@@ -38,49 +38,49 @@ public class BankingDepositVO {
 	@Column(name = "bankingdepositid")
 	private Long id;
 
-	@Column(name = "depositmode")
+	@Column(name = "depositmode", length = 50)
     private String depositMode;
 
-    @Column(name = "docid")
+    @Column(name = "docid", length = 50)
     private String docId;
 
     @Column(name = "docdate")
     private LocalDate docDate= LocalDate.now();
 
-    @Column(name = "receivedfrom")
+    @Column(name = "receivedfrom", length = 50)
     private String receivedFrom;
 
-    @Column(name = "chequeno")
+    @Column(name = "chequeno", length = 50)
     private String chequeNo;
 
     @Column(name = "chequedate")
     private LocalDate chequeDate;
 
-    @Column(name = "chequebank")
+    @Column(name = "chequebank", length = 50)
     private String chequeBank;
 
-    @Column(name = "bankaccount")
+    @Column(name = "bankaccount", length = 50)
     private String bankAccount;
 
-    @Column(name = "currency")
+    @Column(name = "currency", length = 10)
     private String currency;
 
-    @Column(name = "exchangerate", precision = 10, scale = 2)
+    @Column(name = "exchangerate", precision = 10, scale = 6)
     private BigDecimal exchangeRate;
 
-    @Column(name = "depositamount", precision = 15, scale = 2)
+    @Column(name = "depositamount", precision = 10, scale = 2)
     private BigDecimal depositAmount;
 
-    @Column(name = "totaldebitamount", precision = 15, scale = 2)
+    @Column(name = "totaldebitamount", precision = 10, scale = 2)
     private BigDecimal totalDebitAmount;
 
-    @Column(name = "totalcreditamount", precision = 15, scale = 2)
+    @Column(name = "totalcreditamount", precision = 10, scale = 2)
     private BigDecimal totalCreditAmount;
 
-    @Column(name = "totalamount", precision = 15, scale = 2)
+    @Column(name = "totalamount", precision = 10, scale = 2)
     private BigDecimal totalAmount;
 
-    @Column(name = "remarks")
+    @Column(name = "remarks", length = 150)
     private String remarks;
     
     
@@ -111,6 +111,13 @@ public class BankingDepositVO {
 
 	@Column(name = "orgid")
 	private Long orgId;
+	
+	@Column(name = "screencode", length = 5)
+	private String screenCode = "BD";
+
+	@Column(name = "screenname", length = 25)
+	private String screenName = "BANKINGDEPOSIT";
+	
     
 	@OneToMany(mappedBy = "bankingDepositVO", cascade = CascadeType.ALL)
 	@JsonManagedReference

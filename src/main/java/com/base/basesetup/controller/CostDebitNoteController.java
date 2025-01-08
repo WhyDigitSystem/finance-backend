@@ -25,9 +25,6 @@ import com.base.basesetup.common.UserConstants;
 import com.base.basesetup.dto.CostDebitNoteDTO;
 import com.base.basesetup.dto.ResponseDTO;
 import com.base.basesetup.entity.CostDebitNoteVO;
-import com.base.basesetup.entity.CostInvoiceVO;
-import com.base.basesetup.entity.PartyMasterVO;
-import com.base.basesetup.entity.ScreenNamesVO;
 import com.base.basesetup.service.CostDebitNoteService;
 
 @CrossOrigin
@@ -204,7 +201,6 @@ public class CostDebitNoteController extends BaseController {
 		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
 		return ResponseEntity.ok().body(responseDTO);
 	}
-	
 
 	@GetMapping("/partyDetailsForCostDebitNote")
 	public ResponseEntity<ResponseDTO> partyDetailsForCostDebitNote(@RequestParam Long orgId,
@@ -216,7 +212,7 @@ public class CostDebitNoteController extends BaseController {
 		ResponseDTO responseDTO = null;
 		List<Map<String, Object>> partyMaster = new ArrayList<>();
 		try {
-			partyMaster = costDebitNoteService.partyDetailsForCostDebitNote(orgId, branch,finYear);
+			partyMaster = costDebitNoteService.partyDetailsForCostDebitNote(orgId, branch, finYear);
 		} catch (Exception e) {
 			errorMsg = e.getMessage();
 			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
@@ -232,7 +228,7 @@ public class CostDebitNoteController extends BaseController {
 		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
 		return ResponseEntity.ok().body(responseDTO);
 	}
-	
+
 	@GetMapping("/chargeTypeDetailsForCostDebitNote")
 	public ResponseEntity<ResponseDTO> chargeTypeDetailsForCostDebitNote(@RequestParam Long orgId) {
 		String methodName = "chargeTypeDetailsForCostDebitNote()";
@@ -252,13 +248,13 @@ public class CostDebitNoteController extends BaseController {
 			responseObjectsMap.put("chargeType", chargeType);
 			responseDTO = createServiceResponse(responseObjectsMap);
 		} else {
-			responseDTO = createServiceResponseError(responseObjectsMap, "charge Type Details information receive failed",
-					errorMsg);
+			responseDTO = createServiceResponseError(responseObjectsMap,
+					"charge Type Details information receive failed", errorMsg);
 		}
 		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
 		return ResponseEntity.ok().body(responseDTO);
 	}
-	
+
 	@GetMapping("/getAllDocIdForCostInvoice")
 	public ResponseEntity<ResponseDTO> getAllDocIdForCostInvoice(@RequestParam Long orgId) {
 		String methodName = "getAllDocIdForCostInvoice()";
@@ -274,17 +270,18 @@ public class CostDebitNoteController extends BaseController {
 			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
 		}
 		if (StringUtils.isBlank(errorMsg)) {
-			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "All DocId For CostInvoice information get successfully");
+			responseObjectsMap.put(CommonConstant.STRING_MESSAGE,
+					"All DocId For CostInvoice information get successfully");
 			responseObjectsMap.put("costInvoiceDocId", docId);
 			responseDTO = createServiceResponse(responseObjectsMap);
 		} else {
-			responseDTO = createServiceResponseError(responseObjectsMap, "All DocId For CostInvoice Details information receive failed",
-					errorMsg);
+			responseDTO = createServiceResponseError(responseObjectsMap,
+					"All DocId For CostInvoice Details information receive failed", errorMsg);
 		}
 		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
 		return ResponseEntity.ok().body(responseDTO);
 	}
-	
+
 	@GetMapping("/getCurrencyAndExrateDetails")
 	public ResponseEntity<ResponseDTO> getCurrencyAndExrateDetails(@RequestParam Long orgId) {
 		String methodName = "getCurrencyAndExrateDetails()";
@@ -292,7 +289,7 @@ public class CostDebitNoteController extends BaseController {
 		String errorMsg = null;
 		Map<String, Object> responseObjectsMap = new HashMap<>();
 		ResponseDTO responseDTO = null;
-		List<Map<String,Object>> mapp = new ArrayList<>();
+		List<Map<String, Object>> mapp = new ArrayList<>();
 
 		try {
 			mapp = costDebitNoteService.getCurrencyAndExrates(orgId);
@@ -306,41 +303,116 @@ public class CostDebitNoteController extends BaseController {
 			responseObjectsMap.put("currencyVO", mapp);
 			responseDTO = createServiceResponse(responseObjectsMap);
 		} else {
-			responseDTO = createServiceResponseError(responseObjectsMap,
-					"Failed to retrieve Currency Details", errorMsg);
+			responseDTO = createServiceResponseError(responseObjectsMap, "Failed to retrieve Currency Details",
+					errorMsg);
 		}
 
 		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
 		return ResponseEntity.ok().body(responseDTO);
 	}
-	
+
 	@GetMapping("/getOrginBillNoByParty")
-	public ResponseEntity<ResponseDTO> getOrginBillNoByParty(@RequestParam Long orgId,
-			@RequestParam String party, @RequestParam String branchCode) {
+	public ResponseEntity<ResponseDTO> getOrginBillNoByParty(@RequestParam Long orgId, @RequestParam String party,
+			@RequestParam String branchCode) {
 		String methodName = "getOrginBillNoByParty()";
 		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
 		String errorMsg = null;
 		Map<String, Object> responseObjectsMap = new HashMap<>();
 		ResponseDTO responseDTO = null;
-		List<CostInvoiceVO> costInvoiceVO = new ArrayList<>();
+		List<CostDebitNoteVO> costDebitNoteVO = new ArrayList<>();
 		try {
-			costInvoiceVO = costDebitNoteService.getOrginBillNoByParty(orgId, party,branchCode);
+			costDebitNoteVO = costDebitNoteService.getOrginBillNoByParty(orgId, party, branchCode);
 		} catch (Exception e) {
 			errorMsg = e.getMessage();
 			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
 		}
 		if (StringUtils.isBlank(errorMsg)) {
 			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "OrginBillNo information get successfully By OrgId");
-			responseObjectsMap.put("costInvoiceVO", costInvoiceVO);
+			responseObjectsMap.put("costDebitNoteVO", costDebitNoteVO);
 			responseDTO = createServiceResponse(responseObjectsMap);
 		} else {
-			responseDTO = createServiceResponseError(responseObjectsMap, "OrginBillNo information receive failed  By OrgId",
-					errorMsg);
+			responseDTO = createServiceResponseError(responseObjectsMap,
+					"OrginBillNo information receive failed  By OrgId", errorMsg);
 		}
 		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
 		return ResponseEntity.ok().body(responseDTO);
 	}
-	
-	
-	
+
+	@GetMapping("/partyTypeForCostDebitNote")
+	public ResponseEntity<ResponseDTO> partyTypeForCostDebitNote(@RequestParam Long orgId, @RequestParam String branch,
+			@RequestParam String finYear) {
+		String methodName = "partyTypeForCostDebitNote()";
+		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+		String errorMsg = null;
+		Map<String, Object> responseObjectsMap = new HashMap<>();
+		ResponseDTO responseDTO = null;
+		List<Map<String, Object>> partyMaster = new ArrayList<>();
+		try {
+			partyMaster = costDebitNoteService.partyTypeForCostDebitNote(orgId, branch, finYear);
+		} catch (Exception e) {
+			errorMsg = e.getMessage();
+			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+		}
+		if (StringUtils.isBlank(errorMsg)) {
+			responseObjectsMap.put(CommonConstant.STRING_MESSAGE,
+					"PartyType from Party Master information get successfully");
+			responseObjectsMap.put("partyMaster", partyMaster);
+			responseDTO = createServiceResponse(responseObjectsMap);
+		} else {
+			responseDTO = createServiceResponseError(responseObjectsMap,
+					"PartyType from Party Master information receive failed", errorMsg);
+		}
+		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+		return ResponseEntity.ok().body(responseDTO);
+	}
+
+	@PutMapping("/approveCostDebitNote")
+	public ResponseEntity<ResponseDTO> approveCostDebitNote(@RequestParam Long orgId, @RequestParam Long id,
+			@RequestParam String docId, @RequestParam String action, @RequestParam String actionBy) {
+		String methodName = "approveCostDebitNote()";
+		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+		String errorMsg = null;
+		Map<String, Object> responseObjectsMap = new HashMap<>();
+		ResponseDTO responseDTO = null;
+		try {
+			CostDebitNoteVO costDebitNoteVO = costDebitNoteService.approveCostDebitNote(orgId, id, docId, action,
+					actionBy);
+			responseObjectsMap.put("costDebitNoteVO", costDebitNoteVO);
+			responseDTO = createServiceResponse(responseObjectsMap);
+		} catch (Exception e) {
+			errorMsg = e.getMessage();
+			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+			responseDTO = createServiceResponseError(responseObjectsMap, errorMsg, errorMsg);
+		}
+		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+		return ResponseEntity.ok().body(responseDTO);
+	}
+
+	@GetMapping("/getInterAndIntraDetailsForCostInvoice")
+	public ResponseEntity<ResponseDTO> getInterAndIntraDetailsForCostInvoice(@RequestParam Long orgId,
+			@RequestParam String gstType, @RequestParam List<String> gstPercent) {
+		String methodName = "getInterAndIntraDetailsForCostInvoice()";
+		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+		String errorMsg = null;
+		Map<String, Object> responseObjectsMap = new HashMap<>();
+		ResponseDTO responseDTO = null;
+		List<Map<String, Object>> charge = new ArrayList<>();
+		try {
+			charge = costDebitNoteService.getInterAndIntraDetailsForCostInvoice(orgId, gstType, gstPercent);
+		} catch (Exception e) {
+			errorMsg = e.getMessage();
+			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+		}
+		if (StringUtils.isBlank(errorMsg)) {
+			responseObjectsMap.put(CommonConstant.STRING_MESSAGE,
+					"Tax Details get successfully By OrgId, GstType And GstPercent");
+			responseObjectsMap.put("chargeDetails", charge);
+			responseDTO = createServiceResponse(responseObjectsMap);
+		} else {
+			responseDTO = createServiceResponseError(responseObjectsMap,
+					"Tax Detials receive failed By OrgId, GstType And GstPercent", errorMsg);
+		}
+		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+		return ResponseEntity.ok().body(responseDTO);
+	}
 }

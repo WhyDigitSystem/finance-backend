@@ -33,7 +33,6 @@ import com.base.basesetup.entity.CompanyVO;
 import com.base.basesetup.entity.CountryVO;
 import com.base.basesetup.entity.CurrencyVO;
 import com.base.basesetup.entity.EmployeeVO;
-import com.base.basesetup.entity.FinScreenVO;
 import com.base.basesetup.entity.FinancialYearVO;
 import com.base.basesetup.entity.RegionVO;
 import com.base.basesetup.entity.ScreenNamesVO;

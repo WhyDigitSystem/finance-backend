@@ -109,18 +109,6 @@
 			<artifactId>poi-ooxml-schemas</artifactId>
 			<version>4.1.2</version>
 		</dependency>
-		<!-- Apache POI for .xlsx (XSSF) -->
-		<dependency>
-			<groupId>org.apache.poi</groupId>
-			<artifactId>poi-ooxml</artifactId>
-			<version>5.2.3</version> <!-- Check for the latest version -->
-		</dependency>
-		<!-- Apache POI for .xls (HSSF) -->
-		<dependency>
-			<groupId>org.apache.poi</groupId>
-			<artifactId>poi</artifactId>
-			<version>5.2.3</version> <!-- Check for the latest version -->
-		</dependency>
 		<!-- Required for XML processing -->
 		<dependency>
 			<groupId>org.apache.xmlbeans</groupId>
@@ -145,5 +133,4 @@
 			</plugin>
 		</plugins>
 	</build>
-
 </project>

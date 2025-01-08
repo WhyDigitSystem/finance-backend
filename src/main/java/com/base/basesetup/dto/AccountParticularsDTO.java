@@ -2,11 +2,6 @@ package com.base.basesetup.dto;
 
 import java.math.BigDecimal;
 
-import javax.persistence.Column;
-
-import com.base.basesetup.entity.AccountParticularsVO;
-import com.base.basesetup.entity.AdjustmentJournalVO;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

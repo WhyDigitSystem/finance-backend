@@ -19,8 +19,8 @@ public class ArApOffSetInvoiceDetailsDTO {
 	private String curr;
 	private BigDecimal exRate;
 	private BigDecimal invAmount;
-	private String outStanding;
-	private String settled;
+	private BigDecimal outStanding;
+	private BigDecimal settled;
 	private BigDecimal setExRate;
 	private BigDecimal tnxSettled;
 	private BigDecimal gainOrLoss;

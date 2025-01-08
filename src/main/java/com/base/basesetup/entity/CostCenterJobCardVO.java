@@ -20,16 +20,16 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "costcentertmsjobcard")
+@Table(name = "costcenterjobcard")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class CostCenterTmsJobCardVO {
+public class CostCenterJobCardVO {
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "costcentertmsjobcardgen")
-	@SequenceGenerator(name = "costcentertmsjobcardgen", sequenceName = "costcentertmsjobcardseq", initialValue = 1000000001, allocationSize = 1)
-	@Column(name = "costcentertmsjobcardid")
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "costcenterjobcardgen")
+	@SequenceGenerator(name = "costcenterjobcardgen", sequenceName = "costcenterjobcardseq", initialValue = 1000000001, allocationSize = 1)
+	@Column(name = "costcenterjobcardid")
 	private Long id;
 	@Column(name = "accountname",length = 50)
 	private String accountName;
@@ -37,7 +37,7 @@ public class CostCenterTmsJobCardVO {
 	private BigDecimal amount;
 
 	@ManyToOne
-	@JoinColumn(name = "tmsjobcardid")
+	@JoinColumn(name = "jobcardid")
 	@JsonBackReference
-	TmsJobCardVO tmsJobCardVO;
+	JobCardVO jobCardVO;
 }

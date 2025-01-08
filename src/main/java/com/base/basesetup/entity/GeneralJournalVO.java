@@ -81,7 +81,7 @@ public class GeneralJournalVO {
 	@Column(name = "createdby", length = 25)
 	private String createdBy;
 
-	@Column(name = "modifyby", length = 25)
+	@Column(name = "modifiedby", length = 25)
 	private String updatedBy;
 
 	@Column(name = "active")
@@ -93,6 +93,9 @@ public class GeneralJournalVO {
 	@Column(name = "cancelremarks", length = 50)
 	private String cancelRemarks;
 
+	@Column(name = "status", length = 50)
+	private String status;
+	
 	@Column(name = "orgid")
 	private Long orgId;
 

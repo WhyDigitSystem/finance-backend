@@ -34,9 +34,9 @@ public class ContraVoucherParticularsVO {
 	private Long id;
 	@Column(name = "accountsname",length = 50)
 	private String accountsName;
-	@Column(name = "subledgername",length = 25)
+	@Column(name = "subledgername",length = 50)
 	private String subledgerName;
-	@Column(name = "subledgercode",length = 25)
+	@Column(name = "subledgercode",length = 50)
 	private String subLedgerCode;
 	@Column(name = "debit",precision = 10, scale = 2)
 	private BigDecimal debit;

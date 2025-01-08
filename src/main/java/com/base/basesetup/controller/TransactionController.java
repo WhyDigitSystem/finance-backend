@@ -59,13 +59,13 @@ import com.base.basesetup.entity.FundTransferVO;
 import com.base.basesetup.entity.GeneralJournalVO;
 import com.base.basesetup.entity.GlOpeningBalanceVO;
 import com.base.basesetup.entity.GstSalesVoucherVO;
+import com.base.basesetup.entity.JobCardVO;
 import com.base.basesetup.entity.PaymentReversalVO;
 import com.base.basesetup.entity.PaymentVoucherVO;
 import com.base.basesetup.entity.ReceiptReversalVO;
 import com.base.basesetup.entity.ReconcileBankVO;
 import com.base.basesetup.entity.ReconcileCashVO;
 import com.base.basesetup.entity.ReconcileCorpBankVO;
-import com.base.basesetup.entity.TmsJobCardVO;
 import com.base.basesetup.service.TransactionService;
 
 @CrossOrigin
@@ -806,7 +806,7 @@ public class TransactionController extends BaseController {
 		String errorMsg = null;
 		Map<String, Object> responseObjectsMap = new HashMap<>();
 		ResponseDTO responseDTO = null;
-		String mapp = "";
+		String mapp= null;
 
 		try {
 			mapp = transactionService.getGeneralJournalDocId(orgId, finYear, branch, branchCode);
@@ -1556,9 +1556,8 @@ public class TransactionController extends BaseController {
 			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
 		}
 		if (StringUtils.isBlank(errorMsg)) {
-			responseObjectsMap.put(CommonConstant.STRING_MESSAGE,
-					"ArApAdjustmentOffSet information get successfully By OrgId");
-			responseObjectsMap.put("ArApAdjustmentOffSetVO", arApAdjustmentOffSetVO);
+			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "ArApAdjustmentOffSet information get successfully By OrgId");
+			responseObjectsMap.put("arApAdjustmentOffSetVO", arApAdjustmentOffSetVO);
 			responseDTO = createServiceResponse(responseObjectsMap);
 		} else {
 			responseDTO = createServiceResponseError(responseObjectsMap,
@@ -1566,7 +1565,6 @@ public class TransactionController extends BaseController {
 		}
 		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
 		return ResponseEntity.ok().body(responseDTO);
-
 	}
 
 	@GetMapping("/getAllArApAdjustmentOffSetById")
@@ -1584,13 +1582,12 @@ public class TransactionController extends BaseController {
 			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
 		}
 		if (StringUtils.isBlank(errorMsg)) {
-			responseObjectsMap.put(CommonConstant.STRING_MESSAGE,
-					"ArApAdjustmentOffSet information get successfully By id");
+			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "ArApAdjustmentOffSet information get successfully By id");
 			responseObjectsMap.put("arApAdjustmentOffSetVO", arApAdjustmentOffSetVO);
 			responseDTO = createServiceResponse(responseObjectsMap);
 		} else {
 			responseDTO = createServiceResponseError(responseObjectsMap,
-					"ArApAdjustmentOffSet information receive failed By OrgId", errorMsg);
+					"ArApAdjustmentOffSet information receive failed By Id", errorMsg);
 		}
 		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
 		return ResponseEntity.ok().body(responseDTO);
@@ -1600,70 +1597,56 @@ public class TransactionController extends BaseController {
 	public ResponseEntity<ResponseDTO> updateCreateArApAdjustmentOffSet(
 			@Valid @RequestBody ArApAdjustmentOffSetDTO arApAdjustmentOffSetDTO) {
 		String methodName = "updateCreateArApAdjustmentOffSet()";
-
 		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
 		String errorMsg = null;
 		Map<String, Object> responseObjectsMap = new HashMap<>();
 		ResponseDTO responseDTO = null;
-
 		try {
-			ArApAdjustmentOffSetVO arApAdjustmentOffSetVO = transactionService
-					.updateCreateArApAdjustmentOffSet(arApAdjustmentOffSetDTO);
-			boolean isUpdate = arApAdjustmentOffSetDTO.getId() != null;
-
-			if (arApAdjustmentOffSetVO != null) {
-				responseObjectsMap.put(CommonConstant.STRING_MESSAGE,
-						isUpdate ? "ArApAdjustmentOffSet updated successfully"
-								: "ArApAdjustmentOffSet created successfully");
-				responseObjectsMap.put("arApAdjustmentOffSetVO", arApAdjustmentOffSetVO);
-				responseDTO = createServiceResponse(responseObjectsMap);
-			} else {
-				errorMsg = isUpdate ? "ArApAdjustmentOffSet not found for ID: " + arApAdjustmentOffSetDTO.getId()
-						: "ArApAdjustmentOffSet creation failed";
-				responseDTO = createServiceResponseError(responseObjectsMap,
-						isUpdate ? "ArApAdjustmentOffSet update failed" : "ArApAdjustmentOffSet creation failed",
-						errorMsg);
-			}
+			Map<String, Object>arApAdjustmentOffSetVO  = transactionService.updateCreateArApAdjustmentOffSet(arApAdjustmentOffSetDTO);
+			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, arApAdjustmentOffSetVO.get("message"));
+			responseObjectsMap.put("arApAdjustmentOffSetVO", arApAdjustmentOffSetVO.get("arApAdjustmentOffSetVO"));
+			responseDTO = createServiceResponse(responseObjectsMap);
 		} catch (Exception e) {
 			errorMsg = e.getMessage();
-			boolean isUpdate = arApAdjustmentOffSetDTO.getId() != null;
 			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
-			responseDTO = createServiceResponseError(responseObjectsMap,
-					isUpdate ? "ArApAdjustmentOffSet update failed" : "ArApAdjustmentOffSet creation failed", errorMsg);
+			responseDTO = createServiceResponseError(responseObjectsMap, errorMsg, errorMsg);
 		}
-
 		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
 		return ResponseEntity.ok().body(responseDTO);
-	}
 
-	@GetMapping("/getArApAdjustmentOffSetByActive")
-	public ResponseEntity<ResponseDTO> getArApAdjustmentOffSetByActive() {
-		String methodName = "getArApAdjustmentOffSetByActive()";
+	
+	}
+	@GetMapping("/getArApAdjustmentOffSetDocId")
+	public ResponseEntity<ResponseDTO> getArApAdjustmentOffSetDocId(@RequestParam Long orgId, @RequestParam String finYear,
+			@RequestParam String branch, @RequestParam String branchCode) {
+
+		String methodName = "getArApAdjustmentOffSetDocId()";
 		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
 		String errorMsg = null;
 		Map<String, Object> responseObjectsMap = new HashMap<>();
 		ResponseDTO responseDTO = null;
-		List<ArApAdjustmentOffSetVO> arApAdjustmentOffSetVO = new ArrayList<>();
+		String mapp = "";
+
 		try {
-			arApAdjustmentOffSetVO = transactionService.getArApAdjustmentOffSetByActive();
+			mapp = transactionService.getArApAdjustmentOffSetDocId(orgId, finYear, branch, branchCode);
 		} catch (Exception e) {
 			errorMsg = e.getMessage();
 			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
 		}
+
 		if (StringUtils.isBlank(errorMsg)) {
-			responseObjectsMap.put(CommonConstant.STRING_MESSAGE,
-					"ArApAdjustmentOffSet information get successfully By Active");
-			responseObjectsMap.put("arApAdjustmentOffSetVO", arApAdjustmentOffSetVO);
+			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "ArApAdjustmentOffSetDocId information retrieved successfully");
+			responseObjectsMap.put("arApAdjustmentOffSetDocId", mapp);
 			responseDTO = createServiceResponse(responseObjectsMap);
 		} else {
 			responseDTO = createServiceResponseError(responseObjectsMap,
-					"ArApAdjustmentOffSet information receive failed By Active", errorMsg);
+					"Failed to retrieve ArApAdjustmentOffSetDocId information", errorMsg);
 		}
+
 		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
 		return ResponseEntity.ok().body(responseDTO);
-
 	}
-
+	
 	// GlOpeningBalance
 
 	@GetMapping("/getAllGlOpeningBalanceByOrgId")
@@ -2365,22 +2348,22 @@ public class TransactionController extends BaseController {
 	// TMS-TT-JobCard
 
 	@GetMapping("/getAllTmsJobCardByOrgId")
-	public ResponseEntity<ResponseDTO> getAllTmsJobCardByOrgId(@RequestParam(required = false) Long orgId) {
+	public ResponseEntity<ResponseDTO> getAllJobCardByOrgId(@RequestParam(required = false) Long orgId) {
 		String methodName = "getAllTmsJobCardByOrgId()";
 		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
 		String errorMsg = null;
 		Map<String, Object> responseObjectsMap = new HashMap<>();
 		ResponseDTO responseDTO = null;
-		List<TmsJobCardVO> tmsJobCardVO = new ArrayList<>();
+		List<JobCardVO> jobCardVO = new ArrayList<>();
 		try {
-			tmsJobCardVO = transactionService.getAllTmsJobCardByOrgId(orgId);
+			jobCardVO = transactionService.getAllJobCardByOrgId(orgId);
 		} catch (Exception e) {
 			errorMsg = e.getMessage();
 			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
 		}
 		if (StringUtils.isBlank(errorMsg)) {
 			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "TmsJobCard information get successfully By OrgId");
-			responseObjectsMap.put("tmsJobCardVO", tmsJobCardVO);
+			responseObjectsMap.put("jobCardVO", jobCardVO);
 			responseDTO = createServiceResponse(responseObjectsMap);
 		} else {
 			responseDTO = createServiceResponseError(responseObjectsMap,
@@ -2392,22 +2375,22 @@ public class TransactionController extends BaseController {
 	}
 
 	@GetMapping("/getAllTmsJobCardById")
-	public ResponseEntity<ResponseDTO> getAllTmsJobCardById(@RequestParam(required = false) Long id) {
+	public ResponseEntity<ResponseDTO> getAllJobCardById(@RequestParam(required = false) Long id) {
 		String methodName = "getAllTmsJobCardById()";
 		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
 		String errorMsg = null;
 		Map<String, Object> responseObjectsMap = new HashMap<>();
 		ResponseDTO responseDTO = null;
-		List<TmsJobCardVO> tmsJobCardVO = new ArrayList<>();
+		List<JobCardVO> jobCardVO = new ArrayList<>();
 		try {
-			tmsJobCardVO = transactionService.getAllTmsJobCardById(id);
+			jobCardVO = transactionService.getAllJobCardById(id);
 		} catch (Exception e) {
 			errorMsg = e.getMessage();
 			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
 		}
 		if (StringUtils.isBlank(errorMsg)) {
 			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "TmsJobCard information get successfully By id");
-			responseObjectsMap.put("tmsJobCardVO", tmsJobCardVO);
+			responseObjectsMap.put("jobCardVO", jobCardVO);
 			responseDTO = createServiceResponse(responseObjectsMap);
 		} else {
 			responseDTO = createServiceResponseError(responseObjectsMap,
@@ -2418,16 +2401,16 @@ public class TransactionController extends BaseController {
 	}
 
 	@PutMapping("/updateCreateTmsJobCard")
-	public ResponseEntity<ResponseDTO> updateCreateTmsJobCard(@RequestBody TmsJobCardDTO tmsJobCardDTO) {
+	public ResponseEntity<ResponseDTO> updateCreateJobCard(@RequestBody TmsJobCardDTO tmsJobCardDTO) {
 		String methodName = "updateCreateTmsJobCard()";
 		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
 		String errorMsg = null;
 		Map<String, Object> responseObjectsMap = new HashMap<>();
 		ResponseDTO responseDTO = null;
 		try {
-			Map<String, Object> tmsJobCardVO = transactionService.updateCreateTmsJobCard(tmsJobCardDTO);
+			Map<String, Object> tmsJobCardVO = transactionService.updateCreateJobCard(tmsJobCardDTO);
 			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, tmsJobCardVO.get("message"));
-			responseObjectsMap.put("tmsJobCardVO", tmsJobCardVO.get("tmsJobCardVO"));
+			responseObjectsMap.put("jobCardVO", tmsJobCardVO.get("tmsJobCardVO"));
 			responseDTO = createServiceResponse(responseObjectsMap);
 		} catch (Exception e) {
 			errorMsg = e.getMessage();
@@ -2496,7 +2479,7 @@ public class TransactionController extends BaseController {
 	}
 
 	@GetMapping("/getTmsJobCardDocId")
-	public ResponseEntity<ResponseDTO> getTmsJobCardDocId(@RequestParam Long orgId, @RequestParam String finYear,
+	public ResponseEntity<ResponseDTO> getJobCardDocId(@RequestParam Long orgId, @RequestParam String finYear,
 			@RequestParam String branch, @RequestParam String branchCode) {
 
 		String methodName = "getTmsJobCardDocId()";
@@ -2507,7 +2490,7 @@ public class TransactionController extends BaseController {
 		String mapp = "";
 
 		try {
-			mapp = transactionService.getTmsJobCardDocId(orgId, finYear, branch, branchCode);
+			mapp = transactionService.getJobCardDocId(orgId, finYear, branch, branchCode);
 		} catch (Exception e) {
 			errorMsg = e.getMessage();
 			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
@@ -2895,6 +2878,36 @@ public class TransactionController extends BaseController {
 		return ResponseEntity.ok().body(responseDTO);
 	}
 	
+	@GetMapping("/getAccountNamefromGroupLedgerforCV")
+	public ResponseEntity<ResponseDTO> getAccountNamefromGroupLedgerforCV(
+			@RequestParam Long OrgId	) {
+
+		String methodName = "getAccountNamefromGroupLedgerforCV()";
+		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+		String errorMsg = null;
+		Map<String, Object> responseObjectsMap = new HashMap<>();
+		ResponseDTO responseDTO = null;
+		List<Map<String, Object>> mov = new ArrayList<>();
+		try {
+			mov = transactionService.getAccountNamefromGroupLedgerforCV(OrgId);
+		} catch (Exception e) {
+			errorMsg = e.getMessage();
+			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+		}
+
+		if (StringUtils.isBlank(errorMsg)) {
+			responseObjectsMap.put(CommonConstant.STRING_MESSAGE,
+					" AccountName from GroupLedger for Contravoucher information retrieved successfully");
+			responseObjectsMap.put("ContraVoucherVO", mov);
+			responseDTO = createServiceResponse(responseObjectsMap);
+		} else {
+			responseDTO = createServiceResponseError(responseObjectsMap,
+					"Failed to retrieve AccountName from GroupLedger for Contravoucher information", errorMsg);
+		}
+
+		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+		return ResponseEntity.ok().body(responseDTO);
+	}
 
 
 }

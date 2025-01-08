@@ -39,5 +39,7 @@ public interface TaxInvoiceService {
 	List<Map<String, Object>> getPartyAddressDetails(Long orgId, Long id, String stateCode, String placeOfSupply);
 
 	List<Map<String, Object>> getGstTypeDetails(Long orgId, String branchCode, String stateCode);
+	
+	TaxInvoiceVO approveTaxInvoice(Long orgId,Long id,String docId,String action,String actionBy) throws ApplicationException;
 
 }

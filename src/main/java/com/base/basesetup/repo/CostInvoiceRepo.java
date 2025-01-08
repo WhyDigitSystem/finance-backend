@@ -1,5 +1,6 @@
 package com.base.basesetup.repo;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Set;
 
@@ -59,10 +60,21 @@ public interface CostInvoiceRepo extends JpaRepository<CostInvoiceVO, Long> {
 			+ "group by businessplace")
 	Set<Object[]> getPlaceOfSupplyDetails(Long orgId, Long id, String stateCode);
 
-	@Query(nativeQuery = true, value = "SELECT jobno FROM tmsjobcard WHERE orgid=?1 AND closed = 0 AND active=1")
+	@Query(nativeQuery = true, value = "SELECT jobno FROM jobcard WHERE orgid=?1 AND closed = 0 AND active=1")
 	Set<Object[]> getJobNoFromTmsJobCard(Long orgId);
 
 	@Query(nativeQuery = true, value = "SELECT a.tdswithsec,a.tdswithper FROM partyspecialtds a, partymaster b WHERE a.partymasterid = b.partymasterid AND b.orgid=?1 AND b.partycode=?2")
 	Set<Object[]> findTdsDetailsFromPartyMasterSpecialTDS(Long orgId, String partyCode);
+
+	@Query(value = "select a from CostInvoiceVO a where a.orgId=?1 and a.supplierName=?2 and a.branchCode=?3")
+	List<CostInvoiceVO> findOrginBillNoByParty(Long orgId, String party, String branchCode);
+
+	@Query(nativeQuery = true, value = "select accountgroupname,gstpercentage,currency from groupledger where orgid=?1 and gsttaxflag!='NA' and category='TAX' and gsttaxflag='INPUT TAX' and gsttype=?2 and gstpercentage IN(?3) order by gstpercentage desc")
+	Set<Object[]> findInterAndIntraDetailsForCostInvoice(Long orgId, String gtsType, List<String> gstPercent);
+
+	@Query(nativeQuery = true, value = "select accountgroupname,gstpercentage,currency from groupledger where orgid=?1 and gsttaxflag!='NA' and category='TAX' and gsttaxflag='INPUT TAX' and gsttype=?2 and gstpercentage IN(?3) order by gstpercentage desc")
+	Set<Object[]> findInterAndIntraDetailsForCostInvoicePosting(Long orgId, String gtsType, String intraPercent);
+
+	CostInvoiceVO findByOrgIdAndIdAndDocId(Long orgId, Long id, String docId);
 
 }

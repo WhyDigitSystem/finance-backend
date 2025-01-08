@@ -28,7 +28,7 @@ import com.base.basesetup.service.TaxInvoiceService;
 @RestController
 @RequestMapping("/api/taxInvoice")
 public class TaxInvoiceController extends BaseController {
-	
+
 	public static final Logger LOGGER = LoggerFactory.getLogger(TaxInvoiceController.class);
 
 	@Autowired
@@ -37,7 +37,8 @@ public class TaxInvoiceController extends BaseController {
 	// TaxInvoice
 
 	@GetMapping("/getAllTaxInvoiceByFinYearAndBranchCode")
-	public ResponseEntity<ResponseDTO> getAllTaxInvoiceByFinYearAndBranchCode(@RequestParam Long orgId,@RequestParam String finYear,@RequestParam String branchCode) {
+	public ResponseEntity<ResponseDTO> getAllTaxInvoiceByFinYearAndBranchCode(@RequestParam Long orgId,
+			@RequestParam String finYear, @RequestParam String branchCode) {
 		String methodName = "getAllTaxInvoiceByFinYearAndBranchCode()";
 		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
 		String errorMsg = null;
@@ -45,7 +46,7 @@ public class TaxInvoiceController extends BaseController {
 		ResponseDTO responseDTO = null;
 		List<TaxInvoiceVO> taxInvoiceVO = new ArrayList<>();
 		try {
-			taxInvoiceVO = taxInvoiceService.getAllTaxInvoiceByFinYearAndOrgId(orgId,finYear,branchCode);
+			taxInvoiceVO = taxInvoiceService.getAllTaxInvoiceByFinYearAndOrgId(orgId, finYear, branchCode);
 		} catch (Exception e) {
 			errorMsg = e.getMessage();
 			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
@@ -110,7 +111,6 @@ public class TaxInvoiceController extends BaseController {
 		return ResponseEntity.ok().body(responseDTO);
 	}
 
-
 	@GetMapping("/getTaxInvoiceByDocId")
 	public ResponseEntity<ResponseDTO> getTaxInvoiceByDocId(@RequestParam Long orgId, @RequestParam String docId) {
 		String methodName = "getTaxInvoiceByDocId()";
@@ -137,7 +137,7 @@ public class TaxInvoiceController extends BaseController {
 		return ResponseEntity.ok().body(responseDTO);
 
 	}
-	
+
 	@GetMapping("/getTaxInvoiceDocId")
 	public ResponseEntity<ResponseDTO> getTaxInvoiceDocId(@RequestParam Long orgId, @RequestParam String finYear,
 			@RequestParam String branch, @RequestParam String branchCode) {
@@ -168,7 +168,7 @@ public class TaxInvoiceController extends BaseController {
 		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
 		return ResponseEntity.ok().body(responseDTO);
 	}
-	
+
 	@GetMapping("/getChargeType")
 	public ResponseEntity<ResponseDTO> getChargeType(@RequestParam Long orgId) {
 		String methodName = "getChargeType()";
@@ -176,7 +176,7 @@ public class TaxInvoiceController extends BaseController {
 		String errorMsg = null;
 		Map<String, Object> responseObjectsMap = new HashMap<>();
 		ResponseDTO responseDTO = null;
-		List<Map<String,Object>> mapp = new ArrayList<>();
+		List<Map<String, Object>> mapp = new ArrayList<>();
 
 		try {
 			mapp = taxInvoiceService.getChargeType(orgId);
@@ -190,25 +190,25 @@ public class TaxInvoiceController extends BaseController {
 			responseObjectsMap.put("chargeTypeVO", mapp);
 			responseDTO = createServiceResponse(responseObjectsMap);
 		} else {
-			responseDTO = createServiceResponseError(responseObjectsMap,
-					"Failed to retrieve Charge Type", errorMsg);
+			responseDTO = createServiceResponseError(responseObjectsMap, "Failed to retrieve Charge Type", errorMsg);
 		}
 
 		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
 		return ResponseEntity.ok().body(responseDTO);
 	}
-	
+
 	@GetMapping("/getChargeCodeDetailsByChargeType")
-	public ResponseEntity<ResponseDTO> getChargeCodeDetailsByChargeType(@RequestParam Long orgId,@RequestParam String chargeType) {
+	public ResponseEntity<ResponseDTO> getChargeCodeDetailsByChargeType(@RequestParam Long orgId,
+			@RequestParam String chargeType) {
 		String methodName = "getChargeCodeDetailsByChargeType()";
 		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
 		String errorMsg = null;
 		Map<String, Object> responseObjectsMap = new HashMap<>();
 		ResponseDTO responseDTO = null;
-		List<Map<String,Object>> mapp = new ArrayList<>();
+		List<Map<String, Object>> mapp = new ArrayList<>();
 
 		try {
-			mapp = taxInvoiceService.getChargeCodeByChargeType(orgId,chargeType);
+			mapp = taxInvoiceService.getChargeCodeByChargeType(orgId, chargeType);
 		} catch (Exception e) {
 			errorMsg = e.getMessage();
 			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
@@ -219,14 +219,13 @@ public class TaxInvoiceController extends BaseController {
 			responseObjectsMap.put("chargeCodeVO", mapp);
 			responseDTO = createServiceResponse(responseObjectsMap);
 		} else {
-			responseDTO = createServiceResponseError(responseObjectsMap,
-					"Failed to retrieve Charge Code", errorMsg);
+			responseDTO = createServiceResponseError(responseObjectsMap, "Failed to retrieve Charge Code", errorMsg);
 		}
 
 		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
 		return ResponseEntity.ok().body(responseDTO);
 	}
-	
+
 	@GetMapping("/getCurrencyAndExrateDetails")
 	public ResponseEntity<ResponseDTO> getCurrencyAndExrateDetails(@RequestParam Long orgId) {
 		String methodName = "getCurrencyAndExrateDetails()";
@@ -234,7 +233,7 @@ public class TaxInvoiceController extends BaseController {
 		String errorMsg = null;
 		Map<String, Object> responseObjectsMap = new HashMap<>();
 		ResponseDTO responseDTO = null;
-		List<Map<String,Object>> mapp = new ArrayList<>();
+		List<Map<String, Object>> mapp = new ArrayList<>();
 
 		try {
 			mapp = taxInvoiceService.getCurrencyAndExrates(orgId);
@@ -248,16 +247,17 @@ public class TaxInvoiceController extends BaseController {
 			responseObjectsMap.put("currencyVO", mapp);
 			responseDTO = createServiceResponse(responseObjectsMap);
 		} else {
-			responseDTO = createServiceResponseError(responseObjectsMap,
-					"Failed to retrieve Currency Details", errorMsg);
+			responseDTO = createServiceResponseError(responseObjectsMap, "Failed to retrieve Currency Details",
+					errorMsg);
 		}
 
 		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
 		return ResponseEntity.ok().body(responseDTO);
 	}
-	
+
 	@GetMapping("/getPartyNameByPartyType")
-	public ResponseEntity<ResponseDTO> getPartyNameByPartyType(@RequestParam Long orgId,@RequestParam String partyType) {
+	public ResponseEntity<ResponseDTO> getPartyNameByPartyType(@RequestParam Long orgId,
+			@RequestParam String partyType) {
 		String methodName = "getPartyNameByPartyType()";
 		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
 		String errorMsg = null;
@@ -282,15 +282,15 @@ public class TaxInvoiceController extends BaseController {
 		return ResponseEntity.ok().body(responseDTO);
 
 	}
-	
+
 	@GetMapping("/getPartyStateDetails")
-	public ResponseEntity<ResponseDTO> getPartyStateDetails(@RequestParam Long orgId,@RequestParam Long id) {
+	public ResponseEntity<ResponseDTO> getPartyStateDetails(@RequestParam Long orgId, @RequestParam Long id) {
 		String methodName = "getPartyStateDetails()";
 		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
 		String errorMsg = null;
 		Map<String, Object> responseObjectsMap = new HashMap<>();
 		ResponseDTO responseDTO = null;
-		List<Map<String,Object>> partyStateVO = new ArrayList<>();
+		List<Map<String, Object>> partyStateVO = new ArrayList<>();
 		try {
 			partyStateVO = taxInvoiceService.getPartyStateCodeDetails(orgId, id);
 		} catch (Exception e) {
@@ -302,49 +302,52 @@ public class TaxInvoiceController extends BaseController {
 			responseObjectsMap.put("partyStateVO", partyStateVO);
 			responseDTO = createServiceResponse(responseObjectsMap);
 		} else {
-			responseDTO = createServiceResponseError(responseObjectsMap, "Party State information receive failedByOrgId",
-					errorMsg);
+			responseDTO = createServiceResponseError(responseObjectsMap,
+					"Party State information receive failedByOrgId", errorMsg);
 		}
 		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
 		return ResponseEntity.ok().body(responseDTO);
 	}
-	
+
 	@GetMapping("/getPlaceOfSupply")
-	public ResponseEntity<ResponseDTO> getPlaceOfSupply(@RequestParam Long orgId,@RequestParam Long id,@RequestParam String stateCode) {
+	public ResponseEntity<ResponseDTO> getPlaceOfSupply(@RequestParam Long orgId, @RequestParam Long id,
+			@RequestParam String stateCode) {
 		String methodName = "getPlaceOfSupply()";
 		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
 		String errorMsg = null;
 		Map<String, Object> responseObjectsMap = new HashMap<>();
 		ResponseDTO responseDTO = null;
-		List<Map<String,Object>> placeOfSupplyDetails = new ArrayList<>();
+		List<Map<String, Object>> placeOfSupplyDetails = new ArrayList<>();
 		try {
-			placeOfSupplyDetails = taxInvoiceService.getPlaceOfSupplyDetails(orgId, id,stateCode);
+			placeOfSupplyDetails = taxInvoiceService.getPlaceOfSupplyDetails(orgId, id, stateCode);
 		} catch (Exception e) {
 			errorMsg = e.getMessage();
 			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
 		}
 		if (StringUtils.isBlank(errorMsg)) {
-			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "Place Of Supply information get successfully ByOrgId");
+			responseObjectsMap.put(CommonConstant.STRING_MESSAGE,
+					"Place Of Supply information get successfully ByOrgId");
 			responseObjectsMap.put("placeOfSupplyDetails", placeOfSupplyDetails);
 			responseDTO = createServiceResponse(responseObjectsMap);
 		} else {
-			responseDTO = createServiceResponseError(responseObjectsMap, "Place Of Supply information receive failedByOrgId",
-					errorMsg);
+			responseDTO = createServiceResponseError(responseObjectsMap,
+					"Place Of Supply information receive failedByOrgId", errorMsg);
 		}
 		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
 		return ResponseEntity.ok().body(responseDTO);
 	}
-	
+
 	@GetMapping("/getPartyAddress")
-	public ResponseEntity<ResponseDTO> getPartyAddress(@RequestParam Long orgId,@RequestParam Long id,@RequestParam String stateCode,@RequestParam String placeOfSupply) {
+	public ResponseEntity<ResponseDTO> getPartyAddress(@RequestParam Long orgId, @RequestParam Long id,
+			@RequestParam String stateCode, @RequestParam String placeOfSupply) {
 		String methodName = "getPartyAddress()";
 		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
 		String errorMsg = null;
 		Map<String, Object> responseObjectsMap = new HashMap<>();
 		ResponseDTO responseDTO = null;
-		List<Map<String,Object>> partyAddress = new ArrayList<>();
+		List<Map<String, Object>> partyAddress = new ArrayList<>();
 		try {
-			partyAddress = taxInvoiceService.getPartyAddressDetails(orgId, id,stateCode,placeOfSupply);
+			partyAddress = taxInvoiceService.getPartyAddressDetails(orgId, id, stateCode, placeOfSupply);
 		} catch (Exception e) {
 			errorMsg = e.getMessage();
 			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
@@ -354,21 +357,22 @@ public class TaxInvoiceController extends BaseController {
 			responseObjectsMap.put("partyAddress", partyAddress);
 			responseDTO = createServiceResponse(responseObjectsMap);
 		} else {
-			responseDTO = createServiceResponseError(responseObjectsMap, "Party Address information receive failedByOrgId",
-					errorMsg);
+			responseDTO = createServiceResponseError(responseObjectsMap,
+					"Party Address information receive failedByOrgId", errorMsg);
 		}
 		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
 		return ResponseEntity.ok().body(responseDTO);
 	}
-	
+
 	@GetMapping("/getGstType")
-	public ResponseEntity<ResponseDTO> getGstType(@RequestParam Long orgId,@RequestParam String branchCode,@RequestParam String stateCode) {
+	public ResponseEntity<ResponseDTO> getGstType(@RequestParam Long orgId, @RequestParam String branchCode,
+			@RequestParam String stateCode) {
 		String methodName = "getGstType()";
 		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
 		String errorMsg = null;
 		Map<String, Object> responseObjectsMap = new HashMap<>();
 		ResponseDTO responseDTO = null;
-		List<Map<String,Object>> gstTypeDetails = new ArrayList<>();
+		List<Map<String, Object>> gstTypeDetails = new ArrayList<>();
 		try {
 			gstTypeDetails = taxInvoiceService.getGstTypeDetails(orgId, branchCode, stateCode);
 		} catch (Exception e) {
@@ -382,6 +386,26 @@ public class TaxInvoiceController extends BaseController {
 		} else {
 			responseDTO = createServiceResponseError(responseObjectsMap, "Gst Type information receive failedByOrgId",
 					errorMsg);
+		}
+		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+		return ResponseEntity.ok().body(responseDTO);
+	}
+
+	@PutMapping("/approveTaxInvoice")
+	public ResponseEntity<ResponseDTO> approveTaxInvoice(@RequestParam Long orgId,@RequestParam Long id,@RequestParam String docId,@RequestParam String action,@RequestParam String actionBy) {
+		String methodName = "approveTaxInvoice()";
+		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+		String errorMsg = null;
+		Map<String, Object> responseObjectsMap = new HashMap<>();
+		ResponseDTO responseDTO = null;
+		try {
+			TaxInvoiceVO taxInvoiceVO = taxInvoiceService.approveTaxInvoice(orgId, id, docId, action, actionBy);
+			responseObjectsMap.put("taxInvoiceVO", taxInvoiceVO);
+			responseDTO = createServiceResponse(responseObjectsMap);
+		} catch (Exception e) {
+			errorMsg = e.getMessage();
+			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+			responseDTO = createServiceResponseError(responseObjectsMap, errorMsg, errorMsg);
 		}
 		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
 		return ResponseEntity.ok().body(responseDTO);

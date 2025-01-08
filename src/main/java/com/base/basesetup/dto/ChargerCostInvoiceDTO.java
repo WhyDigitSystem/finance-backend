@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class ChargerCostInvoiceDTO {
+	
 	private Long id;
 	private String jobNo;
 	private String chargeName;
@@ -23,10 +24,10 @@ public class ChargerCostInvoiceDTO {
 	private String gst;
 	private BigDecimal rate;
 	private int qty;
-	private int gstPercent;
+	private Float gstPercent;
 	private String ledger;
 	private String govChargeCode;
-	
 	private String taxable;
 	private String exempted;
+
 }

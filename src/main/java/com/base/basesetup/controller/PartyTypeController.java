@@ -24,7 +24,6 @@ import com.base.basesetup.common.CommonConstant;
 import com.base.basesetup.common.UserConstants;
 import com.base.basesetup.dto.PartyTypeDTO;
 import com.base.basesetup.dto.ResponseDTO;
-import com.base.basesetup.entity.PartyMasterVO;
 import com.base.basesetup.entity.PartyTypeVO;
 import com.base.basesetup.service.PartyTypeService;
 

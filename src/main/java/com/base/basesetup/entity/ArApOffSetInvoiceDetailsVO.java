@@ -32,35 +32,35 @@ public class ArApOffSetInvoiceDetailsVO {
 	@SequenceGenerator(name = "arapoffsetinvoicedetailsgen", sequenceName = "arapoffsetinvoicedetailsseq", initialValue = 1000000001, allocationSize = 1)
 	@Column(name = "arapoffsetinvoicedetailsid")
 	private Long id;
-	@Column(name = "invoiceno")
+	@Column(name = "invoiceno",length = 50)
 	private String invoiceNo;
 	@Column(name = "invoicedate")
 	private LocalDate invoiceDate;
-	@Column(name = "refno")
+	@Column(name = "refno",length = 50)
 	private String refNo;
 	@Column(name = "refdate")
 	private LocalDate refDate;
-	@Column(name = "curr")
+	@Column(name = "curr",length = 10)
 	private String curr;
-	@Column(name = "exrate")
+	@Column(name = "exrate",precision = 10, scale = 6)
 	private BigDecimal exRate;
-	@Column(name = "invamount")
+	@Column(name = "invamount",precision = 10, scale = 2)
 	private BigDecimal invAmount;
-	@Column(name = "outstanding")
-	private String outStanding;
-	@Column(name = "settled")
-	private String settled;
-	@Column(name = "setexrate")
+	@Column(name = "outstanding",precision = 10, scale = 2)
+	private BigDecimal outStanding;
+	@Column(name = "settled",precision = 10, scale = 2)
+	private BigDecimal settled;
+	@Column(name = "setexrate",precision = 10, scale = 6)
 	private BigDecimal setExRate;
-	@Column(name = "tnxsettled")
+	@Column(name = "tnxsettled",precision = 10, scale = 2)
 	private BigDecimal tnxSettled;
-	@Column(name = "gainorloss")
+	@Column(name = "gainorloss",precision = 10, scale = 2)
 	private BigDecimal gainOrLoss;
-	@Column(name = "remarks")
+	@Column(name = "remarks",length=150)
 	private String remarks;
 
 	@ManyToOne
 	@JsonBackReference
 	@JoinColumn(name = "arapadjustmentoffsetid")
-	ArApAdjustmentOffSetVO arapadjustmentoffsetVO;
+	ArApAdjustmentOffSetVO arApAdjustmentOffSetVO;
 }

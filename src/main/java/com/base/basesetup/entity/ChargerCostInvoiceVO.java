@@ -35,7 +35,7 @@ public class ChargerCostInvoiceVO {
 	private String jobNo;
 	@Column(name = "chargername", length = 150)
 	private String chargeName;
-	@Column(name = "chargecode", length = 10)
+	@Column(name = "chargecode", length = 25)
 	private String chargeCode;
 	@Column(name = "chargeledger", length = 150)
 	private String chargeLedger;
@@ -60,7 +60,7 @@ public class ChargerCostInvoiceVO {
 	@Column(name = "qty")
 	private int qty;
 	@Column(name = "gstpercent")
-	private int GSTPercent;
+	private Float GSTPercent;
 	@Column(name = "tlcamount", precision = 10, scale = 2)
 	private BigDecimal tlcAmount;
 	@Column(name = "gstamount", precision = 10, scale = 2)

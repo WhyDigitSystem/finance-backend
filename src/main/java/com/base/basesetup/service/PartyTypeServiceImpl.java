@@ -16,7 +16,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.base.basesetup.dto.PartyTypeDTO;
-import com.base.basesetup.entity.PartyMasterVO;
 import com.base.basesetup.entity.PartyTypeVO;
 import com.base.basesetup.exception.ApplicationException;
 import com.base.basesetup.repo.PartyTypeRepo;

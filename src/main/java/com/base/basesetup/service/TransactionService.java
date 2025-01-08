@@ -44,13 +44,13 @@ import com.base.basesetup.entity.FundTransferVO;
 import com.base.basesetup.entity.GeneralJournalVO;
 import com.base.basesetup.entity.GlOpeningBalanceVO;
 import com.base.basesetup.entity.GstSalesVoucherVO;
+import com.base.basesetup.entity.JobCardVO;
 import com.base.basesetup.entity.PaymentReversalVO;
 import com.base.basesetup.entity.PaymentVoucherVO;
 import com.base.basesetup.entity.ReceiptReversalVO;
 import com.base.basesetup.entity.ReconcileBankVO;
 import com.base.basesetup.entity.ReconcileCashVO;
 import com.base.basesetup.entity.ReconcileCorpBankVO;
-import com.base.basesetup.entity.TmsJobCardVO;
 import com.base.basesetup.exception.ApplicationException;
 
 @Service
@@ -175,12 +175,12 @@ public interface TransactionService {
 //	ArApAdjustmentOffSet
 	List<ArApAdjustmentOffSetVO> getAllArApAdjustmentOffSetByOrgId(Long orgId);
 
-	ArApAdjustmentOffSetVO updateCreateArApAdjustmentOffSet(@Valid ArApAdjustmentOffSetDTO arApAdjustmentOffSetDTO)
+	Map<String, Object> updateCreateArApAdjustmentOffSet(@Valid ArApAdjustmentOffSetDTO arApAdjustmentOffSetDTO)
 			throws ApplicationException;
 
 	List<ArApAdjustmentOffSetVO> getAllArApAdjustmentOffSetById(Long id);
-
-	List<ArApAdjustmentOffSetVO> getArApAdjustmentOffSetByActive();
+	
+	String getArApAdjustmentOffSetDocId(Long orgId, String finYear, String branch, String branchCode);
 
 	// GlOpeningBalance
 	List<GlOpeningBalanceVO> getAllGlOpeningBalanceByOrgId(Long orgId);
@@ -247,17 +247,17 @@ public interface TransactionService {
 
 	/// TMS-TT-JobCard
 
-	List<TmsJobCardVO> getAllTmsJobCardByOrgId(Long orgId);
+	List<JobCardVO> getAllJobCardByOrgId(Long orgId);
 
-	Map<String, Object> updateCreateTmsJobCard(@Valid TmsJobCardDTO tmsJobCardDTO) throws ApplicationException;
+	Map<String, Object> updateCreateJobCard(@Valid TmsJobCardDTO tmsJobCardDTO) throws ApplicationException;
 
-	List<TmsJobCardVO> getAllTmsJobCardById(Long id);
+	List<JobCardVO> getAllJobCardById(Long id);
 
 	List<Map<String, Object>> getSalesPersonFromPartyMaster(Long orgId, String partyName);
 
 	List<Map<String, Object>> getAllCustomersFromPartyMaster(Long orgId);
 
-	String getTmsJobCardDocId(Long orgId, String finYear, String branch, String branchCode);
+	String getJobCardDocId(Long orgId, String finYear, String branch, String branchCode);
 
 	// AdjustmentJournal
 
@@ -302,6 +302,8 @@ public interface TransactionService {
 	String getContraVoucherDocId(Long orgId, String finYear, String branch, String branchCode);
 
 	Map<String, Object> updateCreateContraVoucher(@Valid ContraVoucherDTO contraVoucherDTO) throws ApplicationException;
+
+	List<Map<String, Object>> getAccountNamefromGroupLedgerforCV(Long orgId);
 
 
 	

@@ -15,6 +15,8 @@ import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
+import org.springframework.format.annotation.DateTimeFormat;
+
 import com.base.basesetup.dto.CreatedUpdatedDate;
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
@@ -35,148 +37,150 @@ public class CostDebitNoteVO {
 	@SequenceGenerator(name = "costdebitnotegen", sequenceName = "costdebitnoteseq", initialValue = 1000000001, allocationSize = 1)
 	@Column(name = "costdebitnoteid")
 	private Long id;
-	@Column(name = "branch", length = 25)
-	private String branch;
-	@Column(name = "branchcode", length = 25)
-	private String branchCode;
-	@Column(name = "createdby", length = 25)
-	private String createdBy;
-	@Column(name = "updatedby", length = 25)
-	private String modifyBy;
-	private boolean active;
-	private boolean cancel;
-	@Column(name = "cancelremarks", length = 50)
-	private String cancelRemarks;
-	@Column(name = "finyear", length = 10)
-	private String finYear;
-	@Column(name = "screencode", length = 10)
-	private String screenCode="CDN";
-	@Column(name = "screenname", length = 25)
-	private String screenName="COST DEBIT NOTE";
-	@Column(name = "ipno", length = 15)
-	private String ipNo;
-	@Column(name = "latitude", length = 100)
-	private String latitude;
-	@Column(name = "orgid", length = 15)
-	private Long orgId;
-	@Column(name = "docno", length = 50)
-	private String docNo;
-	
-	@Column(name = "docid", length = 50)
-	private String docId;
 
-	@Column(name = "subtype", length = 25)
-	private String subType;
-
+	@Column(name = "mode", length = 10)
+	private String mode;
 	@Column(name = "product", length = 50)
 	private String product;
-	@Column(name = "docdate")
-	private LocalDate docDate=LocalDate.now();
-
-	@Column(name = "vohno", length = 50)
-	private String vohNo;
-
-	@Column(name = "vohdate", length = 50)
-	private LocalDate vohDate; // This can be changed to Date if needed
-
-	@Column(name = "partytype", length = 50)
-	private String partyType;
-
-	@Column(name = "supprefno", length = 50)
-	private String suppRefNo;
-	@Column(name = "suppdate")
-	private LocalDate suppDate;
-
-	@Column(name = "partyname", length = 150)
-	private String partyName;
-
-	@Column(name = "partycode", length = 50)
-	private String partyCode;
-
-	@Column(name = "creditdays")
+	@Column(name = "purvoucherno", length = 50)
+	private String purVoucherNo;
+	@Column(name = "purvoucherdate")
+	private LocalDate purVoucherDate;
+	@Column(name = "supplierbillno", length = 50)
+	private String supplierBillNo;
+	@Column(name = "supplietype", length = 10)
+	private String supplierType;
+	@Column(name = "suppliercode", length = 15)
+	private String supplierCode;
+	@Column(name = "creditdays", length = 10)
 	private int creditDays;
 	@Column(name = "duedate")
 	private LocalDate dueDate;
-
-	@Column(name = "taxexampt")
-	private boolean taxExampt;
-
-	@Column(name = "address", length = 150)
-	private String address;
-
+	@Column(name = "suppliername", length = 150)
+	private String supplierName;
+	@Column(name = "supplierplace", length = 15)
+	private String supplierPlace;
 	@Column(name = "currency", length = 10)
 	private String currency;
-
 	@Column(name = "exrate", precision = 10, scale = 2)
 	private BigDecimal exRate;
-
-	@Column(name = "otherinfo", length = 150)
-	private String otherInfo;
-
+	@Column(name = "suppliergstin", length = 20)
+	private String supplierGstIn;
+	@Column(name = "suppliergstincode", length = 15)
+	private String supplierGstInCode;
 	@Column(name = "remarks", length = 150)
 	private String remarks;
-
-	@Column(name = "shiprefno", length = 50)
-	private String shipRefNo;
-
-	@Column(name = "status", length = 10)
-	private String status;
-
-	@Column(name = "orginbill", length = 50)
-	private String orginBill;
-
-	@Column(name = "gsttype", length = 10)
+	@Column(name = "address", length = 150)
+	private String address;
+	@Column(name = "otherinfo", length = 150)
+	private String otherInfo;
+	@Column(name = "shipperrefno", length = 25)
+	private String shipperRefNo;
+	@Column(name = "gsttype", length = 15)
 	private String gstType;
-	
-	@Column(name = "currentdate")
-	private LocalDate currentDate;
-	
-	@Column(name = "currentdatevalue")
-	private BigDecimal currentDateValue;
-	
-	@Column(name = "partyaddtype",length =50)
-	private String partyAddType;
-	
-	//summary 
-	
+	@Column(name = "orgid", length = 15)
+	private Long orgId;
+	@Column(name = "active")
+	private boolean active;
+	@Column(name = "modifiedby", length = 25)
+	private String updatedBy;
+	@Column(name = "createdby", length = 25)
+	private String createdBy;
+	@Column(name = "cancel")
+	private boolean cancel;
+	@Column(name = "cancelremarks", length = 25)
+	private String cancelRemarks;
+	@Column(name = "branch", length = 25)
+	private String branch;
+	@Column(name = "branchcode", length = 10)
+	private String branchCode;
+	@Column(name = "customer", length = 100)
+	private String customer;
+	@Column(name = "client", length = 30)
+	private String client;
+	@Column(name = "finyear", length = 10)
+	private String finYear;
+	@Column(name = "screencode", length = 10)
+	private String screenCode = "CBN";
+	@Column(name = "screenname", length = 25)
+	private String screenName = "COST DEBIT NOTE";
+	@Column(name = "docid", length = 30)
+	private String docId;
+	@Column(name = "docdate")
+	private LocalDate docDate = LocalDate.now();
+	@Column(name = "payment", length = 20)
+	private String payment;
+	@Column(name = "accuralid", length = 20)
+	private String accuralid;
+	@Column(name = "utrref", length = 10)
+	private String utrRef;
+	@Column(name = "costtype", length = 10)
+	private String costType;
+
+//	SUMMARY
 	@Column(name = "totchargesbillcurramt", precision = 10, scale = 2)
 	private BigDecimal totChargesBillCurrAmt;
-
-	@Column(name = "totchargeslcamp", precision = 10, scale = 2)
-	private BigDecimal totChargesLCAmt;
-
-	@Column(name = "totgrossbillamt", precision = 10, scale = 2)
-	private BigDecimal totGrossBillAmt;
-
-	@Column(name = "totgrosslcamt", precision = 10, scale = 2)
-	private BigDecimal totGrossLCAmt;
-
+	@Column(name = "totchargeslcamt", precision = 10, scale = 2)
+	private BigDecimal totChargesLcAmt;
+	@Column(name = "actbillcurramt", precision = 10, scale = 2)
+	private BigDecimal actBillCurrAmt;
+	@Column(name = "actbilllcamt", precision = 10, scale = 2)
+	private BigDecimal actBillLcAmt;
 	@Column(name = "netbillcurramt", precision = 10, scale = 2)
 	private BigDecimal netBillCurrAmt;
+	@Column(name = "netbilllcamt", precision = 10, scale = 2)
+	private BigDecimal netBillLcAmt;
+	@Column(name = "roundoff")
+	private Long roundOff;
+	@Column(name = "gstinputlcamt", precision = 10, scale = 2)
+	private BigDecimal gstInputLcAmt;
 
-	@Column(name = "netlcamt", precision = 10, scale = 2)
-	private BigDecimal netLCAmt;
+//	APPROVED
+	@Column(name = "approvestatus", length = 20)
+	private String approveStatus;
+	@Column(name = "approveby", length = 20)
+	private String approveBy;
+	@DateTimeFormat(pattern = "dd-MM-yyyy hh:mm:ss a")
+	@Column(name = "approveon")
+	private String approveOn;
 
-	@Column(name = "amtinwords", length = 150)
-	private String amtInWords;
-	
-	@Column(name = "roundoff",precision =10,scale =2)
-	private BigDecimal roundOff;
-	
-	@OneToMany(mappedBy ="costDebitNoteVO",cascade = CascadeType.ALL)
+	@Column(name = "sumLcAmt", precision = 10, scale = 2)
+	private BigDecimal sumLcAmt;
+//
+	@Column(name = "orginbill", length = 50)
+	private String orginBill;
+	@Column(name = "orginbilldate", length = 50)
+	private LocalDate orginBillDate;
+
+//	@Column(name = "partytype", length = 50)
+//	private String partyType;
+
+//	@Column(name = "supprefno", length = 50)
+//	private String suppRefNo;
+//	@Column(name = "suppdate")
+//	private LocalDate suppDate;
+//	@Column(name = "shiprefno", length = 50)
+//	private String shipRefNo;
+
+//	@Column(name = "currentdate")
+//	private LocalDate currentDate;
+//	@Column(name = "currentdatevalue")
+//	private BigDecimal currentDateValue;
+
+//	@Column(name = "partyaddtype", length = 50)
+//	private String partyAddType;
+
+	// summary
+
+	@OneToMany(mappedBy = "costDebitNoteVO", cascade = CascadeType.ALL)
 	@JsonManagedReference
-    List <CostDebitChargesVO> costDebitChargesVO;
-	
-	@OneToMany(mappedBy ="costDebitNoteVO",cascade = CascadeType.ALL)
+	List<ChargerCostDebitNoteVO> costDebitChargesVO;
+
+	@OneToMany(mappedBy = "costDebitNoteVO", cascade = CascadeType.ALL)
 	@JsonManagedReference
-    List <CostDebitNoteGstVO> costDebitNoteGstVO;
-	
-	@OneToMany(mappedBy ="costDebitNoteVO",cascade = CascadeType.ALL)
-	@JsonManagedReference
-    List <CostDebitNoteTaxPrtculVO> costDebitNoteTaxPrtculVO;
-	
-	
-    @JsonGetter("active")
+	List<TdsCostDebitNoteVO> tdsCostDebitNoteVO;
+
+	@JsonGetter("active")
 	public String getActive() {
 		return active ? "Active" : "In-Active";
 	}
@@ -186,9 +190,7 @@ public class CostDebitNoteVO {
 	public String getCancel() {
 		return cancel ? "T" : "F";
 	}
-	
-	
-	
+
 	@Embedded
 	private CreatedUpdatedDate commonDate = new CreatedUpdatedDate();
 }

@@ -1,9 +1,5 @@
 package com.base.basesetup.dto;
 
-import javax.persistence.Column;
-
-import com.base.basesetup.entity.PartyTypeVO;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

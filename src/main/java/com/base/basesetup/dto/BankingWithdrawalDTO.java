@@ -26,13 +26,13 @@ public class BankingWithdrawalDTO {
 	private BigDecimal exchangeRate;
 	private BigDecimal withdrawalAmount;
 	private String remarks;
-	
+
 	private Long orgId;
 	private String createdBy;
 	private String branch;
 	private String branchCode;
 	private String finYear;
-	
+	private String status;
 	List<WithdrawalParticularsDTO> withdrawalParticularsDTO;
 
 }

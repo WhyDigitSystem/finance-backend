@@ -1,7 +1,6 @@
 package com.base.basesetup.entity;
 
 import java.math.BigDecimal;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -26,16 +25,16 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "tmsjobcard")
+@Table(name = "jobcard")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class TmsJobCardVO {
+public class JobCardVO {
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "tmsjobcardgen")
-	@SequenceGenerator(name = "tmsjobcardgen", sequenceName = "tmsjobcardseq", initialValue = 1000000001, allocationSize = 1)
-	@Column(name = "tmsjobcardid")
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "jobcardgen")
+	@SequenceGenerator(name = "jobcardgen", sequenceName = "jobcardseq", initialValue = 1000000001, allocationSize = 1)
+	@Column(name = "jobcardid")
 	private Long id;
 	@Column(name = "jobno", length = 30)
 	private String jobNo;
@@ -43,7 +42,7 @@ public class TmsJobCardVO {
 	private String customer;
 	@Column(name = "operationclosed")
 	private boolean operationClosed;
-	@Column(name = "date")
+	@Column(name = "docdate")
 	private LocalDate date=LocalDate.now();
 	@Column(name = "salescategory", length = 50)
 	private String salesCategory;
@@ -54,7 +53,7 @@ public class TmsJobCardVO {
 	@Column(name = "closed")
 	private boolean closed;
 	@Column(name = "closedon")
-	private LocalDateTime closedOn=LocalDateTime.now();
+	private LocalDateTime closedOn;
 	@Column(name = "income", precision = 10, scale = 2)
 	private BigDecimal income;
 	@Column(name = "expense", precision = 10, scale = 2)
@@ -63,6 +62,7 @@ public class TmsJobCardVO {
 	private BigDecimal profit;
 	@Column(name = "remarks", length = 150)
 	private String remarks;
+
 
 	// default fields
 	@Builder.Default
@@ -90,9 +90,9 @@ public class TmsJobCardVO {
 	@Column(name = "finyear", length = 5)
 	private String finYear;
 
-	@OneToMany(mappedBy = "tmsJobCardVO", cascade = CascadeType.ALL)
+	@OneToMany(mappedBy = "jobCardVO", cascade = CascadeType.ALL)
 	@JsonManagedReference
-	List<CostCenterTmsJobCardVO> costCenterTmsJobCardVO;
+	List<CostCenterJobCardVO> costCenterJobCardVO;
 
 	@Embedded
 	@Builder.Default

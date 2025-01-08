@@ -42,6 +42,10 @@ public class GroupLedgerVO {
 	private String accountGroupName;
 	@Column(name = "type", length = 50)
 	private String type;
+	@Column(name = "gsttype", length = 50)
+	private String gstType;
+	@Column(name = "gstpercentage", precision = 3,scale = 2)
+	private double gstPercentage;
 	@Column(name = "interbranchac")
 	private boolean interBranchAc;
 	@Column(name = "controllac")

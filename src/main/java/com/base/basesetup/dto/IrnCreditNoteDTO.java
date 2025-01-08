@@ -4,12 +4,6 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
-import javax.persistence.Column;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.SequenceGenerator;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -42,8 +36,7 @@ public class IrnCreditNoteDTO {
 	private String status;
 	private String gstType;
 	private String originBillNo;
-	private String voucherNo;
-	private LocalDate voucherDate;
+	private LocalDate originBillDate;
 	private String supplierRefNo;
 	private LocalDate supplierRefDate;
 	private String billCurr;

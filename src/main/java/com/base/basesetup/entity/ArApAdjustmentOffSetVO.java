@@ -32,56 +32,66 @@ import lombok.NoArgsConstructor;
 public class ArApAdjustmentOffSetVO {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "adjustmentoffsetgen")
-	@SequenceGenerator(name = "adjustmentoffsetgen", sequenceName = "adjustmentoffsetseq", initialValue = 1000000001, allocationSize = 1)
-	@Column(name = "adjustmentoffsetid")
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "arapadjustmentoffsetgen")
+	@SequenceGenerator(name = "arapadjustmentoffsetgen", sequenceName = "arapadjustmentoffsetseq", initialValue = 1000000001, allocationSize = 1)
+	@Column(name = "arapadjustmentoffsetid")
 	private Long id;
-	@Column(name = "docid")
+	@Column(name = "docid",length = 50)
 	private String docId;
 	@Column(name = "docdate")
-	private LocalDate docDate;
-	@Column(name = "subledgertype")
+	private LocalDate docDate=LocalDate.now();
+	@Column(name = "subledgertype",length = 30)
 	private String subLedgerType;
-	@Column(name = "subledgername")
+	@Column(name = "subledgername",length = 50)
 	private String subLedgerName;
-	@Column(name = "subledgercode")
+	@Column(name = "subledgercode",length=20)
 	private String subLedgerCode;
-	@Column(name = "receiptpaymentdocid")
+	@Column(name = "receiptpaymentdocid",length = 50)
 	private String receiptPaymentDocId;
 	@Column(name = "receiptpaymentdocdate")
 	private LocalDate receiptPaymentDocDate;
-	@Column(name = "currency")
+	@Column(name = "currency",length=10)
 	private String currency;
-	@Column(name = "exrate")
+	@Column(name = "exrate",precision = 10, scale = 2 )
 	private BigDecimal exRate;
-	@Column(name = "amount")
-	private String amount;
-	@Column(name = "supplierRefNo")
+	@Column(name = "amount",precision = 10, scale = 2)
+	private BigDecimal amount;
+	@Column(name = "supplierRefNo",length = 50)
 	private String supplierRefNo;
-	@Column(name = "forexgainorloss")
+	@Column(name = "forexgainorloss",precision = 10, scale = 2)
 	private BigDecimal forexGainOrLoss;
-	@Column(name = "totalsettled")
+	@Column(name = "totalsettled",precision = 10, scale = 2)
 	private BigDecimal totalSettled;
-	@Column(name = "roundoffamount")
+	@Column(name = "roundoffamount",precision = 10, scale = 2)
 	private BigDecimal roundOffAmount;
-	@Column(name = "onaccount")
+	@Column(name = "onaccount",precision = 10, scale = 2)
 	private BigDecimal onAccount;
-	@Column(name = "narration")
+	@Column(name = "narration",length = 150)
 	private String narration;
+	@Column(name = "screencode",length = 5)
+	private String screenCode="OFS";
+	@Column(name = "screenname",length = 30)
+	private String screenName="ARAP ADJUSTMENTOFFSET";
+	@Column(name = "branch",length = 25)
+	private String branch;
+	@Column(name = "branchcode",length = 20)
+	private String branchCode;
+	@Column(name = "finyear",length =5)
+	private String finYear;
 	@Column(name = "orgid")
 	private Long orgId;
 	@Column(name = "active")
 	private boolean active;
 	@Column(name = "cancel")
 	private boolean cancel;
-	@Column(name = "cancelremarks")
+	@Column(name = "cancelremarks",length=50)
 	private String cancelRemarks;
-	@Column(name = "createdby")
+	@Column(name = "createdby",length = 25)
 	private String createdBy;
-	@Column(name = "modifiedby")
+	@Column(name = "modifiedby",length=25)
 	private String updatedBy;
 	
-	@OneToMany(mappedBy = "arapadjustmentoffsetVO",cascade = CascadeType.ALL)
+	@OneToMany(mappedBy = "arApAdjustmentOffSetVO",cascade = CascadeType.ALL)
 	@JsonManagedReference
 	List<ArApOffSetInvoiceDetailsVO> arApAdjustmentInvoiceDetailsVO;
 	

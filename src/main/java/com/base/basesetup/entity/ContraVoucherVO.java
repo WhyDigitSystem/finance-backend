@@ -38,7 +38,7 @@ public class ContraVoucherVO {
 	@Column(name = "contravoucherid")
 	private Long id;
 
-    @Column(name = "docid")
+    @Column(name = "docid", length = 50)
     private String docId;
 
     @Column(name = "docdate")
@@ -47,25 +47,25 @@ public class ContraVoucherVO {
     @Column(name = "currency", length = 10)
 	private String currency;
     
-	@Column(name = "exrate",precision = 10, scale = 2)
+	@Column(name = "exrate",precision = 10, scale = 6)
 	private BigDecimal exRate;
 
-    @Column(name = "referenceno")
+    @Column(name = "referenceno", length = 75)
     private String referenceNo;
 
     @Column(name = "referencedate")
     private LocalDate referenceDate;
     
-    @Column(name = "chequeno")
+    @Column(name = "chequeno", length = 50)
     private String chequeNo;
 
     @Column(name = "chequedate")
     private LocalDate chequeDate;
 
-    @Column(name = "totaldebitamount", precision = 15, scale = 2)
+    @Column(name = "totaldebitamount", precision = 10, scale = 2)
     private BigDecimal totalDebitAmount;
 
-    @Column(name = "totalcreditamount", precision = 15, scale = 2)
+    @Column(name = "totalcreditamount", precision = 10, scale = 2)
     private BigDecimal totalCreditAmount;
 
     @Column(name = "remarks")
@@ -92,11 +92,17 @@ public class ContraVoucherVO {
 	@Column(name = "cancel")
 	private boolean cancel;
 
-	@Column(name = "cancelremarks", length = 50)
+	@Column(name = "cancelremarks", length = 150)
 	private String cancelRemarks;
 
 	@Column(name = "orgid")
 	private Long orgId;
+	
+	@Column(name = "screencode", length = 5)
+	private String screenCode = "CV";
+
+	@Column(name = "screenname", length = 25)
+	private String screenName = "CONTRAVOUCHER";
     
 	@OneToMany(mappedBy = "contraVoucherVO", cascade = CascadeType.ALL)
 	@JsonManagedReference

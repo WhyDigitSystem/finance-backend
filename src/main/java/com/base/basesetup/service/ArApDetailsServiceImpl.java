@@ -15,7 +15,6 @@ import org.springframework.stereotype.Service;
 
 import com.base.basesetup.dto.ArapDetailsDTO;
 import com.base.basesetup.entity.ArapDetailsVO;
-import com.base.basesetup.entity.CostInvoiceVO;
 import com.base.basesetup.entity.DocumentTypeMappingDetailsVO;
 import com.base.basesetup.exception.ApplicationException;
 import com.base.basesetup.repo.ArapDetailsRepo;
@@ -130,7 +129,7 @@ public class ArApDetailsServiceImpl implements ArApDetailsService {
 		arapDetailsVO.setBaseAmt(arapDetailsDTO.getBaseAmt());
 		arapDetailsVO.setNativeAmt(arapDetailsDTO.getNativeAmt());
 		arapDetailsVO.setChargableAmt(arapDetailsDTO.getChargableAmt());
-		arapDetailsVO.setGstFlag(arapDetailsDTO.isGstFlag());
+		arapDetailsVO.setGstFlag(arapDetailsDTO.getGstFlag());
 		arapDetailsVO.setDocTypeCode(arapDetailsDTO.getDocTypeCode());
 		arapDetailsVO.setSubTypeCode(arapDetailsDTO.getSubTypeCode());
 		arapDetailsVO.setSubLedgerDivision(arapDetailsDTO.getSubLedgerDivision());
