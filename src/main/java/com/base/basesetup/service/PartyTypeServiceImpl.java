@@ -1,7 +1,7 @@
 package com.base.basesetup.service;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -12,6 +12,8 @@ import javax.validation.Valid;
 
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellType;
+import org.apache.poi.ss.usermodel.DateUtil;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -147,195 +149,197 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 
 	@Override
 	public void uploadCustomerData(MultipartFile file, Long orgId, String createdBy) throws Exception {
-		try (Workbook workbook = WorkbookFactory.create(file.getInputStream())) {
+	    try (Workbook workbook = WorkbookFactory.create(file.getInputStream())) {
 
-			// Reading the customer sheet (Customer Data)
-			Sheet customerSheet = workbook.getSheetAt(0); // Assuming customer sheet is the first one
-			List<PartyMasterVO> customersVOList = new ArrayList<>();
+	        // Reading the customer sheet (CustomersDTO)
+	        Sheet customerSheet = workbook.getSheetAt(0); // Assuming customer sheet is the first one
+	        List<CustomersDTO> customersDTOList = new ArrayList<>();
 
-			for (Row row : customerSheet) {
-				if (row.getRowNum() == 0) { // Skipping header
-					continue;
-				}
+	        // Loop through the customer sheet and create CustomersDTO entries
+	        for (Row row : customerSheet) {
+	            if (row.getRowNum() == 0) { // Skipping header
+	                continue;
+	            }
 
-				PartyMasterVO partyMasterVO = new PartyMasterVO();
-				partyMasterVO.setOrgId(orgId);
+	            // Mapping Excel row data to CustomersDTO
+	            CustomersDTO customersDTO = new CustomersDTO();
+	            customersDTO.setCustomerName(getStringCellValue(row.getCell(0))); // Customer Name
+	            customersDTO.setCustomerCode(getStringCellValue(row.getCell(1))); // Customer Code
+	            customersDTO.setGstIn(getStringCellValue(row.getCell(2))); // GSTIN
+	            customersDTO.setPanNo(getStringCellValue(row.getCell(3))); // Pan No
+	            customersDTO.setCreatedBy(createdBy); // Created By
+	            customersDTO.setActive(true); // Assuming it's active
 
-				// Customer details mapping from the sheet
-				partyMasterVO.setPartyName(getStringCellValue(row.getCell(0))); // Customer Name
-				partyMasterVO.setPartyCode(getStringCellValue(row.getCell(1))); // Customer Code
-				partyMasterVO.setGstIn(getStringCellValue(row.getCell(2))); // GSTIN
-				partyMasterVO.setPanNo(getStringCellValue(row.getCell(3))); // Pan No
+	            // Add CustomersDTO to the list
+	            customersDTOList.add(customersDTO);
+	        }
 
-				partyMasterVO.setCreatedBy(createdBy);
+	      
 
-				customersVOList.add(partyMasterVO);
+	        // Reading the state sheet (PartyStateDTO)
+	        Sheet stateSheet = workbook.getSheetAt(1); // Assuming state sheet is the second one
+	        List<CustomersStateDTO> partyStateDTOList = new ArrayList<>();
+
+	        // Loop through the state sheet and create PartyStateDTO entries
+	        for (Row row : stateSheet) {
+	            if (row.getRowNum() == 0) { // Skipping header
+	                continue;
+	            }
+	            
+	            String customerCode=row.getCell(7).getStringCellValue();
+	            CustomersDTO customersDTO = customersDTOList.stream()
+						.filter(c -> c.getCustomerCode().equals(customerCode)).findFirst()
+						.orElseThrow(() -> new RuntimeException("No customer found for Customer name: " + customerCode));
+
+	            // Mapping Excel row data to PartyStateDTO
+	            CustomersStateDTO customersStateDTO = new CustomersStateDTO();
+	            customersStateDTO.setState(getStringCellValue(row.getCell(0))); // State
+	            customersStateDTO.setStateCode(getStringCellValue(row.getCell(1))); // State Code
+	            customersStateDTO.setStateNo(getLongCellValue(row.getCell(2))); // State No
+	            customersStateDTO.setGstIn(getStringCellValue(row.getCell(3))); // GSTIN
+	            customersStateDTO.setContactPerson(getStringCellValue(row.getCell(4))); // Contact Person
+	            customersStateDTO.setPhoneNo(getStringCellValue(row.getCell(5))); // Contact Phone No
+	            customersStateDTO.setEMail(getStringCellValue(row.getCell(6))); // Contact Email
+	            customersStateDTO.setCustomerCode(getStringCellValue(row.getCell(7))); // Customer Code
+	            
+	            if (customersDTO.getCustomersStateDTO() == null) {
+	                customersDTO.setCustomersStateDTO(new ArrayList<>()); // Initialize the list if null
+	            }
+	            customersDTO.getCustomersStateDTO().add(customersStateDTO);
+	        }
+
+
+	        // Reading the address sheet (PartyAddressDTO)
+	        Sheet addressSheet = workbook.getSheetAt(2); // Assuming address sheet is the third one
+	        List<CustomersAddressDTO> partyAddressDTOList = new ArrayList<>();
+
+	        // Loop through the address sheet and create PartyAddressDTO entries
+	        for (Row row : addressSheet) {
+	            if (row.getRowNum() == 0) { // Skipping header
+	                continue;
+	            }
+	            
+	            String customerCode=row.getCell(11).getStringCellValue();
+	            CustomersDTO customersDTO = customersDTOList.stream()
+						.filter(c -> c.getCustomerCode().equals(customerCode)).findFirst()
+						.orElseThrow(() -> new RuntimeException("No customer found for Customer name: " + customerCode));
+
+	            // Mapping Excel row data to PartyAddressDTO
+	            CustomersAddressDTO partyAddressDTO = new CustomersAddressDTO();
+	            partyAddressDTO.setState(getStringCellValue(row.getCell(0))); // State
+	            partyAddressDTO.setCity(getStringCellValue(row.getCell(1))); // City
+	            partyAddressDTO.setBussinesPlace(getStringCellValue(row.getCell(2))); // Business Place
+	            partyAddressDTO.setGstnIn(getStringCellValue(row.getCell(3))); // GST IN
+	            partyAddressDTO.setAddressType(getStringCellValue(row.getCell(4))); // Address Type
+	            partyAddressDTO.setAddressLane1(getStringCellValue(row.getCell(5))); // Address Line 1
+	            partyAddressDTO.setAddressLane2(getStringCellValue(row.getCell(6))); // Address Line 2
+	            partyAddressDTO.setAddressLane3(getStringCellValue(row.getCell(7))); // Address Line 3
+	            partyAddressDTO.setPinCode(getLongCellValue(row.getCell(8))); // PinCode
+	            partyAddressDTO.setContact(getStringCellValue(row.getCell(9))); // Contact
+	            partyAddressDTO.setCustomerCode(getStringCellValue(row.getCell(10))); // Customer Code
+
+	            if (customersDTO.getCustomersAddressDTO() == null) {
+	                customersDTO.setCustomersAddressDTO(new ArrayList<>()); // Initialize the list if null
+	            }
+	            customersDTO.getCustomersAddressDTO().add(partyAddressDTO);
+
+	        }
+
+
+	        // Reading the sales person tagging sheet (PartySalesPersonTaggingDTO)
+	        Sheet salesPersonSheet = workbook.getSheetAt(3); // Assuming sales person tagging sheet is the fourth one
+	        List<CustomerSalesPersonDTO> partySalesPersonTaggingDTOList = new ArrayList<>();
+
+	        // Loop through the sales person sheet and create PartySalesPersonTaggingDTO entries
+	        for (Row row : salesPersonSheet) {
+	            if (row.getRowNum() == 0) { // Skipping header
+	                continue;
+	            }
+	            
+	            
+	            String customerCode=row.getCell(5).getStringCellValue();
+	            CustomersDTO customersDTO = customersDTOList.stream()
+						.filter(c -> c.getCustomerCode().equals(customerCode)).findFirst()
+						.orElseThrow(() -> new RuntimeException("No customer found for Customer name: " + customerCode));
+
+	            // Mapping Excel row data to PartySalesPersonTaggingDTO
+	            CustomerSalesPersonDTO partySalesPersonTaggingDTO = new CustomerSalesPersonDTO();
+	            partySalesPersonTaggingDTO.setSalesPerson(getStringCellValue(row.getCell(0))); // Sales Person
+	            partySalesPersonTaggingDTO.setEmpCode(getStringCellValue(row.getCell(1))); // Emp Code
+	            partySalesPersonTaggingDTO.setSalesBranch(getStringCellValue(row.getCell(2))); // Branch
+	            partySalesPersonTaggingDTO.setEffectiveFrom(getLocalDateCellValue(row.getCell(3))); // Effective From
+	            partySalesPersonTaggingDTO.setEffectiveTill(getLocalDateCellValue(row.getCell(4))); // Effective Till
+	            partySalesPersonTaggingDTO.setCustomerCode(getStringCellValue(row.getCell(5))); // Customer Code
+
+	            if (customersDTO.getCustomerSalesPersonDTO() == null) {
+	                customersDTO.setCustomerSalesPersonDTO(new ArrayList<>()); // Initialize the list if null
+	            }
+	            customersDTO.getCustomerSalesPersonDTO().add(partySalesPersonTaggingDTO);
+
+	        }
+	        
+	        for (CustomersDTO customer : customersDTOList) {
+	        	createUpdateCustomer(customer); // Assuming this method takes a single CustomersDTO
 			}
 
-			// Reading the state sheet (State Data)
-			Sheet stateSheet = workbook.getSheetAt(1); // Assuming state sheet is the second one
-			List<PartyStateVO> statesVOList = new ArrayList<>();
-
-			for (Row row : stateSheet) {
-				if (row.getRowNum() == 0) { // Skipping header
-					continue;
-				}
-
-				PartyStateVO partyStateVO = new PartyStateVO();
-				partyStateVO.setState(getStringCellValue(row.getCell(0))); // State
-				partyStateVO.setStateCode(getStringCellValue(row.getCell(1))); // State Code
-				partyStateVO.setStateNo(getLongCellValue(row.getCell(2))); // State No
-				partyStateVO.setGstIn(getStringCellValue(row.getCell(3))); // GSTIN
-				partyStateVO.setContactPerson(getStringCellValue(row.getCell(4))); // Contact Person
-				partyStateVO.setContactPhoneNo(getStringCellValue(row.getCell(5))); // Contact Phone No
-				partyStateVO.setEmail(getStringCellValue(row.getCell(6))); // Contact Email
-				// partyStateVO.setPartyCode(getStringCellValue(row.getCell(7))); // Customer
-				// Code
-
-				// Lookup Customer for State using customerCode
-				// PartyMasterVO customer = findCustomerByCode(partyStateVO.getPartyCode());
-				// partyStateVO.setPartyMasterVO(customer);
-
-				statesVOList.add(partyStateVO);
-			}
-
-			// Reading the address sheet (Address Data)
-			Sheet addressSheet = workbook.getSheetAt(2); // Assuming address sheet is the third one
-			List<PartyAddressVO> addressesVOList = new ArrayList<>();
-
-			for (Row row : addressSheet) {
-				if (row.getRowNum() == 0) { // Skipping header
-					continue;
-				}
-
-				PartyAddressVO partyAddressVO = new PartyAddressVO();
-				partyAddressVO.setState(getStringCellValue(row.getCell(0))); // State
-				partyAddressVO.setCity(getStringCellValue(row.getCell(1))); // City
-				partyAddressVO.setBusinessPlace(getStringCellValue(row.getCell(2))); // Business Place
-				partyAddressVO.setStateGstIn(getStringCellValue(row.getCell(3))); // State GSTIN
-				partyAddressVO.setAddressType(getStringCellValue(row.getCell(4))); // Address Type
-				partyAddressVO.setAddressLine1(getStringCellValue(row.getCell(5))); // Address Line 1
-				partyAddressVO.setAddressLine2(getStringCellValue(row.getCell(6))); // Address Line 2
-				partyAddressVO.setAddressLine3(getStringCellValue(row.getCell(7))); // Address Line 3
-				partyAddressVO.setPincode(getLongCellValue(row.getCell(8))); // Pincode
-				partyAddressVO.setContact(getStringCellValue(row.getCell(9))); // Contact
-				// partyAddressVO.setPartyCode(getStringCellValue(row.getCell(10))); // Customer
-				// Code
-
-				// Lookup Customer for Address using customerCode
-				// PartyMasterVO customer = findCustomerByCode(partyAddressVO.getPartyCode());
-				// partyAddressVO.setPartyMasterVO(customer);
-
-				addressesVOList.add(partyAddressVO);
-			}
-
-			// Reading the salesperson sheet (Salesperson Tagging Data)
-			Sheet salesPersonSheet = workbook.getSheetAt(3); // Assuming salesperson sheet is the fourth one
-			List<PartySalesPersonTaggingVO> salesPersonsVOList = new ArrayList<>();
-
-			for (Row row : salesPersonSheet) {
-				if (row.getRowNum() == 0) { // Skipping header
-					continue;
-				}
-
-				PartySalesPersonTaggingVO salesPersonTaggingVO = new PartySalesPersonTaggingVO();
-				salesPersonTaggingVO.setSalesPerson(getStringCellValue(row.getCell(0))); // Sales Person Name
-				salesPersonTaggingVO.setEmpCode(getStringCellValue(row.getCell(1))); // Emp Code
-				salesPersonTaggingVO.setSalesBranch(getStringCellValue(row.getCell(2))); // Sales Branch
-
-				DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-
-				String effectiveFromString = getStringCellValue(row.getCell(3)); // Effective From
-				String effectiveTillString = getStringCellValue(row.getCell(4)); // Effective Till
-
-				LocalDate effectiveFrom = effectiveFromString.isEmpty() ? null
-						: LocalDate.parse(effectiveFromString, formatter);
-				LocalDate effectiveTill = effectiveTillString.isEmpty() ? null
-						: LocalDate.parse(effectiveTillString, formatter);
-
-				salesPersonTaggingVO.setEffectiveFrom(effectiveFrom);
-				salesPersonTaggingVO.setEffectiveTill(effectiveTill);
-				// salesPersonTaggingVO.setPartyCode(getStringCellValue(row.getCell(5))); //
-				// Customer Code
-
-				// Lookup Customer for Salesperson using customerCode
-				// PartyMasterVO customer =
-				// findCustomerByCode(salesPersonTaggingVO.getPartyCode());
-				// salesPersonTaggingVO.setPartyMasterVO(customer);
-
-				salesPersonsVOList.add(salesPersonTaggingVO);
-			}
-
-			// Save all data to the respective repositories
-			savePartyMasterVOData(customersVOList);
-			savePartyStateVOData(statesVOList);
-			savePartyAddressVOData(addressesVOList);
-			savePartySalesPersonTaggingVOData(salesPersonsVOList);
-
-		}
+	    }
 	}
 
-	// Helper method to get string value from a cell
+	// Helper method to get string value from a cell, ensuring the cell isn't null
 	private String getStringCellValue(Cell cell) {
-		if (cell == null) {
-			return "";
-		}
-		switch (cell.getCellType()) {
-		case STRING:
-			return cell.getStringCellValue();
-		case NUMERIC:
-			return String.valueOf(cell.getNumericCellValue());
-		default:
-			return "";
-		}
+	    if (cell == null) {
+	        return ""; // Return empty string if cell is null
+	    }
+	    switch (cell.getCellType()) {
+	        case STRING:
+	            return cell.getStringCellValue();
+	        case NUMERIC:
+	            return String.valueOf(cell.getNumericCellValue());
+	        case BOOLEAN:
+	            return String.valueOf(cell.getBooleanCellValue());
+	        default:
+	            return ""; // Return empty string for unsupported cell types or unknown cases
+	    }
 	}
 
 	// Helper method to get Long value from a cell (numeric or string)
 	private Long getLongCellValue(Cell cell) {
-		if (cell == null) {
-			return null;
-		}
-		switch (cell.getCellType()) {
-		case NUMERIC:
-			double numericValue = cell.getNumericCellValue();
-			return numericValue == (long) numericValue ? (long) numericValue : null;
-		case STRING:
-			try {
-				return Long.parseLong(cell.getStringCellValue());
-			} catch (NumberFormatException e) {
-				return null;
-			}
-		default:
-			return null;
-		}
+	    if (cell == null) {
+	        return null;
+	    }
+	    switch (cell.getCellType()) {
+	        case NUMERIC:
+	            double numericValue = cell.getNumericCellValue();
+	            return numericValue == (long) numericValue ? (long) numericValue : null;
+	        case STRING:
+	            try {
+	                return Long.parseLong(cell.getStringCellValue());
+	            } catch (NumberFormatException e) {
+	                return null;
+	            }
+	        default:
+	            return null;
+	    }
 	}
 
-	// Method to find PartyMasterVO by Customer Code (custom implementation)
-	private PartyMasterVO findCustomerByCode(String customerCode) {
-		// Implement logic to find the PartyMasterVO by customerCode, maybe through a
-		// simple lookup
-		return partyMasterRepo.findByPartyCode(customerCode);
+	// Helper method to get LocalDate value from a cell (date)
+	private LocalDate getLocalDateCellValue(Cell cell) {
+	    if (cell == null) {
+	        return null;
+	    }
+	    if (cell.getCellType() == CellType.NUMERIC) {
+	        if (DateUtil.isCellDateFormatted(cell)) {
+	            // Excel stores dates as serial numbers, convert that to LocalDate
+	            return cell.getDateCellValue().toInstant()
+	                .atZone(ZoneId.systemDefault())
+	                .toLocalDate();
+	        }
+	    }
+	    return null; // Return null if it's not a date or is an invalid cell type
 	}
 
-	// Save PartyMasterVO data to the database
-	private void savePartyMasterVOData(List<PartyMasterVO> customers) {
-		partyMasterRepo.saveAll(customers);
-	}
+	
 
-	// Save PartyStateVO data to the database
-	private void savePartyStateVOData(List<PartyStateVO> states) {
-		partyStateRepo.saveAll(states);
-	}
-
-	// Save PartyAddressVO data to the database
-	private void savePartyAddressVOData(List<PartyAddressVO> addresses) {
-		partyAddressRepo.saveAll(addresses);
-	}
-
-	// Save PartySalesPersonTaggingVO data to the database
-	private void savePartySalesPersonTaggingVOData(List<PartySalesPersonTaggingVO> salesPersons) {
-		partySalesPersonTaggingRepo.saveAll(salesPersons);
-	}
 
 	@Override
 	public Map<String, Object> createUpdateCustomer(@Valid CustomersDTO customersDTO) throws ApplicationException {
