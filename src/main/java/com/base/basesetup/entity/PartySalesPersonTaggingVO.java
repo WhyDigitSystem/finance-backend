@@ -47,6 +47,10 @@ public class PartySalesPersonTaggingVO {
 
 	@Column(name = "effectivetill")
 	private LocalDate effectiveTill;
+	
+	@Column(name = "customercode")
+	private String customerCode;
+
 
 	@ManyToOne
 	@JoinColumn(name = "partymasterid")

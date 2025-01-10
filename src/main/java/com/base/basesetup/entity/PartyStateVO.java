@@ -53,6 +53,10 @@ public class PartyStateVO {
 	@Column(name = "statecode", length = 3)
 	private String stateCode;
 
+	@Column(name = "customercode")
+	private String customerCode;
+	
+	
 	
 	@ManyToOne
 	@JoinColumn(name = "partymasterid")
