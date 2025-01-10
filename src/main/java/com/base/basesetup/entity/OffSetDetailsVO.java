@@ -29,7 +29,7 @@ public class OffSetDetailsVO {
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "offsetgen")
 	@SequenceGenerator(name = "offsetgen", sequenceName = "offsetseq", initialValue = 1000000001, allocationSize = 1)
-	@Column(name = "offsetid")
+	@Column(name = "offsetdetailsid")
 	private Long id;
 	
 	@Column(name = "invoiceno",length = 30)
