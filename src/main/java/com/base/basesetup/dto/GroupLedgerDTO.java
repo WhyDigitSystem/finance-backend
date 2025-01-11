@@ -1,7 +1,5 @@
 package com.base.basesetup.dto;
 
-import javax.persistence.Column;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -19,6 +17,7 @@ public class GroupLedgerDTO {
 	private String gstTaxFlag;
 	private String coaList;
 	private String accountGroupName;
+	private String accountCode;
 	private String type;
 	private String gstType;
 	private double gstPercentage;
@@ -28,4 +27,6 @@ public class GroupLedgerDTO {
 	private String currency;
 	private String createdBy;
 	private boolean active;
+	private String natureOfAccount;
+	private String pBFlag;
 }

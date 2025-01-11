@@ -28,7 +28,7 @@ public class GroupLedgerVO {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY, generator = "groupledgergen")
 	@SequenceGenerator(name = "groupledgergen", sequenceName = "groupledgerseq", initialValue = 1000000001, allocationSize = 1)
-	@Column(name = "accountcode")
+	@Column(name = "groupledgerid")
 	private Long id;
 	@Column(name = "orgid")
 	private Long orgId;
@@ -40,6 +40,8 @@ public class GroupLedgerVO {
 	private String coaList;
 	@Column(name = "accountgroupname", length = 150)
 	private String accountGroupName;
+	@Column(name = "accountcode", length =50)
+	private String accountCode;
 	@Column(name = "type", length = 50)
 	private String type;
 	@Column(name = "gsttype", length = 50)
@@ -62,6 +64,12 @@ public class GroupLedgerVO {
 	private String cancelRemarks;
 	private boolean cancel;
 	private boolean active;
+	@Column(name = "natureofaccount", length = 50)
+	private String natureOfAccount;
+	@Column(name = "pbflag", length = 15)
+	private String pBFlag;
+	@Column(name = "parentcode", length = 50)
+	private String parentCode;
 
 	@Embedded
 	@Builder.Default
