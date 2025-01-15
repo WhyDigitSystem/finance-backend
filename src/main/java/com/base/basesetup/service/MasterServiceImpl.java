@@ -1509,9 +1509,6 @@ public class MasterServiceImpl implements MasterService {
 					.orElseThrow(() -> new ApplicationException("Invalid ChargeTypeRequest details"));
 			chargeTypeRequestVO.setUpdatedBy(chargeTypeRequestDTO.getCreatedBy());
 		} else {
-			if (chargeTypeRequestRepo.existsByOrgIdAndChargeDescriptionIgnoreCase(chargeTypeRequestDTO.getOrgId(),chargeTypeRequestDTO.getChargeDescription())) {
-				throw new ApplicationException("The given charge descripition already exists.");
-			}
 			if (chargeTypeRequestRepo.existsByOrgIdAndChargeCodeIgnoreCase(chargeTypeRequestDTO.getOrgId(),chargeTypeRequestDTO.getChargeCode())) {
 				throw new ApplicationException("The given charge code already exists.");
 			}
@@ -1521,11 +1518,7 @@ public class MasterServiceImpl implements MasterService {
 
 		if (isUpdate) {
 			ChargeTypeRequestVO charge = chargeTypeRequestRepo.findById(chargeTypeRequestDTO.getId()).orElse(null);
-			if (!charge.getChargeDescription().equals(chargeTypeRequestDTO.getChargeDescription())) {
-				if (chargeTypeRequestRepo.existsByOrgIdAndChargeDescriptionIgnoreCase(chargeTypeRequestDTO.getOrgId(),chargeTypeRequestDTO.getChargeDescription())) {
-					throw new ApplicationException("The given charge descripition already exists.");
-				}
-			}
+			
 			if (!charge.getChargeCode().equals(chargeTypeRequestDTO.getChargeCode())) {
 				if (chargeTypeRequestRepo.existsByOrgIdAndChargeCodeIgnoreCase(chargeTypeRequestDTO.getOrgId(),chargeTypeRequestDTO.getChargeCode())) {
 					throw new ApplicationException("The given charge code already exists.");
@@ -2204,5 +2197,111 @@ public class MasterServiceImpl implements MasterService {
 	public int getSuccessfulUploads() {
 		return successfulUploads;
 	}
+	
+	@Transactional
+	@Override
+	public void excelUploadForChargeCode(MultipartFile[] files, String createdBy, Long orgId) throws EncryptedDocumentException, ApplicationException, java.io.IOException {
+		totalRows = 0;
+		successfulUploads = 0;
+		for (MultipartFile file : files) {
+			try (Workbook workbook = WorkbookFactory.create(file.getInputStream())) {
+				Sheet sheet = workbook.getSheetAt(0); // Assuming only one sheet
+				List<String> errorMessages = new ArrayList<>();
+				System.out.println("Processing file: " + file.getOriginalFilename()); // Debug statement
+				Row headerRow = sheet.getRow(0);
+//				if (!isHeaderValidChargeType(headerRow)) {
+//					throw new ApplicationException("Invalid Excel format. Please refer to the sample file.");
+//				}
+				// Check all rows for validity first
+				for (Row row : sheet) {
+					if (row.getRowNum() == 0 || isRowEmpty1(row)) {
+						continue; // Skip header row and empty rows
+					}
+					totalRows++; // Increment totalRows
+					try {
+						// Retrieve cell values based on the provided order
+						String chargeType = getStringCellValue1(row.getCell(0));
+						String chargeCode = getStringCellValue1(row.getCell(1));
+						String chargeDesc = getStringCellValue1(row.getCell(2));
+						String sacCode = getStringCellValue1(row.getCell(3));
+						String sacDesc= getStringCellValue1(row.getCell(4));
+						String salesLedger=getStringCellValue1(row.getCell(5));
+						String purchaseLedger=getStringCellValue1(row.getCell(6));
+						String taxable=getStringCellValue1(row.getCell(7));
+						int taxablePercentage = Integer.parseInt(getStringCellValue1(row.getCell(8))); // Get value from the cell
+						String govtSacNumber=getStringCellValue1(row.getCell(9));
+						double gstTax=Double.parseDouble(getStringCellValue1(row.getCell(10)));
+						String activeString=getStringCellValue1(row.getCell(11));
+						// Convert activeString to integer and handle the conditions
+						boolean active;
+						if ("1".equals(activeString)) {
+							active = true; // If the value is '1', set active to true
+						} else if ("0".equals(activeString)) {
+							active = false; // If the value is '0', set active to false
+						} else {
+							throw new ApplicationException(
+									"Invalid value for 'active' field. Expected '1' or '0', but got: " + activeString);
+						}
+						ChargeTypeRequestVO chargeTypeRequestVO= new ChargeTypeRequestVO();
+						
+						if (chargeTypeRequestRepo.existsByOrgIdAndChargeCodeIgnoreCase(orgId,chargeCode)) {
+							throw new ApplicationException("The given charge code already exists.");
+						}
+						// Create CoaVO and add to appropriate list
+						chargeTypeRequestVO.setChargeType(chargeType.toUpperCase());
+						chargeTypeRequestVO.setChargeCode(chargeCode.toUpperCase());
+						chargeTypeRequestVO.setChargeDescription(chargeDesc.toUpperCase());
+						chargeTypeRequestVO.setLocalChargeDescripition(chargeDesc.toUpperCase());
+						chargeTypeRequestVO.setServiceAccountCode(sacCode.toUpperCase());
+						chargeTypeRequestVO.setSacDescripition(sacDesc.toUpperCase());
+						chargeTypeRequestVO.setSalesAccount(salesLedger.toUpperCase());
+						chargeTypeRequestVO.setPurchaseAccount(purchaseLedger.toUpperCase());
+						chargeTypeRequestVO.setTaxable(taxable.toUpperCase());
+						chargeTypeRequestVO.setTaxablePercentage(taxablePercentage);
+						chargeTypeRequestVO.setGovtSac(govtSacNumber.toUpperCase());
+						chargeTypeRequestVO.setExcempted("NO");
+						chargeTypeRequestVO.setGstTax((float)gstTax);
+						chargeTypeRequestVO.setActive(active);
+						chargeTypeRequestVO.setOrgId(orgId);
+						chargeTypeRequestVO.setProduct("ALL");
+						chargeTypeRequestVO.setCreatedBy(createdBy);
+						chargeTypeRequestVO.setUpdatedBy(createdBy);
+						chargeTypeRequestRepo.save(chargeTypeRequestVO);
+						successfulUploads++; // Increment successfulUploads
+					} catch (Exception e) {
+						errorMessages.add("Error processing row " + (row.getRowNum() + 1) + ": " + e.getMessage());
+					}
+				}
+				if (!errorMessages.isEmpty()) {
+					throw new ApplicationException(
+							"Excel upload validation failed. Errors: " + String.join(", ", errorMessages));
+				}
+			} catch (IOException e) {
+				throw new ApplicationException(
+						"Failed to process file: " + file.getOriginalFilename() + " - " + e.getMessage());
+			}
+		}
+	}
+	
+	private boolean isHeaderValidChargeType(Row headerRow) {
+		if (headerRow == null) {
+			return false;
+		}
+		// Adjust based on the actual header names in your Excel
+		return "Charge Type".equalsIgnoreCase(getStringCellValue1(headerRow.getCell(0)))
+				&& "Charge Code".equalsIgnoreCase(getStringCellValue1(headerRow.getCell(1)))
+				&& "Charge Desc".equalsIgnoreCase(getStringCellValue1(headerRow.getCell(2)))
+				&& "Sac Code".equalsIgnoreCase(getStringCellValue1(headerRow.getCell(3)))
+				&& "Sac Desc".equalsIgnoreCase(getStringCellValue1(headerRow.getCell(4)))
+				&& "Sales Ledger".equalsIgnoreCase(getStringCellValue1(headerRow.getCell(5)))
+				&& "Purchase Ledger".equalsIgnoreCase(getStringCellValue1(headerRow.getCell(6)))
+				&& "Taxable".equalsIgnoreCase(getStringCellValue1(headerRow.getCell(7)))
+				&& "Taxable %".equalsIgnoreCase(getStringCellValue1(headerRow.getCell(8)))
+				&& "Govt Sac Number".equalsIgnoreCase(getStringCellValue1(headerRow.getCell(9)))
+				&& "Tax %".equalsIgnoreCase(getStringCellValue1(headerRow.getCell(9)))
+				&& "Active".equalsIgnoreCase(getStringCellValue1(headerRow.getCell(10)));
+	}
+	
+	
 	
 }

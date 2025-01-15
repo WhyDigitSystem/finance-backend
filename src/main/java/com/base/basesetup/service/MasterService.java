@@ -202,4 +202,7 @@ public interface MasterService {
 	int getTotalRows();
 	int getSuccessfulUploads();
 
+	void excelUploadForChargeCode(MultipartFile[] files, String createdBy, Long orgId)
+			throws EncryptedDocumentException, ApplicationException, java.io.IOException;
+
 }
