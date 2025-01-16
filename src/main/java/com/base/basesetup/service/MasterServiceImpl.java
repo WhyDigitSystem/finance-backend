@@ -1,5 +1,7 @@
 package com.base.basesetup.service;
 
+import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -11,11 +13,20 @@ import javax.transaction.Transactional;
 import javax.validation.Valid;
 
 import org.apache.commons.lang3.ObjectUtils;
+import org.apache.poi.EncryptedDocumentException;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellType;
+import org.apache.poi.ss.usermodel.DateUtil;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.base.basesetup.dto.Account1DTO;
 import com.base.basesetup.dto.Account2DTO;
@@ -119,6 +130,8 @@ import com.base.basesetup.repo.TcsMaster2Repo;
 import com.base.basesetup.repo.TcsMasterRepo;
 import com.base.basesetup.repo.TdsMaster2Repo;
 import com.base.basesetup.repo.TdsMasterRepo;
+
+import io.jsonwebtoken.io.IOException;
 
 @Service
 public class MasterServiceImpl implements MasterService {
@@ -999,10 +1012,21 @@ public class MasterServiceImpl implements MasterService {
 			groupLedgerVO = groupLedgerRepo.findById(groupLedgerDTO.getId())
 					.orElseThrow(() -> new ApplicationException("Invalid GroupLedger details"));
 			groupLedgerVO.setUpdatedBy(groupLedgerDTO.getCreatedBy());
+			if (!groupLedgerVO.getAccountCode().equalsIgnoreCase(groupLedgerDTO.getAccountCode())) {
+				if (groupLedgerRepo.existsByAccountCodeAndOrgId(groupLedgerDTO.getAccountCode(),
+						groupLedgerDTO.getOrgId())) {
+					String errorMessage = String.format("This AccountCode: %s Already Exists",
+							groupLedgerDTO.getAccountCode());
+					throw new ApplicationException(errorMessage);
+				}
+				getGroupLedgerVOFromGroupLedgerDTO(groupLedgerDTO, groupLedgerVO);
+				groupLedgerVO.setAccountCode(groupLedgerDTO.getAccountCode());
+				groupLedgerVO.setUpdatedBy(groupLedgerDTO.getCreatedBy());
+			}
 		} else {
-			if (groupLedgerRepo.existsByAccountGroupNameAndOrgId(groupLedgerDTO.getAccountGroupName(),
+			if (groupLedgerRepo.existsByAccountCodeAndOrgId(groupLedgerDTO.getAccountCode(),
 					groupLedgerDTO.getOrgId())) {
-				throw new ApplicationException("The given Account Group Name already exists.");
+				throw new ApplicationException("The given Account Code already exists.");
 			}
 			groupLedgerVO.setUpdatedBy(groupLedgerDTO.getCreatedBy());
 			groupLedgerVO.setCreatedBy(groupLedgerDTO.getCreatedBy());
@@ -1019,21 +1043,41 @@ public class MasterServiceImpl implements MasterService {
 		getGroupLedgerVOFromGroupLedgerDTO(groupLedgerDTO, groupLedgerVO);
 		return groupLedgerRepo.save(groupLedgerVO);
 	}
-
-	private void getGroupLedgerVOFromGroupLedgerDTO(@Valid GroupLedgerDTO groupLedgerDTO, GroupLedgerVO groupLedgerVO) {
-		groupLedgerVO.setGroupName(groupLedgerDTO.getGroupName().toUpperCase());
+	private void getGroupLedgerVOFromGroupLedgerDTO(@Valid GroupLedgerDTO groupLedgerDTO, GroupLedgerVO groupLedgerVO) throws ApplicationException {
+		groupLedgerVO.setGroupName(groupLedgerDTO.getGroupName());
 		groupLedgerVO.setOrgId(groupLedgerDTO.getOrgId());
 		groupLedgerVO.setCoaList(groupLedgerDTO.getCoaList().toUpperCase());
+		groupLedgerVO.setCoaList(groupLedgerDTO.getCoaList());
 		groupLedgerVO.setType(groupLedgerDTO.getType().toUpperCase());
 		groupLedgerVO.setCategory(groupLedgerDTO.getCategory().toUpperCase());
 		groupLedgerVO.setCurrency(groupLedgerDTO.getCurrency());
-		groupLedgerVO.setGstTaxFlag(groupLedgerDTO.getGstTaxFlag());
-		groupLedgerVO.setGstType(groupLedgerDTO.getGstType());
-		groupLedgerVO.setGstPercentage(groupLedgerDTO.getGstPercentage());
 		groupLedgerVO.setActive(groupLedgerDTO.isActive());
 		groupLedgerVO.setInterBranchAc(groupLedgerDTO.isInterBranchAc());
 		groupLedgerVO.setControllAc(groupLedgerDTO.isControllAc());
 		groupLedgerVO.setAccountGroupName(groupLedgerDTO.getAccountGroupName().toUpperCase());
+		groupLedgerVO.setAccountCode(groupLedgerDTO.getAccountCode());
+		groupLedgerVO.setNatureOfAccount(groupLedgerDTO.getNatureOfAccount());
+		groupLedgerVO.setPBFlag(groupLedgerDTO.getPBFlag());
+		groupLedgerVO.setAccountGroupName(groupLedgerDTO.getAccountGroupName());
+		
+		if ("group".equalsIgnoreCase(groupLedgerDTO.getType()) && groupLedgerDTO.getGroupName() == null) {
+			groupLedgerVO.setParentCode("0");
+		}
+		else {
+			// Fetch the parent record
+			GroupLedgerVO coaVO2 = new GroupLedgerVO();
+			if (groupLedgerDTO.getType().equalsIgnoreCase("group")) {
+				coaVO2 = groupLedgerRepo.getOrgIdAndMainAccountGroupName(groupLedgerDTO.getOrgId(), groupLedgerDTO.getGroupName());
+			} else {
+				coaVO2 = groupLedgerRepo.getOrgIdAndSubAccountGroupName(groupLedgerDTO.getOrgId(), groupLedgerDTO.getGroupName());
+			}
+			if (coaVO2 == null) {
+				// Handle the case where the parent record is not found
+				throw new ApplicationException("Parent record not found for GroupName: " + groupLedgerDTO.getGroupName());
+			}
+			// Set parentId and parentCode
+			groupLedgerVO.setParentCode(coaVO2.getAccountCode());
+		}
 	}
 
 	@Override
@@ -1465,9 +1509,6 @@ public class MasterServiceImpl implements MasterService {
 					.orElseThrow(() -> new ApplicationException("Invalid ChargeTypeRequest details"));
 			chargeTypeRequestVO.setUpdatedBy(chargeTypeRequestDTO.getCreatedBy());
 		} else {
-			if (chargeTypeRequestRepo.existsByOrgIdAndChargeDescriptionIgnoreCase(chargeTypeRequestDTO.getOrgId(),chargeTypeRequestDTO.getChargeDescription())) {
-				throw new ApplicationException("The given charge descripition already exists.");
-			}
 			if (chargeTypeRequestRepo.existsByOrgIdAndChargeCodeIgnoreCase(chargeTypeRequestDTO.getOrgId(),chargeTypeRequestDTO.getChargeCode())) {
 				throw new ApplicationException("The given charge code already exists.");
 			}
@@ -1477,11 +1518,7 @@ public class MasterServiceImpl implements MasterService {
 
 		if (isUpdate) {
 			ChargeTypeRequestVO charge = chargeTypeRequestRepo.findById(chargeTypeRequestDTO.getId()).orElse(null);
-			if (!charge.getChargeDescription().equals(chargeTypeRequestDTO.getChargeDescription())) {
-				if (chargeTypeRequestRepo.existsByOrgIdAndChargeDescriptionIgnoreCase(chargeTypeRequestDTO.getOrgId(),chargeTypeRequestDTO.getChargeDescription())) {
-					throw new ApplicationException("The given charge descripition already exists.");
-				}
-			}
+			
 			if (!charge.getChargeCode().equals(chargeTypeRequestDTO.getChargeCode())) {
 				if (chargeTypeRequestRepo.existsByOrgIdAndChargeCodeIgnoreCase(chargeTypeRequestDTO.getOrgId(),chargeTypeRequestDTO.getChargeCode())) {
 					throw new ApplicationException("The given charge code already exists.");
@@ -1712,7 +1749,7 @@ public class MasterServiceImpl implements MasterService {
 				PartyStateVO partyStateVO = new PartyStateVO();
 				partyStateVO.setState(partyStateDTO.getState());
 				partyStateVO.setGstIn(partyStateDTO.getGstIn());
-				partyStateVO.setStateNo(partyStateDTO.getStateNo());
+			//	partyStateVO.setStateNo(partyStateDTO.getStateNo());
 				partyStateVO.setContactPerson(partyStateDTO.getContactPerson());
 				partyStateVO.setContactPhoneNo(partyStateDTO.getContactPhoneNo());
 				partyStateVO.setEmail(partyStateDTO.getEmail());
@@ -1939,4 +1976,332 @@ public class MasterServiceImpl implements MasterService {
 		return result;
 	}
 
+	private int totalRows = 0;
+	private int successfulUploads = 0;
+	@Transactional
+	@Override
+	public void excelUploadForGroupLedger(MultipartFile[] files, String createdBy, Long orgId) throws EncryptedDocumentException, ApplicationException, java.io.IOException {
+		List<GroupLedgerVO> mainGroupList = new ArrayList<>(); // List to store main group records
+		List<GroupLedgerVO> subGroupList = new ArrayList<>(); // List to store subgroup records
+		List<GroupLedgerVO> accountList = new ArrayList<>(); // List to store account records
+		// Reset counters at the start of each upload
+		totalRows = 0;
+		successfulUploads = 0;
+		for (MultipartFile file : files) {
+			try (Workbook workbook = WorkbookFactory.create(file.getInputStream())) {
+				Sheet sheet = workbook.getSheetAt(0); // Assuming only one sheet
+				List<String> errorMessages = new ArrayList<>();
+				System.out.println("Processing file: " + file.getOriginalFilename()); // Debug statement
+				Row headerRow = sheet.getRow(0);
+				if (!isHeaderValid1(headerRow)) {
+					throw new ApplicationException("Invalid Excel format. Please refer to the sample file.");
+				}
+				// Check all rows for validity first
+				for (Row row : sheet) {
+					if (row.getRowNum() == 0 || isRowEmpty1(row)) {
+						continue; // Skip header row and empty rows
+					}
+					totalRows++; // Increment totalRows
+					try {
+						// Retrieve cell values based on the provided order
+						String type = getStringCellValue1(row.getCell(0));
+						String accountName = getStringCellValue1(row.getCell(1));
+						String accountCode = getStringCellValue1(row.getCell(2));
+						String parentCode = getStringCellValue1(row.getCell(3));
+						String GSTTaxFlag= getStringCellValue1(row.getCell(5));
+						String pbFlag=getStringCellValue1(row.getCell(6));
+						String natureOfAccount=getStringCellValue1(row.getCell(7));
+						String coaList=getStringCellValue1(row.getCell(8));
+						String activeString = getStringCellValue1(row.getCell(9)); // Get value from the cell
+						String gstType=getStringCellValue1(row.getCell(10));
+						double gstPercentage=Double.parseDouble(getStringCellValue1(row.getCell(11)));
+						String currency=getStringCellValue1(row.getCell(12));
+						String category=getStringCellValue1(row.getCell(13));
+						// Convert activeString to integer and handle the conditions
+						boolean active;
+						if ("1".equals(activeString)) {
+							active = true; // If the value is '1', set active to true
+						} else if ("0".equals(activeString)) {
+							active = false; // If the value is '0', set active to false
+						} else {
+							throw new ApplicationException(
+									"Invalid value for 'active' field. Expected '1' or '0', but got: " + activeString);
+						}
+						// Create CoaVO and add to appropriate list
+						GroupLedgerVO coaVO = new GroupLedgerVO();
+						coaVO.setType(type);
+						coaVO.setOrgId(orgId);
+						if (parentCode == null || parentCode.trim().isEmpty()) {
+							coaVO.setGroupName(null);
+						} 
+						coaVO.setOrgId(orgId);
+						coaVO.setCoaList(coaList);
+						coaVO.setType(type.toUpperCase());
+						coaVO.setCategory(category.toUpperCase());
+						coaVO.setCurrency(currency);
+						coaVO.setGstTaxFlag(GSTTaxFlag);
+						if(GSTTaxFlag.equals("NA")){
+							coaVO.setGstType(null);
+							coaVO.setGstPercentage(0);	
+						}else {
+							coaVO.setGstType(gstType);
+							coaVO.setGstPercentage(gstPercentage);
+						}
+						
+						coaVO.setActive(active);
+						coaVO.setInterBranchAc(false);
+						coaVO.setControllAc(false);
+						coaVO.setAccountCode(accountCode);
+						coaVO.setNatureOfAccount(natureOfAccount);
+						coaVO.setPBFlag(pbFlag);
+						coaVO.setAccountGroupName(accountName);
+						coaVO.setCreatedBy(createdBy);
+						coaVO.setUpdatedBy(createdBy);
+						// Logic for adding to specific lists based on conditions
+						if ("Group".equalsIgnoreCase(type)) {
+							if (parentCode == null || parentCode.isEmpty()) {
+								coaVO.setParentCode("0");
+								coaVO.setGroupName(null);
+								// Main group (groupName is null)
+								mainGroupList.add(coaVO);
+								groupLedgerRepo.saveAll(mainGroupList);
+							} else {
+								GroupLedgerVO vo = groupLedgerRepo.getOrgIdAndMainAccountCode(orgId, parentCode);
+								coaVO.setParentCode(vo.getAccountCode());
+								coaVO.setGroupName(vo.getAccountGroupName());
+								// Subgroup (groupName is not null)
+								subGroupList.add(coaVO);
+								groupLedgerRepo.saveAll(subGroupList);
+							}
+						} else if ("Account".equalsIgnoreCase(type) && parentCode != null && !parentCode.isEmpty()) {
+							// Account (groupName is not null)
+							GroupLedgerVO vo = groupLedgerRepo.getOrgIdAndSubAccountCode(orgId, parentCode);
+							coaVO.setParentCode(vo.getAccountCode());
+							coaVO.setGroupName(vo.getAccountGroupName());
+							accountList.add(coaVO);
+							groupLedgerRepo.saveAll(accountList);
+						}
+						successfulUploads++; // Increment successfulUploads
+					} catch (Exception e) {
+						errorMessages.add("Error processing row " + (row.getRowNum() + 1) + ": " + e.getMessage());
+					}
+				}
+				if (!errorMessages.isEmpty()) {
+					throw new ApplicationException(
+							"Excel upload validation failed. Errors: " + String.join(", ", errorMessages));
+				}
+			} catch (IOException e) {
+				throw new ApplicationException(
+						"Failed to process file: " + file.getOriginalFilename() + " - " + e.getMessage());
+			}
+		}
+	}
+	
+	private boolean isHeaderValid1(Row headerRow) {
+		if (headerRow == null) {
+			return false;
+		}
+		// Adjust based on the actual header names in your Excel
+		return "Type".equalsIgnoreCase(getStringCellValue1(headerRow.getCell(0)))
+				&& "Account Name".equalsIgnoreCase(getStringCellValue1(headerRow.getCell(1)))
+				&& "Account Code".equalsIgnoreCase(getStringCellValue1(headerRow.getCell(2)))
+				&& "Parent Code".equalsIgnoreCase(getStringCellValue1(headerRow.getCell(3)))
+				&& "Parent Account".equalsIgnoreCase(getStringCellValue1(headerRow.getCell(4)))
+				&& "GST Tax Flag".equalsIgnoreCase(getStringCellValue1(headerRow.getCell(5)))
+				&& "Pbflag".equalsIgnoreCase(getStringCellValue1(headerRow.getCell(6)))
+				&& "Nature Of Account".equalsIgnoreCase(getStringCellValue1(headerRow.getCell(7)))
+				&& "COA List".equalsIgnoreCase(getStringCellValue1(headerRow.getCell(8)))
+				&& "Active".equalsIgnoreCase(getStringCellValue1(headerRow.getCell(9)))
+				&& "GST Type".equalsIgnoreCase(getStringCellValue1(headerRow.getCell(10)))
+				&& "GST %".equalsIgnoreCase(getStringCellValue1(headerRow.getCell(11)))
+				&& "Currency".equalsIgnoreCase(getStringCellValue1(headerRow.getCell(12)));
+	}
+	
+	private String getStringCellValue1(Cell cell) {
+		if (cell == null) {
+			return "";
+		}
+		switch (cell.getCellType()) {
+		case STRING:
+			return cell.getStringCellValue().trim();
+		case NUMERIC:
+			if (DateUtil.isCellDateFormatted(cell)) {
+				return new SimpleDateFormat("dd-MM-yyyy").format(cell.getDateCellValue());
+			} else {
+				double numericValue = cell.getNumericCellValue();
+				if (numericValue == (int) numericValue) {
+					return String.valueOf((int) numericValue);
+				} else {
+					return BigDecimal.valueOf(numericValue).toPlainString();
+				}
+			}
+		case BOOLEAN:
+			return String.valueOf(cell.getBooleanCellValue());
+		case FORMULA:
+			return cell.getCellFormula();
+		default:
+			return "";
+		}
+	}
+	private boolean isRowEmpty1(Row row) {
+		for (int cellNum = row.getFirstCellNum(); cellNum < row.getLastCellNum(); cellNum++) {
+			Cell cell = row.getCell(cellNum);
+			if (cell != null && cell.getCellType() != CellType.BLANK) {
+				return false;
+			}
+		}
+		return true;
+	}
+	private String getStringCellValue(Cell cell) {
+		if (cell == null) {
+			return "";
+		}
+		switch (cell.getCellType()) {
+		case STRING:
+			return cell.getStringCellValue().trim();
+		case NUMERIC:
+			if (DateUtil.isCellDateFormatted(cell)) {
+				return new SimpleDateFormat("dd-MM-yyyy").format(cell.getDateCellValue());
+			} else {
+				double numericValue = cell.getNumericCellValue();
+				if (numericValue == (int) numericValue) {
+					return String.valueOf((int) numericValue);
+				} else {
+					return BigDecimal.valueOf(numericValue).toPlainString();
+				}
+			}
+		case BOOLEAN:
+			return String.valueOf(cell.getBooleanCellValue());
+		case FORMULA:
+			return cell.getCellFormula();
+		default:
+			return "";
+		}
+	}
+	private boolean isRowEmpty(Row row) {
+		for (int cellNum = row.getFirstCellNum(); cellNum < row.getLastCellNum(); cellNum++) {
+			Cell cell = row.getCell(cellNum);
+			if (cell != null && cell.getCellType() != CellType.BLANK) {
+				return false;
+			}
+		}
+		return true;
+	}
+	
+	@Override
+	public int getTotalRows() {
+		return totalRows;
+	}
+
+	@Override
+	public int getSuccessfulUploads() {
+		return successfulUploads;
+	}
+	
+	@Transactional
+	@Override
+	public void excelUploadForChargeCode(MultipartFile[] files, String createdBy, Long orgId) throws EncryptedDocumentException, ApplicationException, java.io.IOException {
+		totalRows = 0;
+		successfulUploads = 0;
+		for (MultipartFile file : files) {
+			try (Workbook workbook = WorkbookFactory.create(file.getInputStream())) {
+				Sheet sheet = workbook.getSheetAt(0); // Assuming only one sheet
+				List<String> errorMessages = new ArrayList<>();
+				System.out.println("Processing file: " + file.getOriginalFilename()); // Debug statement
+				Row headerRow = sheet.getRow(0);
+//				if (!isHeaderValidChargeType(headerRow)) {
+//					throw new ApplicationException("Invalid Excel format. Please refer to the sample file.");
+//				}
+				// Check all rows for validity first
+				for (Row row : sheet) {
+					if (row.getRowNum() == 0 || isRowEmpty1(row)) {
+						continue; // Skip header row and empty rows
+					}
+					totalRows++; // Increment totalRows
+					try {
+						// Retrieve cell values based on the provided order
+						String chargeType = getStringCellValue1(row.getCell(0));
+						String chargeCode = getStringCellValue1(row.getCell(1));
+						String chargeDesc = getStringCellValue1(row.getCell(2));
+						String sacCode = getStringCellValue1(row.getCell(3));
+						String sacDesc= getStringCellValue1(row.getCell(4));
+						String salesLedger=getStringCellValue1(row.getCell(5));
+						String purchaseLedger=getStringCellValue1(row.getCell(6));
+						String taxable=getStringCellValue1(row.getCell(7));
+						int taxablePercentage = Integer.parseInt(getStringCellValue1(row.getCell(8))); // Get value from the cell
+						String govtSacNumber=getStringCellValue1(row.getCell(9));
+						double gstTax=Double.parseDouble(getStringCellValue1(row.getCell(10)));
+						String activeString=getStringCellValue1(row.getCell(11));
+						// Convert activeString to integer and handle the conditions
+						boolean active;
+						if ("1".equals(activeString)) {
+							active = true; // If the value is '1', set active to true
+						} else if ("0".equals(activeString)) {
+							active = false; // If the value is '0', set active to false
+						} else {
+							throw new ApplicationException(
+									"Invalid value for 'active' field. Expected '1' or '0', but got: " + activeString);
+						}
+						ChargeTypeRequestVO chargeTypeRequestVO= new ChargeTypeRequestVO();
+						
+						if (chargeTypeRequestRepo.existsByOrgIdAndChargeCodeIgnoreCase(orgId,chargeCode)) {
+							throw new ApplicationException("The given charge code already exists.");
+						}
+						// Create CoaVO and add to appropriate list
+						chargeTypeRequestVO.setChargeType(chargeType.toUpperCase());
+						chargeTypeRequestVO.setChargeCode(chargeCode.toUpperCase());
+						chargeTypeRequestVO.setChargeDescription(chargeDesc.toUpperCase());
+						chargeTypeRequestVO.setLocalChargeDescripition(chargeDesc.toUpperCase());
+						chargeTypeRequestVO.setServiceAccountCode(sacCode.toUpperCase());
+						chargeTypeRequestVO.setSacDescripition(sacDesc.toUpperCase());
+						chargeTypeRequestVO.setSalesAccount(salesLedger.toUpperCase());
+						chargeTypeRequestVO.setPurchaseAccount(purchaseLedger.toUpperCase());
+						chargeTypeRequestVO.setTaxable(taxable.toUpperCase());
+						chargeTypeRequestVO.setTaxablePercentage(taxablePercentage);
+						chargeTypeRequestVO.setGovtSac(govtSacNumber.toUpperCase());
+						chargeTypeRequestVO.setExcempted("NO");
+						chargeTypeRequestVO.setGstTax((float)gstTax);
+						chargeTypeRequestVO.setActive(active);
+						chargeTypeRequestVO.setOrgId(orgId);
+						chargeTypeRequestVO.setProduct("ALL");
+						chargeTypeRequestVO.setCreatedBy(createdBy);
+						chargeTypeRequestVO.setUpdatedBy(createdBy);
+						chargeTypeRequestRepo.save(chargeTypeRequestVO);
+						successfulUploads++; // Increment successfulUploads
+					} catch (Exception e) {
+						errorMessages.add("Error processing row " + (row.getRowNum() + 1) + ": " + e.getMessage());
+					}
+				}
+				if (!errorMessages.isEmpty()) {
+					throw new ApplicationException(
+							"Excel upload validation failed. Errors: " + String.join(", ", errorMessages));
+				}
+			} catch (IOException e) {
+				throw new ApplicationException(
+						"Failed to process file: " + file.getOriginalFilename() + " - " + e.getMessage());
+			}
+		}
+	}
+	
+	private boolean isHeaderValidChargeType(Row headerRow) {
+		if (headerRow == null) {
+			return false;
+		}
+		// Adjust based on the actual header names in your Excel
+		return "Charge Type".equalsIgnoreCase(getStringCellValue1(headerRow.getCell(0)))
+				&& "Charge Code".equalsIgnoreCase(getStringCellValue1(headerRow.getCell(1)))
+				&& "Charge Desc".equalsIgnoreCase(getStringCellValue1(headerRow.getCell(2)))
+				&& "Sac Code".equalsIgnoreCase(getStringCellValue1(headerRow.getCell(3)))
+				&& "Sac Desc".equalsIgnoreCase(getStringCellValue1(headerRow.getCell(4)))
+				&& "Sales Ledger".equalsIgnoreCase(getStringCellValue1(headerRow.getCell(5)))
+				&& "Purchase Ledger".equalsIgnoreCase(getStringCellValue1(headerRow.getCell(6)))
+				&& "Taxable".equalsIgnoreCase(getStringCellValue1(headerRow.getCell(7)))
+				&& "Taxable %".equalsIgnoreCase(getStringCellValue1(headerRow.getCell(8)))
+				&& "Govt Sac Number".equalsIgnoreCase(getStringCellValue1(headerRow.getCell(9)))
+				&& "Tax %".equalsIgnoreCase(getStringCellValue1(headerRow.getCell(9)))
+				&& "Active".equalsIgnoreCase(getStringCellValue1(headerRow.getCell(10)));
+	}
+	
+	
+	
 }

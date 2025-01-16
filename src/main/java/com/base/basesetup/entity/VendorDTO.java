@@ -22,5 +22,5 @@ public class VendorDTO {
 	
 	private List<VendorsStateDTO> vendorStateDTO;
 	private List<VendorsAddressDTO> vendorAddressDTO;
-	private List<VendorsSalesPersonTaggingDTO> vendorSalesPersonDTO;
+	private List<SpecialTdsDTO> specialTdsDTO;
 }

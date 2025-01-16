@@ -32,8 +32,10 @@ import com.base.basesetup.dto.PartyTypeDTO;
 import com.base.basesetup.entity.PartyAddressVO;
 import com.base.basesetup.entity.PartyMasterVO;
 import com.base.basesetup.entity.PartySalesPersonTaggingVO;
+import com.base.basesetup.entity.PartySpecialTDSVO;
 import com.base.basesetup.entity.PartyStateVO;
 import com.base.basesetup.entity.PartyTypeVO;
+import com.base.basesetup.entity.SpecialTdsDTO;
 import com.base.basesetup.entity.VendorDTO;
 import com.base.basesetup.entity.VendorsAddressDTO;
 import com.base.basesetup.entity.VendorsSalesPersonTaggingDTO;
@@ -149,317 +151,286 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 
 	@Override
 	public void uploadCustomerData(MultipartFile file, Long orgId, String createdBy) throws Exception {
-	    try (Workbook workbook = WorkbookFactory.create(file.getInputStream())) {
+		try (Workbook workbook = WorkbookFactory.create(file.getInputStream())) {
 
-	        // Reading the customer sheet (CustomersDTO)
-	        Sheet customerSheet = workbook.getSheetAt(0); // Assuming customer sheet is the first one
-	        List<CustomersDTO> customersDTOList = new ArrayList<>();
+			// Reading the customer sheet (CustomersDTO)
+			Sheet customerSheet = workbook.getSheetAt(0); // Assuming customer sheet is the first one
+			List<CustomersDTO> customersDTOList = new ArrayList<>();
 
-	        // Loop through the customer sheet and create CustomersDTO entries
-	        for (Row row : customerSheet) {
-	            if (row.getRowNum() == 0) { // Skipping header
-	                continue;
-	            }
+			// Loop through the customer sheet and create CustomersDTO entries
+			for (Row row : customerSheet) {
+				if (row.getRowNum() == 0) { // Skipping header
+					continue;
+				}
 
-	            // Mapping Excel row data to CustomersDTO
-	            CustomersDTO customersDTO = new CustomersDTO();
-	            customersDTO.setCustomerName(getStringCellValue(row.getCell(0))); // Customer Name
-	            customersDTO.setCustomerCode(getStringCellValue(row.getCell(1))); // Customer Code
-	            customersDTO.setGstIn(getStringCellValue(row.getCell(2))); // GSTIN
-	            customersDTO.setPanNo(getStringCellValue(row.getCell(3))); // Pan No
-	            customersDTO.setCreatedBy(createdBy); // Created By
-	            customersDTO.setActive(true); // Assuming it's active
+				// Mapping Excel row data to CustomersDTO
+				CustomersDTO customersDTO = new CustomersDTO();
+				customersDTO.setCustomerName(getStringCellValue(row.getCell(0))); // Customer Name
+				customersDTO.setGstIn(getStringCellValue(row.getCell(2))); // GSTIN
+				customersDTO.setPanNo(getStringCellValue(row.getCell(3))); // Pan No
+				customersDTO.setCreatedBy(createdBy); // Created By
+				customersDTO.setOrgId(orgId);
+				customersDTO.setActive(true); // Assuming it's active
 
-	            // Add CustomersDTO to the list
-	            customersDTOList.add(customersDTO);
-	        }
-
-	      
-
-	        // Reading the state sheet (PartyStateDTO)
-	        Sheet stateSheet = workbook.getSheetAt(1); // Assuming state sheet is the second one
-	        List<CustomersStateDTO> partyStateDTOList = new ArrayList<>();
-
-	        // Loop through the state sheet and create PartyStateDTO entries
-	        for (Row row : stateSheet) {
-	            if (row.getRowNum() == 0) { // Skipping header
-	                continue;
-	            }
-	            
-	            String customerCode=row.getCell(7).getStringCellValue();
-	            CustomersDTO customersDTO = customersDTOList.stream()
-						.filter(c -> c.getCustomerCode().equals(customerCode)).findFirst()
-						.orElseThrow(() -> new RuntimeException("No customer found for Customer name: " + customerCode));
-
-	            // Mapping Excel row data to PartyStateDTO
-	            CustomersStateDTO customersStateDTO = new CustomersStateDTO();
-	            customersStateDTO.setState(getStringCellValue(row.getCell(0))); // State
-	            customersStateDTO.setStateCode(getStringCellValue(row.getCell(1))); // State Code
-	            customersStateDTO.setStateNo(getLongCellValue(row.getCell(2))); // State No
-	            customersStateDTO.setGstIn(getStringCellValue(row.getCell(3))); // GSTIN
-	            customersStateDTO.setContactPerson(getStringCellValue(row.getCell(4))); // Contact Person
-	            customersStateDTO.setPhoneNo(getStringCellValue(row.getCell(5))); // Contact Phone No
-	            customersStateDTO.setEMail(getStringCellValue(row.getCell(6))); // Contact Email
-	            customersStateDTO.setCustomerCode(getStringCellValue(row.getCell(7))); // Customer Code
-	            
-	            if (customersDTO.getCustomersStateDTO() == null) {
-	                customersDTO.setCustomersStateDTO(new ArrayList<>()); // Initialize the list if null
-	            }
-	            customersDTO.getCustomersStateDTO().add(customersStateDTO);
-	        }
-
-
-	        // Reading the address sheet (PartyAddressDTO)
-	        Sheet addressSheet = workbook.getSheetAt(2); // Assuming address sheet is the third one
-	        List<CustomersAddressDTO> partyAddressDTOList = new ArrayList<>();
-
-	        // Loop through the address sheet and create PartyAddressDTO entries
-	        for (Row row : addressSheet) {
-	            if (row.getRowNum() == 0) { // Skipping header
-	                continue;
-	            }
-	            
-	            String customerCode=row.getCell(11).getStringCellValue();
-	            CustomersDTO customersDTO = customersDTOList.stream()
-						.filter(c -> c.getCustomerCode().equals(customerCode)).findFirst()
-						.orElseThrow(() -> new RuntimeException("No customer found for Customer name: " + customerCode));
-
-	            // Mapping Excel row data to PartyAddressDTO
-	            CustomersAddressDTO partyAddressDTO = new CustomersAddressDTO();
-	            partyAddressDTO.setState(getStringCellValue(row.getCell(0))); // State
-	            partyAddressDTO.setCity(getStringCellValue(row.getCell(1))); // City
-	            partyAddressDTO.setBussinesPlace(getStringCellValue(row.getCell(2))); // Business Place
-	            partyAddressDTO.setGstnIn(getStringCellValue(row.getCell(3))); // GST IN
-	            partyAddressDTO.setAddressType(getStringCellValue(row.getCell(4))); // Address Type
-	            partyAddressDTO.setAddressLane1(getStringCellValue(row.getCell(5))); // Address Line 1
-	            partyAddressDTO.setAddressLane2(getStringCellValue(row.getCell(6))); // Address Line 2
-	            partyAddressDTO.setAddressLane3(getStringCellValue(row.getCell(7))); // Address Line 3
-	            partyAddressDTO.setPinCode(getLongCellValue(row.getCell(8))); // PinCode
-	            partyAddressDTO.setContact(getStringCellValue(row.getCell(9))); // Contact
-	            partyAddressDTO.setCustomerCode(getStringCellValue(row.getCell(10))); // Customer Code
-
-	            if (customersDTO.getCustomersAddressDTO() == null) {
-	                customersDTO.setCustomersAddressDTO(new ArrayList<>()); // Initialize the list if null
-	            }
-	            customersDTO.getCustomersAddressDTO().add(partyAddressDTO);
-
-	        }
-
-
-	        // Reading the sales person tagging sheet (PartySalesPersonTaggingDTO)
-	        Sheet salesPersonSheet = workbook.getSheetAt(3); // Assuming sales person tagging sheet is the fourth one
-	        List<CustomerSalesPersonDTO> partySalesPersonTaggingDTOList = new ArrayList<>();
-
-	        // Loop through the sales person sheet and create PartySalesPersonTaggingDTO entries
-	        for (Row row : salesPersonSheet) {
-	            if (row.getRowNum() == 0) { // Skipping header
-	                continue;
-	            }
-	            
-	            
-	            String customerCode=row.getCell(5).getStringCellValue();
-	            CustomersDTO customersDTO = customersDTOList.stream()
-						.filter(c -> c.getCustomerCode().equals(customerCode)).findFirst()
-						.orElseThrow(() -> new RuntimeException("No customer found for Customer name: " + customerCode));
-
-	            // Mapping Excel row data to PartySalesPersonTaggingDTO
-	            CustomerSalesPersonDTO partySalesPersonTaggingDTO = new CustomerSalesPersonDTO();
-	            partySalesPersonTaggingDTO.setSalesPerson(getStringCellValue(row.getCell(0))); // Sales Person
-	            partySalesPersonTaggingDTO.setEmpCode(getStringCellValue(row.getCell(1))); // Emp Code
-	            partySalesPersonTaggingDTO.setSalesBranch(getStringCellValue(row.getCell(2))); // Branch
-	            partySalesPersonTaggingDTO.setEffectiveFrom(getLocalDateCellValue(row.getCell(3))); // Effective From
-	            partySalesPersonTaggingDTO.setEffectiveTill(getLocalDateCellValue(row.getCell(4))); // Effective Till
-	            partySalesPersonTaggingDTO.setCustomerCode(getStringCellValue(row.getCell(5))); // Customer Code
-
-	            if (customersDTO.getCustomerSalesPersonDTO() == null) {
-	                customersDTO.setCustomerSalesPersonDTO(new ArrayList<>()); // Initialize the list if null
-	            }
-	            customersDTO.getCustomerSalesPersonDTO().add(partySalesPersonTaggingDTO);
-
-	        }
-	        
-	        for (CustomersDTO customer : customersDTOList) {
-	        	createUpdateCustomer(customer); // Assuming this method takes a single CustomersDTO
+				// Add CustomersDTO to the list
+				customersDTOList.add(customersDTO);
 			}
 
-	    }
+			// Reading the state sheet (PartyStateDTO)
+			Sheet stateSheet = workbook.getSheetAt(1); // Assuming state sheet is the second one
+			List<CustomersStateDTO> partyStateDTOList = new ArrayList<>();
+
+			// Loop through the state sheet and create PartyStateDTO entries
+			for (Row row : stateSheet) {
+				if (row.getRowNum() == 0) { // Skipping header
+					continue;
+				}
+
+				String customerName = row.getCell(7).getStringCellValue();
+				CustomersDTO customersDTO = customersDTOList.stream()
+						.filter(c -> c.getCustomerName().equals(customerName)).findFirst().orElseThrow(
+								() -> new RuntimeException("No customer found for Customer name: " + customerName));
+
+				// Mapping Excel row data to PartyStateDTO
+				CustomersStateDTO customersStateDTO = new CustomersStateDTO();
+				customersStateDTO.setState(getStringCellValue(row.getCell(0))); // State
+				customersStateDTO.setStateCode(getStringCellValue(row.getCell(1))); // State Code
+				customersStateDTO.setStateNo(getLongCellValue(row.getCell(2))); // State No
+				customersStateDTO.setGstIn(getStringCellValue(row.getCell(3))); // GSTIN
+				customersStateDTO.setContactPerson(getStringCellValue(row.getCell(4))); // Contact Person
+				customersStateDTO.setPhoneNo(getStringCellValue(row.getCell(5))); // Contact Phone No
+				customersStateDTO.setEMail(getStringCellValue(row.getCell(6))); // Contact Email
+
+				partyStateDTOList.add(customersStateDTO);
+				customersDTO.setCustomersStateDTO(partyStateDTOList);
+			}
+
+			// Reading the address sheet (PartyAddressDTO)
+			Sheet addressSheet = workbook.getSheetAt(2); // Assuming address sheet is the third one
+			List<CustomersAddressDTO> partyAddressDTOList = new ArrayList<>();
+
+			// Loop through the address sheet and create PartyAddressDTO entries
+			for (Row row : addressSheet) {
+				if (row.getRowNum() == 0) { // Skipping header
+					continue;
+				}
+
+				String customerName = row.getCell(11).getStringCellValue();
+				CustomersDTO customersDTO = customersDTOList.stream()
+						.filter(c -> c.getCustomerName().equals(customerName)).findFirst().orElseThrow(
+								() -> new RuntimeException("No customer found for Customer name: " + customerName));
+
+				// Mapping Excel row data to PartyAddressDTO
+				CustomersAddressDTO partyAddressDTO = new CustomersAddressDTO();
+				partyAddressDTO.setState(getStringCellValue(row.getCell(0))); // State
+				partyAddressDTO.setCity(getStringCellValue(row.getCell(1))); // City
+				partyAddressDTO.setBussinesPlace(getStringCellValue(row.getCell(2))); // Business Place
+				partyAddressDTO.setGstnIn(getStringCellValue(row.getCell(3))); // GST IN
+				partyAddressDTO.setAddressType(getStringCellValue(row.getCell(4))); // Address Type
+				partyAddressDTO.setAddressLane1(getStringCellValue(row.getCell(5))); // Address Line 1
+				partyAddressDTO.setAddressLane2(getStringCellValue(row.getCell(6))); // Address Line 2
+				partyAddressDTO.setAddressLane3(getStringCellValue(row.getCell(7))); // Address Line 3
+				partyAddressDTO.setPinCode(getLongCellValue(row.getCell(8))); // PinCode
+				partyAddressDTO.setContact(getStringCellValue(row.getCell(9))); // Contact
+
+				partyAddressDTOList.add(partyAddressDTO);
+				customersDTO.setCustomersAddressDTO(partyAddressDTOList);
+
+			}
+
+			// Reading the sales person tagging sheet (PartySalesPersonTaggingDTO)
+			Sheet salesPersonSheet = workbook.getSheetAt(3); // Assuming sales person tagging sheet is the fourth one
+			List<CustomerSalesPersonDTO> partySalesPersonTaggingDTOList = new ArrayList<>();
+
+			// Loop through the sales person sheet and create PartySalesPersonTaggingDTO
+			// entries
+			for (Row row : salesPersonSheet) {
+				if (row.getRowNum() == 0) { // Skipping header
+					continue;
+				}
+
+				String customerName = row.getCell(5).getStringCellValue();
+				CustomersDTO customersDTO = customersDTOList.stream()
+						.filter(c -> c.getCustomerName().equals(customerName)).findFirst().orElseThrow(
+								() -> new RuntimeException("No customer found for Customer name: " + customerName));
+
+				// Mapping Excel row data to PartySalesPersonTaggingDTO
+				CustomerSalesPersonDTO partySalesPersonTaggingDTO = new CustomerSalesPersonDTO();
+				partySalesPersonTaggingDTO.setSalesPerson(getStringCellValue(row.getCell(0))); // Sales Person
+				partySalesPersonTaggingDTO.setEmpCode(getStringCellValue(row.getCell(1))); // Emp Code
+				partySalesPersonTaggingDTO.setSalesBranch(getStringCellValue(row.getCell(2))); // Branch
+				partySalesPersonTaggingDTO.setEffectiveFrom(getLocalDateCellValue(row.getCell(3))); // Effective From
+				partySalesPersonTaggingDTO.setEffectiveTill(getLocalDateCellValue(row.getCell(4))); // Effective Till
+
+				partySalesPersonTaggingDTOList.add(partySalesPersonTaggingDTO);
+				customersDTO.setCustomerSalesPersonDTO(partySalesPersonTaggingDTOList);
+
+			}
+
+			for (CustomersDTO customer : customersDTOList) {
+				createUpdateCustomer(customer); // Assuming this method takes a single CustomersDTO
+			}
+
+		}
 	}
 
 	// Helper method to get string value from a cell, ensuring the cell isn't null
 	private String getStringCellValue(Cell cell) {
-	    if (cell == null) {
-	        return ""; // Return empty string if cell is null
-	    }
-	    switch (cell.getCellType()) {
-	        case STRING:
-	            return cell.getStringCellValue();
-	        case NUMERIC:
-	            return String.valueOf(cell.getNumericCellValue());
-	        case BOOLEAN:
-	            return String.valueOf(cell.getBooleanCellValue());
-	        default:
-	            return ""; // Return empty string for unsupported cell types or unknown cases
-	    }
+		if (cell == null) {
+			return ""; // Return empty string if cell is null
+		}
+		switch (cell.getCellType()) {
+		case STRING:
+			return cell.getStringCellValue();
+		case NUMERIC:
+			return String.valueOf(cell.getNumericCellValue());
+		case BOOLEAN:
+			return String.valueOf(cell.getBooleanCellValue());
+		default:
+			return ""; // Return empty string for unsupported cell types or unknown cases
+		}
 	}
 
 	// Helper method to get Long value from a cell (numeric or string)
 	private Long getLongCellValue(Cell cell) {
-	    if (cell == null) {
-	        return null;
-	    }
-	    switch (cell.getCellType()) {
-	        case NUMERIC:
-	            double numericValue = cell.getNumericCellValue();
-	            return numericValue == (long) numericValue ? (long) numericValue : null;
-	        case STRING:
-	            try {
-	                return Long.parseLong(cell.getStringCellValue());
-	            } catch (NumberFormatException e) {
-	                return null;
-	            }
-	        default:
-	            return null;
-	    }
+		if (cell == null) {
+			return null;
+		}
+		switch (cell.getCellType()) {
+		case NUMERIC:
+			double numericValue = cell.getNumericCellValue();
+			return numericValue == (long) numericValue ? (long) numericValue : null;
+		case STRING:
+			try {
+				return Long.parseLong(cell.getStringCellValue());
+			} catch (NumberFormatException e) {
+				return null;
+			}
+		default:
+			return null;
+		}
 	}
 
 	// Helper method to get LocalDate value from a cell (date)
 	private LocalDate getLocalDateCellValue(Cell cell) {
-	    if (cell == null) {
-	        return null;
-	    }
-	    if (cell.getCellType() == CellType.NUMERIC) {
-	        if (DateUtil.isCellDateFormatted(cell)) {
-	            // Excel stores dates as serial numbers, convert that to LocalDate
-	            return cell.getDateCellValue().toInstant()
-	                .atZone(ZoneId.systemDefault())
-	                .toLocalDate();
-	        }
-	    }
-	    return null; // Return null if it's not a date or is an invalid cell type
+		if (cell == null) {
+			return null;
+		}
+		if (cell.getCellType() == CellType.NUMERIC) {
+			if (DateUtil.isCellDateFormatted(cell)) {
+				// Excel stores dates as serial numbers, convert that to LocalDate
+				return cell.getDateCellValue().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+			}
+		}
+		return null; // Return null if it's not a date or is an invalid cell type
 	}
-
-	
-
 
 	@Override
 	public Map<String, Object> createUpdateCustomer(@Valid CustomersDTO customersDTO) throws ApplicationException {
 
-		PartyMasterVO partyMasterVO;
+		PartyMasterVO partyMasterVO = new PartyMasterVO();
 		String message = null;
 
-		if (ObjectUtils.isEmpty(customersDTO.getId())) {
+		if (ObjectUtils.isNotEmpty(customersDTO.getId())) {
 
-			partyMasterVO = new PartyMasterVO();
-			partyMasterVO.setCreatedBy(customersDTO.getCreatedBy());
+			partyMasterVO = partyMasterRepo.findById(customersDTO.getId())
+					.orElseThrow(() -> new ApplicationException("Invalid PartyMaster Details"));
 			partyMasterVO.setUpdatedBy(customersDTO.getCreatedBy());
 
-			message = "Customers Creation Successfully";
+			message = "Customers Updated Successfully";
 		} else {
 
-			partyMasterVO = partyMasterRepo.findById(customersDTO.getId()).orElseThrow(
-					() -> new ApplicationException("Customers Order Not Found with id: " + customersDTO.getId()));
+			String partyType = "CUSTOMER";
+			// PARTCODE DOCID API
+			String partyTypeDocId = partyTypeRepo.getPartyTypeDocId(customersDTO.getOrgId(), partyType);
+			partyMasterVO.setPartyCode(partyTypeDocId);
+
+			// UPDATE PARTCODE DOCID LASTNO +1
+			PartyTypeVO partyTypeVO = partyTypeRepo.findByOrgIdAndPartyType(customersDTO.getOrgId(), partyType);
+			partyTypeVO.setLastNo(partyTypeVO.getLastNo() + 1);
+			partyTypeRepo.save(partyTypeVO);
+
+			partyMasterVO.setCreatedBy(customersDTO.getCreatedBy());
 			partyMasterVO.setUpdatedBy(customersDTO.getCreatedBy());
-			message = "Customers  Updation Successfully";
+			message = "Customer Created Successfully";
+		}
+		partyMasterVO = partyMasterRepo.save(partyMasterVO);
+		if (ObjectUtils.isNotEmpty(customersDTO.getId())) {
+			List<PartyStateVO> partyStateVOList = partyStateRepo.findByPartyMasterVO(partyMasterVO);
+			partyStateRepo.deleteAll(partyStateVOList);
+		}
+		List<PartyStateVO> partyStateVOs = new ArrayList<>();
+		for (CustomersStateDTO partyStateDTO : customersDTO.getCustomersStateDTO()) {
+			PartyStateVO partyStateVO = new PartyStateVO();
+			partyStateVO.setState(partyStateDTO.getState());
+			partyStateVO.setGstIn(partyStateDTO.getGstIn());
+			partyStateVO.setStateNo(partyStateDTO.getStateNo());
+			partyStateVO.setContactPerson(partyStateDTO.getContactPerson());
+			partyStateVO.setStateCode(partyStateDTO.getStateCode());
+			partyStateVO.setPartyMasterVO(partyMasterVO);
+			partyStateVOs.add(partyStateVO);
 		}
 
-		partyMasterVO = getpartyMasterVOFromCustomersDTO(partyMasterVO, customersDTO);
-		partyMasterRepo.save(partyMasterVO);
+		if (ObjectUtils.isNotEmpty(customersDTO.getId())) {
+			List<PartyAddressVO> partyAddressVOList = partyAddressRepo.findByPartyMasterVO(partyMasterVO);
+			partyAddressRepo.deleteAll(partyAddressVOList);
+		}
+		List<PartyAddressVO> partyAddressVOs = new ArrayList<>();
+		for (CustomersAddressDTO partyAddressDTO : customersDTO.getCustomersAddressDTO()) {
+			PartyAddressVO partyAddressVO = new PartyAddressVO();
+			partyAddressVO.setState(partyAddressDTO.getState());
+			partyAddressVO.setStateGstIn(partyAddressDTO.getGstnIn());
+			partyAddressVO.setBusinessPlace(partyAddressDTO.getBussinesPlace());
+			partyAddressVO.setCity(partyAddressDTO.getCity()); // Changed from cityName to city
+			partyAddressVO.setAddressType(partyAddressDTO.getAddressType());
+			partyAddressVO.setAddressLine1(partyAddressDTO.getAddressLane1());
+			partyAddressVO.setAddressLine2(partyAddressDTO.getAddressLane2());
+			partyAddressVO.setAddressLine3(partyAddressDTO.getAddressLane3());
+			partyAddressVO.setPincode(partyAddressDTO.getPinCode());
+			partyAddressVO.setContact(partyAddressDTO.getContact()); // Changed from contactPerson to contact
 
+			partyAddressVO.setPartyMasterVO(partyMasterVO);
+			partyAddressVOs.add(partyAddressVO);
+		}
+
+		if (ObjectUtils.isNotEmpty(customersDTO.getId())) {
+			List<PartySalesPersonTaggingVO> partySalesPersonTaggingVOList = partySalesPersonTaggingRepo
+					.findByPartyMasterVO(partyMasterVO);
+			partySalesPersonTaggingRepo.deleteAll(partySalesPersonTaggingVOList);
+		}
+		List<PartySalesPersonTaggingVO> partySalesPersonTaggingVOs = new ArrayList<>();
+		for (CustomerSalesPersonDTO partySalesPersonTaggingDTO : customersDTO.getCustomerSalesPersonDTO()) {
+			PartySalesPersonTaggingVO partySalesPersonTaggingVO = new PartySalesPersonTaggingVO();
+			partySalesPersonTaggingVO.setSalesPerson(partySalesPersonTaggingDTO.getSalesPerson());
+			partySalesPersonTaggingVO.setEmpCode(partySalesPersonTaggingDTO.getEmpCode());
+			partySalesPersonTaggingVO.setSalesBranch(partySalesPersonTaggingDTO.getSalesBranch());
+			partySalesPersonTaggingVO.setEffectiveFrom(partySalesPersonTaggingDTO.getEffectiveFrom());
+			partySalesPersonTaggingVO.setEffectiveTill(partySalesPersonTaggingDTO.getEffectiveTill());
+			partySalesPersonTaggingVO.setPartyMasterVO(partyMasterVO);
+			partySalesPersonTaggingVOs.add(partySalesPersonTaggingVO);
+
+		}
+		getPartyMasterVOFromCustomerDTO(customersDTO, partyMasterVO);
+		partyMasterVO.setPartyStateVO(partyStateVOs);
+		partyMasterVO.setPartyAddressVO(partyAddressVOs);
+		partyMasterVO.setPartySalesPersonTaggingVO(partySalesPersonTaggingVOs);
+
+		partyMasterRepo.save(partyMasterVO);
 		Map<String, Object> response = new HashMap<>();
-		response.put("message", message);
 		response.put("partyMasterVO", partyMasterVO);
+		response.put("message", message);
 		return response;
 	}
 
-	private PartyMasterVO getpartyMasterVOFromCustomersDTO(PartyMasterVO partyMasterVO,
-			@Valid CustomersDTO customersDTO) {
-
-		partyMasterVO.setPartyName(customersDTO.getCustomerName());
-		partyMasterVO.setPartyCode(customersDTO.getCustomerCode());
-		partyMasterVO.setGstIn(customersDTO.getGstIn());
-		partyMasterVO.setPanNo(customersDTO.getPanNo());
-		partyMasterVO.setOrgId(customersDTO.getOrgId());
+	private void getPartyMasterVOFromCustomerDTO(@Valid CustomersDTO customerDTO, PartyMasterVO partyMasterVO) {
 		partyMasterVO.setPartyType("CUSTOMER");
-
-		if (customersDTO.getId() != null) {
-			// Clear previous items from the database
-			List<PartyStateVO> partyStateVOs = partyStateRepo.findByPartyMasterVO(partyMasterVO);
-			partyStateRepo.deleteAll(partyStateVOs);
-
-			List<PartyAddressVO> partyAddressVOs = partyAddressRepo.findByPartyMasterVO(partyMasterVO);
-			partyAddressRepo.deleteAll(partyAddressVOs);
-
-			List<PartySalesPersonTaggingVO> personTaggingVOs = partySalesPersonTaggingRepo
-					.findByPartyMasterVO(partyMasterVO);
-			partySalesPersonTaggingRepo.deleteAll(personTaggingVOs);
-
-		}
-
-		List<PartyStateVO> stateVOs = new ArrayList<>();
-		for (CustomersStateDTO customersStateDTO : customersDTO.getCustomersStateDTO()) {
-
-			PartyStateVO partyStateVO = new PartyStateVO();
-
-			partyStateVO.setState(customersStateDTO.getState());
-			partyStateVO.setStateCode(customersStateDTO.getStateCode());
-			partyStateVO.setStateNo(customersStateDTO.getStateNo());
-			partyStateVO.setGstIn(customersStateDTO.getGstIn());
-			partyStateVO.setContactPerson(customersStateDTO.getContactPerson());
-			partyStateVO.setContactPhoneNo(customersStateDTO.getPhoneNo());
-			partyStateVO.setEmail(customersStateDTO.getEMail());
-			partyStateVO.setCustomerCode(customersStateDTO.getCustomerCode());
-			partyStateVO.setPartyMasterVO(partyMasterVO);
-			// Set the SalesVO reference
-			stateVOs.add(partyStateVO);
-
-			// Add the SalesItemParticularsVO to the list
-			partyMasterVO.setPartyStateVO(stateVOs);
-		}
-
-		List<PartyAddressVO> addressVOs = new ArrayList<>();
-		for (CustomersAddressDTO customersAddressDTO : customersDTO.getCustomersAddressDTO()) {
-
-			PartyAddressVO partyAddressVO = new PartyAddressVO();
-
-			partyAddressVO.setState(customersAddressDTO.getState());
-			partyAddressVO.setCity(customersAddressDTO.getCity());
-			partyAddressVO.setBusinessPlace(customersAddressDTO.getBussinesPlace());
-			partyAddressVO.setStateGstIn(customersAddressDTO.getGstnIn());
-			partyAddressVO.setAddressType(customersAddressDTO.getAddressType());
-			partyAddressVO.setAddressLine1(customersAddressDTO.getAddressLane1());
-			partyAddressVO.setAddressLine2(customersAddressDTO.getAddressLane2());
-			partyAddressVO.setAddressLine3(customersAddressDTO.getAddressLane3());
-			partyAddressVO.setPincode(customersAddressDTO.getPinCode());
-			partyAddressVO.setContact(customersAddressDTO.getContact());
-			partyAddressVO.setCustomerCode(customersAddressDTO.getCustomerCode());
-			partyAddressVO.setPartyMasterVO(partyMasterVO);
-			// Set the SalesVO reference
-			addressVOs.add(partyAddressVO);
-
-			// Add the SalesItemParticularsVO to the list
-			partyMasterVO.setPartyAddressVO(addressVOs);
-		}
-
-		List<PartySalesPersonTaggingVO> personTaggingVOs = new ArrayList<>();
-		for (CustomerSalesPersonDTO customerSalesPersonDTO : customersDTO.getCustomerSalesPersonDTO()) {
-
-			PartySalesPersonTaggingVO partySalesPersonTaggingVO = new PartySalesPersonTaggingVO();
-
-			partySalesPersonTaggingVO.setSalesPerson(customerSalesPersonDTO.getSalesPerson());
-			partySalesPersonTaggingVO.setEmpCode(customerSalesPersonDTO.getEmpCode());
-			partySalesPersonTaggingVO.setSalesBranch(customerSalesPersonDTO.getSalesBranch());
-			partySalesPersonTaggingVO.setEffectiveFrom(customerSalesPersonDTO.getEffectiveFrom());
-			partySalesPersonTaggingVO.setEffectiveTill(customerSalesPersonDTO.getEffectiveTill());
-			partySalesPersonTaggingVO.setCustomerCode(customerSalesPersonDTO.getCustomerCode());
-			partySalesPersonTaggingVO.setPartyMasterVO(partyMasterVO);
-			// Set the SalesVO reference
-			personTaggingVOs.add(partySalesPersonTaggingVO);
-
-			// Add the SalesItemParticularsVO to the list
-			partyMasterVO.setPartySalesPersonTaggingVO(personTaggingVOs);
-		}
-
-		return partyMasterVO;
+		partyMasterVO.setPartyName(customerDTO.getCustomerName());
+		partyMasterVO.setGstPartyName(customerDTO.getCustomerName());
+		partyMasterVO.setGstIn(customerDTO.getGstIn());
+		partyMasterVO.setPanNo(customerDTO.getPanNo());
+		partyMasterVO.setPanName(customerDTO.getCustomerName());
+		partyMasterVO.setActive(customerDTO.isActive());
+		partyMasterVO.setOrgId(customerDTO.getOrgId());
 	}
 
 	@Override
@@ -501,8 +472,7 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 		return response;
 	}
 
-	private PartyMasterVO getpartyMasterVOFromVendorDTO(PartyMasterVO partyMasterVO,
-			@Valid VendorDTO vendorDTO) {
+	private PartyMasterVO getpartyMasterVOFromVendorDTO(PartyMasterVO partyMasterVO, @Valid VendorDTO vendorDTO) {
 
 		partyMasterVO.setPartyName(vendorDTO.getVendorName());
 		partyMasterVO.setPartyCode(vendorDTO.getVendorCode());
@@ -532,12 +502,11 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 
 			partyStateVO.setState(vendorsStateDTO.getState());
 			partyStateVO.setStateCode(vendorsStateDTO.getStateCode());
-			partyStateVO.setStateNo(vendorsStateDTO.getStateNo());
+			// partyStateVO.setStateNo(vendorsStateDTO.getStateNo());
 			partyStateVO.setGstIn(vendorsStateDTO.getGstIn());
 			partyStateVO.setContactPerson(vendorsStateDTO.getContactPerson());
 			partyStateVO.setContactPhoneNo(vendorsStateDTO.getPhoneNo());
 			partyStateVO.setEmail(vendorsStateDTO.getEMail());
-			partyStateVO.setCustomerCode(vendorsStateDTO.getVendorCode());
 			partyStateVO.setPartyMasterVO(partyMasterVO);
 			// Set the SalesVO reference
 			stateVOs.add(partyStateVO);
@@ -547,7 +516,7 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 		}
 
 		List<PartyAddressVO> addressVOs = new ArrayList<>();
-		for (VendorsAddressDTO vendorsAddressDTO :vendorDTO.getVendorAddressDTO()) {
+		for (VendorsAddressDTO vendorsAddressDTO : vendorDTO.getVendorAddressDTO()) {
 			PartyAddressVO partyAddressVO = new PartyAddressVO();
 
 			partyAddressVO.setState(vendorsAddressDTO.getState());
@@ -560,7 +529,6 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 			partyAddressVO.setAddressLine3(vendorsAddressDTO.getAddressLane3());
 			partyAddressVO.setPincode(vendorsAddressDTO.getPinCode());
 			partyAddressVO.setContact(vendorsAddressDTO.getContact());
-			partyAddressVO.setCustomerCode(vendorsAddressDTO.getVendorCode());
 			partyAddressVO.setPartyMasterVO(partyMasterVO);
 			// Set the SalesVO reference
 			addressVOs.add(partyAddressVO);
@@ -569,23 +537,24 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 			partyMasterVO.setPartyAddressVO(addressVOs);
 		}
 
-		List<PartySalesPersonTaggingVO> personTaggingVOs = new ArrayList<>();
-		for (VendorsSalesPersonTaggingDTO vendorsSalesPersonTaggingDTO : vendorDTO.getVendorSalesPersonDTO()) {
+		List<PartySpecialTDSVO> specialTDSVOs = new ArrayList<>();
+		for (SpecialTdsDTO specialTdsDTO : vendorDTO.getSpecialTdsDTO()) {
 
-			PartySalesPersonTaggingVO partySalesPersonTaggingVO = new PartySalesPersonTaggingVO();
+			PartySpecialTDSVO PartySpecialTDSVO = new PartySpecialTDSVO();
+			PartySpecialTDSVO.setTdsWithSec(specialTdsDTO.getWhSection());
+			PartySpecialTDSVO.setRateFrom(specialTdsDTO.getRateFrom());
+			PartySpecialTDSVO.setRateTo(specialTdsDTO.getRateTo());
+			PartySpecialTDSVO.setTdsWithPer(specialTdsDTO.getWhPercentage());
+			PartySpecialTDSVO.setSurchargePer(specialTdsDTO.getSurPercentage());
+			PartySpecialTDSVO.setEdPercentage(specialTdsDTO.getEdPercentage());
+			PartySpecialTDSVO.setTdsCertifiNo(specialTdsDTO.getTdsCertificateNo());
 
-			partySalesPersonTaggingVO.setSalesPerson(vendorsSalesPersonTaggingDTO.getSalesPerson());
-			partySalesPersonTaggingVO.setEmpCode(vendorsSalesPersonTaggingDTO.getEmpCode());
-			partySalesPersonTaggingVO.setSalesBranch(vendorsSalesPersonTaggingDTO.getSalesBranch());
-			partySalesPersonTaggingVO.setEffectiveFrom(vendorsSalesPersonTaggingDTO.getEffectiveFrom());
-			partySalesPersonTaggingVO.setEffectiveTill(vendorsSalesPersonTaggingDTO.getEffectiveTill());
-			partySalesPersonTaggingVO.setCustomerCode(vendorsSalesPersonTaggingDTO.getVendorCode());
-			partySalesPersonTaggingVO.setPartyMasterVO(partyMasterVO);
+			PartySpecialTDSVO.setPartyMasterVO(partyMasterVO);
 			// Set the SalesVO reference
-			personTaggingVOs.add(partySalesPersonTaggingVO);
+			specialTDSVOs.add(PartySpecialTDSVO);
 
 			// Add the SalesItemParticularsVO to the list
-			partyMasterVO.setPartySalesPersonTaggingVO(personTaggingVOs);
+			partyMasterVO.setPartySpecialTDSVO(specialTDSVOs);
 		}
 
 		return partyMasterVO;
@@ -601,6 +570,5 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 	public List<PartyMasterVO> getAllVendors(Long orgId) {
 		return partyMasterRepo.getAllVendors(orgId);
 	}
-
 
 }

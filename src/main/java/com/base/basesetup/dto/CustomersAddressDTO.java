@@ -20,6 +20,5 @@ public class CustomersAddressDTO {
 	private String addressLane3;
 	private Long pinCode;
 	private String contact;
-	private String customerCode;
 	
 }

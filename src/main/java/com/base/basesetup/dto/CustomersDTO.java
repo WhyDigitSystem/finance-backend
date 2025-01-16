@@ -14,7 +14,6 @@ public class CustomersDTO {
 	private Long id;
 	private long orgId;
 	private String customerName;
-	private String customerCode;
 	private String gstIn;
 	private String panNo;
 	private boolean active;
