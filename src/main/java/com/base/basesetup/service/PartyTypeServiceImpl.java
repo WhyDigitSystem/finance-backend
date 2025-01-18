@@ -391,7 +391,7 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 			partyMasterVO.setUpdatedBy(customersDTO.getCreatedBy());
 
 			message = "Customers creation Successfully";
-		} else {
+		} else { 
 
 			partyMasterVO = partyMasterRepo.findById(customersDTO.getId())
 					.orElseThrow(() -> new ApplicationException("Invalid PartyMaster Details"));
