@@ -14,7 +14,6 @@ public class VendorDTO {
 	private Long id;
 	private long orgId;
 	private String vendorName;
-	private String vendorCode;
 	private String gstIn;
 	private String panNo;
 	private boolean active;

@@ -17,6 +17,8 @@ public class CustomerSalesPersonDTO {
 	private String salesBranch;
 	private LocalDate effectiveFrom;
 	private LocalDate effectiveTill;
+	private String customerName;
+
 	
 
 }

@@ -50,11 +50,11 @@ public class PartyStateVO {
 	@Column(name = "email", length = 50)
 	private String email;
 
-	@Column(name = "statecode", length = 3)
+	@Column(name = "statecode", length = 15)
 	private String stateCode;
 
-	@Column(name = "customercode")
-	private String customerCode;
+//	@Column(name = "partyname")
+//	private String partyName;
 	
 	
 	
