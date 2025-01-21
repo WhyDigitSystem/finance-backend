@@ -43,7 +43,7 @@ import com.base.basesetup.entity.RegionVO;
 import com.base.basesetup.entity.ScreenNamesVO;
 import com.base.basesetup.entity.StateVO;
 import com.base.basesetup.service.CommonMasterService;
-
+ 
 @CrossOrigin
 @RestController
 @RequestMapping("/api/commonmaster")
