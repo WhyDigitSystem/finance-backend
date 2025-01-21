@@ -363,4 +363,26 @@ public class PartyTypeController extends BaseController {
 		return ResponseEntity.ok().body(responseDTO);
 	}
 	
+	@PostMapping("/vendorUpload")
+	public ResponseEntity<ResponseDTO> vendorUpload(@RequestParam("files") MultipartFile files,
+			@RequestParam("orgId") Long orgId, @RequestParam("createdBy") String createdBy) {
+		String methodName = "customerUpload()";
+		Map<String, Object> responseObjectsMap = new HashMap<>();
+		ResponseDTO responseDTO = null;
+		try {
+			// Call service method to process Excel upload
+			partyTypeService.vendorUpload(files, orgId, createdBy);
+			// Retrieve the counts after processing
+			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "Vendors Upload successfully");
+			responseDTO = createServiceResponse(responseObjectsMap);
+		} catch (Exception e) {
+			String errorMsg = null;
+			errorMsg = e.getMessage();
+			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+			responseDTO = createServiceResponseError(responseObjectsMap, errorMsg, errorMsg);
+		}
+		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+		return ResponseEntity.ok().body(responseDTO);
+	}
+	
 }

@@ -17,6 +17,6 @@ public class VendorsStateDTO {
 	private String contactPerson;
 	private String phoneNo;
 	private String eMail;
-	private String vendorCode;
+	private String vendorName;
 	
 }

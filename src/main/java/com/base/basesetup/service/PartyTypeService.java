@@ -33,7 +33,7 @@ public interface PartyTypeService {
 
 	void processExcelFile(MultipartFile excelFile, String creatdBy) throws IOException, java.io.IOException;
 
-	void uploadCustomerData(MultipartFile file, Long orgId, String createdBy) throws Exception;
+	void uploadCustomerData(MultipartFile files, Long orgId, String createdBy) throws Exception;
 
 	Map<String, Object> createUpdateCustomer(@Valid CustomersDTO customersDTO) throws ApplicationException;
 
@@ -48,5 +48,7 @@ public interface PartyTypeService {
 	Optional<PartyMasterVO> getVendorsById(Long id);
 
 	List<PartyMasterVO> getAllVendors(Long orgId);
+
+	void vendorUpload(MultipartFile files, Long orgId, String createdBy) throws Exception;
 
 }

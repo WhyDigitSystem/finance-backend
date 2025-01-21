@@ -33,6 +33,9 @@ public interface PartyMasterRepo extends JpaRepository<PartyMasterVO, Long> {
 	@Query(nativeQuery =true,value ="select * from partymaster where orgid=?1 and partytype='VENDOR'")
 	List<PartyMasterVO> getAllVendors(Long orgId);
 
+	boolean existsByPartyNameAndOrgId(String customerName, long orgId);
+
+
 	
 
 

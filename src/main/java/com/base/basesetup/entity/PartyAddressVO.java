@@ -62,8 +62,8 @@ public class PartyAddressVO {
     @Column(name = "contact", length = 15) 
     private String contact;
 
-    @Column(name ="customerCode")
-    private String customerCode;
+//    @Column(name ="partyname")
+//    private String partyName;
 
     
 	@ManyToOne

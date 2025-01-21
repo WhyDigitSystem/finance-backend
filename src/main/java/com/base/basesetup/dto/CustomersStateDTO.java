@@ -17,5 +17,5 @@ public class CustomersStateDTO {
 	private String contactPerson;
 	private String phoneNo;
 	private String eMail;
-	
+	private String customerName;
 }
