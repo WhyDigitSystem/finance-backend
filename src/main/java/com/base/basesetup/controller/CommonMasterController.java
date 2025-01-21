@@ -49,7 +49,7 @@ import com.base.basesetup.service.CommonMasterService;
 @RequestMapping("/api/commonmaster")
 public class CommonMasterController extends BaseController {
 
-	@Autowired
+	@Autowired 
 	CommonMasterService commonMasterService;
 
 	public static final Logger LOGGER = LoggerFactory.getLogger(CommonMasterController.class);
