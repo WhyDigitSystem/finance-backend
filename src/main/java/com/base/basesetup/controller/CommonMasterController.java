@@ -48,7 +48,7 @@ import com.base.basesetup.service.CommonMasterService;
 @RestController
 @RequestMapping("/api/commonmaster")
 public class CommonMasterController extends BaseController {
-
+ 
 	@Autowired 
 	CommonMasterService commonMasterService;
 
