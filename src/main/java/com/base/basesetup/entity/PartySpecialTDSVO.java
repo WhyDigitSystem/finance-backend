@@ -1,5 +1,7 @@
 package com.base.basesetup.entity;
 
+import java.math.BigDecimal;
+
 import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
@@ -42,13 +44,13 @@ public class PartySpecialTDSVO {
 	private Long rateTo;
 
 	@Column(name = "tdswithper")
-	private Long tdsWithPer;
+	private BigDecimal tdsWithPer;
 
 	@Column(name = "surchargeper")
-	private Long surchargePer;
+	private BigDecimal surchargePer;
 
 	@Column(name = "edpercentage")
-	private Long edPercentage;
+	private BigDecimal edPercentage;
 
 	@Column(name = "tdscertifino", length = 50)
 	private String tdsCertifiNo;

@@ -29,6 +29,10 @@ public interface PartyTypeRepo extends JpaRepository<PartyTypeVO, Long>{
 
 	@Query(nativeQuery = true,value="select concat(partytypecode,lpad(lastno,5,0)) AS docid from partytype where orgid=?1 and partytype=?2")
 	Set<Object[]> findPartyCodeByOrgIdAndPartyType(Long orgid, String partytype);
+	
+	@Query(nativeQuery = true,value="select concat(partytypecode,lpad(lastno,5,0)) AS docid from partytype where orgid=?1 and partytype=?2")
+	String getPartyTypeVendorDocId(long orgId, String partyType);
+
 
 	
 
