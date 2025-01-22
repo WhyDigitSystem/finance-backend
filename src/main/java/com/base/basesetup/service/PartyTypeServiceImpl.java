@@ -171,11 +171,7 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 		return details1;
 	}
 
-	@Override
-	public void processExcelFile(MultipartFile excelFile, String creatdBy) throws IOException, java.io.IOException {
-		// TODO Auto-generated method stub
-
-	}
+	
 
 	@Override
 	// Method to upload customer data from Excel file

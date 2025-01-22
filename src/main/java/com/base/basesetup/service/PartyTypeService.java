@@ -31,8 +31,6 @@ public interface PartyTypeService {
 
 	List<Map<String, Object>> getPartyCodeByOrgIdAndPartyType(Long orgid, String partytype);
 
-	void processExcelFile(MultipartFile excelFile, String creatdBy) throws IOException, java.io.IOException;
-
 	void uploadCustomerData(MultipartFile files, Long orgId, String createdBy) throws Exception;
 
 	Map<String, Object> createUpdateCustomer(@Valid CustomersDTO customersDTO) throws ApplicationException;
