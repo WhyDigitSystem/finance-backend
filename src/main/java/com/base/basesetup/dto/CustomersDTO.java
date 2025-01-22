@@ -1,5 +1,6 @@
 package com.base.basesetup.dto;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import lombok.AllArgsConstructor;
@@ -18,6 +19,10 @@ public class CustomersDTO {
 	private String panNo;
 	private boolean active;
 	private String createdBy;
+	private Long creditDays;
+	private BigDecimal creditLimit;
+	private String creditTerms;
+	private String taxRegistered;
 	
 	private List<CustomersStateDTO> customersStateDTO;
 	private List<CustomersAddressDTO> customersAddressDTO;

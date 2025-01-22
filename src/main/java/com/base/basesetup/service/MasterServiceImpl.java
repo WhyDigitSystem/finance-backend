@@ -547,7 +547,7 @@ public class MasterServiceImpl implements MasterService {
 				taxMasterDetailsVO.setCostLedger(taxMasterDetailsDTO.getCostLedger());
 				taxMasterDetailsVO.setActive(taxMasterDetailsDTO.isActive());
 				taxMasterDetailsVO.setTaxMasterVO(taxMasterVO);
-			}
+				taxMasterDetailsVOs.add(taxMasterDetailsVO);	}
 		}
 
 		getTaxMasterVOFromTaxMasterDTO(taxMasterDTO, taxMasterVO);
@@ -1966,8 +1966,8 @@ public class MasterServiceImpl implements MasterService {
 		partyMasterVO.setOrgId(partyMasterDTO.getOrgId());
 		partyMasterVO.setFinYear(partyMasterDTO.getFinYear());
 		partyMasterVO.setBranchCode(partyMasterDTO.getBranchCode());
-
-	}
+		partyMasterVO.setCreditTerms(partyMasterDTO.getCreditTerms());
+		}
 
 	@Override
 	public String getPartyMasterDocId(Long orgId, String finYear, String branch, String branchCode) {

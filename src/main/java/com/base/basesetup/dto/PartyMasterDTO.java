@@ -48,7 +48,6 @@ public class PartyMasterDTO {
 	private String accType;
 	private String IfscCode;
 	private String Swift;
-
 	// Additional fields
 	private String branch;
 	private String branchCode;
@@ -58,6 +57,8 @@ public class PartyMasterDTO {
 	private String cancelRemarks;
 	private String finYear;
 	private Long orgId;
+	
+	private String creditTerms;
     
     List<PartyStateDTO> partyStateDTO;
     List<PartyAddressDTO> partyAddressDTO;

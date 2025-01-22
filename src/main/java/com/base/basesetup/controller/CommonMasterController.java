@@ -43,13 +43,13 @@ import com.base.basesetup.entity.RegionVO;
 import com.base.basesetup.entity.ScreenNamesVO;
 import com.base.basesetup.entity.StateVO;
 import com.base.basesetup.service.CommonMasterService;
-
+ 
 @CrossOrigin
 @RestController
 @RequestMapping("/api/commonmaster")
 public class CommonMasterController extends BaseController {
-
-	@Autowired
+ 
+	@Autowired 
 	CommonMasterService commonMasterService;
 
 	public static final Logger LOGGER = LoggerFactory.getLogger(CommonMasterController.class);

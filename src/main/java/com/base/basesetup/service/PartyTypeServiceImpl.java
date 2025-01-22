@@ -1,5 +1,6 @@
 package com.base.basesetup.service;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.ArrayList;
@@ -191,12 +192,23 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 					continue;
 				}
 
+				String creditdays = getStringCellValue(row.getCell(3));
+				Long creditDays = null;
+				if (!creditdays.isEmpty()) {
+					creditDays = Long.parseLong(creditdays); // Only parse if staeno is not empty
+				}
+
 				// Mapping Excel row data to CustomersDTO
 				CustomersDTO customersDTO = new CustomersDTO();
 				customersDTO.setCustomerName(getStringCellValue(row.getCell(0))); // Customer Name
 				customersDTO.setGstIn(getStringCellValue(row.getCell(1))); // GSTIN
 				customersDTO.setPanNo(getStringCellValue(row.getCell(2))); // Pan No
-				customersDTO.setCreatedBy(createdBy); // Created By
+				customersDTO.setCreditLimit(getBigDecimalValue(row.getCell(4)));
+				customersDTO.setCreditTerms(getStringCellValue(row.getCell(5)));
+				customersDTO.setTaxRegistered(getStringCellValue(row.getCell(6)));
+				customersDTO.setCreditDays(creditDays);
+				customersDTO.setTaxRegistered(createdBy);
+				customersDTO.setCreatedBy(createdBy); // Created
 				customersDTO.setOrgId(orgId);
 				customersDTO.setActive(true); // Assuming it's active
 
@@ -390,6 +402,25 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 		return null; // Return null if it's not a date or is an invalid cell type
 	}
 
+	private BigDecimal getBigDecimalValue(Cell cell) {
+		if (cell == null || cell.getCellType() == CellType.BLANK) {
+			return BigDecimal.ZERO; // Default value for blank or null cells
+		}
+
+		switch (cell.getCellType()) {
+		case NUMERIC:
+			return BigDecimal.valueOf(cell.getNumericCellValue()); // Convert numeric value to BigDecimal
+		case STRING:
+			try {
+				return new BigDecimal(cell.getStringCellValue().trim()); // Parse string to BigDecimal
+			} catch (NumberFormatException e) {
+				throw new IllegalArgumentException("Invalid numeric value in cell: " + cell.getStringCellValue(), e);
+			}
+		default:
+			throw new IllegalArgumentException("Unsupported cell type: " + cell.getCellType());
+		}
+	}
+
 	@Override
 	public Map<String, Object> createUpdateCustomer(@Valid CustomersDTO customersDTO) throws ApplicationException {
 
@@ -418,7 +449,7 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 			partyMasterVO.setUpdatedBy(customersDTO.getCreatedBy());
 
 			message = "Customers creation Successfully";
-		} else { 
+		} else {
 
 			partyMasterVO = partyMasterRepo.findById(customersDTO.getId())
 					.orElseThrow(() -> new ApplicationException("Invalid PartyMaster Details"));
@@ -432,7 +463,7 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 							customersDTO.getCustomerName());
 					throw new ApplicationException(errorMessage);
 				}
-
+				partyMasterVO.setPartyName(customersDTO.getCustomerName());
 			}
 
 			message = "Customer Updation Successfully";
@@ -451,6 +482,8 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 			partyStateVO.setContactPerson(partyStateDTO.getContactPerson());
 			partyStateVO.setStateCode(partyStateDTO.getStateCode());
 			partyStateVO.setPartyMasterVO(partyMasterVO);
+			partyStateVO.setEmail(partyStateDTO.getEMail());
+			partyStateVO.setContactPhoneNo(partyStateDTO.getPhoneNo());
 			// partyStateVO.setPartyName(partyStateDTO.getCustomerName());
 			partyStateVOs.add(partyStateVO);
 		}
@@ -516,6 +549,10 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 		partyMasterVO.setPanName(customerDTO.getCustomerName());
 		partyMasterVO.setActive(customerDTO.isActive());
 		partyMasterVO.setOrgId(customerDTO.getOrgId());
+		partyMasterVO.setCreditDays(customerDTO.getCreditDays());
+		partyMasterVO.setCreditLimit(customerDTO.getCreditLimit());
+		partyMasterVO.setCreditTerms(customerDTO.getCreditTerms());
+		partyMasterVO.setGstRegistered(customerDTO.getTaxRegistered());
 	}
 
 	@Override
@@ -541,36 +578,36 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 				throw new ApplicationException(errorMessage);
 			}
 
-			partyMasterVO = new PartyMasterVO();
-			partyMasterVO.setCreatedBy(vendorDTO.getCreatedBy());
-			partyMasterVO.setUpdatedBy(vendorDTO.getCreatedBy());
-
-			message = "vendor Creation Successfully";
-		} else {
-
 			String partyType = "VENDOR";
 			// PARTCODE DOCID API
-			String partyTypeDocId = partyTypeRepo.getPartyTypeDocId(vendorDTO.getOrgId(), partyType);
+			String partyTypeDocId = partyTypeRepo.getPartyTypeVendorDocId(vendorDTO.getOrgId(), partyType);
 			partyMasterVO.setPartyCode(partyTypeDocId);
-
-			if (!partyMasterVO.getPartyName().equalsIgnoreCase(vendorDTO.getVendorName())) {
-
-				if (partyMasterRepo.existsByPartyNameAndOrgId(vendorDTO.getVendorName(), vendorDTO.getOrgId())) {
-					String errorMessage = String.format("This CustomerName: %s Already Exists in This Organization",
-							vendorDTO.getVendorName());
-					throw new ApplicationException(errorMessage);
-				}
-
-			}
 
 			// UPDATE PARTCODE DOCID LASTNO +1
 			PartyTypeVO partyTypeVO = partyTypeRepo.findByOrgIdAndPartyType(vendorDTO.getOrgId(), partyType);
 			partyTypeVO.setLastNo(partyTypeVO.getLastNo() + 1);
 			partyTypeRepo.save(partyTypeVO);
 
+			partyMasterVO.setCreatedBy(vendorDTO.getCreatedBy());
+			partyMasterVO.setUpdatedBy(vendorDTO.getCreatedBy());
+
+			message = "vendor Creation Successfully";
+		} else {
 			partyMasterVO = partyMasterRepo.findById(vendorDTO.getId()).orElseThrow(
 					() -> new ApplicationException("vendor Order Not Found with id: " + vendorDTO.getId()));
+
+			if (!partyMasterVO.getPartyName().equalsIgnoreCase(vendorDTO.getVendorName())) {
+
+				if (partyMasterRepo.existsByPartyNameAndOrgId(vendorDTO.getVendorName(), vendorDTO.getOrgId())) {
+					String errorMessage = String.format("This VendorName: %s Already Exists in This Organization",
+							vendorDTO.getVendorName());
+					throw new ApplicationException(errorMessage);
+				}
+				partyMasterVO.setPartyName(vendorDTO.getVendorName());
+			}
+
 			partyMasterVO.setUpdatedBy(vendorDTO.getCreatedBy());
+
 			message = "vendor  Updation Successfully";
 		}
 
@@ -590,6 +627,11 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 		partyMasterVO.setPanNo(vendorDTO.getPanNo());
 		partyMasterVO.setOrgId(vendorDTO.getOrgId());
 		partyMasterVO.setPartyType("VENDOR");
+
+		partyMasterVO.setCreditDays(vendorDTO.getCreditDays());
+		partyMasterVO.setCreditLimit(vendorDTO.getCreditLimit());
+		partyMasterVO.setCreditTerms(vendorDTO.getCreditTerms());
+		partyMasterVO.setGstRegistered(vendorDTO.getTaxRegistered());
 
 		if (vendorDTO.getId() != null) {
 			// Clear previous items from the database
@@ -612,7 +654,7 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 
 			partyStateVO.setState(vendorsStateDTO.getState());
 			partyStateVO.setStateCode(vendorsStateDTO.getStateCode());
-			// partyStateVO.setStateNo(vendorsStateDTO.getStateNo());
+			partyStateVO.setStateNo(vendorsStateDTO.getStateNo());
 			partyStateVO.setGstIn(vendorsStateDTO.getGstIn());
 			partyStateVO.setContactPerson(vendorsStateDTO.getContactPerson());
 			partyStateVO.setContactPhoneNo(vendorsStateDTO.getPhoneNo());
@@ -754,7 +796,6 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 				vendorsStateDTO.setContactPerson(getStringCellValue(row.getCell(4))); // Contact Person
 				vendorsStateDTO.setPhoneNo(getStringCellValue(row.getCell(5))); // Contact Phone No
 				vendorsStateDTO.setEMail(getStringCellValue(row.getCell(6))); // Contact Email
-				vendorsStateDTO.setVendorName(vendorName); // Customer Name
 				partyStateDTOList.add(vendorsStateDTO);
 				vendorDTO.setVendorStateDTO(partyStateDTOList);
 			}
