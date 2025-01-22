@@ -7,7 +7,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
+import javax.transaction.Transactional;
 import javax.validation.Valid;
 
 import org.apache.commons.lang3.ObjectUtils;
@@ -38,7 +40,6 @@ import com.base.basesetup.entity.PartyTypeVO;
 import com.base.basesetup.entity.SpecialTdsDTO;
 import com.base.basesetup.entity.VendorDTO;
 import com.base.basesetup.entity.VendorsAddressDTO;
-import com.base.basesetup.entity.VendorsSalesPersonTaggingDTO;
 import com.base.basesetup.entity.VendorsStateDTO;
 import com.base.basesetup.exception.ApplicationException;
 import com.base.basesetup.repo.PartyAddressRepo;
@@ -126,21 +127,47 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 	}
 
 	@Override
-	public List<PartyTypeVO> getAllPartyTypeByOrgId(Long orgid) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
 	public List<PartyTypeVO> getPartyTypeById(Long id) {
-		// TODO Auto-generated method stub
-		return null;
+		List<PartyTypeVO> partyTypeVO = new ArrayList<>();
+		if (ObjectUtils.isNotEmpty(id)) {
+			LOGGER.info("Successfully Received  PartyType BY Id : {}", id);
+			partyTypeVO = partyTypeRepo.findPartyTypeVOById(id);
+		} else {
+			LOGGER.info("Successfully Received  PartyType For All Id.");
+			partyTypeVO = partyTypeRepo.findAll();
+		}
+		return partyTypeVO;
 	}
 
 	@Override
-	public List<Map<String, Object>> getPartyCodeByOrgIdAndPartyType(Long orgid, String partytype) {
-		// TODO Auto-generated method stub
-		return null;
+	public List<PartyTypeVO> getAllPartyTypeByOrgId(Long orgid) {
+		List<PartyTypeVO> partyTypeVO = new ArrayList<>();
+		if (ObjectUtils.isNotEmpty(orgid)) {
+			LOGGER.info("Successfully Received  PartyType BY OrgId : {}", orgid);
+			partyTypeVO = partyTypeRepo.findAllPartyTypeVOByOrgId(orgid);
+		} else {
+			LOGGER.info("Successfully Received  PartyType For All OrgId.");
+			partyTypeVO = partyTypeRepo.findAll();
+		}
+		return partyTypeVO;
+	}
+	
+	@Override
+	@Transactional
+	public List<Map<String, Object>> getPartyCodeByOrgIdAndPartyType(Long orgid,String partytype) {
+
+		Set<Object[]> result = partyTypeRepo.findPartyCodeByOrgIdAndPartyType(orgid,partytype);
+		return getPartyCodeByOrgIdAndPartyType(result);
+	}
+
+	private List<Map<String, Object>> getPartyCodeByOrgIdAndPartyType(Set<Object[]> result) {
+		List<Map<String, Object>> details1 = new ArrayList<>();
+		for (Object[] fs : result) {
+			Map<String, Object> part = new HashMap<>();
+			part.put("partCode", fs[0] != null ? fs[0].toString() : "");
+			details1.add(part);
+		}
+		return details1;
 	}
 
 	@Override
