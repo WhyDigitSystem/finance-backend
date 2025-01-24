@@ -65,6 +65,8 @@ public class TaxInvoiceVO {
 	private String bizMode;
 	@Column(name = "partyname",length = 150)
 	private String partyName;
+	@Column(name = "partyid")
+	private Long partyId;
 	@Column(name = "partycode",length = 10)
 	private String partyCode;
 	@Column(name = "partytype",length = 30)

@@ -10,14 +10,11 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 
-public class CostDebitNoteTaxPrtculDTO {
+public class TdsCostDebitNoteDTO {
 
-	private Long Id;
-
+	private Long id;
 	private String tdsWithHolding;
 	private BigDecimal tdsWithHoldingPer;
 	private String section;
-
-//	private BigDecimal totTDSAmt;
 
 }

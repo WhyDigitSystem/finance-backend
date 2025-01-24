@@ -196,5 +196,25 @@ public class IrnCreditNoteController extends BaseController {
 		return ResponseEntity.ok().body(responseDTO);
 
 	}
+	
+	@PutMapping("/approveIrnCreditNote")
+	public ResponseEntity<ResponseDTO> approveIrnCreditNote(@RequestParam Long orgId,@RequestParam Long id,@RequestParam String docId,@RequestParam String action,@RequestParam String actionBy) {
+		String methodName = "approveIrnCreditNote()";
+		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+		String errorMsg = null;
+		Map<String, Object> responseObjectsMap = new HashMap<>();
+		ResponseDTO responseDTO = null;
+		try {
+			IrnCreditNoteVO irnCreditNoteVO = irnCreditService.approveIrnCreditNote(orgId, id, docId, action, actionBy);
+			responseObjectsMap.put("irnCreditNoteVO", irnCreditNoteVO);
+			responseDTO = createServiceResponse(responseObjectsMap);
+		} catch (Exception e) {
+			errorMsg = e.getMessage();
+			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+			responseDTO = createServiceResponseError(responseObjectsMap, errorMsg, errorMsg);
+		}
+		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+		return ResponseEntity.ok().body(responseDTO);
+	}
 
 }

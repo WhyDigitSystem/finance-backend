@@ -26,4 +26,6 @@ public interface IrnCreditNoteService {
 	List<PartyMasterVO> getAllPartyByPartyType(Long orgId, String partyType);
 	
 	List<TaxInvoiceVO>getOriginBillNofromTaxInvoiceByParty(Long orgId,String party,String branchCode);
+	
+	IrnCreditNoteVO approveIrnCreditNote(Long orgId,Long id,String docId,String action,String actionBy) throws ApplicationException;
 }

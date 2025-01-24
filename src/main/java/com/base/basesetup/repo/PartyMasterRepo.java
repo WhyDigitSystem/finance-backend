@@ -25,6 +25,17 @@ public interface PartyMasterRepo extends JpaRepository<PartyMasterVO, Long> {
 	@Query(value = "select a from PartyMasterVO a where a.orgId=?1 and a.partyType=?2 and a.active=true")
 	List<PartyMasterVO> findByOrgIdAndPartyTypeIgnoreCase(Long orgId, String partyType);
 
+	PartyMasterVO findByPartyCode(String partyCode);
+
+	@Query(nativeQuery =true,value ="select * from partymaster where orgid=?1 and partytype='CUSTOMER'")
+	List<PartyMasterVO> getAllCustomers(Long orgId);
+
+	@Query(nativeQuery =true,value ="select * from partymaster where orgid=?1 and partytype='VENDOR'")
+	List<PartyMasterVO> getAllVendors(Long orgId);
+
+	boolean existsByPartyNameAndOrgId(String customerName, long orgId);
+
+
 	
 
 

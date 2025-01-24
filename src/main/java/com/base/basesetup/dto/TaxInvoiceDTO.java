@@ -24,6 +24,7 @@ public class TaxInvoiceDTO {
 	private String bizType;
 	private String bizMode;
 	private String partyName;
+	private Long partyId;
 	private String partyCode;
 	private String partyType;
 	private String stateNo;

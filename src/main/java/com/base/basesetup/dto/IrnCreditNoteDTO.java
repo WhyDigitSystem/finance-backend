@@ -36,8 +36,7 @@ public class IrnCreditNoteDTO {
 	private String status;
 	private String gstType;
 	private String originBillNo;
-	private String voucherNo;
-	private LocalDate voucherDate;
+	private LocalDate originBillDate;
 	private String supplierRefNo;
 	private LocalDate supplierRefDate;
 	private String billCurr;

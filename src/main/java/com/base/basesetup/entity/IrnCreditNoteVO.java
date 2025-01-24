@@ -16,6 +16,8 @@ import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
+import org.springframework.format.annotation.DateTimeFormat;
+
 import com.base.basesetup.dto.CreatedUpdatedDate;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -59,7 +61,7 @@ public class IrnCreditNoteVO {
 	@Column(name = "screencode",length = 30)
 	private String screenCode="ICN";
 	@Column(name = "screenname",length = 30)
-	private String screenName="TRN CREDIT NOTE";
+	private String screenName="IRN CREDIT NOTE";
 	@Column(name = "biztype",length = 10)
 	private String bizType;
 	@Column(name = "bizmode",length = 30)
@@ -94,6 +96,8 @@ public class IrnCreditNoteVO {
 	private LocalDate docDate= LocalDate.now();
 	@Column(name = "originbillno",length = 30)
 	private String originBillNo;
+	@Column(name = "originbilldate")
+	private LocalDate originBillDate;
 	@Column(name = "voucherno",length = 30)
 	private String voucherNo;
 	@Column(name = "voucherdate")
@@ -117,6 +121,15 @@ public class IrnCreditNoteVO {
 		
 	@Column(name = "salestype",length = 30)
 	private String salesType;
+	
+	@Column(name="approvestatus",length = 20)
+	private String approveStatus;
+	@Column(name="approveby",length = 20)
+	private String approveBy;
+	
+	@DateTimeFormat(pattern = "dd-MM-yyyy hh:mm:ss a")
+	@Column(name="approveon")
+	private String approveOn;
 	
 	@Column(name = "creditremarks",length = 100)
 	private String creditRemarks;

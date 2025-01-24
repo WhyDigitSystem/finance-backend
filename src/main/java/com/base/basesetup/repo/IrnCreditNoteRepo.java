@@ -25,4 +25,6 @@ public interface IrnCreditNoteRepo extends JpaRepository<IrnCreditNoteVO, Long> 
 	@Query(nativeQuery = true, value = "SELECT partyname,partycode,partytype from partymaster where orgid=?1 and active=1 ")
 	Set<Object[]> findPartyNameAndPartyCodeAndPartyTypeForIrn(Long orgId);
 
+	IrnCreditNoteVO findByOrgIdAndIdAndDocId(Long orgId, Long id, String docId);
+
 }

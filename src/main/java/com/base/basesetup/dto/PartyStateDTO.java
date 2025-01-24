@@ -15,5 +15,6 @@ public class PartyStateDTO {
 	private String contactPhoneNo; 
 	private String email;
 	private String stateCode;
+	
 
 }

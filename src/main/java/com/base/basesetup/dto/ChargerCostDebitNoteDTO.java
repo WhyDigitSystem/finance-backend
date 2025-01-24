@@ -9,10 +9,9 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class CostDebitChargesDTO {
+public class ChargerCostDebitNoteDTO {
 
 	private Long id;
-
 	private String jobNo;
 	private String chargeName;
 	private String chargeCode;
@@ -26,43 +25,7 @@ public class CostDebitChargesDTO {
 	private Float gstPercent;
 	private String ledger;
 	private String govChargeCode;
-
 	private String taxable;
 	private String exempted;
-//	private String jobType;
-//
-//	private String jobNo;
-//
-//	private String subJobNo;
-//
-//	private String houseNo;
-//
-//	private String chargeCode;
-//
-//	private String gChargeCode;
-//
-//	private String gSAC;
-//
-//	private String chargeName;
-//
-//	private String applyOn;
-//
-//	private String currency;
-//
-//	private BigDecimal exRate;
-//
-//	private BigDecimal rate;
-//
-//	private int taxPercentage;
-//
-//	private int qty;
-//
-//	private String ledger;
-//
-//	private int gstPercentage;
-//
-//	private boolean tax;
-//
-//	private boolean exampted;
 
 }
