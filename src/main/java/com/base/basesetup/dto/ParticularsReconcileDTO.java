@@ -11,7 +11,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ParticularsReconcileDTO {
-	private Long id;
 	private String voucherNo;
 	private LocalDate voucherDate;
 	private String chequeNo;

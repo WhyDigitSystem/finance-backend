@@ -1867,7 +1867,7 @@ public class TransactionController extends BaseController {
 		String errorMsg = null;
 		Map<String, Object> responseObjectsMap = new HashMap<>();
 		ResponseDTO responseDTO = null;
-		List<ReconcileBankVO> reconcileBankVO = new ArrayList<>();
+		ReconcileBankVO reconcileBankVO = new ReconcileBankVO();
 		try {
 			reconcileBankVO = transactionService.getAllReconcileBankById(id);
 		} catch (Exception e) {
@@ -2016,7 +2016,7 @@ public class TransactionController extends BaseController {
 		String errorMsg = null;
 		Map<String, Object> responseObjectsMap = new HashMap<>();
 		ResponseDTO responseDTO = null;
-		List<ReconcileCorpBankVO> reconcileCorpBankVO = new ArrayList<>();
+		 ReconcileCorpBankVO reconcileCorpBankVO = new ReconcileCorpBankVO();
 		try {
 			reconcileCorpBankVO = transactionService.getAllReconcileCorpBankById(id);
 		} catch (Exception e) {
@@ -2144,7 +2144,7 @@ public class TransactionController extends BaseController {
 		String errorMsg = null;
 		Map<String, Object> responseObjectsMap = new HashMap<>();
 		ResponseDTO responseDTO = null;
-		List<ReconcileCashVO> reconcileCashVO = new ArrayList<>();
+		ReconcileCashVO reconcileCashVO = new ReconcileCashVO();
 		try {
 			reconcileCashVO = transactionService.getAllReconcileCashById(id);
 		} catch (Exception e) {
@@ -2381,7 +2381,7 @@ public class TransactionController extends BaseController {
 		String errorMsg = null;
 		Map<String, Object> responseObjectsMap = new HashMap<>();
 		ResponseDTO responseDTO = null;
-		List<JobCardVO> jobCardVO = new ArrayList<>();
+		JobCardVO jobCardVO = new JobCardVO();
 		try {
 			jobCardVO = transactionService.getAllJobCardById(id);
 		} catch (Exception e) {

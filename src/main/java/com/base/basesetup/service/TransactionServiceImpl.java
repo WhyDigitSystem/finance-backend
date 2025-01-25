@@ -950,6 +950,7 @@ public class TransactionServiceImpl implements TransactionService {
 			createUpdateJournalVOByGeneralJournalDTO(generalJournalDTO, generalJournalVO);
 			message = "General Journal Updated Successfully";
 		} else {
+			createUpdateJournalVOByGeneralJournalDTO(generalJournalDTO, generalJournalVO);
 			// GETDOCID API
 			String docId = generalJournalRepo.getGeneralJournalDocId(generalJournalDTO.getOrgId(),
 					generalJournalDTO.getFinYear(), generalJournalDTO.getBranchCode(), screenCode);
@@ -965,7 +966,6 @@ public class TransactionServiceImpl implements TransactionService {
 
 			generalJournalVO.setCreatedBy(generalJournalDTO.getCreatedBy());
 			generalJournalVO.setUpdatedBy(generalJournalDTO.getCreatedBy());
-			createUpdateJournalVOByGeneralJournalDTO(generalJournalDTO, generalJournalVO);
 			message = "General Journal Created Successfully";
 		}
 
@@ -1777,7 +1777,7 @@ public class TransactionServiceImpl implements TransactionService {
 		if (ObjectUtils.isNotEmpty(orgId)) {
 			LOGGER.info("Successfully Received ArApAdjustmentOffSet BY OrgId : {}", orgId);
 			arApAdjustmentOffSetVO = arApAdjustmentOffSetRepo.getAllArApAdjustmentOffSetByOrgId(orgId);
-			}
+		}
 		return arApAdjustmentOffSetVO;
 	}
 
@@ -1787,7 +1787,7 @@ public class TransactionServiceImpl implements TransactionService {
 		if (ObjectUtils.isNotEmpty(id)) {
 			LOGGER.info("Successfully Received ArApAdjustmentOffSet BY Id : {}", id);
 			arApAdjustmentOffSetVO = arApAdjustmentOffSetRepo.getAllArApAdjustmentOffSetById(id);
-			} 
+		}
 		return arApAdjustmentOffSetVO;
 	}
 
@@ -1847,14 +1847,14 @@ public class TransactionServiceImpl implements TransactionService {
 		arApAdjustmentOffSetVO.setOrgId(arApAdjustmentOffSetDTO.getOrgId());
 		arApAdjustmentOffSetVO.setBranch(arApAdjustmentOffSetDTO.getBranch());
 		arApAdjustmentOffSetVO.setBranchCode(arApAdjustmentOffSetDTO.getBranchCode());
-		arApAdjustmentOffSetVO.setFinYear(arApAdjustmentOffSetDTO.getFinYear());		
-	    arApAdjustmentOffSetVO.setActive(arApAdjustmentOffSetDTO.isActive());
-	    arApAdjustmentOffSetVO.setReceiptPaymentDocDate(arApAdjustmentOffSetDTO.getReceiptPaymentDocDate());
-	    arApAdjustmentOffSetVO.setNarration(arApAdjustmentOffSetDTO.getNarration());
+		arApAdjustmentOffSetVO.setFinYear(arApAdjustmentOffSetDTO.getFinYear());
+		arApAdjustmentOffSetVO.setActive(arApAdjustmentOffSetDTO.isActive());
+		arApAdjustmentOffSetVO.setReceiptPaymentDocDate(arApAdjustmentOffSetDTO.getReceiptPaymentDocDate());
+		arApAdjustmentOffSetVO.setNarration(arApAdjustmentOffSetDTO.getNarration());
 
 		if (ObjectUtils.isNotEmpty(arApAdjustmentOffSetVO.getId())) {
-			List<ArApOffSetInvoiceDetailsVO> arApOffSetInvoiceDetailsVO1 = 
-					arApOffSetInvoiceDetailsRepo.findByArApAdjustmentOffSetVO(arApAdjustmentOffSetVO);
+			List<ArApOffSetInvoiceDetailsVO> arApOffSetInvoiceDetailsVO1 = arApOffSetInvoiceDetailsRepo
+					.findByArApAdjustmentOffSetVO(arApAdjustmentOffSetVO);
 
 			arApOffSetInvoiceDetailsRepo.deleteAll(arApOffSetInvoiceDetailsVO1);
 		}
@@ -2039,13 +2039,9 @@ public class TransactionServiceImpl implements TransactionService {
 	}
 
 	@Override
-	public List<ReconcileBankVO> getAllReconcileBankById(Long id) {
-		List<ReconcileBankVO> reconcileBankVO = new ArrayList<>();
-		if (ObjectUtils.isNotEmpty(id)) {
-			LOGGER.info("Successfully Received  ReconcileBank BY Id : {}", id);
-			reconcileBankVO = reconcileBankRepo.getAllReconcileBankById(id);
-		}
-		return reconcileBankVO;
+	public ReconcileBankVO getAllReconcileBankById(Long id) {
+		
+		return reconcileBankRepo.getAllReconcileBankById(id);
 	}
 
 	@Override
@@ -2060,9 +2056,11 @@ public class TransactionServiceImpl implements TransactionService {
 			reconcileBankVO = reconcileBankRepo.findById(reconcileBankDTO.getId())
 					.orElseThrow(() -> new ApplicationException("Invalid ReconcileBank details"));
 			reconcileBankVO.setUpdatedBy(reconcileBankDTO.getCreatedBy());
+			getReconcileBankVOFromReconcileBankDTO(reconcileBankDTO, reconcileBankVO);
 			message = "ReconcileBank Updated Successfully";
 		} else {
 
+			getReconcileBankVOFromReconcileBankDTO(reconcileBankDTO, reconcileBankVO);
 			// GETDOCID API
 			String docId = reconcileBankRepo.getReconcileBankDocId(reconcileBankDTO.getOrgId(),
 					reconcileBankDTO.getFinYear(), reconcileBankDTO.getBranchCode(), screenCode);
@@ -2080,7 +2078,6 @@ public class TransactionServiceImpl implements TransactionService {
 			message = "ReconcileBank Created Successfully";
 		}
 
-		getReconcileBankVOFromReconcileBankDTO(reconcileBankDTO, reconcileBankVO);
 		reconcileBankRepo.save(reconcileBankVO);
 		Map<String, Object> response = new HashMap<>();
 		response.put("reconcileBankVO", reconcileBankVO);
@@ -2120,6 +2117,7 @@ public class TransactionServiceImpl implements TransactionService {
 			particularsReconcileVO.setVoucherDate(particularsReconcileDTO.getVoucherDate());
 			particularsReconcileVO.setChequeNo(particularsReconcileDTO.getChequeNo());
 			particularsReconcileVO.setChequeDate(particularsReconcileDTO.getChequeDate());
+	
 			if (particularsReconcileDTO.getDeposit() != null
 					&& particularsReconcileDTO.getDeposit().compareTo(BigDecimal.ZERO) != 0) {
 				particularsReconcileVO.setDeposit(particularsReconcileDTO.getDeposit());
@@ -2128,7 +2126,6 @@ public class TransactionServiceImpl implements TransactionService {
 				particularsReconcileVO.setWithdrawal(particularsReconcileDTO.getWithdrawal());
 				particularsReconcileVO.setDeposit(BigDecimal.ZERO);
 			}
-
 			totalDeposit = totalDeposit.add(particularsReconcileVO.getDeposit());
 			totalWithdrawal = totalWithdrawal.add(particularsReconcileVO.getWithdrawal());
 			particularsReconcileVO.setBankRef(particularsReconcileDTO.getBankRef());
@@ -2180,13 +2177,9 @@ public class TransactionServiceImpl implements TransactionService {
 	}
 
 	@Override
-	public List<ReconcileCorpBankVO> getAllReconcileCorpBankById(Long id) {
-		List<ReconcileCorpBankVO> reconcileCorpBankVO = new ArrayList<>();
-		if (ObjectUtils.isNotEmpty(id)) {
-			LOGGER.info("Successfully Received  ReconcileCorpBank BY Id : {}", id);
-			reconcileCorpBankVO = reconcileCorpBankRepo.getAllReconcileCorpBankById(id);
-		}
-		return reconcileCorpBankVO;
+	public  ReconcileCorpBankVO  getAllReconcileCorpBankById(Long id) {
+	
+		return reconcileCorpBankRepo.getAllReconcileCorpBankById(id);
 	}
 
 	@Override
@@ -2298,13 +2291,9 @@ public class TransactionServiceImpl implements TransactionService {
 	}
 
 	@Override
-	public List<ReconcileCashVO> getAllReconcileCashById(Long id) {
-		List<ReconcileCashVO> reconcileCashVO = new ArrayList<>();
-		if (ObjectUtils.isNotEmpty(id)) {
-			LOGGER.info("Successfully Received ReconcileCash BY Id : {}", id);
-			reconcileCashVO = reconcileCashRepo.getAllReconcileCashById(id);
-		}
-		return reconcileCashVO;
+	public  ReconcileCashVO getAllReconcileCashById(Long id) {
+
+		return reconcileCashRepo.getAllReconcileCashById(id);
 	}
 
 	@Override
@@ -2445,13 +2434,9 @@ public class TransactionServiceImpl implements TransactionService {
 	}
 
 	@Override
-	public List<JobCardVO> getAllJobCardById(Long id) {
-		List<JobCardVO> tmsJobCardVO = new ArrayList<>();
-		if (ObjectUtils.isNotEmpty(id)) {
-			LOGGER.info("Successfully Received  TmsJobCard BY Id : {}", id);
-			tmsJobCardVO = tmsJobCardRepo.getAllJobCardById(id);
-		}
-		return tmsJobCardVO;
+	public JobCardVO getAllJobCardById(Long id) {
+	
+		return tmsJobCardRepo.getAllJobCardById(id);
 	}
 
 	@Override
@@ -2499,7 +2484,7 @@ public class TransactionServiceImpl implements TransactionService {
 		tmsJobCardVO.setSalesPerson(tmsJobCardDTO.getSalesPerson());
 		tmsJobCardVO.setIncome(tmsJobCardDTO.getIncome());
 		tmsJobCardVO.setExpense(tmsJobCardDTO.getExpense());
-		tmsJobCardVO.setProfit(tmsJobCardDTO.getProfit());
+		tmsJobCardVO.setProfit(tmsJobCardDTO.getIncome().subtract(tmsJobCardDTO.getExpense()));
 		tmsJobCardVO.setRemarks(tmsJobCardDTO.getRemarks());
 		tmsJobCardVO.setCreatedBy(tmsJobCardDTO.getCreatedBy());
 		tmsJobCardVO.setOrgId(tmsJobCardDTO.getOrgId());
