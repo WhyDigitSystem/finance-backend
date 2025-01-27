@@ -2040,7 +2040,7 @@ public class TransactionServiceImpl implements TransactionService {
 
 	@Override
 	public ReconcileBankVO getAllReconcileBankById(Long id) {
-		
+
 		return reconcileBankRepo.getAllReconcileBankById(id);
 	}
 
@@ -2117,7 +2117,7 @@ public class TransactionServiceImpl implements TransactionService {
 			particularsReconcileVO.setVoucherDate(particularsReconcileDTO.getVoucherDate());
 			particularsReconcileVO.setChequeNo(particularsReconcileDTO.getChequeNo());
 			particularsReconcileVO.setChequeDate(particularsReconcileDTO.getChequeDate());
-	
+
 			if (particularsReconcileDTO.getDeposit() != null
 					&& particularsReconcileDTO.getDeposit().compareTo(BigDecimal.ZERO) != 0) {
 				particularsReconcileVO.setDeposit(particularsReconcileDTO.getDeposit());
@@ -2177,8 +2177,8 @@ public class TransactionServiceImpl implements TransactionService {
 	}
 
 	@Override
-	public  ReconcileCorpBankVO  getAllReconcileCorpBankById(Long id) {
-	
+	public ReconcileCorpBankVO getAllReconcileCorpBankById(Long id) {
+
 		return reconcileCorpBankRepo.getAllReconcileCorpBankById(id);
 	}
 
@@ -2291,7 +2291,7 @@ public class TransactionServiceImpl implements TransactionService {
 	}
 
 	@Override
-	public  ReconcileCashVO getAllReconcileCashById(Long id) {
+	public ReconcileCashVO getAllReconcileCashById(Long id) {
 
 		return reconcileCashRepo.getAllReconcileCashById(id);
 	}
@@ -2435,7 +2435,7 @@ public class TransactionServiceImpl implements TransactionService {
 
 	@Override
 	public JobCardVO getAllJobCardById(Long id) {
-	
+
 		return tmsJobCardRepo.getAllJobCardById(id);
 	}
 
@@ -2483,7 +2483,7 @@ public class TransactionServiceImpl implements TransactionService {
 		tmsJobCardVO.setSalesCategory(tmsJobCardDTO.getSalesCategory());
 		tmsJobCardVO.setSalesPerson(tmsJobCardDTO.getSalesPerson());
 		tmsJobCardVO.setIncome(tmsJobCardDTO.getIncome());
-		tmsJobCardVO.setExpense(tmsJobCardDTO.getExpense());
+		tmsJobCardVO.setExpense(tmsJobCardDTO.getExpense().multiply(BigDecimal.valueOf(-1)));	
 		tmsJobCardVO.setProfit(tmsJobCardDTO.getIncome().subtract(tmsJobCardDTO.getExpense()));
 		tmsJobCardVO.setRemarks(tmsJobCardDTO.getRemarks());
 		tmsJobCardVO.setCreatedBy(tmsJobCardDTO.getCreatedBy());
@@ -2520,6 +2520,38 @@ public class TransactionServiceImpl implements TransactionService {
 		String result = tmsJobCardRepo.getJobCardDocId(orgId, finYear, branchCode, ScreenCode);
 		return result;
 
+	}
+
+	@Override
+	public List<Map<String, Object>> getIncomeByTaxInvoice(Long orgId, String partyName) {
+		Set<Object[]> chType = tmsJobCardRepo.getIncomeByTaxInvoice(orgId, partyName);
+		return getIncomeByTax(chType);
+	}
+
+	public List<Map<String, Object>> getIncomeByTax(Set<Object[]> chType) {
+		List<Map<String, Object>> list1 = new ArrayList<>();
+		for (Object[] ch : chType) {
+			Map<String, Object> map = new HashMap<>();
+			map.put("income", ch[0] != null ? ch[0].toString() : "");
+			list1.add(map);
+		}
+		return list1;
+	}
+
+	@Override
+	public List<Map<String, Object>> getExponesByCostInvoice(Long orgId) {
+		Set<Object[]> chType = tmsJobCardRepo.getExponesByCostInvoice(orgId);
+		return getExponesByCost(chType);
+	}
+
+	public List<Map<String, Object>> getExponesByCost(Set<Object[]> chType) {
+		List<Map<String, Object>> list1 = new ArrayList<>();
+		for (Object[] ch : chType) {
+			Map<String, Object> map = new HashMap<>();
+			map.put("exponse", ch[0] != null ? ch[0].toString() : "");
+			list1.add(map);
+		}
+		return list1;
 	}
 
 	// AdjustmentJournal
@@ -2783,7 +2815,6 @@ public class TransactionServiceImpl implements TransactionService {
 	@Override
 	@Transactional
 	public List<Map<String, Object>> getBankNameFromGroupforBankingDeposit(Long orgId) {
-
 		Set<Object[]> result = bankingDepositRepo.findBankNameFromGroupforBankingDeposit(orgId);
 		return getBankNameFromGroupforBankingDeposit(result);
 	}

@@ -28,6 +28,10 @@ public class CustomerDTO {
 	private String city;
 	private String state;
 	private String country;
+	private String bussinessType;
+	private String bussinessCategory;
+	private String accountsType;
+	private String approved;
 	private String cancelRemarks;
 	private String createdBy;
 	private String updatedBy;
@@ -37,5 +41,6 @@ public class CustomerDTO {
 	private List<ClientDTO> clientDTO;
 	
 	private List<ClientBranchDTO>clientBranchDTO;
+	
 
 }

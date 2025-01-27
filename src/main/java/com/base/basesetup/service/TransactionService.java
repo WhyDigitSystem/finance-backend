@@ -254,7 +254,11 @@ public interface TransactionService {
 	List<Map<String, Object>> getAllCustomersFromPartyMaster(Long orgId);
 
 	String getJobCardDocId(Long orgId, String finYear, String branch, String branchCode);
-
+	
+	List<Map<String, Object>> getIncomeByTaxInvoice(Long orgId, String partyName);
+	
+	List<Map<String, Object>> getExponesByCostInvoice(Long orgId);
+	
 	// AdjustmentJournal
 
 	List<AdjustmentJournalVO> getAllAdjustmentJournalByOrgId(Long orgId);
