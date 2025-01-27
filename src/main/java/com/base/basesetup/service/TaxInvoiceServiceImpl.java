@@ -173,6 +173,7 @@ public class TaxInvoiceServiceImpl implements TaxInvoiceService {
 		taxInvoiceVO.setBillMonth(taxInvoiceDTO.getBillMonth().toUpperCase());
 		taxInvoiceVO.setSalesType(taxInvoiceDTO.getSalesType().toUpperCase());
 		taxInvoiceVO.setModifiedBy(taxInvoiceDTO.getCreatedBy());
+		taxInvoiceVO.setJobOrderNo(taxInvoiceDTO.getJobOrderNo());
 
 		if (ObjectUtils.isNotEmpty(taxInvoiceVO.getId())) {
 			List<TaxInvoiceDetailsVO> taxInvoiceDetailsVO1 = taxInvoiceDetailsRepo.findByTaxInvoiceVO(taxInvoiceVO);
