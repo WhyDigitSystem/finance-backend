@@ -118,6 +118,8 @@ public class TaxInvoiceVO {
 	private String billOfEntry;
 	@Column(name = "billmonth",length = 30)
 	private String billMonth;
+	@Column(name = "joborderno",length = 50)
+	private String jobOrderNo;
 	
 	@Column(name="approvestatus",length = 20)
 	private String approveStatus;
