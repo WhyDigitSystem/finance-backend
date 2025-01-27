@@ -28,4 +28,6 @@ public class EmployeeDTO {
 	private boolean cancel;
 	private String cancelRemark;
 	private boolean active;
+	private boolean salesFlag;
+
 }

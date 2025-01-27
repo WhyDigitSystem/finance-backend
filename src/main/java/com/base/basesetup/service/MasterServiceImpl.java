@@ -402,7 +402,7 @@ public class MasterServiceImpl implements MasterService {
 		// Prepare the response
 		Map<String, Object> response = new HashMap<>();
 		response.put("message", message);
-		response.put("employeeVO", employeeVO);
+		response.put("createdEmployeeVO", employeeVO);
 
 		return response;
 	}
@@ -417,10 +417,12 @@ public class MasterServiceImpl implements MasterService {
 		employeeVO.setDesignation(employeeDTO.getDesignation());
 		employeeVO.setDateOfBirth(employeeDTO.getDateOfBirth());
 		employeeVO.setJoiningDate(employeeDTO.getJoiningdate());
-		employeeDTO.setEmail(employeeDTO.getEmail());
+		employeeVO.setEmail(employeeDTO.getEmail());
 		employeeVO.setOrgId(employeeDTO.getOrgId());
 		employeeVO.setCancel(employeeDTO.isCancel());
 		employeeVO.setActive(employeeDTO.isActive());
+		employeeVO.setSalesFlag(employeeDTO.isSalesFlag());
+
 		employeeVO.setCancelRemark(employeeDTO.getCancelRemark());
 	}
 
@@ -1774,8 +1776,7 @@ public class MasterServiceImpl implements MasterService {
 				partyAddressVO.setAddressLine2(partyAddressDTO.getAddressLine2());
 				partyAddressVO.setAddressLine3(partyAddressDTO.getAddressLine3());
 				partyAddressVO.setPincode(partyAddressDTO.getPincode());
-				partyAddressVO.setContact(partyAddressDTO.getContact()); // Changed from contactPerson to contact
-
+				
 				partyAddressVO.setPartyMasterVO(partyMasterVO);
 				partyAddressVOs.add(partyAddressVO);
 			}
