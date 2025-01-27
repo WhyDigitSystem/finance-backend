@@ -47,6 +47,8 @@ public class EmployeeVO {
 	private String department;
 	@Column(name = "designation",length = 30)
 	private String designation;
+	@Column(name = "salesflag")
+	private boolean salesFlag;
 	@Column(name = "dateofbirth")
 	private LocalDate dateOfBirth;
 	@Column(name = "joiningdate")
