@@ -1,6 +1,7 @@
 package com.base.basesetup.service;
 
 import java.math.BigDecimal;
+import java.math.MathContext;
 import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -20,6 +21,7 @@ import com.base.basesetup.dto.TaxInvoiceDTO;
 import com.base.basesetup.dto.TaxInvoiceDetailsDTO;
 import com.base.basesetup.entity.AccountsDetailsVO;
 import com.base.basesetup.entity.AccountsVO;
+import com.base.basesetup.entity.ArapDetailsVO;
 import com.base.basesetup.entity.DocumentTypeMappingDetailsVO;
 import com.base.basesetup.entity.GroupLedgerVO;
 import com.base.basesetup.entity.MultipleDocIdGenerationDetailsVO;
@@ -30,6 +32,7 @@ import com.base.basesetup.entity.TaxInvoiceVO;
 import com.base.basesetup.exception.ApplicationException;
 import com.base.basesetup.repo.AccountsDetailsRepo;
 import com.base.basesetup.repo.AccountsRepo;
+import com.base.basesetup.repo.ArapDetailsRepo;
 import com.base.basesetup.repo.ChargeTypeRequestRepo;
 import com.base.basesetup.repo.DocumentTypeMappingDetailsRepo;
 import com.base.basesetup.repo.GroupLedgerRepo;
@@ -61,6 +64,9 @@ public class TaxInvoiceServiceImpl implements TaxInvoiceService {
 
 	@Autowired
 	PartyMasterRepo partyMasterRepo;
+	
+	@Autowired
+	ArapDetailsRepo arapDetailsRepo;
 
 	@Autowired
 	DocumentTypeMappingDetailsRepo documentTypeMappingDetailsRepo;
@@ -156,7 +162,7 @@ public class TaxInvoiceServiceImpl implements TaxInvoiceService {
 		taxInvoiceVO.setStatus(taxInvoiceDTO.getStatus().toUpperCase());
 		taxInvoiceVO.setGstType(taxInvoiceDTO.getGstType().toUpperCase());
 		taxInvoiceVO.setSupplierBillNo(taxInvoiceDTO.getSupplierBillNo().toUpperCase());
-		taxInvoiceVO.setSupplierBillDate(taxInvoiceDTO.getSupplierBillDate());
+//		taxInvoiceVO.setSupplierBillDate(taxInvoiceDTO.getSupplierBillDate());
 		taxInvoiceVO.setBillCurr(taxInvoiceDTO.getBillCurr().toUpperCase());
 		taxInvoiceVO.setBillCurrRate(taxInvoiceDTO.getBillCurrRate());
 		taxInvoiceVO.setExAmount(taxInvoiceDTO.getExAmount());
@@ -165,8 +171,6 @@ public class TaxInvoiceServiceImpl implements TaxInvoiceService {
 		taxInvoiceVO.setShipperInvoiceNo(taxInvoiceDTO.getShipperInvoiceNo().toUpperCase());
 		taxInvoiceVO.setBillOfEntry(taxInvoiceDTO.getBillOfEntry().toUpperCase());
 		taxInvoiceVO.setBillMonth(taxInvoiceDTO.getBillMonth().toUpperCase());
-		taxInvoiceVO.setInvoiceNo(taxInvoiceDTO.getInvoiceNo().toUpperCase());
-		taxInvoiceVO.setInvoiceDate(taxInvoiceDTO.getInvoiceDate());
 		taxInvoiceVO.setSalesType(taxInvoiceDTO.getSalesType().toUpperCase());
 		taxInvoiceVO.setModifiedBy(taxInvoiceDTO.getCreatedBy());
 
@@ -243,6 +247,55 @@ public class TaxInvoiceServiceImpl implements TaxInvoiceService {
 			taxInvoiceDetailsVO.setTaxInvoiceVO(taxInvoiceVO);
 			taxInvoiceDetailsVOs.add(taxInvoiceDetailsVO);
 		}
+		
+		Map<Integer, BigDecimal> gstSumMap = new HashMap<>();
+		for (TaxInvoiceDetailsVO detailsVO : taxInvoiceDetailsVOs) {
+			int gst = detailsVO.getGSTPercent();
+			BigDecimal gstAmount = detailsVO.getGstAmount();
+
+			gstSumMap.put(gst, gstSumMap.getOrDefault(gst, BigDecimal.ZERO).add(gstAmount));
+		}
+		
+		Map<Double, BigDecimal> updatedGstSumMap = new HashMap<>();
+		if(taxInvoiceDTO.getGstType().equals("INTRA"))
+		{
+		for (Map.Entry<Integer, BigDecimal> entry : gstSumMap.entrySet()) {
+		    double halfGst = entry.getKey() / 2; // Divide GST by 2
+		    BigDecimal halfGstAmount = entry.getValue().divide(BigDecimal.valueOf(2), 2, RoundingMode.UNNECESSARY); // Divide GST Amount by 2
+		    updatedGstSumMap.put(halfGst, halfGstAmount);
+		}
+		}
+		else
+		{
+			for (Map.Entry<Integer, BigDecimal> entry : gstSumMap.entrySet()) {
+				double gst = entry.getKey(); // Keep the original GST percentage
+			    BigDecimal gstAmount = entry.getValue(); // Keep the original GST amount
+			    updatedGstSumMap.put(gst, gstAmount); //
+			}
+			
+		}
+		
+		Map<String,BigDecimal>taxDetailsMap= new HashMap<>();
+		for (Map.Entry<Double, BigDecimal> entry : updatedGstSumMap.entrySet())
+		{
+			List<GroupLedgerVO> groupLedgerVOs= groupLedgerRepo.getTaxLedgerDetails(taxInvoiceDTO.getOrgId(),taxInvoiceDTO.getGstType(),entry.getKey());
+			for(GroupLedgerVO groupLedgerVO:groupLedgerVOs)
+			{
+				taxDetailsMap.put(groupLedgerVO.getAccountGroupName(), entry.getValue());
+			}
+		}
+		List<TaxInvoiceGstVO> taxInvoiceGstVOList = new ArrayList<>();
+		for (Map.Entry<String, BigDecimal> entry : taxDetailsMap.entrySet()) {
+			TaxInvoiceGstVO taxInvoiceGstVO = new TaxInvoiceGstVO();
+			taxInvoiceGstVO.setGstChargeAcc(entry.getKey());
+			taxInvoiceGstVO.setGstCrLcAmount(entry.getValue());
+			taxInvoiceGstVO.setGstDbBillAmount(BigDecimal.ZERO);
+			taxInvoiceGstVO.setGstDbLcAmount(BigDecimal.ZERO);
+			taxInvoiceGstVO.setGstSubledgerCode("None");
+			taxInvoiceGstVO.setGstCrBillAmount(entry.getValue());
+			taxInvoiceGstVO.setTaxInvoiceVO(taxInvoiceVO);
+			taxInvoiceGstVOList.add(taxInvoiceGstVO);
+		}
 
 		Map<String, BigDecimal> ledgerSumMap = new HashMap<>();
 		for (TaxInvoiceDetailsVO detailsVO : taxInvoiceDetailsVOs) {
@@ -255,7 +308,7 @@ public class TaxInvoiceServiceImpl implements TaxInvoiceService {
 			List<TaxInvoiceGstVO> taxInvoiceGstVO = taxInvoiceGstRepo.findByTaxInvoiceVO(taxInvoiceVO);
 			taxInvoiceGstRepo.deleteAll(taxInvoiceGstVO);
 		}
-		List<TaxInvoiceGstVO> taxInvoiceGstVOList = new ArrayList<>();
+		
 		for (Map.Entry<String, BigDecimal> entry : ledgerSumMap.entrySet()) {
 			TaxInvoiceGstVO taxInvoiceGstVO = new TaxInvoiceGstVO();
 			taxInvoiceGstVO.setGstChargeAcc(entry.getKey());
@@ -457,7 +510,7 @@ public class TaxInvoiceServiceImpl implements TaxInvoiceService {
 	    if (taxInvoiceVO.getApproveStatus() == null || 
 	       (!taxInvoiceVO.getApproveStatus().equals("Approved") && !taxInvoiceVO.getApproveStatus().equals("Rejected"))) {
 
-	    	String accountsDocId = accountsRepo.getTaxInvoiceDocId(taxInvoiceVO.getOrgId(), taxInvoiceVO.getFinYear(),
+	    	String accountsDocId = accountsRepo.getApproveDocId(taxInvoiceVO.getOrgId(), taxInvoiceVO.getFinYear(),
 	    			taxInvoiceVO.getBranchCode(),sourceScreenCode,screenCode);
 			taxInvoiceVO.setDocId(docId);
 
@@ -486,6 +539,8 @@ public class TaxInvoiceServiceImpl implements TaxInvoiceService {
 	        accountsVO.setCurrency(taxInvoiceVO.getBillCurr());
 	        accountsVO.setExRate(taxInvoiceVO.getBillCurrRate());
 	        accountsVO.setRemarks(taxInvoiceVO.getBillingRemarks());
+	        accountsVO.setBillMonth(taxInvoiceVO.getBillMonth());
+	        accountsVO.setFinYear(taxInvoiceVO.getFinYear());
 
 	        // Calculate total debit/credit amounts
 	        BigDecimal totalDebitAmount = taxInvoiceVO.getTotalChargeAmountLc().add(taxInvoiceVO.getTotalTaxAmountLc());
@@ -526,7 +581,7 @@ public class TaxInvoiceServiceImpl implements TaxInvoiceService {
 	        Map<String, BigDecimal> ledgerSumMap = new HashMap<>();
 	        for (TaxInvoiceGstVO gstVO : taxInvoiceVO.getTaxInvoiceGstVO()) {
 	            String ledger = gstVO.getGstChargeAcc();
-	            BigDecimal lcAmount = gstVO.getGstCrBillAmount();
+	            BigDecimal lcAmount = gstVO.getGstCrLcAmount();
 
 	            ledgerSumMap.put(ledger, ledgerSumMap.getOrDefault(ledger, BigDecimal.ZERO).add(lcAmount));
 	        }
@@ -562,13 +617,42 @@ public class TaxInvoiceServiceImpl implements TaxInvoiceService {
 
 	        // Save AccountsVO and update TaxInvoiceVO
 	        AccountsVO savedAccountsVO = accountsRepo.save(accountsVO);
+	        int gstflag=1;
+	        
+	        AccountsDetailsVO accountsDetailsVOs2= accountsDetailsRepo.findByAccountsVOAndGstflag(savedAccountsVO,gstflag);
+	        ArapDetailsVO arapDetailsVO= new ArapDetailsVO();
+	        arapDetailsVO.setSourceTransid(accountsDetailsVOs2.getId());
+	        arapDetailsVO.setCreatedBy(savedAccountsVO.getCreatedBy());
+	        arapDetailsVO.setUpdatedBy(savedAccountsVO.getModifiedBy());
+	        arapDetailsVO.setBranch(savedAccountsVO.getBranch());
+	        arapDetailsVO.setBranchCode(savedAccountsVO.getBranchCode());
+	        arapDetailsVO.setFinYear(savedAccountsVO.getFinYear());
+	        arapDetailsVO.setRefNo(savedAccountsVO.getRefNo());
+	        arapDetailsVO.setRefDate(savedAccountsVO.getRefDate());
+	        arapDetailsVO.setSubLedgerCode(accountsDetailsVOs2.getSubLedgerCode());
+	        arapDetailsVO.setCurrency(accountsDetailsVOs2.getACurrency());
+	        arapDetailsVO.setExRate(accountsDetailsVOs2.getAExRate());
+	        arapDetailsVO.setAmount(accountsDetailsVOs2.getArapAmount());
+	        arapDetailsVO.setBaseAmt(accountsDetailsVOs2.getArapAmount());
+	        arapDetailsVO.setDueDate(savedAccountsVO.getDueDate());
+	        arapDetailsVO.setCreditDays(savedAccountsVO.getCreditDays());
+	        arapDetailsVO.setDocId(savedAccountsVO.getDocId());
+	        arapDetailsVO.setDocDate(savedAccountsVO.getDocDate());
+	        arapDetailsVO.setAccCurrency(savedAccountsVO.getCurrency());
+	        arapDetailsVO.setExRate(savedAccountsVO.getExRate());
+	        arapDetailsVO.setAccName(accountsDetailsVOs2.getAccountName());
+	        arapDetailsVO.setGstFlag(accountsDetailsVOs2.getGstflag());
+	        arapDetailsVO.setSubLedgerName(accountsDetailsVOs2.getAccountName());
+	        arapDetailsVO.setSalesType(savedAccountsVO.getSalesType());
+	        arapDetailsVO.setNativeAmt(accountsDetailsVOs2.getArapAmount());
+	        arapDetailsRepo.save(arapDetailsVO);
+
 	        taxInvoiceVO.setInvoiceNo(savedAccountsVO.getDocId());
 	        taxInvoiceVO.setInvoiceDate(savedAccountsVO.getDocDate());
 	        taxInvoiceVO.setApproveStatus(action);
 	        taxInvoiceVO.setApproveBy(actionBy);
 	        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy hh:mm:ss a");
 	        taxInvoiceVO.setApproveOn(LocalDateTime.now().format(formatter).toUpperCase());
-	        
 	        return taxInvoiceRepo.save(taxInvoiceVO);
 
 	    } else if (taxInvoiceVO.getApproveStatus().equals("Approved")) {

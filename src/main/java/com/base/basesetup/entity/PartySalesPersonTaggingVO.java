@@ -27,6 +27,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+
 public class PartySalesPersonTaggingVO {
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "partysalespersontagginggen")
@@ -47,6 +48,9 @@ public class PartySalesPersonTaggingVO {
 
 	@Column(name = "effectivetill")
 	private LocalDate effectiveTill;
+
+//	@Column(name = "partyname")
+//	private String partyName;
 
 	@ManyToOne
 	@JoinColumn(name = "partymasterid")

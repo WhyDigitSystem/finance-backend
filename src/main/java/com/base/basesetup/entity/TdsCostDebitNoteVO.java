@@ -23,7 +23,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class CostDebitNoteTaxPrtculVO {
+public class TdsCostDebitNoteVO {
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "costdebitNotetaxprtculgen")
 	@SequenceGenerator(name = "costdebitNotetaxprtculgen", sequenceName = "costdebitNotetaxprtculseq", initialValue = 1000000001, allocationSize = 1)

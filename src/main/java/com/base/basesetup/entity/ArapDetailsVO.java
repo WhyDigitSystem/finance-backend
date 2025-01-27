@@ -37,7 +37,7 @@ public class ArapDetailsVO {
 	@Column(name = "finyear",length =10)
 	private String finYear;
 	@Column(name = "sourcetransid",length =50)
-	private String sourceTransid;
+	private Long sourceTransid;
 	@Column(name = "docid",length =25)
 	private String docId;
 	@Column(name = "refno",length =50)
@@ -59,7 +59,7 @@ public class ArapDetailsVO {
 	@Column(name = "chargableamt",precision =10,scale = 2)
 	private BigDecimal chargableAmt;
 	@Column(name = "gstflag")
-	private boolean gstFlag;
+	private int gstFlag;
 	@Column(name = "doctypecode",length =50)
 	private String docTypeCode;
 	@Column(name = "subtypecode",length =50)
@@ -71,15 +71,15 @@ public class ArapDetailsVO {
 	@Column(name = "supprefno",length =50)
 	private String suppRefNo;
 	@Column(name = "refdate")
-	private LocalDateTime refDate;
+	private LocalDate refDate;
 	@Column(name = "suprefdate")
-	private LocalDateTime supRefDate;
+	private LocalDate supRefDate;
 	@Column(name = "subledgercode",length =50)
 	private String subLedgerCode;
 	@Column(name = "creditdays",length =10)
-	private String creditDays;
+	private int creditDays;
 	@Column(name = "duedate")
-	private LocalDateTime dueDate;
+	private LocalDate dueDate;
 	@Column(name = "tdsamt",precision =10,scale = 2)
 	private BigDecimal TDSAmt;
 	@Column(name = "hno",length =50)
@@ -108,6 +108,8 @@ public class ArapDetailsVO {
 	private String subLedgerName;
 	@Column(name = "branchcode",length =20)
 	private String branchCode;
+	@Column(name = "salestype",length =20)
+	private String salesType;
 	
 
 

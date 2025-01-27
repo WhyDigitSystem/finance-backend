@@ -62,6 +62,10 @@ public class PartyAddressVO {
     @Column(name = "contact", length = 15) 
     private String contact;
 
+//    @Column(name ="partyname")
+//    private String partyName;
+
+    
 	@ManyToOne
 	@JoinColumn(name = "partymasterid")
 	@JsonBackReference

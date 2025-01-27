@@ -1,7 +1,7 @@
 package com.base.basesetup.dto;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -16,7 +16,7 @@ public class ArapDetailsDTO {
 	private Long id;
 	private String branch;
 	private String finYear;
-	private String sourceTransid;
+	private Long sourceTransid;
 	private String refNo;
 	private String accName;
 	private String currency;
@@ -26,16 +26,16 @@ public class ArapDetailsDTO {
 	private BigDecimal baseAmt;
 	private BigDecimal nativeAmt;
 	private BigDecimal chargableAmt;
-	private boolean gstFlag;
+	private int gstFlag;
 	private String docTypeCode;
 	private String subTypeCode;
 	private String subLedgerDivision;
 	private String suppRefNo;
-	private LocalDateTime refDate;
-	private LocalDateTime supRefDate;
+	private LocalDate refDate;
+	private LocalDate supRefDate;
 	private String subLedgerCode;
-	private String creditDays;
-	private LocalDateTime dueDate;
+	private int creditDays;
+	private LocalDate dueDate;
 	private BigDecimal TDSAmt;
 	private String hno;
 	private Long orgId;

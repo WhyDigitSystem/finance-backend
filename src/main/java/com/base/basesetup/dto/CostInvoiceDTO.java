@@ -16,10 +16,6 @@ public class CostInvoiceDTO {
 	private Long id;
 	private String mode;
 	private String product;
-	private String purVoucherNo;
-	private LocalDate purVoucherDate;
-//	private String costInvoiceNo;
-//	private LocalDate costInvoiceDate;
 	private String supplierBillNo;
 	private String supplierType;
 	private String supplierCode;
@@ -49,10 +45,8 @@ public class CostInvoiceDTO {
 	private String utrRef;
 	private String costType;
 
-
 	List<ChargerCostInvoiceDTO> chargerCostInvoiceDTO;
 
 	List<TdsCostInvoiceDTO> tdsCostInvoiceDTO;
-
 
 }

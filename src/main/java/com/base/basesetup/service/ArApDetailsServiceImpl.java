@@ -129,7 +129,7 @@ public class ArApDetailsServiceImpl implements ArApDetailsService {
 		arapDetailsVO.setBaseAmt(arapDetailsDTO.getBaseAmt());
 		arapDetailsVO.setNativeAmt(arapDetailsDTO.getNativeAmt());
 		arapDetailsVO.setChargableAmt(arapDetailsDTO.getChargableAmt());
-		arapDetailsVO.setGstFlag(arapDetailsDTO.isGstFlag());
+		arapDetailsVO.setGstFlag(arapDetailsDTO.getGstFlag());
 		arapDetailsVO.setDocTypeCode(arapDetailsDTO.getDocTypeCode());
 		arapDetailsVO.setSubTypeCode(arapDetailsDTO.getSubTypeCode());
 		arapDetailsVO.setSubLedgerDivision(arapDetailsDTO.getSubLedgerDivision());

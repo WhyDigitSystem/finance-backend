@@ -1,5 +1,7 @@
 package com.base.basesetup.dto;
 
+import java.math.BigDecimal;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -12,9 +14,9 @@ public class PartySpecialTDSDTO {
 	private String tdsWithSec;
 	private Long rateFrom;
 	private Long rateTo;
-	private Long tdsWithPer;
-	private Long surchargePer;
-	private Long edPercentage;
+	private BigDecimal tdsWithPer;
+	private BigDecimal surchargePer;
+	private BigDecimal edPercentage;
 	private String tdsCertifiNo;
 
 }

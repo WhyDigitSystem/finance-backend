@@ -112,6 +112,9 @@ public class BankingWithdrawalVO {
 	@Column(name = "orgid")
 	private Long orgId;
 	
+	@Column(name = "status", length = 50)
+	private String status;
+	
 	@Column(name = "screencode", length = 5)
 	private String screenCode = "BW";
 

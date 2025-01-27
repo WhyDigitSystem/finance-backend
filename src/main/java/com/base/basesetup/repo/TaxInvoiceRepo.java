@@ -55,7 +55,7 @@ public interface TaxInvoiceRepo extends JpaRepository<TaxInvoiceVO, Long> {
 			+ "  AND branchcode = ?2")
 	Set<Object[]> getGstType(Long orgId, String branchCode,String stateCode);
 
-	@Query(value = "select a from TaxInvoiceVO a where a.orgId=?1 and a.partyName=?2 and a.branchCode=?3")
+	@Query(value = "select a from TaxInvoiceVO a where a.orgId=?1 and a.partyName=?2 and a.branchCode=?3 and a.approveStatus='Approved' order by a.docId desc")
 	List<TaxInvoiceVO> findPartyInvoiceDetails(Long orgId, String party, String branchCode);
 
 	TaxInvoiceVO findByOrgIdAndIdAndDocId(Long orgId, Long id, String docId);
