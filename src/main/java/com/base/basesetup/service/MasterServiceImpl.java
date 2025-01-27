@@ -1543,15 +1543,15 @@ public class MasterServiceImpl implements MasterService {
 		chargeTypeRequestVO.setSalesAccount(chargeTypeRequestDTO.getSalesAccount().toUpperCase());
 		chargeTypeRequestVO.setPurchaseAccount(chargeTypeRequestDTO.getPurchaseAccount().toUpperCase());
 		chargeTypeRequestVO.setTaxable(chargeTypeRequestDTO.getTaxable().toUpperCase());
-		chargeTypeRequestVO.setTaxType(chargeTypeRequestDTO.getTaxType().toUpperCase());
-		chargeTypeRequestVO.setCcFeeApplicable(chargeTypeRequestDTO.getCcFeeApplicable().toUpperCase());
 		chargeTypeRequestVO.setTaxablePercentage(chargeTypeRequestDTO.getTaxablePercentage());
-		chargeTypeRequestVO.setCcJob(chargeTypeRequestDTO.getCcJob().toUpperCase());
 		chargeTypeRequestVO.setGovtSac(chargeTypeRequestDTO.getGovtSac().toUpperCase());
 		chargeTypeRequestVO.setExcempted(chargeTypeRequestDTO.getExcempted().toUpperCase());
 		chargeTypeRequestVO.setGstTax(chargeTypeRequestDTO.getGstTax());
-		chargeTypeRequestVO.setActive(chargeTypeRequestDTO.isActive());
 		chargeTypeRequestVO.setOrgId(chargeTypeRequestDTO.getOrgId());
+		chargeTypeRequestVO.setApproved(chargeTypeRequestDTO.isApproved());
+		if(chargeTypeRequestDTO.isApproved()) {
+		    chargeTypeRequestVO.setActive(true);
+		}
 
 	}
 
