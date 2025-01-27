@@ -1876,4 +1876,59 @@ public class MasterController extends BaseController {
 		}
 
 
+		@GetMapping("/getDepartmentNameForEmployee")
+		public ResponseEntity<ResponseDTO> getDepartmentNameForEmployee(@RequestParam Long orgId) {
+
+			String methodName = "getDepartmentNameForEmployee()";
+			LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+			String errorMsg = null;
+			Map<String, Object> responseObjectsMap = new HashMap<>();
+			ResponseDTO responseDTO = null;
+			List<Map<String, Object>> departmentName = new ArrayList<>();
+
+			try {
+				departmentName = masterService.getDepartmentNameForEmployee(orgId);
+			} catch (Exception e) {
+				errorMsg = e.getMessage();
+				LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+			}
+			if (StringUtils.isBlank(errorMsg)) {
+				responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "DepartmentName retrieved successfully");
+				responseObjectsMap.put("departmentName", departmentName);
+				responseDTO = createServiceResponse(responseObjectsMap);
+			} else {
+				responseDTO = createServiceResponseError(responseObjectsMap, "Failed to retrieve DepartmentName information",
+						errorMsg);
+			}
+			LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+			return ResponseEntity.ok().body(responseDTO);
+		}
+		
+		@GetMapping("/getDesignationNameForEmployee")
+		public ResponseEntity<ResponseDTO> getDesignationNameForEmployee(@RequestParam Long orgId) {
+
+			String methodName = "getDesignationNameForEmployee()";
+			LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+			String errorMsg = null;
+			Map<String, Object> responseObjectsMap = new HashMap<>();
+			ResponseDTO responseDTO = null;
+			List<Map<String, Object>> designationName = new ArrayList<>();
+
+			try {
+				designationName = masterService.getDesignationNameForEmployee(orgId);
+			} catch (Exception e) {
+				errorMsg = e.getMessage();
+				LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+			}
+			if (StringUtils.isBlank(errorMsg)) {
+				responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "DesignationName retrieved successfully");
+				responseObjectsMap.put("designationName", designationName);
+				responseDTO = createServiceResponse(responseObjectsMap);
+			} else {
+				responseDTO = createServiceResponseError(responseObjectsMap, "Failed to retrieve DesignationName information",
+						errorMsg);
+			}
+			LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+			return ResponseEntity.ok().body(responseDTO);
+		}
 }

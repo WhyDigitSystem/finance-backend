@@ -514,6 +514,7 @@ public class TaxInvoiceServiceImpl implements TaxInvoiceService {
 	    	String accountsDocId = accountsRepo.getApproveDocId(taxInvoiceVO.getOrgId(), taxInvoiceVO.getFinYear(),
 	    			taxInvoiceVO.getBranchCode(),sourceScreenCode,screenCode);
 			taxInvoiceVO.setDocId(docId);
+			
 
 			// GETDOCID LASTNO +1
 			MultipleDocIdGenerationDetailsVO multipleDocIdGenerationDetailsVO = multipleDocIdGenerationDetailsRepo

@@ -2304,5 +2304,39 @@ public class MasterServiceImpl implements MasterService {
 	}
 	
 	
+	@Override
+	public List<Map<String, Object>> getDepartmentNameForEmployee(Long orgId) {
+		Set<Object[]> result = employeeRepo.findDepartmentNameForEmployee(orgId);
+		return getDepartmentName(result);
+	}
+
+	private List<Map<String, Object>> getDepartmentName(Set<Object[]> result) {
+		List<Map<String, Object>> details = new ArrayList<>();
+		for (Object[] fs : result) {
+			Map<String, Object> object = new HashMap<>();
+			object.put("departmentName", fs[0] != null ? fs[0].toString() : "");
+	        details.add(object); // Add the map to the list
+
+		}
+		return details;
+	}
+	
+	@Override
+	public List<Map<String, Object>> getDesignationNameForEmployee(Long orgId) {
+		Set<Object[]> result = employeeRepo.findDesignationNameForEmployee(orgId);
+		return getDesignationName(result);
+	}
+
+	private List<Map<String, Object>> getDesignationName(Set<Object[]> result) {
+		List<Map<String, Object>> details = new ArrayList<>();
+		for (Object[] fs : result) {
+			Map<String, Object> object = new HashMap<>();
+			object.put("designationName", fs[0] != null ? fs[0].toString() : "");
+	        details.add(object); // Add the map to the list
+
+		}
+		return details;
+	}
+	
 	
 }
