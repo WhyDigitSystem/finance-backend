@@ -92,8 +92,6 @@ public interface TransactionService {
 	List<Map<String, Object>> updateCreateChartCostCenterList(@Valid List<ChartCostCenterDTO> chartCostCenterDTOList)
 			throws ApplicationException;
 
-
-	
 	List<ChartCostCenterVO> getChartCostCenterById(Long id);
 
 	List<ChartCostCenterVO> getChartCostCenterByActive();
@@ -116,8 +114,8 @@ public interface TransactionService {
 	List<GeneralJournalVO> getGeneralJournalById(Long id);
 
 	List<GeneralJournalVO> getGeneralJournalByActive();
-	
-	List<Map<String, Object>> getAccountNameFromGroup( Long orgId);
+
+	List<Map<String, Object>> getAccountNameFromGroup(Long orgId);
 
 // DebitNote
 	List<DebitNoteVO> getAllDebitNoteByOrgId(Long orgId);
@@ -179,7 +177,7 @@ public interface TransactionService {
 			throws ApplicationException;
 
 	List<ArApAdjustmentOffSetVO> getAllArApAdjustmentOffSetById(Long id);
-	
+
 	String getArApAdjustmentOffSetDocId(Long orgId, String finYear, String branch, String branchCode);
 
 	// GlOpeningBalance
@@ -209,7 +207,7 @@ public interface TransactionService {
 
 	Map<String, Object> updateCreateReconcileBank(@Valid ReconcileBankDTO reconcileBankDTO) throws ApplicationException;
 
-	List<ReconcileBankVO> getAllReconcileBankById(Long id);
+	ReconcileBankVO getAllReconcileBankById(Long id);
 
 	String getReconcileBankDocId(Long orgId, String finYear, String branch, String branchCode);
 
@@ -223,10 +221,9 @@ public interface TransactionService {
 	Map<String, Object> updateCreateReconcileCorpBank(@Valid ReconcileCorpBankDTO reconcileCorpBankDTO)
 			throws ApplicationException;
 
-	List<ReconcileCorpBankVO> getAllReconcileCorpBankById(Long id);
+	ReconcileCorpBankVO getAllReconcileCorpBankById(Long id);
 
 	String getReconcileCorpBankDocId(Long orgId, String finYear, String branch, String branchCode);
-
 
 	// ReconcileCash
 
@@ -234,7 +231,7 @@ public interface TransactionService {
 
 	Map<String, Object> updateCreateReconcileCash(@Valid ReconcileCashDTO reconcileCashDTO) throws ApplicationException;
 
-	List<ReconcileCashVO> getAllReconcileCashById(Long id);
+	ReconcileCashVO getAllReconcileCashById(Long id);
 
 	FundTransferVO getFundTranferByDocId(Long orgId, String docId);
 
@@ -244,21 +241,24 @@ public interface TransactionService {
 
 	String getChartCostCenterDocId(Long orgId, String finYear, String branch, String branchCode);
 
-
 	/// TMS-TT-JobCard
 
 	List<JobCardVO> getAllJobCardByOrgId(Long orgId);
 
 	Map<String, Object> updateCreateJobCard(@Valid TmsJobCardDTO tmsJobCardDTO) throws ApplicationException;
 
-	List<JobCardVO> getAllJobCardById(Long id);
+	JobCardVO getAllJobCardById(Long id);
 
 	List<Map<String, Object>> getSalesPersonFromPartyMaster(Long orgId, String partyName);
 
 	List<Map<String, Object>> getAllCustomersFromPartyMaster(Long orgId);
 
 	String getJobCardDocId(Long orgId, String finYear, String branch, String branchCode);
-
+	
+	List<Map<String, Object>> getIncomeByTaxInvoice(Long orgId, String partyName);
+	
+	List<Map<String, Object>> getExponesByCostInvoice(Long orgId);
+	
 	// AdjustmentJournal
 
 	List<AdjustmentJournalVO> getAllAdjustmentJournalByOrgId(Long orgId);
@@ -270,7 +270,7 @@ public interface TransactionService {
 
 	String getAdjustmentJournalDocId(Long orgId, String finYear, String branch, String branchCode);
 
-	//BankingDeposit
+	// BankingDeposit
 	List<BankingDepositVO> getAllBankingDepositByOrgId(Long orgId);
 
 	List<BankingDepositVO> getBankingDepositById(Long id);
@@ -279,22 +279,23 @@ public interface TransactionService {
 			throws ApplicationException;
 
 	String getBankingDepositDocId(Long orgId, String finYear, String branch, String branchCode);
- 
+
 	List<Map<String, Object>> getBankNameFromGroupforBankingDeposit(Long orgId);
 
-	//BankingWithdrawal
+	// BankingWithdrawal
 	List<BankingWithdrawalVO> getAllBankingWithdrawalByOrgId(Long orgId);
 
 	List<BankingWithdrawalVO> getBankingWithdrawalById(Long id);
 
-	Map<String, Object> updateCreateBankingWithdrawal(@Valid BankingWithdrawalDTO bankingWithdrawalDTO) throws ApplicationException;
+	Map<String, Object> updateCreateBankingWithdrawal(@Valid BankingWithdrawalDTO bankingWithdrawalDTO)
+			throws ApplicationException;
 
 	String getBankingWithdrawalDocId(Long orgId, String finYear, String branch, String branchCode);
 
 	List<Map<String, Object>> getCurrencyAndExrates(Long orgId);
 
-	//contraVoucher
-	
+	// contraVoucher
+
 	List<ContraVoucherVO> getAllContraVoucherByOrgId(Long orgId);
 
 	List<ContraVoucherVO> getContraVoucherById(Long id);
@@ -305,6 +306,4 @@ public interface TransactionService {
 
 	List<Map<String, Object>> getAccountNamefromGroupLedgerforCV(Long orgId);
 
-
-	
 }

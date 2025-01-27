@@ -61,6 +61,12 @@ public class PartyAddressVO {
 
     @Column(name = "contact", length = 15) 
     private String contact;
+    
+    @Column(name = "contactperson", length = 150)
+	private String contactPerson;
+    
+    @Column(name = "contactno", length = 15)
+	private Long contactNo;
 
 //    @Column(name ="partyname")
 //    private String partyName;

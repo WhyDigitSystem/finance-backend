@@ -23,10 +23,16 @@ public class CustomersDTO {
 	private BigDecimal creditLimit;
 	private String creditTerms;
 	private String taxRegistered;
+	private String bussinessType;
+	private String bussinessCategory;
+	private String accountsType;
+	private String currency;
+	private boolean approved;
 	
 	private List<CustomersStateDTO> customersStateDTO;
 	private List<CustomersAddressDTO> customersAddressDTO;
 	private List<CustomerSalesPersonDTO> customerSalesPersonDTO;
+	private List<CustomerCurrencyMappingDTO> customerCurrencyMappingDTO;
 	
 	
 

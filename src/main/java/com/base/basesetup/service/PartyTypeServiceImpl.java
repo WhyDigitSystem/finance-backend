@@ -27,12 +27,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.base.basesetup.dto.CustomerCurrencyMappingDTO;
 import com.base.basesetup.dto.CustomerSalesPersonDTO;
 import com.base.basesetup.dto.CustomersAddressDTO;
 import com.base.basesetup.dto.CustomersDTO;
 import com.base.basesetup.dto.CustomersStateDTO;
 import com.base.basesetup.dto.PartyTypeDTO;
 import com.base.basesetup.entity.PartyAddressVO;
+import com.base.basesetup.entity.PartyCurrencyMappingVO;
 import com.base.basesetup.entity.PartyMasterVO;
 import com.base.basesetup.entity.PartySalesPersonTaggingVO;
 import com.base.basesetup.entity.PartySpecialTDSVO;
@@ -44,6 +46,7 @@ import com.base.basesetup.entity.VendorsAddressDTO;
 import com.base.basesetup.entity.VendorsStateDTO;
 import com.base.basesetup.exception.ApplicationException;
 import com.base.basesetup.repo.PartyAddressRepo;
+import com.base.basesetup.repo.PartyCurrencyMappingRepo;
 import com.base.basesetup.repo.PartyMasterRepo;
 import com.base.basesetup.repo.PartySalesPersonTaggingRepo;
 import com.base.basesetup.repo.PartyStateRepo;
@@ -69,6 +72,9 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 
 	@Autowired
 	PartySalesPersonTaggingRepo partySalesPersonTaggingRepo;
+
+	@Autowired
+	PartyCurrencyMappingRepo partyCurrencyMappingRepo;
 
 	// PartyType
 
@@ -152,12 +158,12 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 		}
 		return partyTypeVO;
 	}
-	
+
 	@Override
 	@Transactional
-	public List<Map<String, Object>> getPartyCodeByOrgIdAndPartyType(Long orgid,String partytype) {
+	public List<Map<String, Object>> getPartyCodeByOrgIdAndPartyType(Long orgid, String partytype) {
 
-		Set<Object[]> result = partyTypeRepo.findPartyCodeByOrgIdAndPartyType(orgid,partytype);
+		Set<Object[]> result = partyTypeRepo.findPartyCodeByOrgIdAndPartyType(orgid, partytype);
 		return getPartyCodeByOrgIdAndPartyType(result);
 	}
 
@@ -170,8 +176,6 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 		}
 		return details1;
 	}
-
-	
 
 	@Override
 	// Method to upload customer data from Excel file
@@ -507,6 +511,19 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 		}
 
 		if (ObjectUtils.isNotEmpty(customersDTO.getId())) {
+			List<PartyCurrencyMappingVO> partyCurrencyMappingVO1 = partyCurrencyMappingRepo
+					.findByPartyMasterVO(partyMasterVO);
+			partyCurrencyMappingRepo.deleteAll(partyCurrencyMappingVO1);
+		}
+		List<PartyCurrencyMappingVO> partyCurrencyMappingVOs = new ArrayList<>();
+		for (CustomerCurrencyMappingDTO customerCurrencyMappingDTO : customersDTO.getCustomerCurrencyMappingDTO()) {
+			PartyCurrencyMappingVO partyCurrencyMappingVO = new PartyCurrencyMappingVO();
+			partyCurrencyMappingVO.setTransCurrency(customerCurrencyMappingDTO.getTransCurrency());
+			partyCurrencyMappingVO.setPartyMasterVO(partyMasterVO);
+			partyCurrencyMappingVOs.add(partyCurrencyMappingVO);
+
+		}
+		if (ObjectUtils.isNotEmpty(customersDTO.getId())) {
 			List<PartySalesPersonTaggingVO> partySalesPersonTaggingVOList = partySalesPersonTaggingRepo
 					.findByPartyMasterVO(partyMasterVO);
 			partySalesPersonTaggingRepo.deleteAll(partySalesPersonTaggingVOList);
@@ -524,9 +541,11 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 			partySalesPersonTaggingVOs.add(partySalesPersonTaggingVO);
 
 		}
+
 		getPartyMasterVOFromCustomersDTO(customersDTO, partyMasterVO);
 		partyMasterVO.setPartyStateVO(partyStateVOs);
 		partyMasterVO.setPartyAddressVO(partyAddressVOs);
+		partyMasterVO.setPartyCurrencyMappingVO(partyCurrencyMappingVOs);
 		partyMasterVO.setPartySalesPersonTaggingVO(partySalesPersonTaggingVOs);
 
 		partyMasterRepo.save(partyMasterVO);
@@ -549,6 +568,11 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 		partyMasterVO.setCreditLimit(customerDTO.getCreditLimit());
 		partyMasterVO.setCreditTerms(customerDTO.getCreditTerms());
 		partyMasterVO.setGstRegistered(customerDTO.getTaxRegistered());
+		partyMasterVO.setBussinessType(customerDTO.getBussinessType());
+		partyMasterVO.setBussinessCate(customerDTO.getBussinessCategory());
+		partyMasterVO.setAccountType(customerDTO.getAccountsType());
+		partyMasterVO.setApproved(customerDTO.isApproved());
+
 	}
 
 	@Override
@@ -628,6 +652,10 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 		partyMasterVO.setCreditLimit(vendorDTO.getCreditLimit());
 		partyMasterVO.setCreditTerms(vendorDTO.getCreditTerms());
 		partyMasterVO.setGstRegistered(vendorDTO.getTaxRegistered());
+		partyMasterVO.setBussinessType(vendorDTO.getBussinessType());
+		partyMasterVO.setBussinessCate(vendorDTO.getBussinessCategory());
+		partyMasterVO.setAccountType(vendorDTO.getAccountsType());
+		partyMasterVO.setApproved(vendorDTO.isApproved());
 
 		if (vendorDTO.getId() != null) {
 			// Clear previous items from the database
@@ -676,6 +704,8 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 			partyAddressVO.setAddressLine2(vendorsAddressDTO.getAddressLane2());
 			partyAddressVO.setAddressLine3(vendorsAddressDTO.getAddressLane3());
 			partyAddressVO.setPincode(vendorsAddressDTO.getPinCode());
+			partyAddressVO.setContactPerson(vendorsAddressDTO.getContactPerson());
+			partyAddressVO.setContactNo(vendorsAddressDTO.getContactNo());
 			partyAddressVO.setContact(vendorsAddressDTO.getContact());
 			partyAddressVO.setPartyMasterVO(partyMasterVO);
 			// Set the SalesVO reference
