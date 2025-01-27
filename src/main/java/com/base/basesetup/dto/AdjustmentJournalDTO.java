@@ -29,6 +29,8 @@ public class AdjustmentJournalDTO {
 	private String branch;
 	private String branchCode; 
 	private String finYear;
+	private String status;
+
 	
 	List<AccountParticularsDTO> accountParticularsDTO;
 

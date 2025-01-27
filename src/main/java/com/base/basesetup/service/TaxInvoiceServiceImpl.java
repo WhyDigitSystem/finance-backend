@@ -21,6 +21,7 @@ import com.base.basesetup.dto.TaxInvoiceDTO;
 import com.base.basesetup.dto.TaxInvoiceDetailsDTO;
 import com.base.basesetup.entity.AccountsDetailsVO;
 import com.base.basesetup.entity.AccountsVO;
+import com.base.basesetup.entity.ArapDetailsVO;
 import com.base.basesetup.entity.DocumentTypeMappingDetailsVO;
 import com.base.basesetup.entity.GroupLedgerVO;
 import com.base.basesetup.entity.MultipleDocIdGenerationDetailsVO;
@@ -31,6 +32,7 @@ import com.base.basesetup.entity.TaxInvoiceVO;
 import com.base.basesetup.exception.ApplicationException;
 import com.base.basesetup.repo.AccountsDetailsRepo;
 import com.base.basesetup.repo.AccountsRepo;
+import com.base.basesetup.repo.ArapDetailsRepo;
 import com.base.basesetup.repo.ChargeTypeRequestRepo;
 import com.base.basesetup.repo.DocumentTypeMappingDetailsRepo;
 import com.base.basesetup.repo.GroupLedgerRepo;
@@ -62,6 +64,9 @@ public class TaxInvoiceServiceImpl implements TaxInvoiceService {
 
 	@Autowired
 	PartyMasterRepo partyMasterRepo;
+	
+	@Autowired
+	ArapDetailsRepo arapDetailsRepo;
 
 	@Autowired
 	DocumentTypeMappingDetailsRepo documentTypeMappingDetailsRepo;
@@ -612,13 +617,42 @@ public class TaxInvoiceServiceImpl implements TaxInvoiceService {
 
 	        // Save AccountsVO and update TaxInvoiceVO
 	        AccountsVO savedAccountsVO = accountsRepo.save(accountsVO);
+	        int gstflag=1;
+	        
+	        AccountsDetailsVO accountsDetailsVOs2= accountsDetailsRepo.findByAccountsVOAndGstflag(savedAccountsVO,gstflag);
+	        ArapDetailsVO arapDetailsVO= new ArapDetailsVO();
+	        arapDetailsVO.setSourceTransid(accountsDetailsVOs2.getId());
+	        arapDetailsVO.setCreatedBy(savedAccountsVO.getCreatedBy());
+	        arapDetailsVO.setUpdatedBy(savedAccountsVO.getModifiedBy());
+	        arapDetailsVO.setBranch(savedAccountsVO.getBranch());
+	        arapDetailsVO.setBranchCode(savedAccountsVO.getBranchCode());
+	        arapDetailsVO.setFinYear(savedAccountsVO.getFinYear());
+	        arapDetailsVO.setRefNo(savedAccountsVO.getRefNo());
+	        arapDetailsVO.setRefDate(savedAccountsVO.getRefDate());
+	        arapDetailsVO.setSubLedgerCode(accountsDetailsVOs2.getSubLedgerCode());
+	        arapDetailsVO.setCurrency(accountsDetailsVOs2.getACurrency());
+	        arapDetailsVO.setExRate(accountsDetailsVOs2.getAExRate());
+	        arapDetailsVO.setAmount(accountsDetailsVOs2.getArapAmount());
+	        arapDetailsVO.setBaseAmt(accountsDetailsVOs2.getArapAmount());
+	        arapDetailsVO.setDueDate(savedAccountsVO.getDueDate());
+	        arapDetailsVO.setCreditDays(savedAccountsVO.getCreditDays());
+	        arapDetailsVO.setDocId(savedAccountsVO.getDocId());
+	        arapDetailsVO.setDocDate(savedAccountsVO.getDocDate());
+	        arapDetailsVO.setAccCurrency(savedAccountsVO.getCurrency());
+	        arapDetailsVO.setExRate(savedAccountsVO.getExRate());
+	        arapDetailsVO.setAccName(accountsDetailsVOs2.getAccountName());
+	        arapDetailsVO.setGstFlag(accountsDetailsVOs2.getGstflag());
+	        arapDetailsVO.setSubLedgerName(accountsDetailsVOs2.getAccountName());
+	        arapDetailsVO.setSalesType(savedAccountsVO.getSalesType());
+	        arapDetailsVO.setNativeAmt(accountsDetailsVOs2.getArapAmount());
+	        arapDetailsRepo.save(arapDetailsVO);
+
 	        taxInvoiceVO.setInvoiceNo(savedAccountsVO.getDocId());
 	        taxInvoiceVO.setInvoiceDate(savedAccountsVO.getDocDate());
 	        taxInvoiceVO.setApproveStatus(action);
 	        taxInvoiceVO.setApproveBy(actionBy);
 	        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy hh:mm:ss a");
 	        taxInvoiceVO.setApproveOn(LocalDateTime.now().format(formatter).toUpperCase());
-	        
 	        return taxInvoiceRepo.save(taxInvoiceVO);
 
 	    } else if (taxInvoiceVO.getApproveStatus().equals("Approved")) {

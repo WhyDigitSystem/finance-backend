@@ -452,7 +452,6 @@ public class IrnCreditNoteServiceImpl implements IrnCreditNoteService {
 	            
 	            AccountsDetailsVO gstAccountDetailsVO = new AccountsDetailsVO();
 	            gstAccountDetailsVO.setACategory(groupLedgerVO.getCategory());
-	            gstAccountDetailsVO.setSubLedgerCode("None");
 	            gstAccountDetailsVO.setNDebitAmount(entry.getValue());
 	            gstAccountDetailsVO.setDebitAmount(entry.getValue());
 	            gstAccountDetailsVO.setNCreditAmount(BigDecimal.ZERO);

@@ -133,6 +133,8 @@ public class CostInvoiceVO {
 	private BigDecimal netBillLcAmt;
 	@Column(name = "roundoff")
 	private Long roundOff;
+	@Column(name = "sumLcAmt", precision = 10, scale = 2)
+	private BigDecimal sumLcAmt;
 	@Column(name = "gstinputlcamt", precision = 10, scale = 2)
 	private BigDecimal gstInputLcAmt;
 

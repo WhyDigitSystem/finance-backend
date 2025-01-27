@@ -69,17 +69,11 @@ public interface CostInvoiceRepo extends JpaRepository<CostInvoiceVO, Long> {
 	@Query(value = "select a from CostInvoiceVO a where a.orgId=?1 and a.supplierName=?2 and a.branchCode=?3")
 	List<CostInvoiceVO> findOrginBillNoByParty(Long orgId, String party, String branchCode);
 
-	@Query(nativeQuery = true, value = "SELECT chargedescription,chargecode,govtsac,taxable,serviceaccountcode,gsttax FROM chargetyperequest WHERE chargedescription LIKE '%INTER%' AND chargecode LIKE '%gst%' AND orgid=?1 AND gsttax IN (?2) GROUP BY chargedescription,chargecode,govtsac,taxable,serviceaccountcode,gsttax")
-	Set<Object[]> findChargeNameAndChargeCodeForIgst(Long orgId, List<String> gstTax);
+	@Query(nativeQuery = true, value = "select accountgroupname,gstpercentage,currency from groupledger where orgid=?1 and gsttaxflag!='NA' and category='TAX' and gsttaxflag='INPUT TAX' and gsttype=?2 and gstpercentage IN(?3) order by gstpercentage desc")
+	Set<Object[]> findInterAndIntraDetailsForCostInvoice(Long orgId, String gtsType, List<String> gstPercent);
 
-	@Query(nativeQuery = true, value = "SELECT chargedescription,chargecode,govtsac,taxable,serviceaccountcode,gsttax FROM chargetyperequest WHERE chargedescription LIKE '%INTER%' AND chargecode LIKE '%gst%' AND orgid=?1 AND gsttax IN (?2) GROUP BY chargedescription,chargecode,govtsac,taxable,serviceaccountcode,gsttax")
-	Set<Object[]> findChargeNameAndChargeCodeForIgstPosting(Long orgId, String gstPercent);
-
-	@Query(nativeQuery = true, value = "SELECT chargedescription,chargecode,govtsac,taxable,serviceaccountcode,gsttax FROM chargetyperequest WHERE chargedescription LIKE '%INTRA%' AND chargecode LIKE '%gst%' AND orgid=?1 AND gsttax IN (?2) GROUP BY chargedescription,chargecode,govtsac,taxable,serviceaccountcode,gsttax")
-	Set<Object[]> findChargeNameAndChargeCodeForCgstAndSgtsPosting(Long orgId, BigDecimal gstPercent);
-
-	@Query(nativeQuery = true, value = "SELECT chargedescription,chargecode,govtsac,taxable,serviceaccountcode,gsttax FROM chargetyperequest WHERE chargedescription LIKE '%INTRA%' AND chargecode LIKE '%gst%' AND orgid=?1 AND gsttax IN (?2) GROUP BY chargedescription,chargecode,govtsac,taxable,serviceaccountcode,gsttax")
-	Set<Object[]> findChargeNameAndChargeCodeForCgstAndIgst(Long orgId, List<String> gstTax);
+	@Query(nativeQuery = true, value = "select accountgroupname,gstpercentage,currency from groupledger where orgid=?1 and gsttaxflag!='NA' and category='TAX' and gsttaxflag='INPUT TAX' and gsttype=?2 and gstpercentage IN(?3) order by gstpercentage desc")
+	Set<Object[]> findInterAndIntraDetailsForCostInvoicePosting(Long orgId, String gtsType, String intraPercent);
 
 	CostInvoiceVO findByOrgIdAndIdAndDocId(Long orgId, Long id, String docId);
 

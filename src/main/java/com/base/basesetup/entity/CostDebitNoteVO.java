@@ -144,6 +144,8 @@ public class CostDebitNoteVO {
 	@Column(name = "approveon")
 	private String approveOn;
 
+	@Column(name = "sumLcAmt", precision = 10, scale = 2)
+	private BigDecimal sumLcAmt;
 //
 	@Column(name = "orginbill", length = 50)
 	private String orginBill;
@@ -176,7 +178,7 @@ public class CostDebitNoteVO {
 
 	@OneToMany(mappedBy = "costDebitNoteVO", cascade = CascadeType.ALL)
 	@JsonManagedReference
-	List<TdsCostDebitNoteVO> costDebitNoteTaxPrtculVO;
+	List<TdsCostDebitNoteVO> tdsCostDebitNoteVO;
 
 	@JsonGetter("active")
 	public String getActive() {

@@ -49,9 +49,8 @@ public interface CostInvoiceService {
 
 	List<Map<String, Object>> getChargeDetailsFromChargeType(Long orgId);
 
-	List<Map<String, Object>> getChargeNameAndChargeCodeForIgst(Long orgId, List<String> gstTax);
-
-	List<Map<String, Object>> getChargeNameAndChargeCodeForCgstAndSgst(Long orgId, List<String> gstTax);
+	List<Map<String, Object>> getInterAndIntraDetailsForCostInvoice(Long orgId, String gstType,
+			List<String> gstPercent);
 
 //	TDS Sub Table
 	List<Map<String, Object>> getTdsDetailsFromPartyMasterSpecialTDS(Long orgId, String partyCode);

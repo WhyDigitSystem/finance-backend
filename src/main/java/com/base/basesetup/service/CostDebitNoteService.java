@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 
 import com.base.basesetup.dto.CostDebitNoteDTO;
 import com.base.basesetup.entity.CostDebitNoteVO;
-import com.base.basesetup.entity.CostInvoiceVO;
 import com.base.basesetup.exception.ApplicationException;
 
 @Service
@@ -38,5 +37,11 @@ public interface CostDebitNoteService {
 	List<CostDebitNoteVO> getOrginBillNoByParty(Long orgId, String party, String branchCode);
 
 	List<Map<String, Object>> partyTypeForCostDebitNote(Long orgId, String branch, String finYear);
+
+	List<Map<String, Object>> getInterAndIntraDetailsForCostInvoice(Long orgId, String gstType,
+			List<String> gstPercent);
+
+	CostDebitNoteVO approveCostDebitNote(Long orgId, Long id, String docId, String action, String actionBy)
+			throws ApplicationException;
 
 }

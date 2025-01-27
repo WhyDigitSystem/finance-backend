@@ -77,7 +77,7 @@ public class PartyMasterVO {
     @Column(name = "accountname", length = 50)
     private String accountName;
 
-    @Column(name = "gstregistered", length = 5)
+    @Column(name = "gstregistered", length = 10)
     private String gstRegistered;
 
     @Column(name = "gstin", length = 15)
@@ -180,6 +180,9 @@ public class PartyMasterVO {
     @Column(name = "orgid")
     private Long orgId;
 	
+    @Column(name = "creditterms")
+    private String creditTerms;
+    
 	@OneToMany(mappedBy = "partyMasterVO",cascade = CascadeType.ALL)
 	@JsonManagedReference
 	private List<PartyStateVO> partyStateVO;

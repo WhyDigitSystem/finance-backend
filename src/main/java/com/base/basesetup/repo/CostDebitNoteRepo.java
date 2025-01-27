@@ -56,4 +56,12 @@ public interface CostDebitNoteRepo extends JpaRepository<CostDebitNoteVO, Long> 
 	@Query(nativeQuery = true, value = "SELECT chargedescription,chargecode,govtsac,taxable,serviceaccountcode,gsttax FROM chargetyperequest WHERE chargedescription LIKE '%INTRA%' AND chargecode LIKE '%gst%' AND orgid=?1 AND gsttax IN (?2) GROUP BY chargedescription,chargecode,govtsac,taxable,serviceaccountcode,gsttax")
 	Set<Object[]> findChargeNameAndChargeCodeForCgstAndSgtsPosting(Long orgId, BigDecimal gstPercent);
 
+	CostDebitNoteVO findByOrgIdAndIdAndDocId(Long orgId, Long id, String docId);
+
+	@Query(nativeQuery = true, value = "select accountgroupname,gstpercentage,currency from groupledger where orgid=?1 and gsttaxflag!='NA' and category='TAX' and gsttaxflag='INPUT TAX' and gsttype=?2 and gstpercentage IN(?3) order by gstpercentage desc")
+	Set<Object[]> findInterAndIntraDetailsForCostInvoicePosting(Long orgId, String gstType, String gstPercent);
+
+	@Query(nativeQuery = true, value = "select accountgroupname,gstpercentage,currency from groupledger where orgid=?1 and gsttaxflag!='NA' and category='TAX' and gsttaxflag='INPUT TAX' and gsttype=?2 and gstpercentage IN(?3) order by gstpercentage desc")
+	Set<Object[]> findInterAndIntraDetailsForCostInvoice(Long orgId, String gstType, List<String> gstPercent);
+
 }

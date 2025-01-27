@@ -806,7 +806,7 @@ public class TransactionController extends BaseController {
 		String errorMsg = null;
 		Map<String, Object> responseObjectsMap = new HashMap<>();
 		ResponseDTO responseDTO = null;
-		String mapp = "";
+		String mapp= null;
 
 		try {
 			mapp = transactionService.getGeneralJournalDocId(orgId, finYear, branch, branchCode);

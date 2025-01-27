@@ -36,21 +36,19 @@ public class AdjustmentJournalVO {
 	@SequenceGenerator(name = "adjustmentjournalgen", sequenceName = "adjustmentjournalseq", initialValue = 1000000001, allocationSize = 1)
 	@Column(name = "adjustmentjournalid")
 	private Long id;
-	
-	
+
 	@Column(name = "adjustmenttype", length = 25)
 	private String adjustmentType;
-	
+
 	@Column(name = "docid", length = 50)
-    private String docId;
+	private String docId;
 
-    @Column(name = "docdate")
-    private LocalDate docDate = LocalDate.now();
-
+	@Column(name = "docdate")
+	private LocalDate docDate = LocalDate.now();
 
 	@Column(name = "currency", length = 10)
 	private String currency;
-	@Column(name = "exrate",precision = 10, scale = 2)
+	@Column(name = "exrate", precision = 10, scale = 2)
 	private BigDecimal exRate;
 	@Column(name = "refno", length = 50)
 	private String refNo;
@@ -70,9 +68,9 @@ public class AdjustmentJournalVO {
 	@Column(name = "remarks", length = 150)
 	private String remarks;
 
-	@Column(name = "totaldebitamount",precision = 10, scale = 2)
+	@Column(name = "totaldebitamount", precision = 10, scale = 2)
 	private BigDecimal totalDebitAmount;
-	@Column(name = "totalcreditamount",precision = 10, scale = 2)
+	@Column(name = "totalcreditamount", precision = 10, scale = 2)
 	private BigDecimal totalCreditAmount;
 
 	@Column(name = "branch", length = 25)
@@ -95,19 +93,19 @@ public class AdjustmentJournalVO {
 
 	@Column(name = "cancel")
 	private boolean cancel;
+	@Column(name = "status", length = 50)
+	private String status;
 
 	@Column(name = "cancelremarks", length = 50)
 	private String cancelRemarks;
 
 	@Column(name = "orgid")
 	private Long orgId;
-	
-	
-	
+
 	@OneToMany(mappedBy = "adjustmentJournalVO", cascade = CascadeType.ALL)
 	@JsonManagedReference
 	List<AccountParticularsVO> accountParticularsVO;
-	
+
 	@Embedded
 	@Builder.Default
 	private CreatedUpdatedDate commonDate = new CreatedUpdatedDate();

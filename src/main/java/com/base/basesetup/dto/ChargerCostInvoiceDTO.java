@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class ChargerCostInvoiceDTO {
+	
 	private Long id;
 	private String jobNo;
 	private String chargeName;
