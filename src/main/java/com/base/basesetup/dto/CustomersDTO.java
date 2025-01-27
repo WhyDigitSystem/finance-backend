@@ -26,6 +26,7 @@ public class CustomersDTO {
 	private String bussinessType;
 	private String bussinessCategory;
 	private String accountsType;
+	private String currency;
 	private boolean approved;
 	
 	private List<CustomersStateDTO> customersStateDTO;
