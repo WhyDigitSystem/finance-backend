@@ -209,6 +209,6 @@ public interface MasterService {
 	void excelUploadForChargeCode(MultipartFile[] files, String createdBy, Long orgId)
 			throws EncryptedDocumentException, ApplicationException, java.io.IOException;
 
-
+	List<Map<String, Object>> getSalesPersonForCustomer(Long orgId);
 
 }

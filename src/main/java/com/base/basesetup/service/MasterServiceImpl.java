@@ -561,7 +561,6 @@ public class MasterServiceImpl implements MasterService {
 		taxMasterVO.setOrgId(taxMasterDTO.getOrgId());
 		taxMasterVO.setFinYear(taxMasterDTO.getFinYear());
 		taxMasterVO.setServiceAccountCode(taxMasterDTO.getServiceAccountCode());
-		taxMasterVO.setWarehouse(taxMasterDTO.getWarehouse());
 		taxMasterVO.setActive(taxMasterDTO.isActive());
 		taxMasterVO.setGst(taxMasterDTO.getGst());
 		taxMasterVO.setGstSlab(taxMasterDTO.getGstSlab());
@@ -2337,6 +2336,26 @@ public class MasterServiceImpl implements MasterService {
 		}
 		return details;
 	}
+
+	
+	@Override
+	public List<Map<String, Object>> getSalesPersonForCustomer(Long orgId) {
+		Set<Object[]> result = employeeRepo.findSalesPersonForCustomer(orgId);
+		return getSalesPersonForCustomer(result);
+	}
+
+	private List<Map<String, Object>> getSalesPersonForCustomer(Set<Object[]> result) {
+		List<Map<String, Object>> details = new ArrayList<>();
+		for (Object[] fs : result) {
+			Map<String, Object> object = new HashMap<>();
+			object.put("salesPerson", fs[0] != null ? fs[0].toString() : "");
+			object.put("salesPersonCode", fs[1] != null ? fs[1].toString() : "");
+	        details.add(object); // Add the map to the list
+
+		}
+		return details;
+	}
+
 	
 	
 }
