@@ -561,7 +561,6 @@ public class MasterServiceImpl implements MasterService {
 		taxMasterVO.setOrgId(taxMasterDTO.getOrgId());
 		taxMasterVO.setFinYear(taxMasterDTO.getFinYear());
 		taxMasterVO.setServiceAccountCode(taxMasterDTO.getServiceAccountCode());
-		taxMasterVO.setWarehouse(taxMasterDTO.getWarehouse());
 		taxMasterVO.setActive(taxMasterDTO.isActive());
 		taxMasterVO.setGst(taxMasterDTO.getGst());
 		taxMasterVO.setGstSlab(taxMasterDTO.getGstSlab());
@@ -1543,15 +1542,15 @@ public class MasterServiceImpl implements MasterService {
 		chargeTypeRequestVO.setSalesAccount(chargeTypeRequestDTO.getSalesAccount().toUpperCase());
 		chargeTypeRequestVO.setPurchaseAccount(chargeTypeRequestDTO.getPurchaseAccount().toUpperCase());
 		chargeTypeRequestVO.setTaxable(chargeTypeRequestDTO.getTaxable().toUpperCase());
-		chargeTypeRequestVO.setTaxType(chargeTypeRequestDTO.getTaxType().toUpperCase());
-		chargeTypeRequestVO.setCcFeeApplicable(chargeTypeRequestDTO.getCcFeeApplicable().toUpperCase());
 		chargeTypeRequestVO.setTaxablePercentage(chargeTypeRequestDTO.getTaxablePercentage());
-		chargeTypeRequestVO.setCcJob(chargeTypeRequestDTO.getCcJob().toUpperCase());
 		chargeTypeRequestVO.setGovtSac(chargeTypeRequestDTO.getGovtSac().toUpperCase());
 		chargeTypeRequestVO.setExcempted(chargeTypeRequestDTO.getExcempted().toUpperCase());
 		chargeTypeRequestVO.setGstTax(chargeTypeRequestDTO.getGstTax());
-		chargeTypeRequestVO.setActive(chargeTypeRequestDTO.isActive());
 		chargeTypeRequestVO.setOrgId(chargeTypeRequestDTO.getOrgId());
+		chargeTypeRequestVO.setApproved(chargeTypeRequestDTO.isApproved());
+		if(chargeTypeRequestDTO.isApproved()) {
+		    chargeTypeRequestVO.setActive(true);
+		}
 
 	}
 
@@ -2337,6 +2336,43 @@ public class MasterServiceImpl implements MasterService {
 		}
 		return details;
 	}
+
+	
+	@Override
+	public List<Map<String, Object>> getSalesPersonForCustomer(Long orgId) {
+		Set<Object[]> result = employeeRepo.findSalesPersonForCustomer(orgId);
+		return getSalesPersonForCustomer(result);
+	}
+
+	private List<Map<String, Object>> getSalesPersonForCustomer(Set<Object[]> result) {
+		List<Map<String, Object>> details = new ArrayList<>();
+		for (Object[] fs : result) {
+			Map<String, Object> object = new HashMap<>();
+			object.put("salesPerson", fs[0] != null ? fs[0].toString() : "");
+			object.put("salesPersonCode", fs[1] != null ? fs[1].toString() : "");
+	        details.add(object); // Add the map to the list
+
+		}
+		return details;
+	}
+
+	@Override
+	public List<Map<String, Object>> getServiceAccountCodeForTaxMaster(Long orgId) {
+		Set<Object[]> result = taxMasterRepo.findServiceAccountCodeForTaxMaster(orgId);
+		return getServiceAccountCodeForTaxMaster(result);
+	}
+
+	private List<Map<String, Object>> getServiceAccountCodeForTaxMaster(Set<Object[]> result) {
+		List<Map<String, Object>> details = new ArrayList<>();
+		for (Object[] fs : result) {
+			Map<String, Object> object = new HashMap<>();
+			object.put("serviceAccountCode", fs[0] != null ? fs[0].toString() : "");
+	        details.add(object); // Add the map to the list
+
+		}
+		return details;
+	}
+
 	
 	
 }

@@ -39,8 +39,6 @@ public class TaxMasterVO {
 	private String finYear;
 	@Column(name = "serviceaccountcode")
 	private String serviceAccountCode;
-	@Column(name = "warehouse")
-	private String warehouse;
 	@Column(name = "gst")
 	private String gst;
 	@Column(name = "gstslab")

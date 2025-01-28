@@ -24,4 +24,7 @@ public interface EmployeeRepo extends JpaRepository<EmployeeVO,Long>{
 	@Query(nativeQuery = true,value = "SELECT designationname FROM designation  WHERE orgid=?1 and active=1")
 	Set<Object[]> findDesignationNameForEmployee(Long orgId);
 
+	@Query(nativeQuery = true,value = "SELECT  employee , employeecode FROM employee  WHERE orgid=?1 and salesflag=1 and active=1")
+	Set<Object[]> findSalesPersonForCustomer(Long orgId);
+
 }

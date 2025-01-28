@@ -575,6 +575,10 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 		partyMasterVO.setApproved(customerDTO.isApproved());
 		partyMasterVO.setCurrency(customerDTO.getCurrency());
 
+		if(customerDTO.isApproved()) {
+			partyMasterVO.setActive(true);
+		}
+
 	}
 
 	@Override
@@ -658,6 +662,10 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 		partyMasterVO.setBussinessCate(vendorDTO.getBussinessCategory());
 		partyMasterVO.setAccountType(vendorDTO.getAccountsType());
 		partyMasterVO.setApproved(vendorDTO.isApproved());
+		
+		if(vendorDTO.isApproved()) {
+			partyMasterVO.setActive(true);
+		}
 
 		if (vendorDTO.getId() != null) {
 			// Clear previous items from the database

@@ -17,7 +17,6 @@ public class TaxMasterDTO {
 	private Long orgId;
 	private String finYear;
 	private String serviceAccountCode;
-	private String warehouse;
 	private String gst;
 	private Long gstSlab;
 	private String createdBy;
