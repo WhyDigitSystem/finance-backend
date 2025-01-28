@@ -292,7 +292,8 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 				partyAddressDTO.setAddressLane2(getStringCellValue(row.getCell(6))); // Address Line 2
 				partyAddressDTO.setAddressLane3(getStringCellValue(row.getCell(7))); // Address Line 3
 				partyAddressDTO.setPinCode(getLongCellValue(row.getCell(8))); // PinCode (long)
-				partyAddressDTO.setContact(getStringCellValue(row.getCell(9))); // Contact
+				partyAddressDTO.setContactPerson(getStringCellValue(row.getCell(9))); 
+				partyAddressDTO.setContactNo(getLongCellValue(row.getCell(10)));/// Contact
 				partyAddressDTO.setCustomerName(customerName); // Customer Name
 
 				partyAddressDTOList.add(partyAddressDTO);
@@ -481,10 +482,10 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 			partyStateVO.setStateNo(partyStateDTO.getStateNo());
 			partyStateVO.setContactPerson(partyStateDTO.getContactPerson());
 			partyStateVO.setStateCode(partyStateDTO.getStateCode());
-			partyStateVO.setPartyMasterVO(partyMasterVO);
 			partyStateVO.setEmail(partyStateDTO.getEMail());
 			partyStateVO.setContactPhoneNo(partyStateDTO.getPhoneNo());
 			// partyStateVO.setPartyName(partyStateDTO.getCustomerName());
+			partyStateVO.setPartyMasterVO(partyMasterVO);
 			partyStateVOs.add(partyStateVO);
 		}
 
@@ -504,7 +505,10 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 			partyAddressVO.setAddressLine2(partyAddressDTO.getAddressLane2());
 			partyAddressVO.setAddressLine3(partyAddressDTO.getAddressLane3());
 			partyAddressVO.setPincode(partyAddressDTO.getPinCode());
-			partyAddressVO.setContact(partyAddressDTO.getContact()); // Changed from contactPerson to contact
+			partyAddressVO.setContactPerson(partyAddressDTO.getContactPerson());
+			partyAddressVO.setContactNo(partyAddressDTO.getContactNo());
+			partyAddressVO.setSez(partyAddressDTO.isSez());
+			// Changed from contactPerson to contact
 			// partyAddressVO.setPartyName(partyAddressDTO.getCustomerName());
 			partyAddressVO.setPartyMasterVO(partyMasterVO);
 			partyAddressVOs.add(partyAddressVO);
@@ -716,7 +720,6 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 			partyAddressVO.setPincode(vendorsAddressDTO.getPinCode());
 			partyAddressVO.setContactPerson(vendorsAddressDTO.getContactPerson());
 			partyAddressVO.setContactNo(vendorsAddressDTO.getContactNo());
-			partyAddressVO.setContact(vendorsAddressDTO.getContact());
 			partyAddressVO.setPartyMasterVO(partyMasterVO);
 			// Set the SalesVO reference
 			addressVOs.add(partyAddressVO);
@@ -730,6 +733,7 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 
 			PartySpecialTDSVO PartySpecialTDSVO = new PartySpecialTDSVO();
 			PartySpecialTDSVO.setTdsWithSec(specialTdsDTO.getWhSection());
+			PartySpecialTDSVO.setSection(specialTdsDTO.getSection());
 			PartySpecialTDSVO.setRateFrom(specialTdsDTO.getRateFrom());
 			PartySpecialTDSVO.setRateTo(specialTdsDTO.getRateTo());
 			PartySpecialTDSVO.setTdsWithPer(specialTdsDTO.getWhPercentage());
@@ -957,5 +961,5 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 		  }
 		return list1;
 	}
-
+	
 }

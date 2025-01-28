@@ -58,9 +58,6 @@ public class PartyAddressVO {
 
     @Column(name = "pincode") 
     private Long pincode;
-
-    @Column(name = "contact", length = 15) 
-    private String contact;
     
     @Column(name = "contactperson", length = 150)
 	private String contactPerson;
@@ -69,7 +66,7 @@ public class PartyAddressVO {
 	private Long contactNo;
     
     @Column(name="sez")
-    private boolean sez = true;
+    private boolean sez;
     
 
 //    @Column(name ="partyname")
