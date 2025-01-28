@@ -213,4 +213,8 @@ public interface MasterService {
 
 	List<Map<String, Object>> getServiceAccountCodeForTaxMaster(Long orgId);
 
+	List<Map<String, Object>> getRevenueLegderForTaxMaster(Long orgId);
+
+	List<Map<String, Object>> getCostLedgerForTaxMaster(Long orgId);
+
 }

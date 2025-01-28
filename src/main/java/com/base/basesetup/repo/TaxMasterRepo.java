@@ -24,4 +24,11 @@ public interface TaxMasterRepo extends JpaRepository<TaxMasterVO,Long>{
 	@Query(nativeQuery = true,value = "select serviceaccountcode from saccode where orgid=?1 and active=1")
 	Set<Object[]> findServiceAccountCodeForTaxMaster(Long orgId);
 
+	@Query(nativeQuery = true,value = "select accountgroupname from groupledger where orgid=?1 and type in ('ACCOUNT') and category in ('RECEIVABLE') and gsttaxflag in ('INPUTTAX') and active=1")
+	Set<Object[]> findRevenueLegderForTaxMaster(Long orgId);
+
+	@Query(nativeQuery = true,value = "select accountgroupname from groupledger where orgid=?1 and type in ('ACCOUNT') and category in ('PAYABLE') and gsttaxflag in ('INPUTTAX') and active=1")
+	Set<Object[]> findCostLedgerForTaxMaster(Long orgId);
+
+
 }
