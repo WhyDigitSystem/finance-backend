@@ -23,7 +23,6 @@ public class TaxMasterDTO {
 	private String cancelRemarks;
 	private boolean cancel;
 	private boolean active;
-	private String jobOrderNo;
 
 	private List<TaxMasterDetailsDTO> taxMasterDetailsDTO;
 }

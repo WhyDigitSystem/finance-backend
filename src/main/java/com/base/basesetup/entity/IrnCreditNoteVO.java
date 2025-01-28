@@ -110,17 +110,14 @@ public class IrnCreditNoteVO {
 	private String billCurr;
 	@Column(name = "billcurrrate", precision = 10, scale = 2)
 	private BigDecimal billCurrRate;
-	@Column(name = "examount", precision = 10, scale = 2)
-	private BigDecimal exAmount;
+	@Column(name = "approved")
+	private boolean approved;
+	
 	@Column(name = "creditdays",length = 5)
 	private int creditDays;
 	@Column(name = "shipperrefno",length = 30)
 	private String shipperRefNo;
-	@Column(name = "billmonth",length = 30)
-	private String billMonth;
-		
-	@Column(name = "salestype",length = 30)
-	private String salesType;
+	
 	
 	@Column(name="approvestatus",length = 20)
 	private String approveStatus;

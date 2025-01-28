@@ -116,6 +116,8 @@ public class CostDebitNoteVO {
 	private String utrRef;
 	@Column(name = "costtype", length = 10)
 	private String costType;
+	@Column(name = "approved")
+	private boolean approved;
 
 //	SUMMARY
 	@Column(name = "totchargesbillcurramt", precision = 10, scale = 2)
@@ -134,6 +136,7 @@ public class CostDebitNoteVO {
 	private Long roundOff;
 	@Column(name = "gstinputlcamt", precision = 10, scale = 2)
 	private BigDecimal gstInputLcAmt;
+	
 
 //	APPROVED
 	@Column(name = "approvestatus", length = 20)
