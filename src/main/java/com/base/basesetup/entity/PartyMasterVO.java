@@ -149,6 +149,7 @@ public class PartyMasterVO {
     @Column(name = "approved", length = 15)
     private boolean approved;
     
+ 
 
     // Additional fields with column mappings
     @Column(name = "branch", length = 25)
