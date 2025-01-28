@@ -6,6 +6,7 @@ import java.util.Optional;
 
 import javax.validation.Valid;
 
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
