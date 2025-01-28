@@ -2356,6 +2356,23 @@ public class MasterServiceImpl implements MasterService {
 		return details;
 	}
 
+	@Override
+	public List<Map<String, Object>> getServiceAccountCodeForTaxMaster(Long orgId) {
+		Set<Object[]> result = taxMasterRepo.findServiceAccountCodeForTaxMaster(orgId);
+		return getServiceAccountCodeForTaxMaster(result);
+	}
+
+	private List<Map<String, Object>> getServiceAccountCodeForTaxMaster(Set<Object[]> result) {
+		List<Map<String, Object>> details = new ArrayList<>();
+		for (Object[] fs : result) {
+			Map<String, Object> object = new HashMap<>();
+			object.put("serviceAccountCode", fs[0] != null ? fs[0].toString() : "");
+	        details.add(object); // Add the map to the list
+
+		}
+		return details;
+	}
+
 	
 	
 }
