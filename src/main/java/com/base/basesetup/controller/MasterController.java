@@ -1988,4 +1988,60 @@ public class MasterController extends BaseController {
 			LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
 			return ResponseEntity.ok().body(responseDTO);
 		}
+		
+		@GetMapping("/getRevenueLegderForTaxMaster")
+		public ResponseEntity<ResponseDTO> getRevenueLegderForTaxMaster(@RequestParam Long orgId) {
+
+			String methodName = "getRevenueLegderForTaxMaster()";
+			LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+			String errorMsg = null;
+			Map<String, Object> responseObjectsMap = new HashMap<>();
+			ResponseDTO responseDTO = null;
+			List<Map<String, Object>> accountGroupName = new ArrayList<>();
+
+			try {
+				accountGroupName = masterService.getRevenueLegderForTaxMaster(orgId);
+			} catch (Exception e) {
+				errorMsg = e.getMessage();
+				LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+			}
+			if (StringUtils.isBlank(errorMsg)) {
+				responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "RevenueLegder retrieved successfully");
+				responseObjectsMap.put("accountGroupName", accountGroupName);
+				responseDTO = createServiceResponse(responseObjectsMap);
+			} else {
+				responseDTO = createServiceResponseError(responseObjectsMap, "Failed to retrieve RevenueLegder information",
+						errorMsg);
+			}
+			LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+			return ResponseEntity.ok().body(responseDTO);
+		}
+		
+		@GetMapping("/getCostLedgerForTaxMaster")
+		public ResponseEntity<ResponseDTO> getCostLedgerForTaxMaster(@RequestParam Long orgId) {
+
+			String methodName = "getCostLedgerForTaxMaster()";
+			LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+			String errorMsg = null;
+			Map<String, Object> responseObjectsMap = new HashMap<>();
+			ResponseDTO responseDTO = null;
+			List<Map<String, Object>> accountGroupName = new ArrayList<>();
+
+			try {
+				accountGroupName = masterService.getCostLedgerForTaxMaster(orgId);
+			} catch (Exception e) {
+				errorMsg = e.getMessage();
+				LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+			}
+			if (StringUtils.isBlank(errorMsg)) {
+				responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "CostLedger retrieved successfully");
+				responseObjectsMap.put("accountGroupName", accountGroupName);
+				responseDTO = createServiceResponse(responseObjectsMap);
+			} else {
+				responseDTO = createServiceResponseError(responseObjectsMap, "Failed to retrieve CostLedger information",
+						errorMsg);
+			}
+			LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+			return ResponseEntity.ok().body(responseDTO);
+		}
 }
