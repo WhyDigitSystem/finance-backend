@@ -67,6 +67,10 @@ public class PartyAddressVO {
     
     @Column(name = "contactno", length = 15)
 	private Long contactNo;
+    
+    @Column(name="sez")
+    private boolean sez = true;
+    
 
 //    @Column(name ="partyname")
 //    private String partyName;

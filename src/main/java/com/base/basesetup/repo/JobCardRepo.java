@@ -29,8 +29,9 @@ public interface JobCardRepo extends JpaRepository<JobCardVO, Long> {
 			+ "a.partyname=?2  and a.joborderno=b.jobno  order by a.totalinvamountlc")
 	Set<Object[]> getIncomeByTaxInvoice(Long orgId, String customerName);
 
-	@Query(nativeQuery = true, value = "select a.netbillcurramt from costinvoice a,jobcard b where a.orgid=?1 \r\n"
-			+ "and a.joborderno=b.jobno  order by a.netbillcurramt")
+	@Query(nativeQuery = true, value = "select a.netbillcurramt from costinvoice a,jobcard b ,chargercostinvoice a1 where a.orgid=?1  and \r\n"
+			+ "a1.costinvoiceid=a.costinvoiceid\r\n"
+			+ "and a1.jobno=b.jobno  order by a.netbillcurramt")
 	Set<Object[]> getExponesByCostInvoice(Long orgId);
 
 	@Query(nativeQuery = true, value = "select concat(prefixfield,lpad(lastno,5,0)) AS docid from documenttypemappingdetails where orgid=?1 and finyear=?2 and branchcode=?3 and screencode=?4")

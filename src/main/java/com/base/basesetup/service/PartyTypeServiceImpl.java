@@ -571,7 +571,10 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 		partyMasterVO.setBussinessType(customerDTO.getBussinessType());
 		partyMasterVO.setBussinessCate(customerDTO.getBussinessCategory());
 		partyMasterVO.setAccountType(customerDTO.getAccountsType());
+		partyMasterVO.setPartyCode(customerDTO.getCustomerCode());
 		partyMasterVO.setApproved(customerDTO.isApproved());
+		partyMasterVO.setCurrency(customerDTO.getCurrency());
+
 		if(customerDTO.isApproved()) {
 			partyMasterVO.setActive(true);
 		}
@@ -937,6 +940,22 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 			}
 		}
 		return null; // Return null if it's not a date or is an invalid cell type
+	}
+
+	@Override
+	public List<Map<String, Object>> getSectionNameFromTds(Long orgId, String section) {
+          Set<Object[]> chType = partyTypeRepo.getSectionNameFromTds(orgId, section);
+          return getSectionName(chType);
+	}
+	
+	public List<Map<String,Object>> getSectionName(Set<Object[]> chType){
+		  List<Map<String,Object>> list1 =new ArrayList<>();
+		  for(Object [] ch : chType) {
+			  Map<String,Object> map = new HashMap<>();
+			  map.put("sectionName", ch[0]!=null ? ch[0].toString():"");
+			  list1.add(map);
+		  }
+		return list1;
 	}
 
 }
