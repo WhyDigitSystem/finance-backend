@@ -1224,6 +1224,7 @@ public class TransactionServiceImpl implements TransactionService {
 		debitNoteVO.setLctotChargeAmount(debitNoteDTO.getLctotChargeAmount());
 		debitNoteVO.setLctotGrossAmount(debitNoteDTO.getLctotGrossAmount());
 		debitNoteVO.setLcNetAmount(debitNoteDTO.getLcNetAmount());
+
 	}
 
 	@Override

@@ -1060,6 +1060,11 @@ public class MasterServiceImpl implements MasterService {
 		groupLedgerVO.setNatureOfAccount(groupLedgerDTO.getNatureOfAccount());
 		groupLedgerVO.setPBFlag(groupLedgerDTO.getPBFlag());
 		groupLedgerVO.setAccountGroupName(groupLedgerDTO.getAccountGroupName());
+		groupLedgerVO.setGstTaxFlag(groupLedgerDTO.getGstTaxFlag());
+		groupLedgerVO.setGstType(groupLedgerDTO.getGstType());
+		groupLedgerVO.setGstPercentage(groupLedgerDTO.getGstPercentage());
+
+
 		
 		if ("group".equalsIgnoreCase(groupLedgerDTO.getType()) && groupLedgerDTO.getGroupName() == null) {
 			groupLedgerVO.setParentCode("0");

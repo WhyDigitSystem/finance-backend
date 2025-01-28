@@ -50,6 +50,7 @@ public class DebitNoteDTO {
 	private String lctotGrossAmount;
 	private String lcNetAmount;
 
+
 	List<ChargerDebitNoteDTO> chargerDebitNoteDTO;
 
 	List<ParticularsDebitNoteDTO> particularsDebitNoteDTO;
