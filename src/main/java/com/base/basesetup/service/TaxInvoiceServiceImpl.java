@@ -165,13 +165,9 @@ public class TaxInvoiceServiceImpl implements TaxInvoiceService {
 //		taxInvoiceVO.setSupplierBillDate(taxInvoiceDTO.getSupplierBillDate());
 		taxInvoiceVO.setBillCurr(taxInvoiceDTO.getBillCurr().toUpperCase());
 		taxInvoiceVO.setBillCurrRate(taxInvoiceDTO.getBillCurrRate());
-		taxInvoiceVO.setExAmount(taxInvoiceDTO.getExAmount());
 		taxInvoiceVO.setCreditDays(taxInvoiceDTO.getCreditDays());
-		taxInvoiceVO.setContactPerson(taxInvoiceDTO.getContactPerson().toUpperCase());
 		taxInvoiceVO.setShipperInvoiceNo(taxInvoiceDTO.getShipperInvoiceNo().toUpperCase());
 		taxInvoiceVO.setBillOfEntry(taxInvoiceDTO.getBillOfEntry().toUpperCase());
-		taxInvoiceVO.setBillMonth(taxInvoiceDTO.getBillMonth().toUpperCase());
-		taxInvoiceVO.setSalesType(taxInvoiceDTO.getSalesType().toUpperCase());
 		taxInvoiceVO.setModifiedBy(taxInvoiceDTO.getCreatedBy());
 		taxInvoiceVO.setJobOrderNo(taxInvoiceDTO.getJobOrderNo());
 
@@ -541,7 +537,6 @@ public class TaxInvoiceServiceImpl implements TaxInvoiceService {
 	        accountsVO.setCurrency(taxInvoiceVO.getBillCurr());
 	        accountsVO.setExRate(taxInvoiceVO.getBillCurrRate());
 	        accountsVO.setRemarks(taxInvoiceVO.getBillingRemarks());
-	        accountsVO.setBillMonth(taxInvoiceVO.getBillMonth());
 	        accountsVO.setFinYear(taxInvoiceVO.getFinYear());
 
 	        // Calculate total debit/credit amounts
@@ -552,7 +547,6 @@ public class TaxInvoiceServiceImpl implements TaxInvoiceService {
 	        accountsVO.setAmountInWords(taxInvoiceVO.getAmountInWords());
 	        accountsVO.setStTaxAmount(taxInvoiceVO.getTotalTaxableAmountLc());
 	        accountsVO.setChargeableAmount(taxInvoiceVO.getTotalChargeAmountLc());
-	        accountsVO.setSalesType(taxInvoiceVO.getSalesType());
 
 	        // Create AccountsDetailsVO list and populate it
 	        List<AccountsDetailsVO> accountsDetailsVOs = new ArrayList<>();
