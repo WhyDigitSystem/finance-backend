@@ -39,7 +39,6 @@ public class IrnCreditNoteVO {
 	@SequenceGenerator(name = "irncreditgen", sequenceName = "irncreditseq", initialValue = 1000000001, allocationSize = 1)
 	@Column(name = "irncreditnoteid")
 	private Long id;
-
 	@Column(name = "orgid")
 	private Long orgId;
 	@Column(name = "branch",length = 30)
@@ -110,8 +109,6 @@ public class IrnCreditNoteVO {
 	private String billCurr;
 	@Column(name = "billcurrrate", precision = 10, scale = 2)
 	private BigDecimal billCurrRate;
-	@Column(name = "approved")
-	private boolean approved;
 	
 	@Column(name = "creditdays",length = 5)
 	private int creditDays;

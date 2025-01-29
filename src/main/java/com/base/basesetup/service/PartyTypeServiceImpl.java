@@ -49,6 +49,7 @@ import com.base.basesetup.repo.PartyAddressRepo;
 import com.base.basesetup.repo.PartyCurrencyMappingRepo;
 import com.base.basesetup.repo.PartyMasterRepo;
 import com.base.basesetup.repo.PartySalesPersonTaggingRepo;
+import com.base.basesetup.repo.PartySpecialTDSRepo;
 import com.base.basesetup.repo.PartyStateRepo;
 import com.base.basesetup.repo.PartyTypeRepo;
 
@@ -69,6 +70,9 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 
 	@Autowired
 	PartyStateRepo partyStateRepo;
+	
+	@Autowired
+	PartySpecialTDSRepo partySpecialTDSRepo;
 
 	@Autowired
 	PartySalesPersonTaggingRepo partySalesPersonTaggingRepo;
@@ -679,9 +683,9 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 			List<PartyAddressVO> partyAddressVOs = partyAddressRepo.findByPartyMasterVO(partyMasterVO);
 			partyAddressRepo.deleteAll(partyAddressVOs);
 
-			List<PartySalesPersonTaggingVO> personTaggingVOs = partySalesPersonTaggingRepo
+			List<PartySpecialTDSVO> partySpecialTDSVO1 = partySpecialTDSRepo
 					.findByPartyMasterVO(partyMasterVO);
-			partySalesPersonTaggingRepo.deleteAll(personTaggingVOs);
+			partySpecialTDSRepo.deleteAll(partySpecialTDSVO1);
 
 		}
 

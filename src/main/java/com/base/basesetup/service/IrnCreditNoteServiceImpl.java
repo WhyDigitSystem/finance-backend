@@ -164,7 +164,6 @@ public class IrnCreditNoteServiceImpl implements IrnCreditNoteService {
 	    irnCreditNoteVO.setCreditDays(irnCreditNoteDTO.getCreditDays());
 	    irnCreditNoteVO.setShipperRefNo(irnCreditNoteDTO.getShipperRefNo());
 	    irnCreditNoteVO.setCreditRemarks(irnCreditNoteDTO.getCreditRemarks());
-	    irnCreditNoteVO.setApproved(irnCreditNoteDTO.isApproved());
 
 	    
 		if (ObjectUtils.isNotEmpty(irnCreditNoteVO.getId())) {
