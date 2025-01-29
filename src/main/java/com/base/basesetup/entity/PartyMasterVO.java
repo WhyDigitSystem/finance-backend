@@ -146,8 +146,6 @@ public class PartyMasterVO {
     @Column(name = "swift", length = 15)
     private String Swift;
     
-    @Column(name = "approved", length = 15)
-    private boolean approved;
     
  
 
