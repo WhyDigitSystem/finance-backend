@@ -292,8 +292,9 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 				partyAddressDTO.setAddressLane2(getStringCellValue(row.getCell(6))); // Address Line 2
 				partyAddressDTO.setAddressLane3(getStringCellValue(row.getCell(7))); // Address Line 3
 				partyAddressDTO.setPinCode(getLongCellValue(row.getCell(8))); // PinCode (long)
-				partyAddressDTO.setContactPerson(getStringCellValue(row.getCell(9))); 
-				partyAddressDTO.setContactNo(getLongCellValue(row.getCell(10)));/// Contact
+				partyAddressDTO.setContact(getStringCellValue(row.getCell(9)));
+//				partyAddressDTO.setContactPerson(getStringCellValue(row.getCell(9))); 
+//				partyAddressDTO.setContactNo(getLongCellValue(row.getCell(10))); 
 				partyAddressDTO.setCustomerName(customerName); // Customer Name
 
 				partyAddressDTOList.add(partyAddressDTO);
@@ -505,9 +506,9 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 			partyAddressVO.setAddressLine2(partyAddressDTO.getAddressLane2());
 			partyAddressVO.setAddressLine3(partyAddressDTO.getAddressLane3());
 			partyAddressVO.setPincode(partyAddressDTO.getPinCode());
-			partyAddressVO.setContactPerson(partyAddressDTO.getContactPerson());
-			partyAddressVO.setContactNo(partyAddressDTO.getContactNo());
-			partyAddressVO.setSez(partyAddressDTO.isSez());
+			partyAddressVO.setContact(partyAddressDTO.getContact());
+//			partyAddressVO.setContactPerson(partyAddressDTO.getContactPerson());
+//			partyAddressVO.setContactNo(partyAddressDTO.getContactNo());
 			// Changed from contactPerson to contact
 			// partyAddressVO.setPartyName(partyAddressDTO.getCustomerName());
 			partyAddressVO.setPartyMasterVO(partyMasterVO);
@@ -576,7 +577,6 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 		partyMasterVO.setBussinessCate(customerDTO.getBussinessCategory());
 		partyMasterVO.setAccountType(customerDTO.getAccountsType());
 		partyMasterVO.setPartyCode(customerDTO.getCustomerCode());
-		partyMasterVO.setApproved(customerDTO.isApproved());
 		partyMasterVO.setCurrency(customerDTO.getCurrency());
 
 		if(customerDTO.isApproved()) {
@@ -665,7 +665,6 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 		partyMasterVO.setBussinessType(vendorDTO.getBussinessType());
 		partyMasterVO.setBussinessCate(vendorDTO.getBussinessCategory());
 		partyMasterVO.setAccountType(vendorDTO.getAccountsType());
-		partyMasterVO.setApproved(vendorDTO.isApproved());
 		
 		if(vendorDTO.isApproved()) {
 			partyMasterVO.setActive(true);
@@ -718,8 +717,10 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 			partyAddressVO.setAddressLine2(vendorsAddressDTO.getAddressLane2());
 			partyAddressVO.setAddressLine3(vendorsAddressDTO.getAddressLane3());
 			partyAddressVO.setPincode(vendorsAddressDTO.getPinCode());
-			partyAddressVO.setContactPerson(vendorsAddressDTO.getContactPerson());
-			partyAddressVO.setContactNo(vendorsAddressDTO.getContactNo());
+			partyAddressVO.setContact(vendorsAddressDTO.getContact());
+			partyAddressVO.setSez(vendorsAddressDTO.isSez());
+//			partyAddressVO.setContactPerson(vendorsAddressDTO.getContactPerson());
+//			partyAddressVO.setContactNo(vendorsAddressDTO.getContactNo());
 			partyAddressVO.setPartyMasterVO(partyMasterVO);
 			// Set the SalesVO reference
 			addressVOs.add(partyAddressVO);

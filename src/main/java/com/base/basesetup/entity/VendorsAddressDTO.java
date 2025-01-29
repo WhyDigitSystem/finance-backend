@@ -21,7 +21,8 @@ public class VendorsAddressDTO {
 	private Long pinCode;
 	private String contact;
 	private String vendorName;
-	private String contactPerson;
-	private Long contactNo;
+	private boolean sez;
+//	private String contactPerson;
+//	private Long contactNo;
 
 }

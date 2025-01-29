@@ -19,9 +19,9 @@ public class CustomersAddressDTO {
 	private String addressLane2;
 	private String addressLane3;
 	private Long pinCode;
-	private String contactPerson;
-	private Long contactNo; 
-	private boolean sez;
+	private String contact;
+//	private Long contactNo;
+//	private boolean sez;
 	private String customerName;
 
 }
