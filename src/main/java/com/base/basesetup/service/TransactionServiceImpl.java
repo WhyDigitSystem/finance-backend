@@ -1038,7 +1038,7 @@ public class TransactionServiceImpl implements TransactionService {
 	@Override
 	public String getGeneralJournalDocId(Long orgId, String finYear, String branch, String branchCode) {
 		String ScreenCode = "GJ";
-		String result = generalJournalRepo.getGeneralJournalByDocId(orgId, finYear, branchCode, ScreenCode);
+		String result = generalJournalRepo.getGeneralJournalDocId(orgId, finYear, branchCode, ScreenCode);
 		return result;
 	}
 
