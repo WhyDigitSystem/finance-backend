@@ -21,7 +21,7 @@ public class CustomersAddressDTO {
 	private Long pinCode;
 	private String contact;
 //	private Long contactNo;
-	private boolean sez;
+//	private boolean sez;
 	private String customerName;
 
 }

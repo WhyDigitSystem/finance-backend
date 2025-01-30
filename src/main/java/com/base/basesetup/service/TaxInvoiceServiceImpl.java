@@ -657,5 +657,22 @@ public class TaxInvoiceServiceImpl implements TaxInvoiceService {
 	        throw new ApplicationException("This Invoice Already Rejected");
 	    }
 	}
+	
+	@Override
+	public List<Map<String, Object>> getCreditDaysFromCustomer(Long orgId,String customerCode) {
+		Set<Object[]> chDetails = taxInvoiceRepo.findCreditDaysFromCustomer(orgId,customerCode);
+		return getCreditDaysFromCustomer(chDetails);
+	}
+
+	private List<Map<String, Object>> getCreditDaysFromCustomer(Set<Object[]> chCode) {
+		List<Map<String, Object>> List1 = new ArrayList<>();
+		for (Object[] ch : chCode) {
+			Map<String, Object> map = new HashMap<>();
+			map.put("creditDays", ch[0] != null ? ch[0].toString() : ""); // Empty string if null
+			List1.add(map);
+		}
+		return List1;
+
+	}
 
 }

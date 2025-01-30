@@ -19,6 +19,6 @@ public class PartyAddressDTO {
     private String addressLine3;
     private Long pincode;
     private String contact;
-    private boolean sez;
+//    private boolean sez;
 //	private String contactPerson;
 }

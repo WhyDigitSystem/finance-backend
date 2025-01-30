@@ -77,4 +77,7 @@ public interface CostInvoiceRepo extends JpaRepository<CostInvoiceVO, Long> {
 
 	CostInvoiceVO findByOrgIdAndIdAndDocId(Long orgId, Long id, String docId);
 
+	@Query(nativeQuery = true,value = "select a.creditdays from partymaster a where a.orgId=?1 and partycode=?2 and a.active=1 ")
+	Set<Object[]> findCreditDaysFromVendor(Long orgId, String supplierCode);
+
 }

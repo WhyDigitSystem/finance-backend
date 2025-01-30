@@ -854,4 +854,21 @@ public class CostInvoiceServiceImpl implements CostInvoiceService {
 		}
 	}
 
+	
+	@Override
+	public List<Map<String, Object>> getCreditDaysFromVendor(Long orgId,String supplierCode) {
+		Set<Object[]> chDetails = costInvoiceRepo.findCreditDaysFromVendor(orgId,supplierCode);
+		return getCreditDaysFromVendor(chDetails);
+	}
+
+	private List<Map<String, Object>> getCreditDaysFromVendor(Set<Object[]> chCode) {
+		List<Map<String, Object>> List1 = new ArrayList<>();
+		for (Object[] ch : chCode) {
+			Map<String, Object> map = new HashMap<>();
+			map.put("creditDays", ch[0] != null ? ch[0].toString() : ""); // Empty string if null
+			List1.add(map);
+		}
+		return List1;
+
+	}
 }

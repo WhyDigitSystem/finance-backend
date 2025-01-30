@@ -511,7 +511,7 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 			partyAddressVO.setAddressLine3(partyAddressDTO.getAddressLane3());
 			partyAddressVO.setPincode(partyAddressDTO.getPinCode());
 			partyAddressVO.setContact(partyAddressDTO.getContact());
-			partyAddressVO.setSez(partyAddressDTO.isSez());
+//			partyAddressVO.setSez(partyAddressDTO.isSez());
 //			partyAddressVO.setContactPerson(partyAddressDTO.getContactPerson());
 //			partyAddressVO.setContactNo(partyAddressDTO.getContactNo());
 			// Changed from contactPerson to contact
