@@ -66,7 +66,7 @@ public interface CostInvoiceRepo extends JpaRepository<CostInvoiceVO, Long> {
 	@Query(nativeQuery = true, value = "SELECT a.tdswithsec,a.tdswithper FROM partyspecialtds a, partymaster b WHERE a.partymasterid = b.partymasterid AND b.orgid=?1 AND b.partycode=?2")
 	Set<Object[]> findTdsDetailsFromPartyMasterSpecialTDS(Long orgId, String partyCode);
 
-	@Query(value = "select a from CostInvoiceVO a where a.orgId=?1 and a.supplierName=?2 and a.branchCode=?3")
+	@Query(nativeQuery = true,value = "select * from costinvoice a where a.orgId=?1 and a.supplierName=?2 and a.branchCode=?3 and a.approvestatus='Approved' order by a.docId desc")
 	List<CostInvoiceVO> findOrginBillNoByParty(Long orgId, String party, String branchCode);
 
 	@Query(nativeQuery = true, value = "select accountgroupname,gstpercentage,currency from groupledger where orgid=?1 and gsttaxflag!='NA' and category='TAX' and gsttaxflag='INPUT TAX' and gsttype=?2 and gstpercentage IN(?3) order by gstpercentage desc")

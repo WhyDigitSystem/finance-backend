@@ -25,6 +25,7 @@ import com.base.basesetup.entity.AccountsDetailsVO;
 import com.base.basesetup.entity.AccountsVO;
 import com.base.basesetup.entity.ChargerCostDebitNoteVO;
 import com.base.basesetup.entity.CostDebitNoteVO;
+import com.base.basesetup.entity.CostInvoiceVO;
 import com.base.basesetup.entity.DocumentTypeMappingDetailsVO;
 import com.base.basesetup.entity.GroupLedgerVO;
 import com.base.basesetup.entity.MultipleDocIdGenerationDetailsVO;
@@ -33,6 +34,7 @@ import com.base.basesetup.exception.ApplicationException;
 import com.base.basesetup.repo.AccountsRepo;
 import com.base.basesetup.repo.ChargesCostDebitNoteRepo;
 import com.base.basesetup.repo.CostDebitNoteRepo;
+import com.base.basesetup.repo.CostInvoiceRepo;
 import com.base.basesetup.repo.DocumentTypeMappingDetailsRepo;
 import com.base.basesetup.repo.GroupLedgerRepo;
 import com.base.basesetup.repo.MultipleDocIdGenerationDetailsRepo;
@@ -60,6 +62,9 @@ public class CostDebitNoteServiceImpl implements CostDebitNoteService {
 
 	@Autowired
 	GroupLedgerRepo groupLedgerRepo;
+	
+	@Autowired
+	CostInvoiceRepo costInvoiceRepo;
 
 	@Autowired
 	MultipleDocIdGenerationDetailsRepo multipleDocIdGenerationDetailsRepo;
@@ -520,8 +525,8 @@ public class CostDebitNoteServiceImpl implements CostDebitNoteService {
 	}
 
 	@Override
-	public List<CostDebitNoteVO> getOrginBillNoByParty(Long orgId, String party, String branchCode) {
-		return costDebitNoteRepo.findOrginBillNoByParty(orgId, party, branchCode);
+	public List<CostInvoiceVO> getOriginBillNofromCostInvoiceByParty(Long orgId, String party, String branchCode) {
+		return costInvoiceRepo.findOrginBillNoByParty(orgId, party, branchCode);
 	}
 
 	@Override

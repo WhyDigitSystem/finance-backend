@@ -43,8 +43,6 @@ public interface CostDebitNoteRepo extends JpaRepository<CostDebitNoteVO, Long> 
 	@Query(nativeQuery = true, value = "select currency,currencydescripition,buyingexrate,sellingexrate from vw_exrates where orgid=?1")
 	Set<Object[]> getCurrencyAndExrateDetails(Long orgId);
 
-	@Query(value = "select a from CostDebitNoteVO a where a.orgId=?1 and a.supplierName=?2 and a.branchCode=?3")
-	List<CostDebitNoteVO> findOrginBillNoByParty(Long orgId, String party, String branchCode);
 
 	@Query(nativeQuery = true, value = "SELECT a.partytype\r\n" + "FROM partymaster a\r\n" + "WHERE a.orgId = ?1\r\n"
 			+ "AND a.branch = ?2\r\n" + "AND a.finyear =?3 and partytype='VENDOR'GROUP BY a.partytype")
