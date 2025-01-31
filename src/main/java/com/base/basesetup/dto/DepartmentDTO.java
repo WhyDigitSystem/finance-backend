@@ -14,5 +14,4 @@ public class DepartmentDTO {
 	private boolean active;
 	private Long orgId;
 	private String createdBy;
-	private boolean cancel;
 }

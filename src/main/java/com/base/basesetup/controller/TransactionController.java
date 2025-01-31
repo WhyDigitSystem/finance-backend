@@ -795,7 +795,7 @@ public class TransactionController extends BaseController {
 		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
 		return ResponseEntity.ok().body(responseDTO);
 	}
-
+	
 	@GetMapping("/getGeneralJournalDocId")
 	public ResponseEntity<ResponseDTO> getGeneralJournalDocId(@RequestParam Long orgId, @RequestParam String finYear,
 			@RequestParam String branch, @RequestParam String branchCode) {
@@ -805,7 +805,7 @@ public class TransactionController extends BaseController {
 		String errorMsg = null;
 		Map<String, Object> responseObjectsMap = new HashMap<>();
 		ResponseDTO responseDTO = null;
-		String mapp = null;
+		String mapp = "";
 
 		try {
 			mapp = transactionService.getGeneralJournalDocId(orgId, finYear, branch, branchCode);
@@ -816,18 +816,19 @@ public class TransactionController extends BaseController {
 
 		if (StringUtils.isBlank(errorMsg)) {
 			responseObjectsMap.put(CommonConstant.STRING_MESSAGE,
-					"GeneralJournal DocId information retrieved successfully");
+					"GeneralJournalDocId information retrieved successfully");
 			responseObjectsMap.put("generalJournalDocId", mapp);
 			responseDTO = createServiceResponse(responseObjectsMap);
 		} else {
 			responseDTO = createServiceResponseError(responseObjectsMap,
-					"Failed to retrieve GeneralJournal Docid information", errorMsg);
+					"Failed to retrieve GeneralJournalDocId information", errorMsg);
 		}
 
 		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
 		return ResponseEntity.ok().body(responseDTO);
 	}
 
+	
 	@GetMapping("/getAccountNameFromGroup")
 	public ResponseEntity<ResponseDTO> getAccountNameFromGroup(@RequestParam Long orgId) {
 

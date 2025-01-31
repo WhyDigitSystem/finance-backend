@@ -1162,7 +1162,6 @@ public class CommonMasterServiceImpl implements CommonMasterService {
 		departmentVO.setDepartmentCode(departmentDTO.getDepartmentCode().toUpperCase());
 		departmentVO.setActive(departmentDTO.isActive());
 		departmentVO.setOrgId(departmentDTO.getOrgId());
-		departmentVO.setCancel(departmentDTO.isCancel());
 
 	}
 
@@ -1238,7 +1237,6 @@ public class CommonMasterServiceImpl implements CommonMasterService {
 		designationVO.setDesignationCode(designationDTO.getDesignationCode().toUpperCase());
 		designationVO.setActive(designationDTO.isActive());
 		designationVO.setOrgId(designationDTO.getOrgId());
-		designationVO.setCancel(designationDTO.isCancel());
 
 	}	
 

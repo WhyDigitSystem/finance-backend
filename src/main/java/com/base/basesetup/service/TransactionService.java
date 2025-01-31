@@ -113,6 +113,8 @@ public interface TransactionService {
 
 	List<GeneralJournalVO> getGeneralJournalById(Long id);
 
+	String getGeneralJournalDocId(Long orgId, String finYear, String branch, String branchCode);
+
 	List<GeneralJournalVO> getGeneralJournalByActive();
 
 	List<Map<String, Object>> getAccountNameFromGroup(Long orgId);
@@ -211,8 +213,6 @@ public interface TransactionService {
 
 	String getReconcileBankDocId(Long orgId, String finYear, String branch, String branchCode);
 
-	String getGeneralJournalDocId(Long orgId, String finYear, String branch, String branchCode);
-
 	List<Map<String, Object>> getBankNameForGroupLedger(Long orgId);
 
 	// ReconcileCorpBank
@@ -305,5 +305,6 @@ public interface TransactionService {
 	Map<String, Object> updateCreateContraVoucher(@Valid ContraVoucherDTO contraVoucherDTO) throws ApplicationException;
 
 	List<Map<String, Object>> getAccountNamefromGroupLedgerforCV(Long orgId);
+
 
 }

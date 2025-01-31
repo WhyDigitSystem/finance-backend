@@ -1072,11 +1072,11 @@ public class MasterServiceImpl implements MasterService {
 		else {
 			// Fetch the parent record
 			GroupLedgerVO coaVO2 = new GroupLedgerVO();
-			if (groupLedgerDTO.getType().equalsIgnoreCase("group")) {
+//			if (groupLedgerDTO.getType().equalsIgnoreCase("group")) {
 				coaVO2 = groupLedgerRepo.getOrgIdAndMainAccountGroupName(groupLedgerDTO.getOrgId(), groupLedgerDTO.getGroupName());
-			} else {
-				coaVO2 = groupLedgerRepo.getOrgIdAndSubAccountGroupName(groupLedgerDTO.getOrgId(), groupLedgerDTO.getGroupName());
-			}
+//			} else {
+//				coaVO2 = groupLedgerRepo.getOrgIdAndSubAccountGroupName(groupLedgerDTO.getOrgId(), groupLedgerDTO.getGroupName());
+//			}
 			if (coaVO2 == null) {
 				// Handle the case where the parent record is not found
 				throw new ApplicationException("Parent record not found for GroupName: " + groupLedgerDTO.getGroupName());

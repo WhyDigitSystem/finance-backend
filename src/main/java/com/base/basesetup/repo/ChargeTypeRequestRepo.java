@@ -45,4 +45,5 @@ public interface ChargeTypeRequestRepo extends JpaRepository<ChargeTypeRequestVO
 	ChargeTypeRequestVO FindByChargeCodeAndOrgId(@Param("chargeCode") String igstChargeCode,
 			@Param("orgId") Long orgId);
 
+
 }

@@ -67,7 +67,7 @@ public class PartyAddressVO {
 //	private String contactPerson;
     
     @Column(name="sez")
-    private boolean sez = true;
+    private boolean sez = false;
     
 
 //    @Column(name ="partyname")

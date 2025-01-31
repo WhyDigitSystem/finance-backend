@@ -42,4 +42,6 @@ public interface TaxInvoiceService {
 	
 	TaxInvoiceVO approveTaxInvoice(Long orgId,Long id,String docId,String action,String actionBy) throws ApplicationException;
 
+	List<Map<String, Object>> getCreditDaysFromCustomer(Long orgId, String customerCode);
+
 }

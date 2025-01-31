@@ -551,5 +551,34 @@ public class CostInvoiceController extends BaseController {
 		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
 		return ResponseEntity.ok().body(responseDTO);
 	}
+	
+	@GetMapping("/getCreditDaysFromVendor")
+	public ResponseEntity<ResponseDTO> getCreditDaysFromVendor(@RequestParam Long orgId,
+			@RequestParam String supplierCode) {
+		String methodName = "getCreditDaysFromVendor()";
+		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+		String errorMsg = null;
+		Map<String, Object> responseObjectsMap = new HashMap<>();
+		ResponseDTO responseDTO = null;
+		List<Map<String, Object>> creditdays = new ArrayList<>();
+		try {
+			creditdays = costInvoiceService.getCreditDaysFromVendor(orgId, supplierCode);
+		} catch (Exception e) {
+			errorMsg = e.getMessage();
+			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+		}
+		if (StringUtils.isBlank(errorMsg)) {
+			responseObjectsMap.put(CommonConstant.STRING_MESSAGE,
+					"Creditdays get successfully from Vendor master");
+			responseObjectsMap.put("creditdays", creditdays);
+			responseDTO = createServiceResponse(responseObjectsMap);
+		} else {
+			responseDTO = createServiceResponseError(responseObjectsMap,
+					"creditdays receive failed from Vendor master", errorMsg);
+		}
+		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+		return ResponseEntity.ok().body(responseDTO);
+	}
+
 
 }
