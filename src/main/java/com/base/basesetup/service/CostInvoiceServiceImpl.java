@@ -761,6 +761,7 @@ public class CostInvoiceServiceImpl implements CostInvoiceService {
 			AccountsDetailsVO accountsDetailsVO = new AccountsDetailsVO();
 			accountsDetailsVO.setNDebitAmount(BigDecimal.ZERO);
 			accountsDetailsVO.setACategory("PAYABLE A/C");
+			accountsDetailsVO.setAccountName("PAYABLE A/C");
 			accountsDetailsVO.setDebitAmount(BigDecimal.ZERO);
 			accountsDetailsVO.setNCreditAmount(costInvoiceVO.getSumLcAmt());
 			accountsDetailsVO.setCreditAmount(costInvoiceVO.getSumLcAmt());
