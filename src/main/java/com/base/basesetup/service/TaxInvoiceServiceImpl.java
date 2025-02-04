@@ -555,6 +555,7 @@ public class TaxInvoiceServiceImpl implements TaxInvoiceService {
 	        AccountsDetailsVO accountsDetailsVO = new AccountsDetailsVO();
 	        accountsDetailsVO.setNDebitAmount(taxInvoiceVO.getTotalInvAmountLc());
 	        accountsDetailsVO.setACategory("RECEIVABLE A/C");
+	        accountsDetailsVO.setAccountName("RECEIVABLE A/C");
 	        accountsDetailsVO.setSubLedgerCode(taxInvoiceVO.getPartyCode());
 	        accountsDetailsVO.setDebitAmount(taxInvoiceVO.getTotalInvAmountLc());
 	        accountsDetailsVO.setNCreditAmount(BigDecimal.ZERO);
