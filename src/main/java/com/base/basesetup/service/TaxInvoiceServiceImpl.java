@@ -180,7 +180,7 @@ public class TaxInvoiceServiceImpl implements TaxInvoiceService {
 		BigDecimal totalChargeAmountBC = BigDecimal.ZERO;
 		BigDecimal totalTaxAmountLC = BigDecimal.ZERO;
 		BigDecimal totalTaxAmountBC = BigDecimal.ZERO;
-		BigDecimal totalInvAmountLC = BigDecimal.ZERO; 
+		BigDecimal totalInvAmountLC = BigDecimal.ZERO;  
 		BigDecimal totalInvAmountBC = BigDecimal.ZERO;
 
 		List<TaxInvoiceDetailsVO> taxInvoiceDetailsVOs = new ArrayList<>();
