@@ -60,8 +60,14 @@ public interface TaxInvoiceRepo extends JpaRepository<TaxInvoiceVO, Long> {
 
 	TaxInvoiceVO findByOrgIdAndIdAndDocId(Long orgId, Long id, String docId);
 
-	@Query(nativeQuery = true,value = "select a.creditdays from partymaster a where a.orgId=?1 and partycode=?2 and a.active=1 ")
+	@Query(nativeQuery = true,value = "select a.creditdays from partymaster a where a.orgid=?1 and partycode=?2 and a.active=1 ")
 	Set<Object[]> findCreditDaysFromCustomer(Long orgId, String customerCode);
+
+	@Query(nativeQuery = true,value = "select a.jobno from jobcard a where a.orgid=?1 and a.closed=0 and a.active=1 ")
+	Set<Object[]> getAllJobNoByActice(Long orgId);
+
+
+
 	
 
 }
