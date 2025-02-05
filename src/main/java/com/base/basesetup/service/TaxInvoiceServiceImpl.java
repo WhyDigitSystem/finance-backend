@@ -1,7 +1,6 @@
 package com.base.basesetup.service;
 
 import java.math.BigDecimal;
-import java.math.MathContext;
 import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -458,25 +457,7 @@ public class TaxInvoiceServiceImpl implements TaxInvoiceService {
 		return List1;
 	}
 
-	@Override
-	public List<Map<String, Object>> getPartyAddressDetails(Long orgId, Long id, String stateCode,
-			String placeOfSupply) {
-		Set<Object[]> getAddressDetails = taxInvoiceRepo.getAddressDetails(orgId, id, stateCode, placeOfSupply);
-		return getAddress(getAddressDetails);
-	}
-
-	private List<Map<String, Object>> getAddress(Set<Object[]> getAddressDetails) {
-		List<Map<String, Object>> List1 = new ArrayList<>();
-		for (Object[] ch : getAddressDetails) {
-			Map<String, Object> map = new HashMap<>();
-			map.put("addressType", ch[0] != null ? ch[0].toString() : "");
-			map.put("address", ch[1] != null ? ch[1].toString() : ""); // Empty string if null
-			map.put("pinCode", ch[2] != null ? ch[2].toString() : "");
-			List1.add(map);
-		}
-		return List1;
-	}
-
+	
 	@Override
 	public List<Map<String, Object>> getGstTypeDetails(Long orgId, String branchCode, String stateCode) {
 		Set<Object[]> getGSTTypeDetails = taxInvoiceRepo.getGstType(orgId, branchCode, stateCode);
@@ -675,5 +656,43 @@ public class TaxInvoiceServiceImpl implements TaxInvoiceService {
 		return List1;
 
 	}
+
+	
+	@Override
+	public List<Map<String, Object>> getPartyAddressDetails(Long orgId, Long id, String stateCode,
+			String placeOfSupply) {
+		Set<Object[]> getAddressDetails = taxInvoiceRepo.getAddressDetails(orgId, id, stateCode, placeOfSupply);
+		return getAddress(getAddressDetails);
+	}
+
+	private List<Map<String, Object>> getAddress(Set<Object[]> getAddressDetails) {
+		List<Map<String, Object>> List1 = new ArrayList<>();
+		for (Object[] ch : getAddressDetails) {
+			Map<String, Object> map = new HashMap<>();
+			map.put("addressType", ch[0] != null ? ch[0].toString() : "");
+			map.put("address", ch[1] != null ? ch[1].toString() : ""); // Empty string if null
+			map.put("pinCode", ch[2] != null ? ch[2].toString() : "");
+			List1.add(map);
+		}
+		return List1;
+	}
+
+
+	@Override
+	public List<Map<String, Object>> getAllJobNoByActice(Long orgId) {
+		Set<Object[]> jobNo = taxInvoiceRepo.getAllJobNoByActice(orgId );
+		return getAllJobNoByActice(jobNo);
+	}
+
+	private List<Map<String, Object>> getAllJobNoByActice(Set<Object[]> jobOrderNo) {
+		List<Map<String, Object>> List1 = new ArrayList<>();
+		for (Object[] ch : jobOrderNo) {
+			Map<String, Object> map = new HashMap<>();
+			map.put("jobNo", ch[0] != null ? ch[0].toString() : "");
+			List1.add(map);
+		}
+		return List1;
+	}
+
 
 }
