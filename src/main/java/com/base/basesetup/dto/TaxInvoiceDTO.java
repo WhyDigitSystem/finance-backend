@@ -40,15 +40,13 @@ public class TaxInvoiceDTO {
 	private LocalDate supplierBillDate;
 	private String billCurr;
 	private BigDecimal billCurrRate;
-	private BigDecimal exAmount;
 	private int creditDays;
-	private String contactPerson;
 	private String shipperInvoiceNo;
 	private String billOfEntry;
-	private String billMonth;
 	private String invoiceNo;
 	private LocalDate invoiceDate;
-	private String salesType;
+	private String jobOrderNo;
+
 	
 	List<TaxInvoiceDetailsDTO> taxInvoiceDetailsDTO;
 

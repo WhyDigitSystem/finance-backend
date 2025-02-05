@@ -13,6 +13,7 @@ import javax.persistence.Table;
 
 import com.base.basesetup.dto.CreatedUpdatedDate;
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonGetter;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -58,13 +59,24 @@ public class PartyAddressVO {
 
     @Column(name = "pincode") 
     private Long pincode;
-
+    
     @Column(name = "contact", length = 15) 
     private String contact;
+    
+//    @Column(name = "contactperson", length = 150)
+//	private String contactPerson;
+    
+    @Column(name="sez")
+    private boolean sez = false;
+    
 
 //    @Column(name ="partyname")
 //    private String partyName;
 
+	@JsonGetter("sez")
+	public String getSez() {
+		return sez ? "T" : "F";
+	}
     
 	@ManyToOne
 	@JoinColumn(name = "partymasterid")

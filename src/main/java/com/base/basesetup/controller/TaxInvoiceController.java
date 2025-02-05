@@ -409,5 +409,35 @@ public class TaxInvoiceController extends BaseController {
 		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
 		return ResponseEntity.ok().body(responseDTO);
 	}
+	
+	@GetMapping("/getCreditDaysFromCustomer")
+	public ResponseEntity<ResponseDTO> getCreditDaysFromCustomer(@RequestParam Long orgId,
+			@RequestParam String customerCode) {
+		String methodName = "getCreditDaysFromCustomer()";
+		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+		String errorMsg = null;
+		Map<String, Object> responseObjectsMap = new HashMap<>();
+		ResponseDTO responseDTO = null;
+		List<Map<String, Object>> creditdays = new ArrayList<>();
+		try {
+			creditdays = taxInvoiceService.getCreditDaysFromCustomer(orgId, customerCode);
+		} catch (Exception e) {
+			errorMsg = e.getMessage();
+			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+		}
+		if (StringUtils.isBlank(errorMsg)) {
+			responseObjectsMap.put(CommonConstant.STRING_MESSAGE,
+					"Creditdays get successfully from customer master");
+			responseObjectsMap.put("creditdays", creditdays);
+			responseDTO = createServiceResponse(responseObjectsMap);
+		} else {
+			responseDTO = createServiceResponseError(responseObjectsMap,
+					"creditdays receive failed from customer master", errorMsg);
+		}
+		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+		return ResponseEntity.ok().body(responseDTO);
+	}
+
+
 
 }

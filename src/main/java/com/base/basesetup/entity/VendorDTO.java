@@ -23,6 +23,10 @@ public class VendorDTO {
 	private BigDecimal creditLimit;
 	private String creditTerms;
 	private String taxRegistered;
+	private String bussinessType;
+	private String bussinessCategory;
+	private String accountsType;
+	private boolean approved;
 	
 	private List<VendorsStateDTO> vendorStateDTO;
 	private List<VendorsAddressDTO> vendorAddressDTO;

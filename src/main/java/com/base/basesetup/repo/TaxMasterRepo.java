@@ -1,6 +1,7 @@
 package com.base.basesetup.repo;
 
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -19,5 +20,15 @@ public interface TaxMasterRepo extends JpaRepository<TaxMasterVO,Long>{
 
 	@Query(nativeQuery = true,value = "select * from taxmaster where active=1")
 	List<TaxMasterVO> findTaxMasterByActive();
+
+	@Query(nativeQuery = true,value = "select serviceaccountcode from saccode where orgid=?1 and active=1")
+	Set<Object[]> findServiceAccountCodeForTaxMaster(Long orgId);
+
+	@Query(nativeQuery = true,value = "select accountgroupname from groupledger where orgid=?1 and type in ('ACCOUNT') and category in ('RECEIVABLE A/C') and gsttaxflag in ('OUTPUT TAX') and active=1")
+	Set<Object[]> findRevenueLegderForTaxMaster(Long orgId);
+
+	@Query(nativeQuery = true,value = "select accountgroupname from groupledger where orgid=?1 and type in ('ACCOUNT') and category in ('PAYABLE A/C') and gsttaxflag in ('OUTPUT TAX') and active=1")
+	Set<Object[]> findCostLedgerForTaxMaster(Long orgId);
+
 
 }

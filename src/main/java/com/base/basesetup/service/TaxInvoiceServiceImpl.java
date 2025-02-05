@@ -165,14 +165,11 @@ public class TaxInvoiceServiceImpl implements TaxInvoiceService {
 //		taxInvoiceVO.setSupplierBillDate(taxInvoiceDTO.getSupplierBillDate());
 		taxInvoiceVO.setBillCurr(taxInvoiceDTO.getBillCurr().toUpperCase());
 		taxInvoiceVO.setBillCurrRate(taxInvoiceDTO.getBillCurrRate());
-		taxInvoiceVO.setExAmount(taxInvoiceDTO.getExAmount());
 		taxInvoiceVO.setCreditDays(taxInvoiceDTO.getCreditDays());
-		taxInvoiceVO.setContactPerson(taxInvoiceDTO.getContactPerson().toUpperCase());
 		taxInvoiceVO.setShipperInvoiceNo(taxInvoiceDTO.getShipperInvoiceNo().toUpperCase());
 		taxInvoiceVO.setBillOfEntry(taxInvoiceDTO.getBillOfEntry().toUpperCase());
-		taxInvoiceVO.setBillMonth(taxInvoiceDTO.getBillMonth().toUpperCase());
-		taxInvoiceVO.setSalesType(taxInvoiceDTO.getSalesType().toUpperCase());
 		taxInvoiceVO.setModifiedBy(taxInvoiceDTO.getCreatedBy());
+		taxInvoiceVO.setJobOrderNo(taxInvoiceDTO.getJobOrderNo());
 
 		if (ObjectUtils.isNotEmpty(taxInvoiceVO.getId())) {
 			List<TaxInvoiceDetailsVO> taxInvoiceDetailsVO1 = taxInvoiceDetailsRepo.findByTaxInvoiceVO(taxInvoiceVO);
@@ -513,6 +510,7 @@ public class TaxInvoiceServiceImpl implements TaxInvoiceService {
 	    	String accountsDocId = accountsRepo.getApproveDocId(taxInvoiceVO.getOrgId(), taxInvoiceVO.getFinYear(),
 	    			taxInvoiceVO.getBranchCode(),sourceScreenCode,screenCode);
 			taxInvoiceVO.setDocId(docId);
+			
 
 			// GETDOCID LASTNO +1
 			MultipleDocIdGenerationDetailsVO multipleDocIdGenerationDetailsVO = multipleDocIdGenerationDetailsRepo
@@ -539,7 +537,6 @@ public class TaxInvoiceServiceImpl implements TaxInvoiceService {
 	        accountsVO.setCurrency(taxInvoiceVO.getBillCurr());
 	        accountsVO.setExRate(taxInvoiceVO.getBillCurrRate());
 	        accountsVO.setRemarks(taxInvoiceVO.getBillingRemarks());
-	        accountsVO.setBillMonth(taxInvoiceVO.getBillMonth());
 	        accountsVO.setFinYear(taxInvoiceVO.getFinYear());
 
 	        // Calculate total debit/credit amounts
@@ -550,7 +547,6 @@ public class TaxInvoiceServiceImpl implements TaxInvoiceService {
 	        accountsVO.setAmountInWords(taxInvoiceVO.getAmountInWords());
 	        accountsVO.setStTaxAmount(taxInvoiceVO.getTotalTaxableAmountLc());
 	        accountsVO.setChargeableAmount(taxInvoiceVO.getTotalChargeAmountLc());
-	        accountsVO.setSalesType(taxInvoiceVO.getSalesType());
 
 	        // Create AccountsDetailsVO list and populate it
 	        List<AccountsDetailsVO> accountsDetailsVOs = new ArrayList<>();
@@ -661,6 +657,23 @@ public class TaxInvoiceServiceImpl implements TaxInvoiceService {
 	    } else {
 	        throw new ApplicationException("This Invoice Already Rejected");
 	    }
+	}
+	
+	@Override
+	public List<Map<String, Object>> getCreditDaysFromCustomer(Long orgId,String customerCode) {
+		Set<Object[]> chDetails = taxInvoiceRepo.findCreditDaysFromCustomer(orgId,customerCode);
+		return getCreditDaysFromCustomer(chDetails);
+	}
+
+	private List<Map<String, Object>> getCreditDaysFromCustomer(Set<Object[]> chCode) {
+		List<Map<String, Object>> List1 = new ArrayList<>();
+		for (Object[] ch : chCode) {
+			Map<String, Object> map = new HashMap<>();
+			map.put("creditDays", ch[0] != null ? ch[0].toString() : ""); // Empty string if null
+			List1.add(map);
+		}
+		return List1;
+
 	}
 
 }

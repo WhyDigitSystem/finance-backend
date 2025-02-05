@@ -58,4 +58,6 @@ public interface CostInvoiceService {
 //	APPROVE
 	CostInvoiceVO approveCostInvoice(Long orgId, Long id, String docId, String action, String actionBy)
 			throws ApplicationException;
+
+	List<Map<String, Object>> getCreditDaysFromVendor(Long orgId, String supplierCode);
 }

@@ -145,6 +145,9 @@ public class PartyMasterVO {
 
     @Column(name = "swift", length = 15)
     private String Swift;
+    
+    
+ 
 
     // Additional fields with column mappings
     @Column(name = "branch", length = 25)

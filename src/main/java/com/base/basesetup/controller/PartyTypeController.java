@@ -1,6 +1,7 @@
 package com.base.basesetup.controller;
 
 import java.util.ArrayList;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -212,8 +213,8 @@ public class PartyTypeController extends BaseController {
 		return ResponseEntity.ok().body(responseDTO);
 	}
 
-	//CUSTOMERS
-	
+	// CUSTOMERS
+
 	@PutMapping("/createUpdateCustomer")
 	public ResponseEntity<ResponseDTO> createUpdateCustomer(@Valid @RequestBody CustomersDTO customersDTO) {
 		String methodName = "createUpdateCustomer()";
@@ -235,7 +236,7 @@ public class PartyTypeController extends BaseController {
 		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
 		return ResponseEntity.ok().body(responseDTO);
 	}
-	
+
 	@GetMapping("/getCustomersById")
 	public ResponseEntity<ResponseDTO> getCustomersById(@RequestParam Long id) {
 		String methodName = "getCustomersById()";
@@ -261,8 +262,7 @@ public class PartyTypeController extends BaseController {
 		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
 		return ResponseEntity.ok().body(responseDTO);
 	}
-	
-	
+
 	@GetMapping("/getAllCustomers")
 	public ResponseEntity<ResponseDTO> getAllCustomers(@RequestParam Long orgId) {
 		String methodName = "getAllCustomers()";
@@ -270,7 +270,7 @@ public class PartyTypeController extends BaseController {
 		String errorMsg = null;
 		Map<String, Object> responseObjectsMap = new HashMap<>();
 		ResponseDTO responseDTO = null;
-		List<PartyMasterVO> masterVOs = new ArrayList<PartyMasterVO>();
+		List<PartyMasterVO> masterVOs = new ArrayList<>();
 		try {
 			masterVOs = partyTypeService.getAllCustomers(orgId);
 		} catch (Exception e) {
@@ -279,16 +279,16 @@ public class PartyTypeController extends BaseController {
 		}
 		if (StringUtils.isBlank(errorMsg)) {
 			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "Customers information get successfully By orgId");
-			responseObjectsMap.put("customersVO", masterVOs);
+			responseObjectsMap.put("masterVOs", masterVOs);
 			responseDTO = createServiceResponse(responseObjectsMap);
 		} else {
-			responseDTO = createServiceResponseError(responseObjectsMap, "Customers information receive failed By orgId",
-					errorMsg);
+			responseDTO = createServiceResponseError(responseObjectsMap,
+					"Customers information receive failed By orgId", errorMsg);
 		}
 		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
 		return ResponseEntity.ok().body(responseDTO);
 	}
-	
+
 	@PutMapping("/createUpdateVendor")
 	public ResponseEntity<ResponseDTO> createUpdateVendor(@Valid @RequestBody VendorDTO vendorDTO) {
 		String methodName = "createUpdateVendor()";
@@ -310,7 +310,7 @@ public class PartyTypeController extends BaseController {
 		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
 		return ResponseEntity.ok().body(responseDTO);
 	}
-	
+
 	@GetMapping("/getVendorsById")
 	public ResponseEntity<ResponseDTO> getVendorsById(@RequestParam Long id) {
 		String methodName = "getVendorsById()";
@@ -336,7 +336,7 @@ public class PartyTypeController extends BaseController {
 		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
 		return ResponseEntity.ok().body(responseDTO);
 	}
-	
+
 	@GetMapping("/getAllVendors")
 	public ResponseEntity<ResponseDTO> getAllVendors(@RequestParam Long orgId) {
 		String methodName = "getAllVendors()";
@@ -362,7 +362,7 @@ public class PartyTypeController extends BaseController {
 		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
 		return ResponseEntity.ok().body(responseDTO);
 	}
-	
+
 	@PostMapping("/vendorUpload")
 	public ResponseEntity<ResponseDTO> vendorUpload(@RequestParam("files") MultipartFile files,
 			@RequestParam("orgId") Long orgId, @RequestParam("createdBy") String createdBy) {
@@ -384,5 +384,33 @@ public class PartyTypeController extends BaseController {
 		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
 		return ResponseEntity.ok().body(responseDTO);
 	}
-	
+
+	@GetMapping("/getSectionNameFromTds")
+	public ResponseEntity<ResponseDTO> getSectionNameFromTds(@RequestParam Long orgId, @RequestParam String section) {
+		String methodName = "getSectionNameFromTds()";
+		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+		String errorMsg = null;
+		Map<String, Object> responseObjectsMap = new HashMap<>();
+		ResponseDTO responseDTO = null;
+		List<Map<String, Object>> mapp = new ArrayList<>();
+
+		try {
+			mapp = partyTypeService.getSectionNameFromTds(orgId, section);
+		} catch (Exception e) {
+			errorMsg = e.getMessage();
+			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+		}
+
+		if (StringUtils.isBlank(errorMsg)) {
+			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "sectionName retrieved successfully");
+			responseObjectsMap.put("tdsMasterVO", mapp);
+			responseDTO = createServiceResponse(responseObjectsMap);
+		} else {
+			responseDTO = createServiceResponseError(responseObjectsMap, "Failed to retrieve sectionName", errorMsg);
+		}
+
+		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+		return ResponseEntity.ok().body(responseDTO);
+	}
+
 }

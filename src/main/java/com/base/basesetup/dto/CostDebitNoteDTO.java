@@ -4,6 +4,8 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
+import javax.persistence.Column;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -46,6 +48,7 @@ public class CostDebitNoteDTO {
 	private String accuralid;
 	private String utrRef;
 	private String costType;
+	private boolean approved;
 
 	private String orginBill;
 	private LocalDate originBillDate;

@@ -20,10 +20,10 @@ public interface ChargeTypeRequestRepo extends JpaRepository<ChargeTypeRequestVO
 	@Query(nativeQuery = true, value = "select * from chargetyperequest where active=1")
 	List<ChargeTypeRequestVO> findChargeTypeRequestByActive();
 
-	@Query(nativeQuery = true, value = "select accountgroupname from groupledger where active=1 and category in('RECEIVABLE A/C','OTHERS') and type='ACCOUNT' and orgid=?1")
+	@Query(nativeQuery = true, value = "select accountgroupname from groupledger where active=1 and category in('RECEIVABLE A/C') and type='ACCOUNT' and orgid=?1")
 	Set<Object[]> findSalesAccountFromGroup(Long orgId);
 
-	@Query(nativeQuery = true, value = "select accountgroupname from groupledger where active=1 and category in('PAYABLE A/C','OTHERS') and type='ACCOUNT' and orgid=?1")
+	@Query(nativeQuery = true, value = "select accountgroupname from groupledger where active=1 and category in('PAYABLE A/C') and type='ACCOUNT' and orgid=?1")
 	Set<Object[]> findPaymentAccountFromGroup(Long orgId);
 
 	boolean existsByOrgIdAndChargeDescriptionIgnoreCase(Long orgId, String chargeDescription);
@@ -44,5 +44,6 @@ public interface ChargeTypeRequestRepo extends JpaRepository<ChargeTypeRequestVO
 	@Query("SELECT c FROM ChargeTypeRequestVO c WHERE c.chargeCode = :chargeCode AND c.orgId = :orgId")
 	ChargeTypeRequestVO FindByChargeCodeAndOrgId(@Param("chargeCode") String igstChargeCode,
 			@Param("orgId") Long orgId);
+
 
 }

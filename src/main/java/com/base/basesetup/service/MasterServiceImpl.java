@@ -402,7 +402,7 @@ public class MasterServiceImpl implements MasterService {
 		// Prepare the response
 		Map<String, Object> response = new HashMap<>();
 		response.put("message", message);
-		response.put("employeeVO", employeeVO);
+		response.put("createdEmployeeVO", employeeVO);
 
 		return response;
 	}
@@ -417,10 +417,12 @@ public class MasterServiceImpl implements MasterService {
 		employeeVO.setDesignation(employeeDTO.getDesignation());
 		employeeVO.setDateOfBirth(employeeDTO.getDateOfBirth());
 		employeeVO.setJoiningDate(employeeDTO.getJoiningdate());
-		employeeDTO.setEmail(employeeDTO.getEmail());
+		employeeVO.setEmail(employeeDTO.getEmail());
 		employeeVO.setOrgId(employeeDTO.getOrgId());
 		employeeVO.setCancel(employeeDTO.isCancel());
 		employeeVO.setActive(employeeDTO.isActive());
+		employeeVO.setSalesFlag(employeeDTO.isSalesFlag());
+
 		employeeVO.setCancelRemark(employeeDTO.getCancelRemark());
 	}
 
@@ -559,7 +561,6 @@ public class MasterServiceImpl implements MasterService {
 		taxMasterVO.setOrgId(taxMasterDTO.getOrgId());
 		taxMasterVO.setFinYear(taxMasterDTO.getFinYear());
 		taxMasterVO.setServiceAccountCode(taxMasterDTO.getServiceAccountCode());
-		taxMasterVO.setWarehouse(taxMasterDTO.getWarehouse());
 		taxMasterVO.setActive(taxMasterDTO.isActive());
 		taxMasterVO.setGst(taxMasterDTO.getGst());
 		taxMasterVO.setGstSlab(taxMasterDTO.getGstSlab());
@@ -1059,6 +1060,11 @@ public class MasterServiceImpl implements MasterService {
 		groupLedgerVO.setNatureOfAccount(groupLedgerDTO.getNatureOfAccount());
 		groupLedgerVO.setPBFlag(groupLedgerDTO.getPBFlag());
 		groupLedgerVO.setAccountGroupName(groupLedgerDTO.getAccountGroupName());
+		groupLedgerVO.setGstTaxFlag(groupLedgerDTO.getGstTaxFlag());
+		groupLedgerVO.setGstType(groupLedgerDTO.getGstType());
+		groupLedgerVO.setGstPercentage(groupLedgerDTO.getGstPercentage());
+
+
 		
 		if ("group".equalsIgnoreCase(groupLedgerDTO.getType()) && groupLedgerDTO.getGroupName() == null) {
 			groupLedgerVO.setParentCode("0");
@@ -1066,11 +1072,11 @@ public class MasterServiceImpl implements MasterService {
 		else {
 			// Fetch the parent record
 			GroupLedgerVO coaVO2 = new GroupLedgerVO();
-			if (groupLedgerDTO.getType().equalsIgnoreCase("group")) {
+//			if (groupLedgerDTO.getType().equalsIgnoreCase("group")) {
 				coaVO2 = groupLedgerRepo.getOrgIdAndMainAccountGroupName(groupLedgerDTO.getOrgId(), groupLedgerDTO.getGroupName());
-			} else {
-				coaVO2 = groupLedgerRepo.getOrgIdAndSubAccountGroupName(groupLedgerDTO.getOrgId(), groupLedgerDTO.getGroupName());
-			}
+//			} else {
+//				coaVO2 = groupLedgerRepo.getOrgIdAndSubAccountGroupName(groupLedgerDTO.getOrgId(), groupLedgerDTO.getGroupName());
+//			}
 			if (coaVO2 == null) {
 				// Handle the case where the parent record is not found
 				throw new ApplicationException("Parent record not found for GroupName: " + groupLedgerDTO.getGroupName());
@@ -1541,15 +1547,15 @@ public class MasterServiceImpl implements MasterService {
 		chargeTypeRequestVO.setSalesAccount(chargeTypeRequestDTO.getSalesAccount().toUpperCase());
 		chargeTypeRequestVO.setPurchaseAccount(chargeTypeRequestDTO.getPurchaseAccount().toUpperCase());
 		chargeTypeRequestVO.setTaxable(chargeTypeRequestDTO.getTaxable().toUpperCase());
-		chargeTypeRequestVO.setTaxType(chargeTypeRequestDTO.getTaxType().toUpperCase());
-		chargeTypeRequestVO.setCcFeeApplicable(chargeTypeRequestDTO.getCcFeeApplicable().toUpperCase());
 		chargeTypeRequestVO.setTaxablePercentage(chargeTypeRequestDTO.getTaxablePercentage());
-		chargeTypeRequestVO.setCcJob(chargeTypeRequestDTO.getCcJob().toUpperCase());
 		chargeTypeRequestVO.setGovtSac(chargeTypeRequestDTO.getGovtSac().toUpperCase());
 		chargeTypeRequestVO.setExcempted(chargeTypeRequestDTO.getExcempted().toUpperCase());
 		chargeTypeRequestVO.setGstTax(chargeTypeRequestDTO.getGstTax());
-		chargeTypeRequestVO.setActive(chargeTypeRequestDTO.isActive());
 		chargeTypeRequestVO.setOrgId(chargeTypeRequestDTO.getOrgId());
+		chargeTypeRequestVO.setApproved(chargeTypeRequestDTO.isApproved());
+		if(chargeTypeRequestDTO.isApproved()) {
+		    chargeTypeRequestVO.setActive(true);
+		}
 
 	}
 
@@ -1774,8 +1780,7 @@ public class MasterServiceImpl implements MasterService {
 				partyAddressVO.setAddressLine2(partyAddressDTO.getAddressLine2());
 				partyAddressVO.setAddressLine3(partyAddressDTO.getAddressLine3());
 				partyAddressVO.setPincode(partyAddressDTO.getPincode());
-				partyAddressVO.setContact(partyAddressDTO.getContact()); // Changed from contactPerson to contact
-
+				
 				partyAddressVO.setPartyMasterVO(partyMasterVO);
 				partyAddressVOs.add(partyAddressVO);
 			}
@@ -2302,6 +2307,111 @@ public class MasterServiceImpl implements MasterService {
 				&& "Active".equalsIgnoreCase(getStringCellValue1(headerRow.getCell(10)));
 	}
 	
+	
+	@Override
+	public List<Map<String, Object>> getDepartmentNameForEmployee(Long orgId) {
+		Set<Object[]> result = employeeRepo.findDepartmentNameForEmployee(orgId);
+		return getDepartmentName(result);
+	}
+
+	private List<Map<String, Object>> getDepartmentName(Set<Object[]> result) {
+		List<Map<String, Object>> details = new ArrayList<>();
+		for (Object[] fs : result) {
+			Map<String, Object> object = new HashMap<>();
+			object.put("departmentName", fs[0] != null ? fs[0].toString() : "");
+	        details.add(object); // Add the map to the list
+
+		}
+		return details;
+	}
+	
+	@Override
+	public List<Map<String, Object>> getDesignationNameForEmployee(Long orgId) {
+		Set<Object[]> result = employeeRepo.findDesignationNameForEmployee(orgId);
+		return getDesignationName(result);
+	}
+
+	private List<Map<String, Object>> getDesignationName(Set<Object[]> result) {
+		List<Map<String, Object>> details = new ArrayList<>();
+		for (Object[] fs : result) {
+			Map<String, Object> object = new HashMap<>();
+			object.put("designationName", fs[0] != null ? fs[0].toString() : "");
+	        details.add(object); // Add the map to the list
+
+		}
+		return details;
+	}
+
+	
+	@Override
+	public List<Map<String, Object>> getSalesPersonForCustomer(Long orgId) {
+		Set<Object[]> result = employeeRepo.findSalesPersonForCustomer(orgId);
+		return getSalesPersonForCustomer(result);
+	}
+
+	private List<Map<String, Object>> getSalesPersonForCustomer(Set<Object[]> result) {
+		List<Map<String, Object>> details = new ArrayList<>();
+		for (Object[] fs : result) {
+			Map<String, Object> object = new HashMap<>();
+			object.put("salesPerson", fs[0] != null ? fs[0].toString() : "");
+			object.put("salesPersonCode", fs[1] != null ? fs[1].toString() : "");
+	        details.add(object); // Add the map to the list
+
+		}
+		return details;
+	}
+
+	@Override
+	public List<Map<String, Object>> getServiceAccountCodeForTaxMaster(Long orgId) {
+		Set<Object[]> result = taxMasterRepo.findServiceAccountCodeForTaxMaster(orgId);
+		return getServiceAccountCodeForTaxMaster(result);
+	}
+
+	private List<Map<String, Object>> getServiceAccountCodeForTaxMaster(Set<Object[]> result) {
+		List<Map<String, Object>> details = new ArrayList<>();
+		for (Object[] fs : result) {
+			Map<String, Object> object = new HashMap<>();
+			object.put("serviceAccountCode", fs[0] != null ? fs[0].toString() : "");
+	        details.add(object); // Add the map to the list
+
+		}
+		return details;
+	}
+
+	@Override
+	public List<Map<String, Object>> getRevenueLegderForTaxMaster(Long orgId) {
+		Set<Object[]> result = taxMasterRepo.findRevenueLegderForTaxMaster(orgId);
+		return getRevenueLegderForTaxMaster(result);
+	}
+
+	private List<Map<String, Object>> getRevenueLegderForTaxMaster(Set<Object[]> result) {
+		List<Map<String, Object>> details = new ArrayList<>();
+		for (Object[] fs : result) {
+			Map<String, Object> object = new HashMap<>();
+			object.put("revenueLedger", fs[0] != null ? fs[0].toString() : "");
+	        details.add(object); // Add the map to the list
+
+		}
+		return details;
+	}
+
+	@Override
+	public List<Map<String, Object>> getCostLedgerForTaxMaster(Long orgId) {
+		Set<Object[]> result = taxMasterRepo.findCostLedgerForTaxMaster(orgId);
+		return getCostLedgerForTaxMaster(result);
+	}
+
+	private List<Map<String, Object>> getCostLedgerForTaxMaster(Set<Object[]> result) {
+		List<Map<String, Object>> details = new ArrayList<>();
+		for (Object[] fs : result) {
+			Map<String, Object> object = new HashMap<>();
+			object.put("costLedger", fs[0] != null ? fs[0].toString() : "");
+	        details.add(object); // Add the map to the list
+
+		}
+		return details;
+	}
+
 	
 	
 }

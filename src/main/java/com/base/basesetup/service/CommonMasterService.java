@@ -12,6 +12,8 @@ import com.base.basesetup.dto.CityDTO;
 import com.base.basesetup.dto.CompanyDTO;
 import com.base.basesetup.dto.CountryDTO;
 import com.base.basesetup.dto.CurrencyDTO;
+import com.base.basesetup.dto.DepartmentDTO;
+import com.base.basesetup.dto.DesignationDTO;
 import com.base.basesetup.dto.FinScreenDTO;
 import com.base.basesetup.dto.FinancialYearDTO;
 import com.base.basesetup.dto.RegionDTO;
@@ -21,6 +23,8 @@ import com.base.basesetup.entity.CityVO;
 import com.base.basesetup.entity.CompanyVO;
 import com.base.basesetup.entity.CountryVO;
 import com.base.basesetup.entity.CurrencyVO;
+import com.base.basesetup.entity.DepartmentVO;
+import com.base.basesetup.entity.DesignationVO;
 import com.base.basesetup.entity.FinancialYearVO;
 import com.base.basesetup.entity.RegionVO;
 import com.base.basesetup.entity.ScreenNamesVO;
@@ -124,5 +128,22 @@ public interface CommonMasterService {
 	ScreenNamesVO getScreenNamesById(Long id) throws ApplicationException;
 
 	List<Map<String, Object>> getAllCurrencyForExRate(Long orgId);
+
+	//Department
+	Map<String, Object> createUpdateDepartment(DepartmentDTO departmentDTO) throws ApplicationException;
+
+	Optional<DepartmentVO> getDepartmentById(Long id);
+
+	List<DepartmentVO> getDepartmentByOrgId(Long orgId);
+
+	//Designation
+	Map<String, Object> createUpdateDesignation(DesignationDTO designationDTO) throws ApplicationException;
+
+	Optional<DesignationVO> getDesignationById(Long id);
+
+	List<DesignationVO> getDesignationByOrgId(Long orgId);
+
+
+
 
 }

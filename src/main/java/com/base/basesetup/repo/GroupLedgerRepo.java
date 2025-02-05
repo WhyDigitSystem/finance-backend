@@ -31,7 +31,7 @@ List<GroupLedgerVO> getTaxLedgerDetails(Long orgId, String gstType, Double key);
 
 boolean existsByAccountCodeAndOrgId(String accountCode, Long orgId);
 
-@Query(nativeQuery =true,value ="select * from  groupledger where active=1 and orgid=?1 and accountgroupname=?2  and type='group' and groupname is null")
+@Query(nativeQuery =true,value ="select * from  groupledger where active=1 and orgid=?1 and accountgroupname=?2  and type='group'")
 GroupLedgerVO getOrgIdAndMainAccountGroupName(Long orgId, String groupName);
 
 

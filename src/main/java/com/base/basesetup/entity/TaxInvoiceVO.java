@@ -106,18 +106,16 @@ public class TaxInvoiceVO {
 	private String billCurr;
 	@Column(name = "billcurrrate", precision = 10, scale = 2)
 	private BigDecimal billCurrRate;
-	@Column(name = "examount", precision = 10, scale = 2)
-	private BigDecimal exAmount;
 	@Column(name = "creditdays",length = 5)
 	private int creditDays;
-	@Column(name = "contactperson",length = 30)
-	private String contactPerson;
+	
 	@Column(name = "shipperinvoiceno",length = 30)
 	private String shipperInvoiceNo;
 	@Column(name = "billofentry",length = 30)
 	private String billOfEntry;
-	@Column(name = "billmonth",length = 30)
-	private String billMonth;
+	
+	@Column(name = "joborderno",length = 50)
+	private String jobOrderNo;
 	
 	@Column(name="approvestatus",length = 20)
 	private String approveStatus;
@@ -135,8 +133,7 @@ public class TaxInvoiceVO {
 
 	@Column(name = "invoicedate")
 	private LocalDate invoiceDate;
-	@Column(name = "salestype",length = 30)
-	private String salesType;
+	
 
 	@Column(name = "totalchargeamountlc", precision = 10, scale = 2)
 	private BigDecimal totalChargeAmountLc;

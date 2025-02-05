@@ -7,11 +7,12 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class DepartmentDTO {
+public class DesignationDTO {
 	private Long id;
-	private String departmentName;
-	private String departmentCode;
+	private String designationName;
+	private String designationCode;
 	private boolean active;
 	private Long orgId;
 	private String createdBy;
+
 }
