@@ -161,7 +161,7 @@ public class TaxInvoiceServiceImpl implements TaxInvoiceService {
 		taxInvoiceVO.setStatus(taxInvoiceDTO.getStatus().toUpperCase());
 		taxInvoiceVO.setGstType(taxInvoiceDTO.getGstType().toUpperCase());
 		taxInvoiceVO.setSupplierBillNo(taxInvoiceDTO.getSupplierBillNo().toUpperCase());
-//		taxInvoiceVO.setSupplierBillDate(taxInvoiceDTO.getSupplierBillDate());
+		taxInvoiceVO.setSupplierBillDate(taxInvoiceDTO.getSupplierBillDate());
 		taxInvoiceVO.setBillCurr(taxInvoiceDTO.getBillCurr().toUpperCase());
 		taxInvoiceVO.setBillCurrRate(taxInvoiceDTO.getBillCurrRate());
 		taxInvoiceVO.setCreditDays(taxInvoiceDTO.getCreditDays());
@@ -412,6 +412,8 @@ public class TaxInvoiceServiceImpl implements TaxInvoiceService {
 			map.put("currencyDescription", ch[1] != null ? ch[1].toString() : "");
 			map.put("buyingExRate", ch[2] != null ? ch[2].toString() : "");
 			map.put("sellingExRate", ch[3] != null ? ch[3].toString() : "");
+			map.put("id", ch[4] != null ? ch[4].toString() : "");
+
 			List1.add(map);
 		}
 		return List1;
