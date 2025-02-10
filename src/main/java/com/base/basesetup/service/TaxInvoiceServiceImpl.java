@@ -1,7 +1,6 @@
 package com.base.basesetup.service;
 
 import java.math.BigDecimal;
-import java.math.MathContext;
 import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -162,13 +161,14 @@ public class TaxInvoiceServiceImpl implements TaxInvoiceService {
 		taxInvoiceVO.setStatus(taxInvoiceDTO.getStatus().toUpperCase());
 		taxInvoiceVO.setGstType(taxInvoiceDTO.getGstType().toUpperCase());
 		taxInvoiceVO.setSupplierBillNo(taxInvoiceDTO.getSupplierBillNo().toUpperCase());
-//		taxInvoiceVO.setSupplierBillDate(taxInvoiceDTO.getSupplierBillDate());
+		taxInvoiceVO.setSupplierBillDate(taxInvoiceDTO.getSupplierBillDate());
 		taxInvoiceVO.setBillCurr(taxInvoiceDTO.getBillCurr().toUpperCase());
 		taxInvoiceVO.setBillCurrRate(taxInvoiceDTO.getBillCurrRate());
 		taxInvoiceVO.setCreditDays(taxInvoiceDTO.getCreditDays());
 		taxInvoiceVO.setShipperInvoiceNo(taxInvoiceDTO.getShipperInvoiceNo().toUpperCase());
 		taxInvoiceVO.setBillOfEntry(taxInvoiceDTO.getBillOfEntry().toUpperCase());
 		taxInvoiceVO.setModifiedBy(taxInvoiceDTO.getCreatedBy());
+		taxInvoiceVO.setPartyId(taxInvoiceDTO.getPartyId());
 		taxInvoiceVO.setJobOrderNo(taxInvoiceDTO.getJobOrderNo());
 		taxInvoiceVO.setPartyId(taxInvoiceDTO.getPartyId());
 
@@ -413,6 +413,8 @@ public class TaxInvoiceServiceImpl implements TaxInvoiceService {
 			map.put("currencyDescription", ch[1] != null ? ch[1].toString() : "");
 			map.put("buyingExRate", ch[2] != null ? ch[2].toString() : "");
 			map.put("sellingExRate", ch[3] != null ? ch[3].toString() : "");
+			map.put("id", ch[4] != null ? ch[4].toString() : "");
+
 			List1.add(map);
 		}
 		return List1;
@@ -459,25 +461,7 @@ public class TaxInvoiceServiceImpl implements TaxInvoiceService {
 		return List1;
 	}
 
-	@Override
-	public List<Map<String, Object>> getPartyAddressDetails(Long orgId, Long id, String stateCode,
-			String placeOfSupply) {
-		Set<Object[]> getAddressDetails = taxInvoiceRepo.getAddressDetails(orgId, id, stateCode, placeOfSupply);
-		return getAddress(getAddressDetails);
-	}
-
-	private List<Map<String, Object>> getAddress(Set<Object[]> getAddressDetails) {
-		List<Map<String, Object>> List1 = new ArrayList<>();
-		for (Object[] ch : getAddressDetails) {
-			Map<String, Object> map = new HashMap<>();
-			map.put("addressType", ch[0] != null ? ch[0].toString() : "");
-			map.put("address", ch[1] != null ? ch[1].toString() : ""); // Empty string if null
-			map.put("pinCode", ch[2] != null ? ch[2].toString() : "");
-			List1.add(map);
-		}
-		return List1;
-	}
-
+	
 	@Override
 	public List<Map<String, Object>> getGstTypeDetails(Long orgId, String branchCode, String stateCode) {
 		Set<Object[]> getGSTTypeDetails = taxInvoiceRepo.getGstType(orgId, branchCode, stateCode);
@@ -556,6 +540,7 @@ public class TaxInvoiceServiceImpl implements TaxInvoiceService {
 	        AccountsDetailsVO accountsDetailsVO = new AccountsDetailsVO();
 	        accountsDetailsVO.setNDebitAmount(taxInvoiceVO.getTotalInvAmountLc());
 	        accountsDetailsVO.setACategory("RECEIVABLE A/C");
+	        accountsDetailsVO.setAccountName("RECEIVABLE A/C");
 	        accountsDetailsVO.setSubLedgerCode(taxInvoiceVO.getPartyCode());
 	        accountsDetailsVO.setDebitAmount(taxInvoiceVO.getTotalInvAmountLc());
 	        accountsDetailsVO.setNCreditAmount(BigDecimal.ZERO);
@@ -675,5 +660,43 @@ public class TaxInvoiceServiceImpl implements TaxInvoiceService {
 		return List1;
 
 	}
+
+	
+	@Override
+	public List<Map<String, Object>> getPartyAddressDetails(Long orgId, Long id, String stateCode,
+			String placeOfSupply) {
+		Set<Object[]> getAddressDetails = taxInvoiceRepo.getAddressDetails(orgId, id, stateCode, placeOfSupply);
+		return getAddress(getAddressDetails);
+	}
+
+	private List<Map<String, Object>> getAddress(Set<Object[]> getAddressDetails) {
+		List<Map<String, Object>> List1 = new ArrayList<>();
+		for (Object[] ch : getAddressDetails) {
+			Map<String, Object> map = new HashMap<>();
+			map.put("addressType", ch[0] != null ? ch[0].toString() : "");
+			map.put("address", ch[1] != null ? ch[1].toString() : ""); // Empty string if null
+			map.put("pinCode", ch[2] != null ? ch[2].toString() : "");
+			List1.add(map);
+		}
+		return List1;
+	}
+
+
+	@Override
+	public List<Map<String, Object>> getAllJobNoByActice(Long orgId) {
+		Set<Object[]> jobNo = taxInvoiceRepo.getAllJobNoByActice(orgId );
+		return getAllJobNoByActice(jobNo);
+	}
+
+	private List<Map<String, Object>> getAllJobNoByActice(Set<Object[]> jobOrderNo) {
+		List<Map<String, Object>> List1 = new ArrayList<>();
+		for (Object[] ch : jobOrderNo) {
+			Map<String, Object> map = new HashMap<>();
+			map.put("jobNo", ch[0] != null ? ch[0].toString() : "");
+			List1.add(map);
+		}
+		return List1;
+	}
+
 
 }

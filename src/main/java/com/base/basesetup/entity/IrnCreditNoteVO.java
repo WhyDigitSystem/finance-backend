@@ -146,6 +146,8 @@ public class IrnCreditNoteVO {
 	private BigDecimal totalTaxableAmountLc;
 	@Column(name = "amountinwords",length = 150)
 	private String amountInWords;
+	@Column(name = "jobno")
+	private String jobNo;
 	
 	@OneToMany(mappedBy = "irnCreditNoteVO", cascade = CascadeType.ALL)
 	@JsonManagedReference

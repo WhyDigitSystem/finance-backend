@@ -18,8 +18,8 @@ public class CostDebitNoteDTO {
 	private Long id;
 	private String mode;
 	private String product;
-	private String invoiceNo;
-	private LocalDate invoiceDate;
+//	private String invoiceNo;
+//	private LocalDate invoiceDate;
 	private String supplierBillNo;
 	private String supplierType;
 	private String supplierCode;
