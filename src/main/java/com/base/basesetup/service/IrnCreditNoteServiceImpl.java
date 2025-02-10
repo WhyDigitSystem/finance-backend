@@ -164,6 +164,8 @@ public class IrnCreditNoteServiceImpl implements IrnCreditNoteService {
 	    irnCreditNoteVO.setCreditDays(irnCreditNoteDTO.getCreditDays());
 	    irnCreditNoteVO.setShipperRefNo(irnCreditNoteDTO.getShipperRefNo());
 	    irnCreditNoteVO.setCreditRemarks(irnCreditNoteDTO.getCreditRemarks());
+	    irnCreditNoteVO.setOriginBillDate(irnCreditNoteDTO.getOriginBillDate());
+	    irnCreditNoteVO.setJobNo(irnCreditNoteDTO.getJobNo());
 
 	    
 		if (ObjectUtils.isNotEmpty(irnCreditNoteVO.getId())) {
@@ -445,7 +447,9 @@ public class IrnCreditNoteServiceImpl implements IrnCreditNoteService {
 //	        // Add GST ledger entries
 	        for (Map.Entry<String, BigDecimal> entry : ledgerSumMap.entrySet()) {
 	            GroupLedgerVO groupLedgerVO = groupLedgerRepo.findByAccountGroupName(entry.getKey());
-	            
+	            if (groupLedgerVO == null) {
+	                throw new ApplicationException("No Group Ledger found for account group name: " + entry.getKey());
+	            }
 	            AccountsDetailsVO gstAccountDetailsVO = new AccountsDetailsVO();
 	            gstAccountDetailsVO.setACategory(groupLedgerVO.getCategory());
 	            gstAccountDetailsVO.setNDebitAmount(entry.getValue());

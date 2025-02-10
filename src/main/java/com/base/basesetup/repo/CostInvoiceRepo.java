@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import com.base.basesetup.entity.CostInvoiceVO;
+import com.base.basesetup.entity.GroupLedgerVO;
 import com.base.basesetup.entity.PartyMasterVO;
 
 public interface CostInvoiceRepo extends JpaRepository<CostInvoiceVO, Long> {
@@ -69,15 +70,18 @@ public interface CostInvoiceRepo extends JpaRepository<CostInvoiceVO, Long> {
 	@Query(nativeQuery = true,value = "select * from costinvoice a where a.orgId=?1 and a.supplierName=?2 and a.branchCode=?3 and a.approvestatus='Approved' order by a.docId desc")
 	List<CostInvoiceVO> findOrginBillNoByParty(Long orgId, String party, String branchCode);
 
-	@Query(nativeQuery = true, value = "select accountgroupname,gstpercentage,currency from groupledger where orgid=?1 and gsttaxflag!='NA' and category='TAX' and gsttaxflag='INPUT TAX' and gsttype=?2 and gstpercentage IN(?3) order by gstpercentage desc")
-	Set<Object[]> findInterAndIntraDetailsForCostInvoice(Long orgId, String gtsType, List<String> gstPercent);
+	@Query(nativeQuery = true, value = "select * from groupledger where orgid=?1 and gsttaxflag!='NA' and category='TAX' and gsttaxflag='INPUT TAX' and gsttype=?2 and gstpercentage IN(?3) order by gstpercentage desc")
+	GroupLedgerVO findInterDetailsForCostInvoicePosting(Long orgId, String gtsType, Double gstPercent);
 
-	@Query(nativeQuery = true, value = "select accountgroupname,gstpercentage,currency from groupledger where orgid=?1 and gsttaxflag!='NA' and category='TAX' and gsttaxflag='INPUT TAX' and gsttype=?2 and gstpercentage IN(?3) order by gstpercentage desc")
-	Set<Object[]> findInterAndIntraDetailsForCostInvoicePosting(Long orgId, String gtsType, String intraPercent);
+	@Query(nativeQuery = true, value = "select * from groupledger where orgid=?1 and gsttaxflag!='NA' and category='TAX' and gsttaxflag='INPUT TAX' and gsttype=?2 and gstpercentage IN(?3) order by gstpercentage desc")
+	List<GroupLedgerVO> findIntraDetailsForCostInvoicePosting(Long orgId, String gtsType, Double intraPercent);
 
 	CostInvoiceVO findByOrgIdAndIdAndDocId(Long orgId, Long id, String docId);
 
 	@Query(nativeQuery = true,value = "select a.creditdays from partymaster a where a.orgId=?1 and partycode=?2 and a.active=1 ")
 	Set<Object[]> findCreditDaysFromVendor(Long orgId, String supplierCode);
+
+	@Query(nativeQuery = true, value = "select accountgroupname,gstpercentage,currency from groupledger where orgid=?1 and gsttaxflag!='NA' and category='TAX' and gsttaxflag='INPUT TAX' and gsttype=?2 and gstpercentage IN(?3) order by gstpercentage desc")
+	Set<Object[]> findInterAndIntraDetailsForCostInvoice(Long orgId, String gstType, List<String> gstPercent);
 
 }
