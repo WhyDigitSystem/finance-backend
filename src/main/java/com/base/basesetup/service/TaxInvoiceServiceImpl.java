@@ -170,6 +170,7 @@ public class TaxInvoiceServiceImpl implements TaxInvoiceService {
 		taxInvoiceVO.setModifiedBy(taxInvoiceDTO.getCreatedBy());
 		taxInvoiceVO.setPartyId(taxInvoiceDTO.getPartyId());
 		taxInvoiceVO.setJobOrderNo(taxInvoiceDTO.getJobOrderNo());
+		taxInvoiceVO.setPartyId(taxInvoiceDTO.getPartyId());
 
 		if (ObjectUtils.isNotEmpty(taxInvoiceVO.getId())) {
 			List<TaxInvoiceDetailsVO> taxInvoiceDetailsVO1 = taxInvoiceDetailsRepo.findByTaxInvoiceVO(taxInvoiceVO);
@@ -179,8 +180,8 @@ public class TaxInvoiceServiceImpl implements TaxInvoiceService {
 		BigDecimal totalChargeAmountBC = BigDecimal.ZERO;
 		BigDecimal totalTaxAmountLC = BigDecimal.ZERO;
 		BigDecimal totalTaxAmountBC = BigDecimal.ZERO;
-		BigDecimal totalInvAmountLC = BigDecimal.ZERO;
-		BigDecimal totalInvAmountBC = BigDecimal.ZERO;
+		BigDecimal totalInvAmountLC = BigDecimal.ZERO;  
+		BigDecimal totalInvAmountBC = BigDecimal.ZERO; 
 
 		List<TaxInvoiceDetailsVO> taxInvoiceDetailsVOs = new ArrayList<>();
 		for (TaxInvoiceDetailsDTO taxInvoiceDetailsDTO : taxInvoiceDTO.getTaxInvoiceDetailsDTO()) {
