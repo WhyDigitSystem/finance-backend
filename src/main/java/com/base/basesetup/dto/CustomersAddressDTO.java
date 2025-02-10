@@ -20,6 +20,7 @@ public class CustomersAddressDTO {
 	private String addressLane3;
 	private Long pinCode;
 	private String contact;
+	private boolean taxFree;
 //	private Long contactNo;
 //	private boolean sez;
 	private String customerName;

@@ -32,7 +32,7 @@ public class TdsCostInvoiceVO {
 	@SequenceGenerator(name = "tdscostinvoicegen", sequenceName = "tdscostinvoiceseq", initialValue = 1000000001, allocationSize = 1)
 	@Column(name = "tdscostinvoiceid")
 	private Long id;
-	@Column(name = "tdswithholding",length =10)
+	@Column(name = "tdswithholding",length =50)
 	private String tdsWithHolding;
 	@Column(name = "tdswithholdingper",precision =10,scale = 2)
 	private BigDecimal tdsWithHoldingPer;

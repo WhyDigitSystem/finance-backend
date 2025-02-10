@@ -40,7 +40,7 @@ import com.base.basesetup.repo.GroupLedgerRepo;
 import com.base.basesetup.repo.MultipleDocIdGenerationDetailsRepo;
 import com.base.basesetup.repo.TdsCostDebitNoteRepo;
 
-@Service
+@Service 
 public class CostDebitNoteServiceImpl implements CostDebitNoteService {
 
 	public static final Logger LOGGER = LoggerFactory.getLogger(CostDebitNoteServiceImpl.class);
@@ -63,7 +63,7 @@ public class CostDebitNoteServiceImpl implements CostDebitNoteService {
 	@Autowired
 	GroupLedgerRepo groupLedgerRepo;
 	
-	@Autowired
+	@Autowired 
 	CostInvoiceRepo costInvoiceRepo;
 
 	@Autowired
