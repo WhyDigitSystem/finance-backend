@@ -25,6 +25,7 @@ import com.base.basesetup.common.UserConstants;
 import com.base.basesetup.dto.CostDebitNoteDTO;
 import com.base.basesetup.dto.ResponseDTO;
 import com.base.basesetup.entity.CostDebitNoteVO;
+import com.base.basesetup.entity.CostInvoiceVO;
 import com.base.basesetup.service.CostDebitNoteService;
 
 @CrossOrigin
@@ -311,24 +312,24 @@ public class CostDebitNoteController extends BaseController {
 		return ResponseEntity.ok().body(responseDTO);
 	}
 
-	@GetMapping("/getOrginBillNoByParty")
-	public ResponseEntity<ResponseDTO> getOrginBillNoByParty(@RequestParam Long orgId, @RequestParam String party,
+	@GetMapping("/getOriginBillNofromCostInvoiceByParty")
+	public ResponseEntity<ResponseDTO> getOriginBillNofromCostInvoiceByParty(@RequestParam Long orgId, @RequestParam String party,
 			@RequestParam String branchCode) {
-		String methodName = "getOrginBillNoByParty()";
+		String methodName = "getOriginBillNofromCostInvoiceByParty()";
 		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
 		String errorMsg = null;
 		Map<String, Object> responseObjectsMap = new HashMap<>();
 		ResponseDTO responseDTO = null;
-		List<CostDebitNoteVO> costDebitNoteVO = new ArrayList<>();
+		List<CostInvoiceVO> costInvoiceVO = new ArrayList<>();
 		try {
-			costDebitNoteVO = costDebitNoteService.getOrginBillNoByParty(orgId, party, branchCode);
+			costInvoiceVO = costDebitNoteService.getOriginBillNofromCostInvoiceByParty(orgId, party, branchCode);
 		} catch (Exception e) {
 			errorMsg = e.getMessage();
 			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
 		}
 		if (StringUtils.isBlank(errorMsg)) {
 			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "OrginBillNo information get successfully By OrgId");
-			responseObjectsMap.put("costDebitNoteVO", costDebitNoteVO);
+			responseObjectsMap.put("costInvoiceVO", costInvoiceVO);
 			responseDTO = createServiceResponse(responseObjectsMap);
 		} else {
 			responseDTO = createServiceResponseError(responseObjectsMap,

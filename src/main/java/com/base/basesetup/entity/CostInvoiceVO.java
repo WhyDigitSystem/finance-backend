@@ -137,6 +137,8 @@ public class CostInvoiceVO {
 	private BigDecimal sumLcAmt;
 	@Column(name = "gstinputlcamt", precision = 10, scale = 2)
 	private BigDecimal gstInputLcAmt;
+	@Column(name = "joborderno",length = 50)
+	private String jobOrderNo;
 
 //	APPROVED
 	@Column(name = "approvestatus", length = 20)

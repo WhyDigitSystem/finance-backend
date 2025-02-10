@@ -1876,4 +1876,172 @@ public class MasterController extends BaseController {
 		}
 
 
+		@GetMapping("/getDepartmentNameForEmployee")
+		public ResponseEntity<ResponseDTO> getDepartmentNameForEmployee(@RequestParam Long orgId) {
+
+			String methodName = "getDepartmentNameForEmployee()";
+			LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+			String errorMsg = null;
+			Map<String, Object> responseObjectsMap = new HashMap<>();
+			ResponseDTO responseDTO = null;
+			List<Map<String, Object>> departmentName = new ArrayList<>();
+
+			try {
+				departmentName = masterService.getDepartmentNameForEmployee(orgId);
+			} catch (Exception e) {
+				errorMsg = e.getMessage();
+				LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+			}
+			if (StringUtils.isBlank(errorMsg)) {
+				responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "DepartmentName retrieved successfully");
+				responseObjectsMap.put("departmentName", departmentName);
+				responseDTO = createServiceResponse(responseObjectsMap);
+			} else {
+				responseDTO = createServiceResponseError(responseObjectsMap, "Failed to retrieve DepartmentName information",
+						errorMsg);
+			}
+			LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+			return ResponseEntity.ok().body(responseDTO);
+		}
+		
+		@GetMapping("/getDesignationNameForEmployee")
+		public ResponseEntity<ResponseDTO> getDesignationNameForEmployee(@RequestParam Long orgId) {
+
+			String methodName = "getDesignationNameForEmployee()";
+			LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+			String errorMsg = null;
+			Map<String, Object> responseObjectsMap = new HashMap<>();
+			ResponseDTO responseDTO = null;
+			List<Map<String, Object>> designationName = new ArrayList<>();
+
+			try {
+				designationName = masterService.getDesignationNameForEmployee(orgId);
+			} catch (Exception e) {
+				errorMsg = e.getMessage();
+				LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+			}
+			if (StringUtils.isBlank(errorMsg)) {
+				responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "DesignationName retrieved successfully");
+				responseObjectsMap.put("designationName", designationName);
+				responseDTO = createServiceResponse(responseObjectsMap);
+			} else {
+				responseDTO = createServiceResponseError(responseObjectsMap, "Failed to retrieve DesignationName information",
+						errorMsg);
+			}
+			LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+			return ResponseEntity.ok().body(responseDTO);
+		}
+		
+		@GetMapping("/getSalesPersonForCustomer")
+		public ResponseEntity<ResponseDTO> getSalesPersonForCustomer(@RequestParam Long orgId) {
+
+			String methodName = "getSalesPersonForCustomer()";
+			LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+			String errorMsg = null;
+			Map<String, Object> responseObjectsMap = new HashMap<>();
+			ResponseDTO responseDTO = null;
+			List<Map<String, Object>> salesPerson = new ArrayList<>();
+
+			try {
+				salesPerson = masterService.getSalesPersonForCustomer(orgId);
+			} catch (Exception e) {
+				errorMsg = e.getMessage();
+				LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+			}
+			if (StringUtils.isBlank(errorMsg)) {
+				responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "SalesPerson retrieved successfully");
+				responseObjectsMap.put("salesPerson", salesPerson);
+				responseDTO = createServiceResponse(responseObjectsMap);
+			} else {
+				responseDTO = createServiceResponseError(responseObjectsMap, "Failed to retrieve SalesPerson information",
+						errorMsg);
+			}
+			LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+			return ResponseEntity.ok().body(responseDTO);
+		}
+		
+		
+		@GetMapping("/getServiceAccountCodeForTaxMaster")
+		public ResponseEntity<ResponseDTO> getServiceAccountCodeForTaxMaster(@RequestParam Long orgId) {
+
+			String methodName = "getServiceAccountCodeForTaxMaster()";
+			LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+			String errorMsg = null;
+			Map<String, Object> responseObjectsMap = new HashMap<>();
+			ResponseDTO responseDTO = null;
+			List<Map<String, Object>> serviceAccountCode = new ArrayList<>();
+
+			try {
+				serviceAccountCode = masterService.getServiceAccountCodeForTaxMaster(orgId);
+			} catch (Exception e) {
+				errorMsg = e.getMessage();
+				LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+			}
+			if (StringUtils.isBlank(errorMsg)) {
+				responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "serviceAccountCode retrieved successfully");
+				responseObjectsMap.put("serviceAccountCode", serviceAccountCode);
+				responseDTO = createServiceResponse(responseObjectsMap);
+			} else {
+				responseDTO = createServiceResponseError(responseObjectsMap, "Failed to retrieve serviceAccountCode information",
+						errorMsg);
+			}
+			LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+			return ResponseEntity.ok().body(responseDTO);
+		}
+		
+		@GetMapping("/getRevenueLegderForTaxMaster")
+		public ResponseEntity<ResponseDTO> getRevenueLegderForTaxMaster(@RequestParam Long orgId) {
+
+			String methodName = "getRevenueLegderForTaxMaster()";
+			LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+			String errorMsg = null;
+			Map<String, Object> responseObjectsMap = new HashMap<>();
+			ResponseDTO responseDTO = null;
+			List<Map<String, Object>> accountGroupName = new ArrayList<>();
+
+			try {
+				accountGroupName = masterService.getRevenueLegderForTaxMaster(orgId);
+			} catch (Exception e) {
+				errorMsg = e.getMessage();
+				LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+			}
+			if (StringUtils.isBlank(errorMsg)) {
+				responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "RevenueLegder retrieved successfully");
+				responseObjectsMap.put("accountGroupName", accountGroupName);
+				responseDTO = createServiceResponse(responseObjectsMap);
+			} else {
+				responseDTO = createServiceResponseError(responseObjectsMap, "Failed to retrieve RevenueLegder information",
+						errorMsg);
+			}
+			LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+			return ResponseEntity.ok().body(responseDTO);
+		}
+		
+		@GetMapping("/getCostLedgerForTaxMaster")
+		public ResponseEntity<ResponseDTO> getCostLedgerForTaxMaster(@RequestParam Long orgId) {
+
+			String methodName = "getCostLedgerForTaxMaster()";
+			LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+			String errorMsg = null;
+			Map<String, Object> responseObjectsMap = new HashMap<>();
+			ResponseDTO responseDTO = null;
+			List<Map<String, Object>> accountGroupName = new ArrayList<>();
+
+			try {
+				accountGroupName = masterService.getCostLedgerForTaxMaster(orgId);
+			} catch (Exception e) {
+				errorMsg = e.getMessage();
+				LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+			}
+			if (StringUtils.isBlank(errorMsg)) {
+				responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "CostLedger retrieved successfully");
+				responseObjectsMap.put("accountGroupName", accountGroupName);
+				responseDTO = createServiceResponse(responseObjectsMap);
+			} else {
+				responseDTO = createServiceResponseError(responseObjectsMap, "Failed to retrieve CostLedger information",
+						errorMsg);
+			}
+			LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+			return ResponseEntity.ok().body(responseDTO);
+		}
 }

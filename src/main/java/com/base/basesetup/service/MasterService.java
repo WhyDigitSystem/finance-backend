@@ -68,6 +68,10 @@ public interface MasterService {
 	Map<String, Object> createEmployee(EmployeeDTO employeeDTO) throws ApplicationException;
 
 	void deleteEmployee(Long employeeid);
+	
+	List<Map<String, Object>> getDepartmentNameForEmployee(Long orgId);
+
+	List<Map<String, Object>> getDesignationNameForEmployee(Long orgId);
 
 //	SetTaxRateVO
 	List<SetTaxRateVO> getAllSetTaxRateByOrgId(Long orgId);
@@ -204,5 +208,13 @@ public interface MasterService {
 
 	void excelUploadForChargeCode(MultipartFile[] files, String createdBy, Long orgId)
 			throws EncryptedDocumentException, ApplicationException, java.io.IOException;
+
+	List<Map<String, Object>> getSalesPersonForCustomer(Long orgId);
+
+	List<Map<String, Object>> getServiceAccountCodeForTaxMaster(Long orgId);
+
+	List<Map<String, Object>> getRevenueLegderForTaxMaster(Long orgId);
+
+	List<Map<String, Object>> getCostLedgerForTaxMaster(Long orgId);
 
 }

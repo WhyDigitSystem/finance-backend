@@ -161,12 +161,12 @@ public class IrnCreditNoteServiceImpl implements IrnCreditNoteService {
 	    irnCreditNoteVO.setSupplierRefDate(irnCreditNoteDTO.getSupplierRefDate());
 	    irnCreditNoteVO.setBillCurr(irnCreditNoteDTO.getBillCurr());
 	    irnCreditNoteVO.setBillCurrRate(irnCreditNoteDTO.getBillCurrRate());
-	    irnCreditNoteVO.setExAmount(irnCreditNoteDTO.getExAmount());
 	    irnCreditNoteVO.setCreditDays(irnCreditNoteDTO.getCreditDays());
 	    irnCreditNoteVO.setShipperRefNo(irnCreditNoteDTO.getShipperRefNo());
-	    irnCreditNoteVO.setBillMonth(irnCreditNoteDTO.getBillMonth());
-	    irnCreditNoteVO.setSalesType(irnCreditNoteDTO.getSalesType());
 	    irnCreditNoteVO.setCreditRemarks(irnCreditNoteDTO.getCreditRemarks());
+	    irnCreditNoteVO.setOriginBillDate(irnCreditNoteDTO.getOriginBillDate());
+	    irnCreditNoteVO.setJobNo(irnCreditNoteDTO.getJobNo());
+
 	    
 		if (ObjectUtils.isNotEmpty(irnCreditNoteVO.getId())) {
 			List<IrnCreditNoteDetailsVO> irnCreditNoteDetailsVO1 = irnCreditChargesRepo.findByIrnCreditNoteVO(irnCreditNoteVO);
@@ -399,7 +399,6 @@ public class IrnCreditNoteServiceImpl implements IrnCreditNoteService {
 	        accountsVO.setRemarks(irnCreditNoteVO.getCreditRemarks());
 	        accountsVO.setSupplierRefNo(irnCreditNoteVO.getSupplierRefNo());
 	        accountsVO.setSupplierRefDate(irnCreditNoteVO.getSupplierRefDate());
-	        accountsVO.setBillMonth(irnCreditNoteVO.getBillMonth());
 	        accountsVO.setFinYear(irnCreditNoteVO.getFinYear());
 
 //	        // Calculate total debit/credit amounts
@@ -410,7 +409,6 @@ public class IrnCreditNoteServiceImpl implements IrnCreditNoteService {
 	        accountsVO.setAmountInWords(irnCreditNoteVO.getAmountInWords());
 	        accountsVO.setStTaxAmount(irnCreditNoteVO.getTotalTaxableAmountLc());
 	        accountsVO.setChargeableAmount(irnCreditNoteVO.getTotalChargeAmountLc());
-	        accountsVO.setSalesType(irnCreditNoteVO.getSalesType());
 
 //	        // Create AccountsDetailsVO list and populate it
 	        List<AccountsDetailsVO> accountsDetailsVOs = new ArrayList<>();
@@ -449,7 +447,9 @@ public class IrnCreditNoteServiceImpl implements IrnCreditNoteService {
 //	        // Add GST ledger entries
 	        for (Map.Entry<String, BigDecimal> entry : ledgerSumMap.entrySet()) {
 	            GroupLedgerVO groupLedgerVO = groupLedgerRepo.findByAccountGroupName(entry.getKey());
-	            
+	            if (groupLedgerVO == null) {
+	                throw new ApplicationException("No Group Ledger found for account group name: " + entry.getKey());
+	            }
 	            AccountsDetailsVO gstAccountDetailsVO = new AccountsDetailsVO();
 	            gstAccountDetailsVO.setACategory(groupLedgerVO.getCategory());
 	            gstAccountDetailsVO.setNDebitAmount(entry.getValue());

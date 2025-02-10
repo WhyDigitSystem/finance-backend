@@ -20,7 +20,6 @@ public class TmsJobCardDTO {
 	private boolean financeClosed;
 	private String salesPerson;
 	private BigDecimal income;
-	private BigDecimal profit;
 	private LocalDateTime closedOn;
 	private BigDecimal expense;
 	private String remarks;

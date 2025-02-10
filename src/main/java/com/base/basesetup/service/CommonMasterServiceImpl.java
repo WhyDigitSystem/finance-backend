@@ -22,6 +22,8 @@ import com.base.basesetup.dto.CityDTO;
 import com.base.basesetup.dto.CompanyDTO;
 import com.base.basesetup.dto.CountryDTO;
 import com.base.basesetup.dto.CurrencyDTO;
+import com.base.basesetup.dto.DepartmentDTO;
+import com.base.basesetup.dto.DesignationDTO;
 import com.base.basesetup.dto.FinScreenDTO;
 import com.base.basesetup.dto.FinancialYearDTO;
 import com.base.basesetup.dto.RegionDTO;
@@ -32,6 +34,8 @@ import com.base.basesetup.entity.CityVO;
 import com.base.basesetup.entity.CompanyVO;
 import com.base.basesetup.entity.CountryVO;
 import com.base.basesetup.entity.CurrencyVO;
+import com.base.basesetup.entity.DepartmentVO;
+import com.base.basesetup.entity.DesignationVO;
 import com.base.basesetup.entity.EmployeeVO;
 import com.base.basesetup.entity.FinancialYearVO;
 import com.base.basesetup.entity.RegionVO;
@@ -43,6 +47,8 @@ import com.base.basesetup.repo.CityRepo;
 import com.base.basesetup.repo.CompanyRepo;
 import com.base.basesetup.repo.CountryRepo;
 import com.base.basesetup.repo.CurrencyRepo;
+import com.base.basesetup.repo.DepartmentRepo;
+import com.base.basesetup.repo.DesignationRepo;
 import com.base.basesetup.repo.EmployeeRepo;
 import com.base.basesetup.repo.FinScreenRepo;
 import com.base.basesetup.repo.FinancialYearRepo;
@@ -62,6 +68,9 @@ public class CommonMasterServiceImpl implements CommonMasterService {
 	@Autowired
 	CountryRepo countryRepo;
 
+	@Autowired
+	DepartmentRepo departmentRepo;
+	
 	@Autowired
 	CurrencyRepo currencyRepo;
 
@@ -100,6 +109,9 @@ public class CommonMasterServiceImpl implements CommonMasterService {
 
 	@Autowired
 	ScreenNamesRepo screenNamesRepo;
+	
+	@Autowired
+	DesignationRepo designationRepo;
 
 	// Company
 
@@ -1067,5 +1079,184 @@ public class CommonMasterServiceImpl implements CommonMasterService {
 		}
 		return currencyList;
 	}
+	
+	//Department
+	
+	@Override
+	public List<DepartmentVO> getDepartmentByOrgId(Long orgId) {
+		return departmentRepo.findDepartmentByOrgId(orgId);
+	}
+	
+	@Override
+	public Optional<DepartmentVO> getDepartmentById(Long id) {
+		return departmentRepo.findById(id);
+	}
+
+	@Override
+	public Map<String, Object> createUpdateDepartment(DepartmentDTO departmentDTO) throws ApplicationException {
+
+		DepartmentVO departmentVO;
+		String message = null;
+
+		if (ObjectUtils.isEmpty(departmentDTO.getId())) {
+			if (departmentRepo.existsByDepartmentNameAndDepartmentCodeAndOrgId(departmentDTO.getDepartmentName(),
+					departmentDTO.getDepartmentCode(), departmentDTO.getOrgId())) {
+				String errorMessage = String.format(
+						"The DepartmentName: %s and DepartmentCode: %s already exists This Organization.",
+						departmentDTO.getDepartmentName(), departmentDTO.getDepartmentCode());
+				throw new ApplicationException(errorMessage);
+			}
+
+			if (departmentRepo.existsByDepartmentNameAndOrgId(departmentDTO.getDepartmentName(), departmentDTO.getOrgId())) {
+				String errorMessage = String.format("The DepartmentName: %s already exists This Organization.",
+						departmentDTO.getDepartmentName());
+				throw new ApplicationException(errorMessage);
+			}
+			
+			if (departmentRepo.existsByDepartmentCodeAndOrgId(departmentDTO.getDepartmentCode(), departmentDTO.getOrgId())) {
+				String errorMessage = String.format("The DepartmentCode: %s already exists This Organization.",
+						departmentDTO.getDepartmentCode());
+				throw new ApplicationException(errorMessage);
+			}
+			// Create new branch
+			departmentVO = new DepartmentVO();
+			departmentVO.setCreatedBy(departmentDTO.getCreatedBy());
+			departmentVO.setUpdatedBy(departmentDTO.getCreatedBy());
+			message = "Department Creation SuccessFully";
+		} else {
+			// Update existing branch
+			departmentVO = departmentRepo.findById(departmentDTO.getId())
+					.orElseThrow(() -> new ApplicationException("Department not found with id: " + departmentDTO.getId()));
+			departmentVO.setUpdatedBy(departmentDTO.getCreatedBy());
+			if (!departmentVO.getDepartmentName().equalsIgnoreCase(departmentDTO.getDepartmentName())) {
+				if (departmentRepo.existsByDepartmentNameAndOrgId(departmentDTO.getDepartmentName(), departmentDTO.getOrgId())) {
+					String errorMessage = String.format("The DepartmentName: %s already exists This Organization.",
+							departmentDTO.getDepartmentName());
+					throw new ApplicationException(errorMessage);
+				}
+				departmentVO.setDepartmentName(departmentDTO.getDepartmentName().toUpperCase());
+			}
+			if (!departmentVO.getDepartmentCode().equalsIgnoreCase(departmentDTO.getDepartmentCode())) {
+				if (departmentRepo.existsByDepartmentCodeAndOrgId(departmentDTO.getDepartmentCode(), departmentDTO.getOrgId())) {
+					String errorMessage = String.format("The DepartmentCode: %s already exists This Organization.",
+							departmentDTO.getDepartmentCode());
+					throw new ApplicationException(errorMessage);
+				}
+				departmentVO.setDepartmentCode(departmentDTO.getDepartmentCode().toUpperCase());
+
+			}
+			message = "Department Update Successfully";
+		}
+
+		getDepartmentVOFromDepartmentDTO(departmentVO, departmentDTO);
+		departmentRepo.save(departmentVO);
+		Map<String, Object> response = new HashMap<String, Object>();
+		response.put("message", message);
+		response.put("departmentVO", departmentVO);
+		return response;
+
+	}
+
+	private void getDepartmentVOFromDepartmentDTO(DepartmentVO departmentVO, DepartmentDTO departmentDTO) {
+		departmentVO.setDepartmentName(departmentDTO.getDepartmentName().toUpperCase());
+		departmentVO.setDepartmentCode(departmentDTO.getDepartmentCode().toUpperCase());
+		departmentVO.setActive(departmentDTO.isActive());
+		departmentVO.setOrgId(departmentDTO.getOrgId());
+
+	}
+
+	@Override
+	public Map<String, Object> createUpdateDesignation(DesignationDTO designationDTO) throws ApplicationException {
+		DesignationVO designationVO;
+		String message = null;
+
+		if (ObjectUtils.isEmpty(designationDTO.getId())) {
+			
+			if (designationRepo.existsByDesignationNameAndDesignationCodeAndOrgId(designationDTO.getDesignationName(),
+					designationDTO.getDesignationCode(), designationDTO.getOrgId())) {
+				String errorMessage = String.format(
+						"The DesignationName: %s and DesignationCode: %s already exists This Organization.",
+						designationDTO.getDesignationName(), designationDTO.getDesignationCode());
+				throw new ApplicationException(errorMessage);
+			}
+
+			if (designationRepo.existsByDesignationNameAndOrgId(designationDTO.getDesignationName(), designationDTO.getOrgId())) {
+				String errorMessage = String.format("The DesignationName: %s already exists This Organization.",
+						designationDTO.getDesignationName());
+				throw new ApplicationException(errorMessage);
+			}
+			
+			if (designationRepo.existsByDesignationCodeAndOrgId(designationDTO.getDesignationCode(), designationDTO.getOrgId())) {
+				String errorMessage = String.format("The DesignationCode: %s already exists This Organization.",
+						designationDTO.getDesignationCode());
+				throw new ApplicationException(errorMessage);
+			}
+			// Create new branch
+			designationVO = new DesignationVO();
+			designationVO.setCreatedBy(designationDTO.getCreatedBy());
+			designationVO.setUpdatedBy(designationDTO.getCreatedBy());
+			message = "Designation Creation SuccessFully";
+		} else {
+			// Update existing branch
+			designationVO = designationRepo.findById(designationDTO.getId())
+					.orElseThrow(() -> new ApplicationException("Designation not found with id: " + designationDTO.getId()));
+			designationVO.setUpdatedBy(designationDTO.getCreatedBy());
+			
+			if (!designationVO.getDesignationName().equalsIgnoreCase(designationDTO.getDesignationName())) {
+				if (departmentRepo.existsByDepartmentNameAndOrgId(designationDTO.getDesignationName(), designationDTO.getOrgId())) {
+					String errorMessage = String.format("The DesignationName: %s already exists This Organization.",
+							designationDTO.getDesignationName());
+					throw new ApplicationException(errorMessage);
+				}
+				designationVO.setDesignationName(designationDTO.getDesignationName().toUpperCase());
+			}
+			if (!designationVO.getDesignationCode().equalsIgnoreCase(designationDTO.getDesignationCode())) {
+				if (departmentRepo.existsByDepartmentCodeAndOrgId(designationDTO.getDesignationCode(), designationDTO.getOrgId())) {
+					String errorMessage = String.format("The DesignationCode: %s already exists This Organization.",
+							designationDTO.getDesignationCode());
+					throw new ApplicationException(errorMessage);
+				}
+				designationVO.setDesignationCode(designationDTO.getDesignationCode().toUpperCase());
+
+			}
+		
+			message = "Designation Update Successfully";
+		}
+
+		getDesignationVOFromDesignationDTO(designationVO, designationDTO);
+		designationRepo.save(designationVO);
+		Map<String, Object> response = new HashMap<String, Object>();
+		response.put("message", message);
+		response.put("designationVO", designationVO);
+		return response;
+
+	}
+
+	private void getDesignationVOFromDesignationDTO(DesignationVO designationVO, DesignationDTO designationDTO) {
+		designationVO.setDesignationName(designationDTO.getDesignationName().toUpperCase());
+		designationVO.setDesignationCode(designationDTO.getDesignationCode().toUpperCase());
+		designationVO.setActive(designationDTO.isActive());
+		designationVO.setOrgId(designationDTO.getOrgId());
+
+	}	
+
+	@Override
+	public Optional<DesignationVO>  getDesignationById(Long id) {
+		// TODO Auto-generated method stub
+		return designationRepo.findById(id);
+	}
+
+	@Override
+	public List<DesignationVO> getDesignationByOrgId(Long orgId) {
+		// TODO Auto-generated method stub
+		return designationRepo.findDesignationByOrgId(orgId);
+	}
+
+	
+
+	
+
+	
+
 
 }

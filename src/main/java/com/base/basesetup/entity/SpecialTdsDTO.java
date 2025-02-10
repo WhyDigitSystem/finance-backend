@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 public class SpecialTdsDTO {
 
 	private Long id;
+	private String section;
 	private String whSection;
 	private Long rateFrom;
 	private Long rateTo;

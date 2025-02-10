@@ -101,7 +101,7 @@ public class CostDebitNoteVO {
 	@Column(name = "finyear", length = 10)
 	private String finYear;
 	@Column(name = "screencode", length = 10)
-	private String screenCode = "CBN";
+	private String screenCode = "CDN";
 	@Column(name = "screenname", length = 25)
 	private String screenName = "COST DEBIT NOTE";
 	@Column(name = "docid", length = 30)
@@ -116,6 +116,8 @@ public class CostDebitNoteVO {
 	private String utrRef;
 	@Column(name = "costtype", length = 10)
 	private String costType;
+	@Column(name = "approved")
+	private boolean approved;
 
 //	SUMMARY
 	@Column(name = "totchargesbillcurramt", precision = 10, scale = 2)
@@ -134,6 +136,7 @@ public class CostDebitNoteVO {
 	private Long roundOff;
 	@Column(name = "gstinputlcamt", precision = 10, scale = 2)
 	private BigDecimal gstInputLcAmt;
+	
 
 //	APPROVED
 	@Column(name = "approvestatus", length = 20)

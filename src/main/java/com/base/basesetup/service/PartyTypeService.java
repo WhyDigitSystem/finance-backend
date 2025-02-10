@@ -6,6 +6,7 @@ import java.util.Optional;
 
 import javax.validation.Valid;
 
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -38,8 +39,8 @@ public interface PartyTypeService {
 	Optional<PartyMasterVO> getCustomersById(Long id);
 
 	List<PartyMasterVO> getAllCustomers(Long orgId);
-	
-	//VENDORS
+
+	// VENDORS
 
 	Map<String, Object> createUpdateVendor(@Valid VendorDTO vendorDTO) throws ApplicationException;
 
@@ -48,5 +49,7 @@ public interface PartyTypeService {
 	List<PartyMasterVO> getAllVendors(Long orgId);
 
 	void vendorUpload(MultipartFile files, Long orgId, String createdBy) throws Exception;
+
+	List<Map<String, Object>> getSectionNameFromTds(Long orgId, String section);
 
 }

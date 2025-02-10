@@ -2,6 +2,8 @@ package com.base.basesetup.dto;
 
 import java.util.List;
 
+import javax.persistence.Column;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -15,7 +17,6 @@ public class TaxMasterDTO {
 	private Long orgId;
 	private String finYear;
 	private String serviceAccountCode;
-	private String warehouse;
 	private String gst;
 	private Long gstSlab;
 	private String createdBy;

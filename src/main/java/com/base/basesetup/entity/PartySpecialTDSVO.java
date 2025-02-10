@@ -33,7 +33,10 @@ public class PartySpecialTDSVO {
 	@SequenceGenerator(name = "partyspecialtdsgen", sequenceName = "partyspecialtdsseq", initialValue = 1000000001, allocationSize = 1)
 	@Column(name = "partyspecialtdsid")
 	private Long id;
-	
+
+	@Column(name = "section", length = 150)
+	private String section;
+
 	@Column(name = "tdswithsec", length = 150)
 	private String tdsWithSec;
 

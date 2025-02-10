@@ -48,14 +48,8 @@ public class ChargeTypeRequestVO {
 	private String purchaseAccount;
 	@Column(name = "taxable",length = 30)
 	private String taxable;
-	@Column(name = "taxtype",length = 30)
-	private String taxType;
-	@Column(name = "ccfeeapplicable",length = 30)
-	private String ccFeeApplicable;
 	@Column(name = "taxablepercentage",length = 5)
 	private int taxablePercentage;
-	@Column(name = "ccjob",length = 30)
-	private String ccJob;
 	@Column(name = "govtsac",length = 150)
 	private String govtSac;
 	@Column(name = "excempted",length = 30)
@@ -68,6 +62,8 @@ public class ChargeTypeRequestVO {
 	private String service;
 	@Column(name = "type",length = 30)
 	private String type;
+	@Column(name = "approved")
+	private boolean approved;
 
 	@Column(name = "active")
 	private boolean active;

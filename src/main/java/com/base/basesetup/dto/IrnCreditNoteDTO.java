@@ -4,6 +4,8 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
+import javax.persistence.Column;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -41,12 +43,11 @@ public class IrnCreditNoteDTO {
 	private LocalDate supplierRefDate;
 	private String billCurr;
 	private BigDecimal billCurrRate;
-	private BigDecimal exAmount;
 	private int creditDays;
 	private String shipperRefNo;
-	private String billMonth;
-	private String salesType;
 	private String creditRemarks;
+	private String jobNo;
+
 
 	List<IrnCreditNoteDetailsDTO> irnCreditNoteDetailsDTO;
 
