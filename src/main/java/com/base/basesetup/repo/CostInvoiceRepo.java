@@ -1,6 +1,5 @@
 package com.base.basesetup.repo;
 
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.Set;
 
@@ -70,11 +69,11 @@ public interface CostInvoiceRepo extends JpaRepository<CostInvoiceVO, Long> {
 	@Query(nativeQuery = true,value = "select * from costinvoice a where a.orgId=?1 and a.supplierName=?2 and a.branchCode=?3 and a.approvestatus='Approved' order by a.docId desc")
 	List<CostInvoiceVO> findOrginBillNoByParty(Long orgId, String party, String branchCode);
 
-	@Query(nativeQuery = true, value = "select * from groupledger where orgid=?1 and gsttaxflag!='NA' and category='TAX' and gsttaxflag='INPUT TAX' and gsttype=?2 and gstpercentage IN(?3) order by gstpercentage desc")
-	GroupLedgerVO findInterDetailsForCostInvoicePosting(Long orgId, String gtsType, Double gstPercent);
+	@Query(nativeQuery = true, value = "select  accountgroupname,gstpercentage,currency from groupledger where orgid=?1 and gsttaxflag!='NA' and category='TAX' and gsttaxflag='INPUT TAX' and gsttype=?2 and gstpercentage IN(?3) group by  accountgroupname,gstpercentage,currency order by gstpercentage desc")
+	Set<Object[]> findInterDetailsForCostInvoicePosting(Long orgId, String gtsType, Double gstPercent);
 
-	@Query(nativeQuery = true, value = "select * from groupledger where orgid=?1 and gsttaxflag!='NA' and category='TAX' and gsttaxflag='INPUT TAX' and gsttype=?2 and gstpercentage IN(?3) order by gstpercentage desc")
-	List<GroupLedgerVO> findIntraDetailsForCostInvoicePosting(Long orgId, String gtsType, Double intraPercent);
+	@Query(nativeQuery = true, value = "select accountgroupname,gstpercentage,currency from groupledger where orgid=?1 and gsttaxflag!='NA' and category='TAX' and gsttaxflag='INPUT TAX' and gsttype=?2 and gstpercentage IN(?3) group by  accountgroupname,gstpercentage,currency order by gstpercentage desc")
+	Set<Object[]> findIntraDetailsForCostInvoicePosting(Long orgId, String gtsType, Double intraPercent);
 
 	CostInvoiceVO findByOrgIdAndIdAndDocId(Long orgId, Long id, String docId);
 

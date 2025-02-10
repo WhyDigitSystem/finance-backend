@@ -315,29 +315,28 @@ public class CostInvoiceServiceImpl implements CostInvoiceService {
 //				if (igstSummaryVO.getGSTPercent() != 0) {
 				taxAmount = taxAmount.add(igstLcAmount);
 
-				GroupLedgerVO groupLedgerVOs = costInvoiceRepo
+				Set<Object[]> groupLedgerVOs = costInvoiceRepo
 						.findInterDetailsForCostInvoicePosting(costInvoiceDTO.getOrgId(), gstType, gstPercent);
-
-				String chargeDesc = groupLedgerVOs.getAccountGroupName();
-				double gstPer = groupLedgerVOs.getGstPercentage();
-				String currency = groupLedgerVOs.getCurrency();
-				String ledger = groupLedgerVOs.getAccountGroupName();
-				igstSummaryVO.setChargeName(chargeDesc);
-				igstSummaryVO.setCurrency(currency);
-				igstSummaryVO.setGSTPercent(gstPer);
-				igstSummaryVO.setLedger(ledger);
-
-				igstSummaryVO.setQty(Integer.valueOf(1));
-				igstSummaryVO.setRate(BigDecimal.ONE);
-				igstSummaryVO.setExRate(BigDecimal.ONE);
-				igstSummaryVO.setFcAmt(BigDecimal.ONE);
-				igstSummaryVO.setLcAmt(igstLcAmount);
-				igstSummaryVO.setFcAmt(BigDecimal.ONE);
-				igstSummaryVO.setBillAmt(BigDecimal.ONE);
-				igstSummaryVO.setGstAmount(BigDecimal.ONE);
-				igstSummaryVO.setCostInvoiceVO(costInvoiceVO);
-
-				chargerCostInvoiceVOs.add(igstSummaryVO);
+				for (Object[] ch : groupLedgerVOs) {
+					String chargeDesc = ch[0].toString();
+					double gstPer = Double.parseDouble(ch[1].toString());
+					String currency = ch[2].toString();
+					String ledger = ch[0].toString();
+					igstSummaryVO.setChargeName(chargeDesc);
+					igstSummaryVO.setCurrency(currency);
+					igstSummaryVO.setGSTPercent(gstPer);
+					igstSummaryVO.setLedger(ledger);
+					igstSummaryVO.setQty(Integer.valueOf(1));
+					igstSummaryVO.setRate(BigDecimal.ONE);
+					igstSummaryVO.setExRate(BigDecimal.ONE);
+					igstSummaryVO.setFcAmt(BigDecimal.ONE);
+					igstSummaryVO.setLcAmt(igstLcAmount);
+					igstSummaryVO.setFcAmt(BigDecimal.ONE);
+					igstSummaryVO.setBillAmt(BigDecimal.ONE);
+					igstSummaryVO.setGstAmount(BigDecimal.ONE);
+					igstSummaryVO.setCostInvoiceVO(costInvoiceVO);
+					chargerCostInvoiceVOs.add(igstSummaryVO);
+				}
 			}
 		}
 
@@ -356,16 +355,15 @@ public class CostInvoiceServiceImpl implements CostInvoiceService {
 //				if (igstSummaryVO.getGSTPercent() != 0) {
 				taxAmount = taxAmount.add(sgstAmount);
 
-				
-				List<GroupLedgerVO> groupLedgerVOs = costInvoiceRepo
+				Set<Object[]> groupLedgerVOs = costInvoiceRepo
 						.findIntraDetailsForCostInvoicePosting(costInvoiceDTO.getOrgId(), gstType, gstPercent);
 
-				for (GroupLedgerVO entry1 : groupLedgerVOs) {
+				for (Object[] entry1 : groupLedgerVOs) {
 					ChargerCostInvoiceVO cgstSummaryVO = new ChargerCostInvoiceVO();
-					cgstSummaryVO.setChargeName(entry1.getAccountGroupName());
-					cgstSummaryVO.setGSTPercent(entry1.getGstPercentage());
-					cgstSummaryVO.setCurrency(entry1.getCurrency());
-					cgstSummaryVO.setLedger(entry1.getAccountGroupName());
+					cgstSummaryVO.setChargeName(entry1[0].toString());
+					cgstSummaryVO.setGSTPercent(Double.parseDouble(entry1[1].toString()));
+					cgstSummaryVO.setCurrency(entry1[2].toString());
+					cgstSummaryVO.setLedger(entry1[0].toString());
 					cgstSummaryVO.setQty(1);
 					cgstSummaryVO.setRate(BigDecimal.ONE);
 					cgstSummaryVO.setExRate(BigDecimal.ONE);
