@@ -149,6 +149,9 @@ public class CostDebitNoteServiceImpl implements CostDebitNoteService {
 		costDebitNoteVO.setOrginBill(costDebitNoteDTO.getOrginBill());
 		costDebitNoteVO.setOrginBillDate(costDebitNoteDTO.getOriginBillDate());
 		costDebitNoteVO.setApproved(costDebitNoteDTO.isApproved());
+		costDebitNoteVO.setMode(costDebitNoteDTO.getMode());
+		costDebitNoteVO.setPurVoucherNo(costDebitNoteDTO.getPurVoucherNo());
+		costDebitNoteVO.setPurVoucherDate(costDebitNoteDTO.getPurVoucherDate());
 
 		// Set individual fields from DTO to VO
 
