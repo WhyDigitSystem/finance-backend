@@ -366,7 +366,7 @@ public class PartyTypeController extends BaseController {
 	@PostMapping("/vendorUpload")
 	public ResponseEntity<ResponseDTO> vendorUpload(@RequestParam("files") MultipartFile files,
 			@RequestParam("orgId") Long orgId, @RequestParam("createdBy") String createdBy) {
-		String methodName = "customerUpload()";
+		String methodName = "vendorUpload()";
 		Map<String, Object> responseObjectsMap = new HashMap<>();
 		ResponseDTO responseDTO = null;
 		try {
