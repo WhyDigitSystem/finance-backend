@@ -114,8 +114,8 @@ public class CostDebitNoteVO {
 	private String accuralid;
 	@Column(name = "utrref", length = 10)
 	private String utrRef;
-	@Column(name = "costtype", length = 10)
-	private String costType;
+//	@Column(name = "costtype", length = 10)
+//	private String costType;
 	@Column(name = "approved")
 	private boolean approved;
 

@@ -26,6 +26,6 @@ public class ChargerCostDebitNoteDTO {
 	private String ledger;
 	private String govChargeCode;
 	private String taxable;
-	private String exempted;
+//	private String exempted;
 
 }
