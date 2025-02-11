@@ -132,8 +132,8 @@ public class CostDebitNoteVO {
 	private BigDecimal netBillCurrAmt;
 	@Column(name = "netbilllcamt", precision = 10, scale = 2)
 	private BigDecimal netBillLcAmt;
-	@Column(name = "roundoff")
-	private Long roundOff;
+	@Column(name = "roundoff", precision = 10, scale = 2)
+	private BigDecimal roundOff;
 	@Column(name = "gstinputlcamt", precision = 10, scale = 2)
 	private BigDecimal gstInputLcAmt;
 	
