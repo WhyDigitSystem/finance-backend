@@ -204,16 +204,17 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 				continue;
 			CustomersDTO customer = new CustomersDTO();
 			customer.setCustomerName(getStringCellValue(row.getCell(0)));
-			customer.setGstIn(getStringCellValue(row.getCell(1)));
-			customer.setPanNo(getStringCellValue(row.getCell(2)));
-			customer.setCreditDays(getLongCellValue(row.getCell(4)));
-			customer.setCreditLimit(getBigDecimalValue(row.getCell(3)));
-			customer.setCreditTerms(getStringCellValue(row.getCell(5)));
-			customer.setTaxRegistered(getStringCellValue(row.getCell(6)));
-			customer.setBussinessType(getStringCellValue(row.getCell(7)));
-			customer.setBussinessCategory(getStringCellValue(row.getCell(8)));
-			customer.setAccountsType(getStringCellValue(row.getCell(9)));
-			customer.setCurrency(getStringCellValue(row.getCell(10)));
+			customer.setCustomerCode(getStringCellValue(row.getCell(1)));
+			customer.setGstIn(getStringCellValue(row.getCell(2)));
+			customer.setPanNo(getStringCellValue(row.getCell(3)));
+			customer.setCreditLimit(getBigDecimalValue(row.getCell(4)));
+			customer.setCreditDays(getLongCellValue(row.getCell(5)));
+			customer.setCreditTerms(getStringCellValue(row.getCell(6)));
+			customer.setTaxRegistered(getStringCellValue(row.getCell(7)));
+			customer.setBussinessType(getStringCellValue(row.getCell(8)));
+			customer.setBussinessCategory(getStringCellValue(row.getCell(9)));
+			customer.setAccountsType(getStringCellValue(row.getCell(10)));
+			customer.setCurrency(getStringCellValue(row.getCell(11)));
 			customer.setCreatedBy(createdBy);
 			customer.setOrgId(orgId);
 			customer.setActive(true);
@@ -258,6 +259,8 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 						address.setAddressLane2(getStringCellValue(row.getCell(6)));
 						address.setAddressLane3(getStringCellValue(row.getCell(7)));
 						address.setPinCode(getLongCellValue(row.getCell(8)));
+						String no = getStringCellValue(row.getCell(9));
+						System.out.println(no);
 						address.setContact(getStringCellValue(row.getCell(9)));
 						customer.getCustomersAddressDTO().add(address);
 					});
@@ -296,8 +299,26 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 		}
 	}
 
+//	private String getStringCellValue(Cell cell) {
+//		return (cell == null) ? "" : cell.toString().trim();
+//	}
+
 	private String getStringCellValue(Cell cell) {
-		return (cell == null) ? "" : cell.toString().trim();
+	    if (cell == null) return "";
+
+	    switch (cell.getCellType()) {
+	        case STRING:
+	            return cell.getStringCellValue().trim();
+	        case NUMERIC:
+	            double numericValue = cell.getNumericCellValue();
+	            if (numericValue == Math.floor(numericValue)) {
+	                // If it's a whole number, convert without decimal point
+	                return String.valueOf((long) numericValue);
+	            }
+	            return String.valueOf(numericValue);
+	        default:
+	            return "";
+	    }
 	}
 
 	private Long getLongCellValue(Cell cell) {
