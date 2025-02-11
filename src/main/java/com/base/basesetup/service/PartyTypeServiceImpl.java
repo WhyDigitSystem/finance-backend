@@ -343,14 +343,14 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 		String message = null;
 
 		if (ObjectUtils.isEmpty(customersDTO.getId())) {
-
-			if (partyMasterRepo.existsByPartyNameAndOrgId(customersDTO.getCustomerName(), customersDTO.getOrgId())) {
+			String partyType = "CUSTOMER";
+			if (partyMasterRepo.existsByPartyNameAndOrgIdAndPartyType(customersDTO.getCustomerName(), customersDTO.getOrgId(),partyType)) {
 				String errorMessage = String.format("This CustomerName: %s Already Exists in This Organization",
 						customersDTO.getCustomerName());
 				throw new ApplicationException(errorMessage);
 			}
 
-			String partyType = "CUSTOMER";
+		
 			// PARTCODE DOCID API
 			String partyTypeDocId = partyTypeRepo.getPartyTypeDocId(customersDTO.getOrgId(), partyType);
 			partyMasterVO.setPartyCode(partyTypeDocId);
@@ -371,9 +371,9 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 			partyMasterVO.setUpdatedBy(customersDTO.getCreatedBy());
 
 			if (!partyMasterVO.getPartyName().equalsIgnoreCase(customersDTO.getCustomerName())) {
-
-				if (partyMasterRepo.existsByPartyNameAndOrgId(customersDTO.getCustomerName(),
-						customersDTO.getOrgId())) {
+				String partyType = "CUSTOMER";
+				if (partyMasterRepo.existsByPartyNameAndOrgIdAndPartyType(customersDTO.getCustomerName(),
+						customersDTO.getOrgId(),partyType)) {
 					String errorMessage = String.format("This CustomerName: %s Already Exists in This Organization",
 							customersDTO.getCustomerName());
 					throw new ApplicationException(errorMessage);
@@ -515,14 +515,14 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 		String message = null;
 
 		if (ObjectUtils.isEmpty(vendorDTO.getId())) {
-
-			if (partyMasterRepo.existsByPartyNameAndOrgId(vendorDTO.getVendorName(), vendorDTO.getOrgId())) {
+			String partyType = "VENDOR";
+			if (partyMasterRepo.existsByPartyNameAndOrgIdAndPartyType(vendorDTO.getVendorName(), vendorDTO.getOrgId(),partyType)) {
 				String errorMessage = String.format("This CustomerName: %s Already Exists in This Organization",
 						vendorDTO.getVendorName());
 				throw new ApplicationException(errorMessage);
 			}
 
-			String partyType = "VENDOR";
+			
 			// PARTCODE DOCID API
 			String partyTypeDocId = partyTypeRepo.getPartyTypeVendorDocId(vendorDTO.getOrgId(), partyType);
 			partyMasterVO.setPartyCode(partyTypeDocId);
@@ -541,8 +541,8 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 					() -> new ApplicationException("vendor Order Not Found with id: " + vendorDTO.getId()));
 
 			if (!partyMasterVO.getPartyName().equalsIgnoreCase(vendorDTO.getVendorName())) {
-
-				if (partyMasterRepo.existsByPartyNameAndOrgId(vendorDTO.getVendorName(), vendorDTO.getOrgId())) {
+				String partyType = "VENDOR";
+				if (partyMasterRepo.existsByPartyNameAndOrgIdAndPartyType(vendorDTO.getVendorName(), vendorDTO.getOrgId(),partyType)) {
 					String errorMessage = String.format("This VendorName: %s Already Exists in This Organization",
 							vendorDTO.getVendorName());
 					throw new ApplicationException(errorMessage);
