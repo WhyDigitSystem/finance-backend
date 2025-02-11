@@ -40,8 +40,8 @@ public class ChargerCostDebitNoteVO {
 	private String chargeLedger;
 	@Column(name = "sac", length = 15)
 	private String sac;
-	@Column(name = "conttype", length = 10)
-	private String contType;
+//	@Column(name = "conttype", length = 10)
+//	private String contType;
 	@Column(name = "currency", length = 15)
 	private String currency;
 	@Column(name = "exrate", precision = 10, scale = 2)
@@ -60,16 +60,16 @@ public class ChargerCostDebitNoteVO {
 	private int qty;
 	@Column(name = "gstpercent")
 	private Float GSTPercent;
-	@Column(name = "tlcamount", precision = 10, scale = 2)
-	private BigDecimal tlcAmount;
+//	@Column(name = "tlcamount", precision = 10, scale = 2)
+//	private BigDecimal tlcAmount;
 	@Column(name = "gstamount", precision = 10, scale = 2)
 	private BigDecimal gstAmount;
 	@Column(name = "ledger", length = 150)
 	private String ledger;
 	@Column(name = "govchargecode", length = 10)
 	private String govChargeCode;
-	@Column(name = "exempted", precision = 10, scale = 2)
-	private String exempted;
+//	@Column(name = "exempted", precision = 10, scale = 2)
+//	private String exempted;
 	@Column(name = "taxable", length = 10)
 	private String taxable;
 

@@ -45,7 +45,7 @@ public class CostDebitNoteDTO {
 	private String payment;
 	private String accuralid;
 	private String utrRef;
-	private String costType;
+//	private String costType;
 	private boolean approved;
 
 	private String orginBill;

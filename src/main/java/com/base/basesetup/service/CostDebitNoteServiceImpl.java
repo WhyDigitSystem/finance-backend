@@ -145,7 +145,7 @@ public class CostDebitNoteServiceImpl implements CostDebitNoteService {
 		costDebitNoteVO.setPayment(costDebitNoteDTO.getPayment());
 		costDebitNoteVO.setAccuralid(costDebitNoteDTO.getAccuralid());
 		costDebitNoteVO.setUtrRef(costDebitNoteDTO.getUtrRef());
-		costDebitNoteVO.setCostType(costDebitNoteDTO.getCostType());
+//		costDebitNoteVO.setCostType(costDebitNoteDTO.getCostType());
 		costDebitNoteVO.setOrginBill(costDebitNoteDTO.getOrginBill());
 		costDebitNoteVO.setOrginBillDate(costDebitNoteDTO.getOriginBillDate());
 		costDebitNoteVO.setApproved(costDebitNoteDTO.isApproved());
@@ -172,6 +172,8 @@ public class CostDebitNoteServiceImpl implements CostDebitNoteService {
 
 		BigDecimal taxAmount = BigDecimal.ZERO;
 		BigDecimal tdsAmount = BigDecimal.ZERO;
+		
+		BigDecimal  gstInputAmount = BigDecimal.ZERO;
 
 		List<ChargerCostDebitNoteVO> chargerCostDebitVOs = new ArrayList<>();
 
@@ -194,7 +196,7 @@ public class CostDebitNoteServiceImpl implements CostDebitNoteService {
 			chargerCostDebitVO.setExRate(chargerCostDebitDTO.getExRate());
 			chargerCostDebitVO.setGst(chargerCostDebitDTO.getGst());
 			chargerCostDebitVO.setGovChargeCode(chargerCostDebitDTO.getGovChargeCode());
-			chargerCostDebitVO.setExempted(chargerCostDebitDTO.getExempted());
+//			chargerCostDebitVO.setExempted(chargerCostDebitDTO.getExempted());
 			chargerCostDebitVO.setTaxable(chargerCostDebitDTO.getTaxable());
 			chargerCostDebitVO.setGSTPercent(chargerCostDebitDTO.getGstPercent());
 
@@ -234,6 +236,8 @@ public class CostDebitNoteServiceImpl implements CostDebitNoteService {
 //			GST AMOUNT CALCULATION
 			gstAmount = lcAmount.multiply(gstPercent).divide(BigDecimal.valueOf(100));
 			chargerCostDebitVO.setGstAmount(gstAmount);
+			
+			gstInputAmount=gstInputAmount.add(gstAmount);
 
 //			AGGREGATE IGST SUMS BY GST PERCENTAGE
 			if (costDebitNoteDTO.getGstType().equalsIgnoreCase("INTER") && gstPercent.compareTo(BigDecimal.ZERO) > 0) {
@@ -408,10 +412,11 @@ public class CostDebitNoteServiceImpl implements CostDebitNoteService {
 		costDebitNoteVO.setTotChargesBillCurrAmt(totChargeAmtBillCurr);
 		costDebitNoteVO.setTotChargesLcAmt(totChargeAmtLc);
 		costDebitNoteVO.setNetBillCurrAmt(netAmountBillCurr);
-		costDebitNoteVO.setNetBillLcAmt(netAmountLc);
+		costDebitNoteVO.setNetBillLcAmt(netAmountLc); 
 		costDebitNoteVO.setActBillCurrAmt(actBillAmtBillCurr);
 		costDebitNoteVO.setActBillLcAmt(actBillAmtLc);
 		costDebitNoteVO.setRoundOff(roundOff);
+		costDebitNoteVO.setGstInputLcAmt(gstInputAmount);
 		costDebitNoteVO.setSumLcAmt(sumDebitAmount);
 		costDebitNoteVO.setCostDebitChargesVO(chargerCostDebitVOs);
 
