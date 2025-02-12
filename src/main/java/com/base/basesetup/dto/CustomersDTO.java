@@ -28,7 +28,7 @@ public class CustomersDTO {
 	private String bussinessCategory;
 	private String accountsType;
 	private String currency;
-	private String customerCode;
+//	private String customerCode;
 	private boolean approved;
 	
 	private List<CustomersStateDTO> customersStateDTO = new ArrayList<>();

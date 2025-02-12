@@ -204,17 +204,17 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 				continue;
 			CustomersDTO customer = new CustomersDTO();
 			customer.setCustomerName(getStringCellValue(row.getCell(0)));
-			customer.setCustomerCode(getStringCellValue(row.getCell(1)));
-			customer.setGstIn(getStringCellValue(row.getCell(2)));
-			customer.setPanNo(getStringCellValue(row.getCell(3)));
-			customer.setCreditLimit(getBigDecimalValue(row.getCell(4)));
-			customer.setCreditDays(getLongCellValue(row.getCell(5)));
-			customer.setCreditTerms(getStringCellValue(row.getCell(6)));
-			customer.setTaxRegistered(getStringCellValue(row.getCell(7)));
-			customer.setBussinessType(getStringCellValue(row.getCell(8)));
-			customer.setBussinessCategory(getStringCellValue(row.getCell(9)));
-			customer.setAccountsType(getStringCellValue(row.getCell(10)));
-			customer.setCurrency(getStringCellValue(row.getCell(11)));
+//			customer.setCustomerCode(getStringCellValue(row.getCell(1)));
+			customer.setGstIn(getStringCellValue(row.getCell(1)));
+			customer.setPanNo(getStringCellValue(row.getCell(2)));
+			customer.setCreditLimit(getBigDecimalValue(row.getCell(3)));
+			customer.setCreditDays(getLongCellValue(row.getCell(4)));
+			customer.setCreditTerms(getStringCellValue(row.getCell(5)));
+			customer.setTaxRegistered(getStringCellValue(row.getCell(6)));
+			customer.setBussinessType(getStringCellValue(row.getCell(7)));
+			customer.setBussinessCategory(getStringCellValue(row.getCell(8)));
+			customer.setAccountsType(getStringCellValue(row.getCell(9)));
+			customer.setCurrency(getStringCellValue(row.getCell(10)));
 			customer.setCreatedBy(createdBy);
 			customer.setOrgId(orgId);
 			customer.setActive(true);
@@ -490,7 +490,7 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 		partyMasterVO.setBussinessType(customerDTO.getBussinessType());
 		partyMasterVO.setBussinessCate(customerDTO.getBussinessCategory());
 		partyMasterVO.setAccountType(customerDTO.getAccountsType());
-		partyMasterVO.setPartyCode(customerDTO.getCustomerCode());
+//		partyMasterVO.setPartyCode(customerDTO.getCustomerCode());
 		partyMasterVO.setCurrency(customerDTO.getCurrency());
 
 		if (customerDTO.isApproved()) {
