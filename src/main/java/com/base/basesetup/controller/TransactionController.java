@@ -2503,7 +2503,7 @@ public class TransactionController extends BaseController {
 	}
 
 	@GetMapping("/getIncomeByTaxInvoice")
-	public ResponseEntity<ResponseDTO> getIncomeByTaxInvoice(@RequestParam Long orgId, @RequestParam String partyName) {
+	public ResponseEntity<ResponseDTO> getIncomeByTaxInvoice(@RequestParam Long orgId, @RequestParam String customerName) {
 		String methodName = "getIncomeByTaxInvoice()";
 		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
 		String errorMsg = null;
@@ -2512,7 +2512,7 @@ public class TransactionController extends BaseController {
 		List<Map<String, Object>> mapp = new ArrayList<>();
 
 		try {
-			mapp = transactionService.getIncomeByTaxInvoice(orgId, partyName);
+			mapp = transactionService.getIncomeByTaxInvoice(orgId, customerName);
 		} catch (Exception e) {
 			errorMsg = e.getMessage();
 			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
@@ -2531,7 +2531,7 @@ public class TransactionController extends BaseController {
 	}
 
 	@GetMapping("/getExponesByCostInvoice")
-	public ResponseEntity<ResponseDTO> getExponesByCostInvoice(@RequestParam Long orgId) {
+	public ResponseEntity<ResponseDTO> getExponesByCostInvoice(@RequestParam Long orgId,@RequestParam String customerName) {
 		String methodName = "getExponesByCostInvoice()";
 		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
 		String errorMsg = null;
@@ -2540,7 +2540,7 @@ public class TransactionController extends BaseController {
 		List<Map<String, Object>> mapp = new ArrayList<>();
 
 		try {
-			mapp = transactionService.getExponesByCostInvoice(orgId);
+			mapp = transactionService.getExponesByCostInvoice(orgId,customerName);
 		} catch (Exception e) {
 			errorMsg = e.getMessage();
 			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
