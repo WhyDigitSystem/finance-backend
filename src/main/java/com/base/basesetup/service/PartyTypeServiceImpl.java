@@ -204,17 +204,17 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 				continue;
 			CustomersDTO customer = new CustomersDTO();
 			customer.setCustomerName(getStringCellValue(row.getCell(0)));
-			customer.setCustomerCode(getStringCellValue(row.getCell(1)));
-			customer.setGstIn(getStringCellValue(row.getCell(2)));
-			customer.setPanNo(getStringCellValue(row.getCell(3)));
-			customer.setCreditLimit(getBigDecimalValue(row.getCell(4)));
-			customer.setCreditDays(getLongCellValue(row.getCell(5)));
-			customer.setCreditTerms(getStringCellValue(row.getCell(6)));
-			customer.setTaxRegistered(getStringCellValue(row.getCell(7)));
-			customer.setBussinessType(getStringCellValue(row.getCell(8)));
-			customer.setBussinessCategory(getStringCellValue(row.getCell(9)));
-			customer.setAccountsType(getStringCellValue(row.getCell(10)));
-			customer.setCurrency(getStringCellValue(row.getCell(11)));
+//			customer.setCustomerCode(getStringCellValue(row.getCell(1)));
+			customer.setGstIn(getStringCellValue(row.getCell(1)));
+			customer.setPanNo(getStringCellValue(row.getCell(2)));
+			customer.setCreditLimit(getBigDecimalValue(row.getCell(3)));
+			customer.setCreditDays(getLongCellValue(row.getCell(4)));
+			customer.setCreditTerms(getStringCellValue(row.getCell(5)));
+			customer.setTaxRegistered(getStringCellValue(row.getCell(6)));
+			customer.setBussinessType(getStringCellValue(row.getCell(7)));
+			customer.setBussinessCategory(getStringCellValue(row.getCell(8)));
+			customer.setAccountsType(getStringCellValue(row.getCell(9)));
+			customer.setCurrency(getStringCellValue(row.getCell(10)));
 			customer.setCreatedBy(createdBy);
 			customer.setOrgId(orgId);
 			customer.setActive(true);
@@ -343,14 +343,14 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 		String message = null;
 
 		if (ObjectUtils.isEmpty(customersDTO.getId())) {
-
-			if (partyMasterRepo.existsByPartyNameAndOrgId(customersDTO.getCustomerName(), customersDTO.getOrgId())) {
+			String partyType = "CUSTOMER";
+			if (partyMasterRepo.existsByPartyNameAndOrgIdAndPartyType(customersDTO.getCustomerName(), customersDTO.getOrgId(),partyType)) {
 				String errorMessage = String.format("This CustomerName: %s Already Exists in This Organization",
 						customersDTO.getCustomerName());
 				throw new ApplicationException(errorMessage);
 			}
 
-			String partyType = "CUSTOMER";
+		
 			// PARTCODE DOCID API
 			String partyTypeDocId = partyTypeRepo.getPartyTypeDocId(customersDTO.getOrgId(), partyType);
 			partyMasterVO.setPartyCode(partyTypeDocId);
@@ -371,9 +371,9 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 			partyMasterVO.setUpdatedBy(customersDTO.getCreatedBy());
 
 			if (!partyMasterVO.getPartyName().equalsIgnoreCase(customersDTO.getCustomerName())) {
-
-				if (partyMasterRepo.existsByPartyNameAndOrgId(customersDTO.getCustomerName(),
-						customersDTO.getOrgId())) {
+				String partyType = "CUSTOMER";
+				if (partyMasterRepo.existsByPartyNameAndOrgIdAndPartyType(customersDTO.getCustomerName(),
+						customersDTO.getOrgId(),partyType)) {
 					String errorMessage = String.format("This CustomerName: %s Already Exists in This Organization",
 							customersDTO.getCustomerName());
 					throw new ApplicationException(errorMessage);
@@ -490,7 +490,7 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 		partyMasterVO.setBussinessType(customerDTO.getBussinessType());
 		partyMasterVO.setBussinessCate(customerDTO.getBussinessCategory());
 		partyMasterVO.setAccountType(customerDTO.getAccountsType());
-		partyMasterVO.setPartyCode(customerDTO.getCustomerCode());
+//		partyMasterVO.setPartyCode(customerDTO.getCustomerCode());
 		partyMasterVO.setCurrency(customerDTO.getCurrency());
 
 		if (customerDTO.isApproved()) {
@@ -515,14 +515,14 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 		String message = null;
 
 		if (ObjectUtils.isEmpty(vendorDTO.getId())) {
-
-			if (partyMasterRepo.existsByPartyNameAndOrgId(vendorDTO.getVendorName(), vendorDTO.getOrgId())) {
+			String partyType = "VENDOR";
+			if (partyMasterRepo.existsByPartyNameAndOrgIdAndPartyType(vendorDTO.getVendorName(), vendorDTO.getOrgId(),partyType)) {
 				String errorMessage = String.format("This CustomerName: %s Already Exists in This Organization",
 						vendorDTO.getVendorName());
 				throw new ApplicationException(errorMessage);
 			}
 
-			String partyType = "VENDOR";
+			
 			// PARTCODE DOCID API
 			String partyTypeDocId = partyTypeRepo.getPartyTypeVendorDocId(vendorDTO.getOrgId(), partyType);
 			partyMasterVO.setPartyCode(partyTypeDocId);
@@ -541,8 +541,8 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 					() -> new ApplicationException("vendor Order Not Found with id: " + vendorDTO.getId()));
 
 			if (!partyMasterVO.getPartyName().equalsIgnoreCase(vendorDTO.getVendorName())) {
-
-				if (partyMasterRepo.existsByPartyNameAndOrgId(vendorDTO.getVendorName(), vendorDTO.getOrgId())) {
+				String partyType = "VENDOR";
+				if (partyMasterRepo.existsByPartyNameAndOrgIdAndPartyType(vendorDTO.getVendorName(), vendorDTO.getOrgId(),partyType)) {
 					String errorMessage = String.format("This VendorName: %s Already Exists in This Organization",
 							vendorDTO.getVendorName());
 					throw new ApplicationException(errorMessage);

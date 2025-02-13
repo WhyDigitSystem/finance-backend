@@ -35,6 +35,8 @@ public interface PartyMasterRepo extends JpaRepository<PartyMasterVO, Long> {
 
 	boolean existsByPartyNameAndOrgId(String customerName, long orgId);
 
+	boolean existsByPartyNameAndOrgIdAndPartyType(String customerName, long orgId, String partyType);
+
 
 	
 
