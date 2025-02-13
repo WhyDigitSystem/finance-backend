@@ -208,7 +208,8 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 			customer.setGstIn(getStringCellValue(row.getCell(1)));
 			customer.setPanNo(getStringCellValue(row.getCell(2)));
 			customer.setCreditLimit(getBigDecimalValue(row.getCell(3)));
-			customer.setCreditDays(getLongCellValue(row.getCell(4)));
+			Long creditDays = getLongCellValue(row.getCell(4));
+			customer.setCreditDays(creditDays != null ? creditDays : 0);
 			customer.setCreditTerms(getStringCellValue(row.getCell(5)));
 			customer.setTaxRegistered(getStringCellValue(row.getCell(6)));
 			customer.setBussinessType(getStringCellValue(row.getCell(7)));
@@ -483,7 +484,9 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 		partyMasterVO.setPanName(customerDTO.getCustomerName());
 		partyMasterVO.setActive(customerDTO.isActive());
 		partyMasterVO.setOrgId(customerDTO.getOrgId());
-		partyMasterVO.setCreditDays(customerDTO.getCreditDays());
+		Long creditDays = customerDTO.getCreditDays();
+		partyMasterVO.setCreditDays(creditDays != null ? creditDays : 0);
+//		partyMasterVO.setCreditDays(customerDTO.getCreditDays());
 		partyMasterVO.setCreditLimit(customerDTO.getCreditLimit());
 		partyMasterVO.setCreditTerms(customerDTO.getCreditTerms());
 		partyMasterVO.setGstRegistered(customerDTO.getTaxRegistered());
@@ -571,8 +574,8 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 		partyMasterVO.setPanNo(vendorDTO.getPanNo());
 		partyMasterVO.setOrgId(vendorDTO.getOrgId());
 		partyMasterVO.setPartyType("VENDOR");
-
-		partyMasterVO.setCreditDays(vendorDTO.getCreditDays());
+		Long creditDays = vendorDTO.getCreditDays();
+		partyMasterVO.setCreditDays(creditDays != null ? creditDays : 0);
 		partyMasterVO.setCreditLimit(vendorDTO.getCreditLimit());
 		partyMasterVO.setCreditTerms(vendorDTO.getCreditTerms());
 		partyMasterVO.setGstRegistered(vendorDTO.getTaxRegistered());
@@ -677,188 +680,7 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 		return partyMasterRepo.getAllVendors(orgId);
 	}
 
-//	@Override
-//	// Method to upload customer data from Excel file
-//	public void vendorUpload(MultipartFile files, Long orgId, String createdBy) throws Exception {
-//
-//		List<VendorDTO> vendorDTOList = new ArrayList<>();
-//		try (Workbook workbook = WorkbookFactory.create(files.getInputStream())) {
-//			// Reading the customer sheet (CustomersDTO)
-//			Sheet customerSheet = workbook.getSheetAt(0); // Assuming customer sheet is the first one
-//
-//			// Loop through the customer sheet and create CustomersDTO entries
-//			for (Row row : customerSheet) {
-//				if (row.getRowNum() == 0) { // Skipping header
-//					continue;
-//				}
-//
-//				// Mapping Excel row data to CustomersDTO
-//				VendorDTO vendorDTO = new VendorDTO();
-//				vendorDTO.setVendorName(getStringCellValue(row.getCell(0))); // Customer Name
-//				vendorDTO.setGstIn(getStringCellValue(row.getCell(1))); // GSTIN
-//				vendorDTO.setPanNo(getStringCellValue(row.getCell(2))); // Pan No
-//				vendorDTO.setCreatedBy(createdBy); // Created By
-//				vendorDTO.setOrgId(orgId);
-//				vendorDTO.setActive(true); // Assuming it's active
-//
-//				// Initialize CustomersAddressDTO list if null
-//				if (vendorDTO.getVendorAddressDTO() == null) {
-//					vendorDTO.setVendorAddressDTO((new ArrayList<>()));
-//				}
-//
-//				// Initialize SpecialTdsDTO list if null
-//				if (vendorDTO.getSpecialTdsDTO() == null) {
-//					vendorDTO.setSpecialTdsDTO(new ArrayList<>());
-//				}
-//
-//				// Add CustomersDTO to the list
-//				vendorDTOList.add(vendorDTO);
-//			}
-//
-//			// Reading the state sheet (CustomersStateDTO)
-//			Sheet stateSheet = workbook.getSheetAt(1); // Assuming state sheet is the second one
-//			List<VendorsStateDTO> partyStateDTOList = new ArrayList<>();
-//
-//			// Loop through the state sheet and create CustomersStateDTO entries
-//			for (Row row : stateSheet) {
-//				if (row.getRowNum() == 0) { // Skipping header
-//					continue;
-//				}
-//
-//				String vendorName = getStringCellValue(row.getCell(7)); // Safe cell value retrieval
-//				if (vendorName.isEmpty()) {
-//					// Handle case where customer name is missing or invalid
-//					continue;
-//				}
-//
-//				VendorDTO vendorDTO = vendorDTOList.stream().filter(c -> c.getVendorName().equals(vendorName))
-//						.findFirst()
-//						.orElseThrow(() -> new RuntimeException("No Vendor found for vendorName : " + vendorName));
-//
-//				String staeno = getStringCellValue(row.getCell(2)); // Ensure staeno is retrieved safely
-//				Long stateNo = null;
-//				if (!staeno.isEmpty()) {
-//					stateNo = Long.parseLong(staeno); // Only parse if staeno is not empty
-//				}
-//
-//				// Mapping Excel row data to CustomersStateDTO
-//				VendorsStateDTO vendorsStateDTO = new VendorsStateDTO();
-//				vendorsStateDTO.setState(getStringCellValue(row.getCell(0))); // State
-//				vendorsStateDTO.setStateCode(getStringCellValue(row.getCell(1))); // State Code
-//				vendorsStateDTO.setStateNo(stateNo); // State No
-//				vendorsStateDTO.setGstIn(getStringCellValue(row.getCell(3))); // GSTIN
-//				vendorsStateDTO.setContactPerson(getStringCellValue(row.getCell(4))); // Contact Person
-//				vendorsStateDTO.setPhoneNo(getStringCellValue(row.getCell(5))); // Contact Phone No
-//				vendorsStateDTO.setEMail(getStringCellValue(row.getCell(6))); // Contact Email
-//				partyStateDTOList.add(vendorsStateDTO);
-//				vendorDTO.setVendorStateDTO(partyStateDTOList);
-//			}
-//
-//			// Reading the address sheet (CustomersAddressDTO)
-//			Sheet addressSheet = workbook.getSheetAt(2); // Assuming address sheet is the third one
-//			List<VendorsAddressDTO> partyAddressDTOList = new ArrayList<>();
-//
-//			// Loop through the address sheet and create CustomersAddressDTO entries
-//			for (Row row : addressSheet) {
-//				if (row.getRowNum() == 0) { // Skipping header
-//					continue;
-//				}
-//
-//				String vendorName = getStringCellValue(row.getCell(10)); // Safely get customer name
-//				if (vendorName.isEmpty()) {
-//					// Handle case where customer name is missing or invalid
-//					throw new ApplicationException("No vendor found for vendorName : " + vendorName);
-//				}
-//
-//				VendorDTO vendorDTO = vendorDTOList.stream().filter(c -> c.getVendorName().equals(vendorName))
-//						.findFirst()
-//						.orElseThrow(() -> new RuntimeException("No Vendor found for vendorName : " + vendorName));
-//
-//				// Mapping Excel row data to CustomersAddressDTO
-//				VendorsAddressDTO partyAddressDTO = new VendorsAddressDTO();
-//				partyAddressDTO.setState(getStringCellValue(row.getCell(0))); // State
-//				partyAddressDTO.setCity(getStringCellValue(row.getCell(1))); // City
-//				partyAddressDTO.setBussinesPlace(getStringCellValue(row.getCell(2))); // Business Place
-//				partyAddressDTO.setGstnIn(getStringCellValue(row.getCell(3))); // GST IN
-//				partyAddressDTO.setAddressType(getStringCellValue(row.getCell(4))); // Address Type
-//				partyAddressDTO.setAddressLane1(getStringCellValue(row.getCell(5))); // Address Line 1
-//				partyAddressDTO.setAddressLane2(getStringCellValue(row.getCell(6))); // Address Line 2
-//				partyAddressDTO.setAddressLane3(getStringCellValue(row.getCell(7))); // Address Line 3
-//				partyAddressDTO.setPinCode(getLongCellValue(row.getCell(8))); // PinCode (long)
-//				partyAddressDTO.setContact(getStringCellValue(row.getCell(9))); // Contact
-//				partyAddressDTO.setVendorName(vendorName); // Customer Name
-//
-//				partyAddressDTOList.add(partyAddressDTO);
-//				vendorDTO.setVendorAddressDTO(partyAddressDTOList); // Add to list
-//
-//			}
-//
-//			// Save each customer DTO once
-//			for (VendorDTO vendor : vendorDTOList) {
-//				createUpdateVendor(vendor);
-//			}
-//		}
-//	}
-//
-//	// Helper method to get string value from a cell, ensuring the cell isn't null
-//	private String getStringCellValue1(Cell cell) {
-//		if (cell == null) {
-//			return ""; // Return empty string if cell is null
-//		}
-//		switch (cell.getCellType()) {
-//		case STRING:
-//			return cell.getStringCellValue();
-//		case NUMERIC:
-//			return String.valueOf(cell.getNumericCellValue());
-//		case BOOLEAN:
-//			return String.valueOf(cell.getBooleanCellValue());
-//		default:
-//			return ""; // Return empty string for unsupported cell types or unknown cases
-//		}
-//	}
-//
-//	private Long getLongCellValue1(Cell cell) {
-//		if (cell == null) {
-//			return null; // Return null if cell is empty
-//		}
-//
-//		// If the cell type is numeric, check if it has a decimal point
-//		if (cell.getCellType() == CellType.NUMERIC) {
-//			// If it's a double value (numeric with decimal), cast to Long
-//			if (DateUtil.isCellDateFormatted(cell)) {
-//				// Handle date type if needed (not for pinCode, but for completeness)
-//				return null;
-//			} else {
-//				return (long) cell.getNumericCellValue(); // Convert numeric to long
-//			}
-//		}
-//
-//		// If the cell type is String, try parsing it
-//		if (cell.getCellType() == CellType.STRING) {
-//			try {
-//			} catch (NumberFormatException e) {
-//				// Handle invalid number format
-//				return null; // or throw exception depending on your needs
-//			}
-//		}
-//
-//		// Return null if it's neither numeric nor string
-//		return null;
-//	}
-//
-//	// Helper method to get LocalDate value from a cell (date)
-//	private LocalDate getLocalDateCellValue1(Cell cell) {
-//		if (cell == null) {
-//			return null;
-//		}
-//		if (cell.getCellType() == CellType.NUMERIC) {
-//			if (DateUtil.isCellDateFormatted(cell)) {
-//				// Excel stores dates as serial numbers, convert that to LocalDate
-//				return cell.getDateCellValue().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-//			}
-//		}
-//		return null; // Return null if it's not a date or is an invalid cell type
-//	}
+
 
 	@Override
 	public List<Map<String, Object>> getSectionNameFromTds(Long orgId, String section) {
@@ -906,7 +728,8 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 			vendor.setGstIn(getStringCellValue(row.getCell(1)));
 			vendor.setPanNo(getStringCellValue(row.getCell(2)));
 			vendor.setCreditLimit(getBigDecimalValue(row.getCell(3)));
-			vendor.setCreditDays(getLongCellValue(row.getCell(4)));
+			Long creditDays = getLongCellValue(row.getCell(4));
+			vendor.setCreditDays(creditDays != null ? creditDays : 0);
 			vendor.setCreditTerms(getStringCellValue(row.getCell(5)));
 			vendor.setTaxRegistered(getStringCellValue(row.getCell(6)));
 			vendor.setBussinessType(getStringCellValue(row.getCell(7)));
