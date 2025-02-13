@@ -62,7 +62,7 @@ public class CostDebitNoteServiceImpl implements CostDebitNoteService {
 
 	@Autowired
 	GroupLedgerRepo groupLedgerRepo;
-	
+
 	@Autowired
 	CostInvoiceRepo costInvoiceRepo;
 
@@ -172,8 +172,8 @@ public class CostDebitNoteServiceImpl implements CostDebitNoteService {
 
 		BigDecimal taxAmount = BigDecimal.ZERO;
 		BigDecimal tdsAmount = BigDecimal.ZERO;
-		
-		BigDecimal  gstInputAmount = BigDecimal.ZERO;
+
+		BigDecimal gstInputAmount = BigDecimal.ZERO;
 
 		List<ChargerCostDebitNoteVO> chargerCostDebitVOs = new ArrayList<>();
 
@@ -236,8 +236,8 @@ public class CostDebitNoteServiceImpl implements CostDebitNoteService {
 //			GST AMOUNT CALCULATION
 			gstAmount = lcAmount.multiply(gstPercent).divide(BigDecimal.valueOf(100));
 			chargerCostDebitVO.setGstAmount(gstAmount);
-			
-			gstInputAmount=gstInputAmount.add(gstAmount);
+
+			gstInputAmount = gstInputAmount.add(gstAmount);
 
 //			AGGREGATE IGST SUMS BY GST PERCENTAGE
 			if (costDebitNoteDTO.getGstType().equalsIgnoreCase("INTER") && gstPercent.compareTo(BigDecimal.ZERO) > 0) {
@@ -407,12 +407,11 @@ public class CostDebitNoteServiceImpl implements CostDebitNoteService {
 		BigDecimal roundedValue = totChargeAmtLc.setScale(0, RoundingMode.HALF_UP);
 		BigDecimal sumDebitAmount = sumLcAmount.add(taxAmount);
 		BigDecimal roundOff = roundedValue.subtract(totChargeAmtLc);
-		
 
 		costDebitNoteVO.setTotChargesBillCurrAmt(totChargeAmtBillCurr);
-		costDebitNoteVO.setTotChargesLcAmt(totChargeAmtLc);
+		costDebitNoteVO.setTotChargesLcAmt(roundedValue);
 		costDebitNoteVO.setNetBillCurrAmt(netAmountBillCurr);
-		costDebitNoteVO.setNetBillLcAmt(netAmountLc); 
+		costDebitNoteVO.setNetBillLcAmt(netAmountLc);
 		costDebitNoteVO.setActBillCurrAmt(actBillAmtBillCurr);
 		costDebitNoteVO.setActBillLcAmt(actBillAmtLc);
 		costDebitNoteVO.setRoundOff(roundOff);
@@ -642,8 +641,7 @@ public class CostDebitNoteServiceImpl implements CostDebitNoteService {
 			accountsDetailsVO.setGstflag(6);
 			accountsDetailsVO.setAccountsVO(accountsVO);
 			accountsDetailsVOs.add(accountsDetailsVO);
-			
-			
+
 			if (costDebitNoteVO.getRoundOff() != null) {
 //				BigDecimal roundOffAmount = costDebitNoteVO.getRoundOff().setScale(2, RoundingMode.HALF_UP);
 				accountsDetailsVO.setNDebitAmount(costDebitNoteVO.getRoundOff());

@@ -2524,8 +2524,8 @@ public class TransactionServiceImpl implements TransactionService {
 	}
 
 	@Override
-	public List<Map<String, Object>> getIncomeByTaxInvoice(Long orgId, String partyName) {
-		Set<Object[]> chType = tmsJobCardRepo.getIncomeByTaxInvoice(orgId, partyName);
+	public List<Map<String, Object>> getIncomeByTaxInvoice(Long orgId, String customerName) {
+		Set<Object[]> chType = tmsJobCardRepo.getIncomeByTaxInvoice(orgId, customerName);
 		return getIncomeByTax(chType);
 	}
 
@@ -2540,8 +2540,8 @@ public class TransactionServiceImpl implements TransactionService {
 	}
 
 	@Override
-	public List<Map<String, Object>> getExponesByCostInvoice(Long orgId) {
-		Set<Object[]> chType = tmsJobCardRepo.getExponesByCostInvoice(orgId);
+	public List<Map<String, Object>> getExponesByCostInvoice(Long orgId,String customerName) {
+		Set<Object[]> chType = tmsJobCardRepo.getExponesByCostInvoice(orgId ,customerName);
 		return getExponesByCost(chType);
 	}
 
