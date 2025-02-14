@@ -303,7 +303,8 @@ public class CostDebitNoteServiceImpl implements CostDebitNoteService {
 
 				BigDecimal cgstAmount = totalTaxAmount.divide(BigDecimal.valueOf(2), RoundingMode.HALF_UP);
 				taxAmount = taxAmount.add(cgstAmount);
-				BigDecimal sgstAmount = totalTaxAmount.divide(BigDecimal.valueOf(2), RoundingMode.HALF_UP);
+				BigDecimal sgstAmount = totalTaxAmount.
+						divide(BigDecimal.valueOf(2), RoundingMode.HALF_UP);
 				taxAmount = taxAmount.add(sgstAmount);
 
 				Set<Object[]> chargeVO = costDebitNoteRepo
@@ -409,10 +410,27 @@ public class CostDebitNoteServiceImpl implements CostDebitNoteService {
 		BigDecimal roundOff = roundedValue.subtract(totChargeAmtLc);
 
 		costDebitNoteVO.setTotChargesBillCurrAmt(totChargeAmtBillCurr);
-		costDebitNoteVO.setTotChargesLcAmt(roundedValue);
 		costDebitNoteVO.setNetBillCurrAmt(netAmountBillCurr);
 		costDebitNoteVO.setNetBillLcAmt(netAmountLc);
-		costDebitNoteVO.setActBillCurrAmt(actBillAmtBillCurr);
+		CostInvoiceVO costInvoiceVO = costInvoiceRepo.findByOrgIdAndDocId( costDebitNoteDTO.getOrgId(), costDebitNoteDTO.getOrginBill());
+		if (costInvoiceVO == null) {
+		    new  ApplicationException("No CostInvoice found for given orgIS and docId");
+		}
+		
+		BigDecimal sumLcAmounts = costInvoiceVO.getSumLcAmt();
+
+		System.out.println(sumLcAmounts);
+		System.out.println(roundedValue);
+
+		if (roundedValue.compareTo(sumLcAmounts) <= 0) {  
+//		    costDebitNoteVO.setActBillCurrAmt(actBillAmtBillCurr);
+			costDebitNoteVO.setTotChargesLcAmt(roundedValue);
+
+		} else {
+		    throw new IllegalArgumentException("actBillAmt(Bill Currency) must be less than or equal to CostInvoice Amount "+ sumLcAmounts);
+		}
+
+	    costDebitNoteVO.setActBillCurrAmt(actBillAmtBillCurr);
 		costDebitNoteVO.setActBillLcAmt(actBillAmtLc);
 		costDebitNoteVO.setRoundOff(roundOff);
 		costDebitNoteVO.setGstInputLcAmt(gstInputAmount);
