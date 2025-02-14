@@ -414,7 +414,7 @@ public class CostDebitNoteServiceImpl implements CostDebitNoteService {
 		costDebitNoteVO.setNetBillLcAmt(netAmountLc);
 		CostInvoiceVO costInvoiceVO = costInvoiceRepo.findByOrgIdAndDocId( costDebitNoteDTO.getOrgId(), costDebitNoteDTO.getOrginBill());
 		if (costInvoiceVO == null) {
-		    new  ApplicationException("No CostInvoice found for given orgIS and docId");
+		    new  ApplicationException("No CostInvoice found for given orgId and docId");
 		}
 		
 		BigDecimal sumLcAmounts = costInvoiceVO.getSumLcAmt();
