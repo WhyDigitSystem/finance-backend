@@ -423,7 +423,6 @@ public class CostDebitNoteServiceImpl implements CostDebitNoteService {
 		System.out.println(roundedValue);
 
 		if (roundedValue.compareTo(sumLcAmounts) <= 0) {  
-//		    costDebitNoteVO.setActBillCurrAmt(actBillAmtBillCurr);
 			costDebitNoteVO.setTotChargesLcAmt(roundedValue);
 
 		} else {
