@@ -426,7 +426,7 @@ public class CostDebitNoteServiceImpl implements CostDebitNoteService {
 			costDebitNoteVO.setTotChargesLcAmt(roundedValue);
 
 		} else {
-		    throw new IllegalArgumentException("actBillAmt(Bill Currency) must be less than or equal to CostInvoice Amount "+ sumLcAmounts);
+		    throw new IllegalArgumentException("ACTBILLAMT(BILL CURRENCY) must be less than or equal to COSTINVOICE AMOUNT "+ sumLcAmounts);
 		}
 
 	    costDebitNoteVO.setActBillCurrAmt(actBillAmtBillCurr);
