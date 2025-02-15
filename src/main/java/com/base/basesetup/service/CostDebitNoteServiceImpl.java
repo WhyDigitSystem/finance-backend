@@ -419,14 +419,14 @@ public class CostDebitNoteServiceImpl implements CostDebitNoteService {
 		
 		BigDecimal sumLcAmounts = costInvoiceVO.getSumLcAmt();
 
-		System.out.println(sumLcAmounts);
-		System.out.println(roundedValue);
+//		System.out.println(sumLcAmounts);
+//		System.out.println(roundedValue);
 
 		if (roundedValue.compareTo(sumLcAmounts) <= 0) {  
 			costDebitNoteVO.setTotChargesLcAmt(roundedValue);
 
 		} else {
-		    throw new IllegalArgumentException("ACTBILLAMT(BILL CURRENCY) must be less than or equal to COSTINVOICE AMOUNT "+ sumLcAmounts);
+		    throw new IllegalArgumentException("ACTBILLAMT(BILL CURRENCY) "+ roundedValue + " must be less than or equal to COSTINVOICE AMOUNT "+ sumLcAmounts);
 		}
 
 	    costDebitNoteVO.setActBillCurrAmt(actBillAmtBillCurr);

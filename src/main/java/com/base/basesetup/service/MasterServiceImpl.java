@@ -1567,6 +1567,7 @@ public class MasterServiceImpl implements MasterService {
 		chargeTypeRequestVO.setExcempted(chargeTypeRequestDTO.getExcempted().toUpperCase());
 		chargeTypeRequestVO.setGstTax(chargeTypeRequestDTO.getGstTax());
 		chargeTypeRequestVO.setOrgId(chargeTypeRequestDTO.getOrgId());
+		chargeTypeRequestVO.setActive(chargeTypeRequestDTO.isActive());
 		chargeTypeRequestVO.setApproved(chargeTypeRequestDTO.isApproved());
 		if (chargeTypeRequestDTO.isApproved()) {
 			chargeTypeRequestVO.setActive(true);
