@@ -31,7 +31,7 @@ public class DepartmentVO {
 		@Column(name = "departmentid")
 		private Long id;
 	    
-	    @Column(name = "departmentname", length = 10)
+	    @Column(name = "departmentname", length = 255)
 		private String departmentName;
 
 	    @Column(name = "departmentcode", length = 75)
@@ -50,7 +50,8 @@ public class DepartmentVO {
 		
 		@Column(name = "screencode", length = 5)
 		private String screenCode = "DEP";
-
+ 
+		
 		@Column(name = "screenname", length = 25)
 		private String screenName = "DEPARTMENT";
 	    

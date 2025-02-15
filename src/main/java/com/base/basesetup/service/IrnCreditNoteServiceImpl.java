@@ -19,6 +19,7 @@ import com.base.basesetup.dto.IrnCreditNoteDTO;
 import com.base.basesetup.dto.IrnCreditNoteDetailsDTO;
 import com.base.basesetup.entity.AccountsDetailsVO;
 import com.base.basesetup.entity.AccountsVO;
+import com.base.basesetup.entity.CostInvoiceVO;
 import com.base.basesetup.entity.DocumentTypeMappingDetailsVO;
 import com.base.basesetup.entity.GroupLedgerVO;
 import com.base.basesetup.entity.IrnCreditNoteDetailsVO;
@@ -325,13 +326,31 @@ public class IrnCreditNoteServiceImpl implements IrnCreditNoteService {
 		BigDecimal originalTotalInvAmountLC = totalChargeAmountLC.add(totalTaxAmountLC);
 		BigDecimal roundedTotalInvAmountLC = totalInvAmountLC.setScale(0, RoundingMode.HALF_UP);
 		BigDecimal roundOffAmountLC = roundedTotalInvAmountLC.subtract(originalTotalInvAmountLC);
-		irnCreditNoteVO.setTotalInvAmountLc(roundedTotalInvAmountLC);
+		
+		TaxInvoiceVO taxInvoiceVO = taxInvoiceRepo.findByOrgIdAndDocId( irnCreditNoteDTO.getOrgId(), irnCreditNoteDTO.getOriginBillNo());
+		if (taxInvoiceVO == null) {
+		    new  ApplicationException("No TaxInvoice found for given orgId and docId");
+		}
+		
+		BigDecimal totalInvAmountLc = taxInvoiceVO.getTotalInvAmountLc();
+
+//		System.out.println(totalInvAmountLc);
+//		System.out.println(roundedTotalInvAmountLC);
+
+		if (roundedTotalInvAmountLC.compareTo(totalInvAmountLc) <= 0) {  
+			irnCreditNoteVO.setTotalInvAmountLc(roundedTotalInvAmountLC);
+
+		} else {
+		    throw new IllegalArgumentException("TOTALINVOICEAMOUNTLC " + roundedTotalInvAmountLC +" must be less than or equal to TAXINVOICE AMOUNT "+ totalInvAmountLc);
+		}
+
+		
 		irnCreditNoteVO.setAmountInWords(amountInWordsConverterService.convert(irnCreditNoteVO.getTotalInvAmountLc().longValue()));
 		irnCreditNoteVO.setRoundOffAmountLc(roundOffAmountLC);
 
 		BigDecimal roundedTotalInvAmountBC = totalInvAmountBC.setScale(0, RoundingMode.HALF_UP);
 		irnCreditNoteVO.setTotalInvAmountBc(roundedTotalInvAmountBC);
-
+//		totalInvAmountLc
 		irnCreditNoteVO.setIrnCreditNoteDetailsVO(irnCreditNoteDetailsVOs);
 
 	}

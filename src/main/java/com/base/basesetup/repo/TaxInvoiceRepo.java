@@ -66,6 +66,9 @@ public interface TaxInvoiceRepo extends JpaRepository<TaxInvoiceVO, Long> {
 	@Query(nativeQuery = true,value = "select a.jobno from jobcard a where a.orgid=?1 and a.closed=0 and a.active=1 ")
 	Set<Object[]> getAllJobNoByActice(Long orgId);
 
+	@Query(nativeQuery = true,value = "select * from taxinvoice a where a.orgid=?1 and docid=?2 ")
+	TaxInvoiceVO findByOrgIdAndDocId(Long orgId, String originBillNo);
+
 
 
 	
