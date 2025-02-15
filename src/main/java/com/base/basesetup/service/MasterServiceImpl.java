@@ -2023,7 +2023,17 @@ public class MasterServiceImpl implements MasterService {
 						// Retrieve cell values based on the provided order
 						String type = getStringCellValue1(row.getCell(0));
 						String accountName = getStringCellValue1(row.getCell(1));
+						if (groupLedgerRepo.existsByAccountGroupNameAndOrgId(accountName,orgId)) {
+							String errorMessage = String.format("This Accountname: %s Already Exists in This Organization",
+								accountName);
+							throw new ApplicationException("The given Account Group Name already exists.");
+					}
 						String accountCode = getStringCellValue1(row.getCell(2));
+						if (groupLedgerRepo.existsByAccountCodeAndOrgId(accountCode,orgId)) {
+							String errorMessage = String.format("This AccountCode: %s Already Exists in This Organization",
+								accountCode);
+							throw new ApplicationException("The given Account Code  already exists.");
+					}
 						String parentCode = getStringCellValue1(row.getCell(3));
 						String GSTTaxFlag = getStringCellValue1(row.getCell(5));
 						String pbFlag = getStringCellValue1(row.getCell(6));
