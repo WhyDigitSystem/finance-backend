@@ -22,7 +22,7 @@ public class ChargeTypeRequestDTO {
 	private String govtSac;
 	private String excempted;
 	private float gstTax;
-//	private boolean active;
+	private boolean active;
 	private String createdBy;
 	private Long orgId;
 	private boolean approved;

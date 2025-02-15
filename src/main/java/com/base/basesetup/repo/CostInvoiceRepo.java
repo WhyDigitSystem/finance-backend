@@ -83,4 +83,7 @@ public interface CostInvoiceRepo extends JpaRepository<CostInvoiceVO, Long> {
 	@Query(nativeQuery = true, value = "select accountgroupname,gstpercentage,currency from groupledger where orgid=?1 and gsttaxflag!='NA' and category='TAX' and gsttaxflag='INPUT TAX' and gsttype=?2 and gstpercentage IN(?3) order by gstpercentage desc")
 	Set<Object[]> findInterAndIntraDetailsForCostInvoice(Long orgId, String gstType, List<String> gstPercent);
 
+	@Query(nativeQuery = true, value = "select * from costinvoice where orgid=?1 and docid=?2")
+	CostInvoiceVO findByOrgIdAndDocId(Long orgId, String orginBill);
+
 }

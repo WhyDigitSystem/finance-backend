@@ -2,6 +2,7 @@ package com.base.basesetup.service;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -184,7 +185,7 @@ public class CostInvoiceServiceImpl implements CostInvoiceService {
 		costInvoiceVO.setSupplierType(costInvoiceDTO.getSupplierType());
 		costInvoiceVO.setSupplierCode(costInvoiceDTO.getSupplierCode());
 		costInvoiceVO.setCreditDays(costInvoiceDTO.getCreditDays());
-		costInvoiceVO.setDueDate(costInvoiceDTO.getDueDate());
+//		costInvoiceVO.setDueDate(costInvoiceDTO.getDueDate());
 		costInvoiceVO.setSupplierName(costInvoiceDTO.getSupplierName());
 		costInvoiceVO.setSupplierPlace(costInvoiceDTO.getSupplierPlace());
 		costInvoiceVO.setCurrency(costInvoiceDTO.getCurrency());
@@ -197,7 +198,7 @@ public class CostInvoiceServiceImpl implements CostInvoiceService {
 		costInvoiceVO.setShipperRefNo(costInvoiceDTO.getShipperRefNo());
 		costInvoiceVO.setGstType(costInvoiceDTO.getGstType());
 		costInvoiceVO.setOrgId(costInvoiceDTO.getOrgId());
-		costInvoiceVO.setCreatedBy(costInvoiceDTO.getCreatedBy());
+//		costInvoiceVO.setCreatedBy(costInvoiceDTO.getCreatedBy());
 		costInvoiceVO.setCancelRemarks(costInvoiceDTO.getCancelRemarks());
 		costInvoiceVO.setBranch(costInvoiceDTO.getBranch());
 		costInvoiceVO.setBranchCode(costInvoiceDTO.getBranchCode());
@@ -801,6 +802,14 @@ public class CostInvoiceServiceImpl implements CostInvoiceService {
 			AccountsVO savedAccountsVO = accountsRepo.save(accountsVO);
 			costInvoiceVO.setPurVoucherNo(savedAccountsVO.getDocId());
 			costInvoiceVO.setPurVoucherDate(savedAccountsVO.getDocDate());
+			
+			LocalDate purVouDate = savedAccountsVO.getDocDate();
+			int creditDays = costInvoiceVO.getCreditDays();
+			LocalDate dueDate = purVouDate.plusDays(creditDays);
+			// Save dueDate in your entity
+			accountsVO.setDueDate(dueDate);
+			costInvoiceVO.setDueDate(dueDate);
+			
 			costInvoiceVO.setApproveStatus(action);
 			costInvoiceVO.setApproveBy(actionBy);
 			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy hh:mm:ss a");
