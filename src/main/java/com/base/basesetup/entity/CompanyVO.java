@@ -75,7 +75,7 @@ public class CompanyVO {
 	private boolean cancel;
 	private int role;
 	private String ceo;
-	private String gst;
+	private String panno;
 
 	@JsonGetter("active")
 	public String getActive() {

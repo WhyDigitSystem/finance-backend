@@ -33,7 +33,7 @@ public class CompanyDTO {
 	private boolean cancel;
 	private boolean active;
 	private String ceo;
-	private String gst;
+	private String panno;
 	private int role;
 
 }

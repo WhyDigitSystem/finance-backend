@@ -1868,7 +1868,7 @@ public class MasterController extends BaseController {
 		} catch (Exception e) {
 			String errorMsg = e.getMessage();
 			LOGGER.error(CommonConstant.EXCEPTION, methodName, e);
-			responseObjectsMap.put("statusFlag", "Error");
+//			responseObjectsMap.put("statusFlag", "Error");
 			responseObjectsMap.put("status", false);
 			responseObjectsMap.put("errorMessage", errorMsg);
 			responseDTO = createServiceResponseError(responseObjectsMap, "Excel Upload For Coa Failed", errorMsg);

@@ -34,6 +34,7 @@ import com.base.basesetup.dto.CustomersAddressDTO;
 import com.base.basesetup.dto.CustomersDTO;
 import com.base.basesetup.dto.CustomersStateDTO;
 import com.base.basesetup.dto.PartyTypeDTO;
+import com.base.basesetup.dto.VendorCurrencyMappingDTO;
 import com.base.basesetup.entity.PartyAddressVO;
 import com.base.basesetup.entity.PartyCurrencyMappingVO;
 import com.base.basesetup.entity.PartyMasterVO;
@@ -597,6 +598,10 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 
 			List<PartySpecialTDSVO> partySpecialTDSVO1 = partySpecialTDSRepo.findByPartyMasterVO(partyMasterVO);
 			partySpecialTDSRepo.deleteAll(partySpecialTDSVO1);
+			
+			List<PartyCurrencyMappingVO> partyCurrencyMappingVO1 = partyCurrencyMappingRepo
+					.findByPartyMasterVO(partyMasterVO);
+			partyCurrencyMappingRepo.deleteAll(partyCurrencyMappingVO1);
 
 		}
 
@@ -665,7 +670,17 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 			// Add the SalesItemParticularsVO to the list
 			partyMasterVO.setPartySpecialTDSVO(specialTDSVOs);
 		}
-
+	
+		
+		List<PartyCurrencyMappingVO> partyCurrencyMappingVOs = new ArrayList<>();
+		for (VendorCurrencyMappingDTO vendorCurrencyMappingDTO : vendorDTO.getVendorCurrencyMappingDTO()) {
+			PartyCurrencyMappingVO partyCurrencyMappingVO = new PartyCurrencyMappingVO();
+			partyCurrencyMappingVO.setTransCurrency(vendorCurrencyMappingDTO.getTransCurrency());
+			partyCurrencyMappingVO.setPartyMasterVO(partyMasterVO);
+			partyCurrencyMappingVOs.add(partyCurrencyMappingVO);
+			  partyMasterVO.setPartyCurrencyMappingVO(partyCurrencyMappingVOs);
+		}	
+      
 		return partyMasterVO;
 	}
 

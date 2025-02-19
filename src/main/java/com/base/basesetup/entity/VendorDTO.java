@@ -1,7 +1,10 @@
 package com.base.basesetup.entity;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
+
+import com.base.basesetup.dto.VendorCurrencyMappingDTO;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -31,4 +34,5 @@ public class VendorDTO {
 	private List<VendorsStateDTO> vendorStateDTO;
 	private List<VendorsAddressDTO> vendorAddressDTO;
 	private List<SpecialTdsDTO> specialTdsDTO;
+	private List<VendorCurrencyMappingDTO> vendorCurrencyMappingDTO;
 }

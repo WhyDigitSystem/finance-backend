@@ -10,4 +10,6 @@ public class BasesetupApplication {
 		SpringApplication.run(BasesetupApplication.class, args);
 	}
 
+	
+
 }
