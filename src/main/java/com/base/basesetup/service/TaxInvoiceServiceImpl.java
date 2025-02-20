@@ -2,6 +2,7 @@ package com.base.basesetup.service;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -631,6 +632,13 @@ public class TaxInvoiceServiceImpl implements TaxInvoiceService {
 
 	        taxInvoiceVO.setInvoiceNo(savedAccountsVO.getDocId());
 	        taxInvoiceVO.setInvoiceDate(savedAccountsVO.getDocDate());
+			
+			LocalDate invoiceNo = savedAccountsVO.getDocDate();
+			int creditDays = taxInvoiceVO.getCreditDays();
+			LocalDate dueDate = invoiceNo.plusDays(creditDays);
+			// Save dueDate in your entity
+			savedAccountsVO.setDueDate(dueDate);
+			taxInvoiceVO.setDueDate(dueDate);
 	        taxInvoiceVO.setApproveStatus(action);
 	        taxInvoiceVO.setApproveBy(actionBy);
 	        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy hh:mm:ss a");

@@ -51,6 +51,8 @@ public class ChargeRCostInvoiceGnaVO {
 	private BigDecimal billAmt;
 	@Column(name = "gtaamount", precision = 10, scale = 2)
 	private BigDecimal gtaamount;
+	@Column(name = "gstamt", precision = 10, scale = 2)
+	private BigDecimal gstAmt;
 
 //	@ManyToOne
 //	@JoinColumn(name = "rcostinvoicegnaid")

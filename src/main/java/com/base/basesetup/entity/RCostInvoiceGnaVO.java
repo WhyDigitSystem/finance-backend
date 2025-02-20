@@ -2,8 +2,8 @@ package com.base.basesetup.entity;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -22,6 +22,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import com.base.basesetup.dto.CreatedUpdatedDate;
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -123,26 +124,19 @@ public class RCostInvoiceGnaVO {
 	private BigDecimal gstAmtLc;
 	@Column(name = "amountinwords")
 	private String amountInWords;
-	
-
-////	APPROVED
-	@Column(name = "approvestatus", length = 20)
-	private String approveStatus;
-	@Column(name = "approveby", length = 20)
-	private String approveBy;
-	@DateTimeFormat(pattern = "dd-MM-yyyy hh:mm:ss a")
-	@Column(name = "approveon")
-	private String approveOn;
+	@Column(name = "sumlcamt", precision = 10, scale = 2)
+	private BigDecimal sumLcAmt;
+	@Column(name = "sumbillamt", precision = 10, scale = 2)
+	private BigDecimal sumBillAmt;
 	
 
 	 @OneToMany(mappedBy = "rCostInvoiceGnaVO", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	 @JsonManagedReference
-	 private List<ChargeRCostInvoiceGnaVO> chargeRCostInvoiceGnaVO = new ArrayList<>();
+	 private List<ChargeRCostInvoiceGnaVO> chargeRCostInvoiceGnaVO;
 
 	 @OneToMany(mappedBy = "rCostInvoiceGnaVO", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	 @JsonManagedReference
-	 private List<TdsRCostInvoiceGnaVO> tdsRCostInvoiceGnaVO = new ArrayList<>();
-
+	 private List<TdsRCostInvoiceGnaVO> tdsRCostInvoiceGnaVO;
 
 	@JsonGetter("active")
 	public String getActive() {

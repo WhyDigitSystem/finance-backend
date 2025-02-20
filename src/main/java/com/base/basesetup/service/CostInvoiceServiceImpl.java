@@ -803,12 +803,12 @@ public class CostInvoiceServiceImpl implements CostInvoiceService {
 			costInvoiceVO.setPurVoucherNo(savedAccountsVO.getDocId());
 			costInvoiceVO.setPurVoucherDate(savedAccountsVO.getDocDate());
 			
-			LocalDate purVouDate = savedAccountsVO.getDocDate();
-			int creditDays = costInvoiceVO.getCreditDays();
-			LocalDate dueDate = purVouDate.plusDays(creditDays);
-			// Save dueDate in your entity
-			accountsVO.setDueDate(dueDate);
-			costInvoiceVO.setDueDate(dueDate);
+//			LocalDate purVouDate = savedAccountsVO.getDocDate();
+//			int creditDays = costInvoiceVO.getCreditDays();
+//			LocalDate dueDate = purVouDate.plusDays(creditDays);
+//			// Save dueDate in your entity
+//			accountsVO.setDueDate(dueDate);
+//			costInvoiceVO.setDueDate(dueDate);
 			
 			costInvoiceVO.setApproveStatus(action);
 			costInvoiceVO.setApproveBy(actionBy);

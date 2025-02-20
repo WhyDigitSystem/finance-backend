@@ -112,7 +112,7 @@ public class RCostInvoiceGnaController extends BaseController{
 		if (StringUtils.isBlank(errorMsg)) {
 			responseObjectsMap.put(CommonConstant.STRING_MESSAGE,
 					"RCostInvoiceGnaDocId information retrieved successfully");
-			responseObjectsMap.put("taxInvoiceDocId", mapp);
+			responseObjectsMap.put("rcostInvoiceGnaDocId", mapp);
 			responseDTO = createServiceResponse(responseObjectsMap);
 		} else {
 			responseDTO = createServiceResponseError(responseObjectsMap,
@@ -237,7 +237,7 @@ public class RCostInvoiceGnaController extends BaseController{
 	
 	@GetMapping("/getSectionNameFromTDSMaster")
 	public ResponseEntity<ResponseDTO> getSectionNameFromTDSMaster(@RequestParam Long orgId,
-			@RequestParam String section) {
+			@RequestParam String tds) {
 		String methodName = "getSectionNameFromTDSMaster()";
 		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
 		String errorMsg = null;
@@ -245,7 +245,7 @@ public class RCostInvoiceGnaController extends BaseController{
 		ResponseDTO responseDTO = null;
 		List<Map<String, Object>> tdsMasterVO = new ArrayList<>();
 		try {
-			tdsMasterVO = rCostInvoiceGnaService.getSectionNameFromTDSMaster(orgId, section);
+			tdsMasterVO = rCostInvoiceGnaService.getSectionNameFromTDSMaster(orgId, tds);
 		} catch (Exception e) {
 			errorMsg = e.getMessage();
 			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
