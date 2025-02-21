@@ -8,6 +8,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class VendorCurrencyMappingDTO {
+	
+	
 	private Long id;
 	private String transCurrency;
 
