@@ -365,8 +365,8 @@ public class RCostInvoiceGnaServiceImpl implements RCostInvoiceGnaService {
 		List<Map<String, Object>> List1 = new ArrayList<>();
 		for (Object[] ch : stateDetails) {
 			Map<String, Object> map = new HashMap<>();
-			map.put("state", ch[0] != null ? ch[0].toString() : ""); // Empty string if null
-			map.put("stateCode", ch[1] != null ? ch[1].toString() : "");
+			map.put("stateCode", ch[0] != null ? ch[0].toString() : ""); // Empty string if null
+			map.put("state", ch[1] != null ? ch[1].toString() : "");
 			map.put("gstin", ch[2] != null ? ch[2].toString() : "");
 			map.put("city", ch[3] != null ? ch[3].toString() : "");
 			map.put("address", ch[4] != null ? ch[4].toString() : "");
@@ -504,7 +504,6 @@ public class RCostInvoiceGnaServiceImpl implements RCostInvoiceGnaService {
 			chargeRCostInvoiceGnaVO.setGstAmt(gstAmt);
 
 			totalGstAmt = totalGstAmt.add(gstAmt);
-
 			chargeRCostInvoiceGnaVO.setFcAmt(fcAmount);
 			chargeRCostInvoiceGnaVO.setLcAmt(lcAmt);
 			billAmt = chargeRCostInvoiceGnaDTO.getExRate().multiply(chargeRCostInvoiceGnaDTO.getRate());
@@ -538,29 +537,29 @@ public class RCostInvoiceGnaServiceImpl implements RCostInvoiceGnaService {
 				Double gstPercent = Double.parseDouble(entry.getKey());
 				BigDecimal igstLcAmount = entry.getValue();
 //				if (igstSummaryVO.getGSTPercent() != 0) {
-				totalGstAmt = totalGstAmt.add(igstLcAmount);
+//				totalGstAmt = totalGstAmt.add(igstLcAmount);
 
 				Set<Object[]> groupLedgerVOs = rCostInvoiceGnaRepo
 						.findInterDetailsForrCostInvoiceGnaPosting(rCostInvoiceGnaDTO.getOrgId(), gstType, gstPercent);
 				for (Object[] ch : groupLedgerVOs) {
 					String chargeDesc = ch[0].toString();
 					float gstPerc = (float) Double.parseDouble(ch[2].toString());
-					String currency = ch[1].toString();
+//					String currency = ch[1].toString();
 					igstSummaryVO.setChargeName(chargeDesc);
-					igstSummaryVO.setCurrency(currency);
+//					igstSummaryVO.setCurrency(currency);
 					igstSummaryVO.setGstPer(gstPerc);
 					igstSummaryVO.setRate(sumOfRate);
-					igstSummaryVO.setExRate(exrate);
+					igstSummaryVO.setExRate(BigDecimal.ZERO);
 
 					// Foreign currency handling
-					if (currency.equals("INR")) {
+					if (Currency.equals("INR")) {
 						igstSummaryVO.setFcAmt(BigDecimal.ZERO);
 					} else {
 						igstSummaryVO.setFcAmt(sumOfRate);
 					}
 					igstSummaryVO.setLcAmt(igstLcAmount);
 					igstSummaryVO.setBillAmt(igstLcAmount);
-					igstSummaryVO.setGstAmt(BigDecimal.ZERO);
+					igstSummaryVO.setGstAmt(gstAmt);
 					igstSummaryVO.setRCostInvoiceGnaVO(rCostInvoiceGnaVO);
 					chargeRCostInvoiceGnaVOs.add(igstSummaryVO);
 				}
@@ -576,11 +575,11 @@ public class RCostInvoiceGnaServiceImpl implements RCostInvoiceGnaService {
 
 				BigDecimal cgstAmount = totalTaxAmount.divide(BigDecimal.valueOf(2));
 //				if (igstSummaryVO.getGSTPercent() != 0) {
-				totalGstAmt = totalGstAmt.add(cgstAmount);
+//				totalGstAmt = totalGstAmt.add(cgstAmount);
 
 				BigDecimal sgstAmount = totalTaxAmount.divide(BigDecimal.valueOf(2));
 //				if (igstSummaryVO.getGSTPercent() != 0) {
-				totalGstAmt = totalGstAmt.add(sgstAmount);
+//				totalGstAmt = totalGstAmt.add(sgstAmount);
 
 				Set<Object[]> groupLedgerVOs = rCostInvoiceGnaRepo
 						.findIntraDetailsForrCostInvoiceGnaPosting(rCostInvoiceGnaDTO.getOrgId(), gstType, gstPercent);
@@ -589,20 +588,20 @@ public class RCostInvoiceGnaServiceImpl implements RCostInvoiceGnaService {
 					ChargeRCostInvoiceGnaVO cgstSummaryVO = new ChargeRCostInvoiceGnaVO();
 					cgstSummaryVO.setChargeName(entry1[0].toString());
 					cgstSummaryVO.setGstPer(new BigDecimal(entry1[2].toString()).floatValue());
-					cgstSummaryVO.setCurrency(entry1[1].toString());
-					String currency = entry1[1].toString();
+//					cgstSummaryVO.setCurrency(entry1[1].toString());
+//					String currency = entry1[1].toString();
 					cgstSummaryVO.setRate(sumOfRate);
-					cgstSummaryVO.setExRate(exrate);
+					cgstSummaryVO.setExRate(BigDecimal.ZERO);
 
 					// Foreign currency handling
-					if (currency.equals("INR")) {
+					if (Currency.equals("INR")) {
 						cgstSummaryVO.setFcAmt(BigDecimal.ZERO);
 					} else {
 						cgstSummaryVO.setFcAmt(sumOfRate);
 					}
 					cgstSummaryVO.setLcAmt(cgstAmount);
 					cgstSummaryVO.setBillAmt(cgstAmount);
-					cgstSummaryVO.setGstAmt(BigDecimal.ZERO);
+					cgstSummaryVO.setGstAmt(gstAmt);
 					cgstSummaryVO.setRCostInvoiceGnaVO(rCostInvoiceGnaVO);
 					chargeRCostInvoiceGnaVOs.add(cgstSummaryVO);
 				}
@@ -656,7 +655,12 @@ public class RCostInvoiceGnaServiceImpl implements RCostInvoiceGnaService {
 		rCostInvoiceGnaVO.setNetAmtBc(netAmtBillCurr);
 		rCostInvoiceGnaVO.setNetAmtLc(netAmtBillLc);
 		rCostInvoiceGnaVO.setRoundOff(roundOff);
+		System.out.println(sumOfLcAmount);
+		System.out.println(totalGstAmt);
+  BigDecimal gstcal = sumOfLcAmount.subtract(totalGstAmt);
 		rCostInvoiceGnaVO.setGstAmtLc(sumOfLcAmount.subtract(totalGstAmt));
+		System.out.println(gstcal);
+
 		rCostInvoiceGnaVO.setSumLcAmt(sumOfLcAmount);
 		rCostInvoiceGnaVO.setSumBillAmt(sumOfBillAmount);
 		rCostInvoiceGnaVO.setAmountInWords(
