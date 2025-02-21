@@ -677,7 +677,9 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 			PartyCurrencyMappingVO partyCurrencyMappingVO = new PartyCurrencyMappingVO();
 			partyCurrencyMappingVO.setTransCurrency(vendorCurrencyMappingDTO.getTransCurrency());
 			partyCurrencyMappingVO.setPartyMasterVO(partyMasterVO);
+//			partyCurrencyMappingVOs.add(partyCurrencyMappingVO);
 			partyCurrencyMappingVOs.add(partyCurrencyMappingVO);
+
 			  partyMasterVO.setPartyCurrencyMappingVO(partyCurrencyMappingVOs);
 		}	
       
