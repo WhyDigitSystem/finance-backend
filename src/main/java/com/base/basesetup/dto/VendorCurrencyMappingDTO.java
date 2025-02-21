@@ -11,6 +11,7 @@ public class VendorCurrencyMappingDTO {
 	
 	
 	private Long id;
+	
 	private String transCurrency;
 
 }
