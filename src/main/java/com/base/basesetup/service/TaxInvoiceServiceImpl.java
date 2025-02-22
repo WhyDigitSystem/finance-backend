@@ -173,6 +173,9 @@ public class TaxInvoiceServiceImpl implements TaxInvoiceService {
 		taxInvoiceVO.setJobOrderNo(taxInvoiceDTO.getJobOrderNo());
 		taxInvoiceVO.setPartyId(taxInvoiceDTO.getPartyId());
 		taxInvoiceVO.setRemarks(taxInvoiceDTO.getRemarks());
+		taxInvoiceVO.setVId(taxInvoiceDTO.getVId());
+		taxInvoiceVO.setVDate(taxInvoiceDTO.getVDate());
+
 
 
 		if (ObjectUtils.isNotEmpty(taxInvoiceVO.getId())) {
@@ -708,5 +711,22 @@ public class TaxInvoiceServiceImpl implements TaxInvoiceService {
 		return List1;
 	}
 
+	
+	@Override
+	public List<Map<String, Object>> getJobCardForTaxInvoice(Long orgId,String partyCode) {
+		Set<Object[]> chType = taxInvoiceRepo.getJobCardForTaxInvoice(orgId,partyCode);
+		return getJobCard(chType);
+	}
+
+	private List<Map<String, Object>> getJobCard(Set<Object[]> chType) {
+		List<Map<String, Object>> List1 = new ArrayList<>();
+		for (Object[] ch : chType) {
+			Map<String, Object> map = new HashMap<>();
+			map.put("jobCard", ch[0].toString());
+			List1.add(map);
+		}
+		return List1;
+
+	}
 
 }

@@ -40,6 +40,8 @@ public class JobCardVO {
 	private String jobNo;
 	@Column(name = "customer", length = 50)
 	private String customer;
+	@Column(name = "customercode", length = 20)
+	private String customerCode;
 	@Column(name = "operationclosed")
 	private boolean operationClosed;
 	@Column(name = "date")

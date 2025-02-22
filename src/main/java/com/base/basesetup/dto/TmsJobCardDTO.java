@@ -15,6 +15,7 @@ public class TmsJobCardDTO {
 	private Long id;
 	//private String jobNo;
 	private String customer;
+	private String customerCode;
 	private boolean operationClosed;
 	private String salesCategory;
 	private boolean financeClosed;

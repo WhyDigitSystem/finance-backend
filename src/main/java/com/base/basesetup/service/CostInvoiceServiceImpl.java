@@ -210,6 +210,9 @@ public class CostInvoiceServiceImpl implements CostInvoiceService {
 		costInvoiceVO.setUtrRef(costInvoiceDTO.getUtrRef());
 		costInvoiceVO.setCostType(costInvoiceDTO.getCostType());
 		costInvoiceVO.setJobOrderNo(costInvoiceDTO.getJobOrderNo());
+		costInvoiceVO.setVId(costInvoiceDTO.getVId());
+		costInvoiceVO.setVDate(costInvoiceDTO.getVDate());
+
 
 		if (costInvoiceDTO.getId() != null) {
 
