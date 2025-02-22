@@ -22,9 +22,9 @@ import com.base.basesetup.common.CommonConstant;
 import com.base.basesetup.common.UserConstants;
 import com.base.basesetup.dto.RCostInvoiceGnaDTO;
 import com.base.basesetup.dto.ResponseDTO;
+import com.base.basesetup.entity.CostInvoiceVO;
 import com.base.basesetup.entity.PartyMasterVO;
 import com.base.basesetup.entity.RCostInvoiceGnaVO;
-import com.base.basesetup.entity.TdsMasterVO;
 import com.base.basesetup.service.RCostInvoiceGnaService;
 
 @CrossOrigin
@@ -72,7 +72,9 @@ public class RCostInvoiceGnaController extends BaseController{
 		String errorMsg = null;
 		Map<String, Object> responseObjectsMap = new HashMap<>();
 		ResponseDTO responseDTO = null;
-		RCostInvoiceGnaVO rCostInvoiceGnaVO = new RCostInvoiceGnaVO() ;
+//		RCostInvoiceGnaVO rCostInvoiceGnaVO = new RCostInvoiceGnaVO() ;
+		List<RCostInvoiceGnaVO> rCostInvoiceGnaVO = new ArrayList<>();
+
 		try {
 			rCostInvoiceGnaVO = rCostInvoiceGnaService.getAllRCostInvoiceGnaById(id);
 		} catch (Exception e) {

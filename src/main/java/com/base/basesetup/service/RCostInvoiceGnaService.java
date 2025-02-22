@@ -16,7 +16,7 @@ public interface RCostInvoiceGnaService {
 
 	List<RCostInvoiceGnaVO> getAllRCostInvoiceGnaByOrgId(Long orgId);
 
-	RCostInvoiceGnaVO getAllRCostInvoiceGnaById(Long id);
+	List<RCostInvoiceGnaVO> getAllRCostInvoiceGnaById(Long id);
 
 	String getRCostInvoiceGnaDocId(Long orgId, String finYear, String branch, String branchCode);
 

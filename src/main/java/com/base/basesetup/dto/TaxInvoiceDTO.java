@@ -46,6 +46,8 @@ public class TaxInvoiceDTO {
 	private String invoiceNo;
 	private LocalDate invoiceDate;
 	private String jobOrderNo;
+	private String remarks;
+
 
 	
 	List<TaxInvoiceDetailsDTO> taxInvoiceDetailsDTO;

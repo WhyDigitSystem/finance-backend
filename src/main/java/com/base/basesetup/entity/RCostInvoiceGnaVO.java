@@ -16,6 +16,7 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -29,18 +30,18 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name="rcostinvoicegna")
+@Table(name = "rcostinvoicegna")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class RCostInvoiceGnaVO {
-	
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "rcostinvoicegnagen")
 	@SequenceGenerator(name = "rcostinvoicegnagen", sequenceName = "rcostinvoicegnaseq", initialValue = 1000000001, allocationSize = 1)
 	@Column(name = "rcostinvoicegnaid")
 	private Long id;
-	
+
 	@Column(name = "docid", length = 30)
 	private String docId;
 	@Column(name = "docdate")
@@ -79,12 +80,12 @@ public class RCostInvoiceGnaVO {
 	private String remarks;
 	@Column(name = "gsttype", length = 15)
 	private String gstType;
-	
-	//Default fields
+
+	// Default fields
 	@Column(name = "orgid", length = 15)
 	private Long orgId;
 	@Column(name = "active")
-	private boolean active;
+	private boolean active = true;
 	@Column(name = "modifiedby", length = 25)
 	private String updatedBy;
 	@Column(name = "createdby", length = 25)
@@ -108,7 +109,6 @@ public class RCostInvoiceGnaVO {
 	@Column(name = "screenname", length = 25)
 	private String screenName = "REGISTER COSTINVOICE GNA";
 
-
 //	SUMMARY
 	@Column(name = "actbillamtbc", precision = 10, scale = 2)
 	private BigDecimal actBillAmtBc;
@@ -128,15 +128,20 @@ public class RCostInvoiceGnaVO {
 	private BigDecimal sumLcAmt;
 	@Column(name = "sumbillamt", precision = 10, scale = 2)
 	private BigDecimal sumBillAmt;
-	
 
-	 @OneToMany(mappedBy = "rCostInvoiceGnaVO", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	 @JsonManagedReference
-	 private List<ChargeRCostInvoiceGnaVO> chargeRCostInvoiceGnaVO;
+	@OneToMany(mappedBy = "rCostInvoiceGnaVO", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@JsonManagedReference
+	private List<ChargeRCostInvoiceGnaVO> chargeRCostInvoiceGnaVO;
 
-	 @OneToMany(mappedBy = "rCostInvoiceGnaVO", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	 @JsonManagedReference
-	 private List<TdsRCostInvoiceGnaVO> tdsRCostInvoiceGnaVO;
+	@Transient
+	List<ChargeRCostInvoiceGnaVO> gstLines;
+
+	@Transient
+	List<ChargeRCostInvoiceGnaVO> normalCharges;
+
+	@OneToMany(mappedBy = "rCostInvoiceGnaVO", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@JsonManagedReference
+	private List<TdsRCostInvoiceGnaVO> tdsRCostInvoiceGnaVO;
 
 	@JsonGetter("active")
 	public String getActive() {
@@ -147,8 +152,8 @@ public class RCostInvoiceGnaVO {
 	public String getCancel() {
 		return cancel ? "T" : "F";
 	}
+
 	@Embedded
 	private CreatedUpdatedDate commonDate = new CreatedUpdatedDate();
-	
 
 }

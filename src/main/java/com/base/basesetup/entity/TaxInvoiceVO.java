@@ -110,6 +110,8 @@ public class TaxInvoiceVO {
 	private BigDecimal billCurrRate;
 	@Column(name = "creditdays",length = 5)
 	private int creditDays;
+	@Column(name = "remarks",length = 255)
+	private String remarks;
 	
 	@Column(name = "shipperinvoiceno",length = 30)
 	private String shipperInvoiceNo;
