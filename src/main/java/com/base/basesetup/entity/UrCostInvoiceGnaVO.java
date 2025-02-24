@@ -14,6 +14,7 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import com.base.basesetup.dto.CreatedUpdatedDate;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
@@ -115,6 +116,7 @@ public class UrCostInvoiceGnaVO {
 	private BigDecimal input;
 	@Column(name = "output", precision = 10, scale = 2)
 	private BigDecimal output;
+	
 
 ////	APPROVED
 //	@Column(name = "approvestatus", length = 20)
@@ -128,6 +130,13 @@ public class UrCostInvoiceGnaVO {
 	@OneToMany(mappedBy = "urCostInvoiceGnaVO", cascade = CascadeType.ALL)
 	@JsonManagedReference
 	List<ChargesUrCostInvoiceGnaVO> chargesUrCostInvoiceGnaVO;
+	
+	
+	@Transient
+	List<ChargesUrCostInvoiceGnaVO> gstLines;
+
+	@Transient
+	List<ChargesUrCostInvoiceGnaVO> normalCharges;
 
 	@OneToMany(mappedBy = "urCostInvoiceGnaVO", cascade = CascadeType.ALL)
 	@JsonManagedReference
@@ -136,4 +145,5 @@ public class UrCostInvoiceGnaVO {
 	@Embedded
 	@Builder.Default
 	private CreatedUpdatedDate commonDate = new CreatedUpdatedDate();
+
 }

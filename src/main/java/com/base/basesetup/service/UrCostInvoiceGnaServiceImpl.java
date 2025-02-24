@@ -17,7 +17,9 @@ import org.springframework.stereotype.Service;
 import com.base.basesetup.dto.ChargesUrCostInvoiceGnaDTO;
 import com.base.basesetup.dto.TdsUrCostInvoiceGnaDTO;
 import com.base.basesetup.dto.UrCostInvoiceGnaDTO;
+import com.base.basesetup.entity.ChargerCostInvoiceVO;
 import com.base.basesetup.entity.ChargesUrCostInvoiceGnaVO;
+import com.base.basesetup.entity.CostInvoiceVO;
 import com.base.basesetup.entity.DocumentTypeMappingDetailsVO;
 import com.base.basesetup.entity.PartyMasterVO;
 import com.base.basesetup.entity.TdsUrCostInvoiceGnaVO;
@@ -109,6 +111,7 @@ public class UrCostInvoiceGnaServiceImpl implements UrCostInvoiceGnaService {
 		}
 
 		urCostInvoiceGnaRepo.save(urCostInvoiceGnaVO);
+		
 		Map<String, Object> response = new HashMap<>();
 		response.put("urCostInvoiceGnaVO", urCostInvoiceGnaVO);
 		response.put("message", message);
@@ -312,9 +315,38 @@ public class UrCostInvoiceGnaServiceImpl implements UrCostInvoiceGnaService {
 	}
 
 	@Override
-	public UrCostInvoiceGnaVO getUrCostInvoiceGnaById(Long id) {
+	public List<UrCostInvoiceGnaVO> getUrCostInvoiceGnaById(Long id) {
 
-		return urCostInvoiceGnaRepo.getUrCostInvoiceGnaById(id);
+		List<UrCostInvoiceGnaVO> urCostInvoiceGnaVOList = new ArrayList<>();
+
+		if (ObjectUtils.isNotEmpty(id)) {
+			LOGGER.info("Successfully Received  CostInvoice BY Id : {}", id);
+			urCostInvoiceGnaVOList = urCostInvoiceGnaRepo.getUrCostInvoiceGnaById(id);
+
+			for (UrCostInvoiceGnaVO urCostInvoiceGnaVO : urCostInvoiceGnaVOList) {
+				List<ChargesUrCostInvoiceGnaVO> gstLines = new ArrayList<>();
+				List<ChargesUrCostInvoiceGnaVO> normalCharges = new ArrayList<>();
+
+				// Iterate through the chargerCostInvoiceVO list and split charges
+				for (ChargesUrCostInvoiceGnaVO charge : urCostInvoiceGnaVO.getChargesUrCostInvoiceGnaVO()) {
+					if (isGstCharge(charge)) {
+						gstLines.add(charge); // Add GST related charges to gstLines
+					} else {
+						normalCharges.add(charge); // Add normal charges to normalCharges
+					}
+				}
+
+				urCostInvoiceGnaVO.setGstLines(gstLines);
+				urCostInvoiceGnaVO.setNormalCharges(normalCharges);
+			}
+		}
+		return urCostInvoiceGnaVOList;
+	}
+
+	private boolean isGstCharge(ChargesUrCostInvoiceGnaVO charge) {
+		// Check if chargeName contains "CGST", "SGST" or "IGST" to identify GST charges
+		return charge.getChargeLedger() != null && (charge.getChargeLedger().contains("CGST")
+				|| charge.getChargeLedger().contains("SGST") || charge.getChargeLedger().contains("IGST"));
 
 	}
 

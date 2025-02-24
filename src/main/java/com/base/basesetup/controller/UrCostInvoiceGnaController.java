@@ -71,7 +71,7 @@ public class UrCostInvoiceGnaController extends BaseController {
 		String errorMsg = null;
 		Map<String, Object> responseObjectsMap = new HashMap<>();
 		ResponseDTO responseDTO = null;
-		UrCostInvoiceGnaVO urCostInvoiceGnaVO = new UrCostInvoiceGnaVO();
+		List<UrCostInvoiceGnaVO> urCostInvoiceGnaVO =   new ArrayList<>();
 		try {
 			urCostInvoiceGnaVO = urCostInvoiceGnaService.getUrCostInvoiceGnaById(id);
 		} catch (Exception e) {
