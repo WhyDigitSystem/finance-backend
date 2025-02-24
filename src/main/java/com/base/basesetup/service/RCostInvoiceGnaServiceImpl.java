@@ -24,6 +24,7 @@ import com.base.basesetup.entity.AccountsVO;
 import com.base.basesetup.entity.ChargeRCostInvoiceGnaVO;
 import com.base.basesetup.entity.DocumentTypeMappingDetailsVO;
 import com.base.basesetup.entity.GroupLedgerVO;
+import com.base.basesetup.entity.MultipleDocIdGenerationDetailsVO;
 import com.base.basesetup.entity.PartyMasterVO;
 import com.base.basesetup.entity.RCostInvoiceGnaVO;
 import com.base.basesetup.entity.TdsRCostInvoiceGnaVO;
@@ -221,7 +222,7 @@ public class RCostInvoiceGnaServiceImpl implements RCostInvoiceGnaService {
 		String accountsScreenCode="AC";
 		RCostInvoiceGnaVO rCostInvoiceGnaVO = new RCostInvoiceGnaVO();
 		AccountsVO accountsVO =new AccountsVO();
-		String accountsDocId = null ;
+//		String accountsDocId ;
 
 		String message;
 		if (ObjectUtils.isNotEmpty(rCostInvoiceGnaDTO.getId())) {
@@ -236,7 +237,6 @@ public class RCostInvoiceGnaServiceImpl implements RCostInvoiceGnaService {
 			String docId = rCostInvoiceGnaRepo.getRCostInvoiceGnaDocId(rCostInvoiceGnaDTO.getOrgId(),
 					rCostInvoiceGnaDTO.getFinYear(), rCostInvoiceGnaDTO.getBranchCode(), screenCode);
 			rCostInvoiceGnaVO.setDocId(docId);
-			accountsVO.setDocId(accountsDocId);
 
 
 			// GETDOCID LASTNO +1
@@ -248,17 +248,20 @@ public class RCostInvoiceGnaServiceImpl implements RCostInvoiceGnaService {
 			
 			//Accounts 
 			
-//			 accountsDocId = accountsRepo.getrCostInvoiceGnaDocId(rCostInvoiceGnaDTO.getOrgId(),
-//					rCostInvoiceGnaDTO.getFinYear(), rCostInvoiceGnaDTO.getBranchCode(), screenCode, accountsScreenCode);
+			String accountsDocId = accountsRepo.getrCostInvoiceGnaDocId(rCostInvoiceGnaDTO.getOrgId(),
+					rCostInvoiceGnaDTO.getFinYear(), rCostInvoiceGnaDTO.getBranchCode(), screenCode, accountsScreenCode);
 //			rCostInvoiceGnaVO.setDocId(docId);
-//
-//			// GETDOCID LASTNO +1
-//			MultipleDocIdGenerationDetailsVO mulDocId = multipleDocIdGenerationDetailsRepo
-//					.findByOrgIdAndFinYearAndBranchCodeAndSourceScreenCodeAndScreenCode(rCostInvoiceGnaDTO.getOrgId(),
-//							rCostInvoiceGnaDTO.getFinYear(), rCostInvoiceGnaDTO.getBranchCode(), screenCode, accountsScreenCode);
-//			mulDocId.setLastno(mulDocId.getLastno() + 1);
-//			multipleDocIdGenerationDetailsRepo.save(mulDocId);
-//
+			 System.out.println("DOCID " + accountsDocId);
+			 accountsVO.setDocId(accountsDocId);
+
+
+			// GETDOCID LASTNO +1
+			MultipleDocIdGenerationDetailsVO mulDocId = multipleDocIdGenerationDetailsRepo
+					.findByOrgIdAndFinYearAndBranchCodeAndSourceScreenCodeAndScreenCode(rCostInvoiceGnaDTO.getOrgId(),
+							rCostInvoiceGnaDTO.getFinYear(), rCostInvoiceGnaDTO.getBranchCode(), screenCode, accountsScreenCode);
+			mulDocId.setLastno(mulDocId.getLastno() + 1);
+			multipleDocIdGenerationDetailsRepo.save(mulDocId);
+
 
 			rCostInvoiceGnaVO.setCreatedBy(rCostInvoiceGnaDTO.getCreatedBy());
 			rCostInvoiceGnaVO.setUpdatedBy(rCostInvoiceGnaDTO.getCreatedBy());
