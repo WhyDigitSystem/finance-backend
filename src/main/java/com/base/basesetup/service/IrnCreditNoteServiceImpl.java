@@ -341,7 +341,7 @@ public class IrnCreditNoteServiceImpl implements IrnCreditNoteService {
 			irnCreditNoteVO.setTotalInvAmountLc(roundedTotalInvAmountLC);
 
 		} else {
-		    throw new IllegalArgumentException("TOTALINVOICEAMOUNTLC " + roundedTotalInvAmountLC +" must be less than or equal to TAXINVOICE AMOUNT "+ totalInvAmountLc);
+		    throw new IllegalArgumentException("INRCREDITNOTE " + roundedTotalInvAmountLC + " must be less than or equal to TAXINVOICE "+ totalInvAmountLc);
 		}
 
 		

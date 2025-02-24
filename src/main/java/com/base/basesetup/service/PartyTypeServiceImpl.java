@@ -34,6 +34,7 @@ import com.base.basesetup.dto.CustomersAddressDTO;
 import com.base.basesetup.dto.CustomersDTO;
 import com.base.basesetup.dto.CustomersStateDTO;
 import com.base.basesetup.dto.PartyTypeDTO;
+import com.base.basesetup.dto.VendorCurrencyMappingDTO;
 import com.base.basesetup.entity.PartyAddressVO;
 import com.base.basesetup.entity.PartyCurrencyMappingVO;
 import com.base.basesetup.entity.PartyMasterVO;
@@ -520,7 +521,7 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 		if (ObjectUtils.isEmpty(vendorDTO.getId())) {
 			String partyType = "VENDOR";
 			if (partyMasterRepo.existsByPartyNameAndOrgIdAndPartyType(vendorDTO.getVendorName(), vendorDTO.getOrgId(),partyType)) {
-				String errorMessage = String.format("This CustomerName: %s Already Exists in This Organization",
+				String errorMessage = String.format("This Vendor Name: %s Already Exists in This Organization",
 						vendorDTO.getVendorName());
 				throw new ApplicationException(errorMessage);
 			}
@@ -546,7 +547,7 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 			if (!partyMasterVO.getPartyName().equalsIgnoreCase(vendorDTO.getVendorName())) {
 				String partyType = "VENDOR";
 				if (partyMasterRepo.existsByPartyNameAndOrgIdAndPartyType(vendorDTO.getVendorName(), vendorDTO.getOrgId(),partyType)) {
-					String errorMessage = String.format("This VendorName: %s Already Exists in This Organization",
+					String errorMessage = String.format("This Vendor Name: %s Already Exists in This Organization",
 							vendorDTO.getVendorName());
 					throw new ApplicationException(errorMessage);
 				}
@@ -597,6 +598,9 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 
 			List<PartySpecialTDSVO> partySpecialTDSVO1 = partySpecialTDSRepo.findByPartyMasterVO(partyMasterVO);
 			partySpecialTDSRepo.deleteAll(partySpecialTDSVO1);
+			
+			List<PartyCurrencyMappingVO> partyCurrencyMappingVO1 = partyCurrencyMappingRepo.findByPartyMasterVO(partyMasterVO);
+			partyCurrencyMappingRepo.deleteAll(partyCurrencyMappingVO1);
 
 		}
 
@@ -665,6 +669,16 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 			// Add the SalesItemParticularsVO to the list
 			partyMasterVO.setPartySpecialTDSVO(specialTDSVOs);
 		}
+		
+		List<PartyCurrencyMappingVO> partyCurrencyMappingVOs = new ArrayList<>();
+		for (VendorCurrencyMappingDTO vendorCurrencyMappingDTO : vendorDTO.getVendorCurrencyMappingDTO()) {
+			PartyCurrencyMappingVO partyCurrencyMappingVO = new PartyCurrencyMappingVO();
+			partyCurrencyMappingVO.setTransCurrency(vendorCurrencyMappingDTO.getTransCurrency());
+			partyCurrencyMappingVO.setPartyMasterVO(partyMasterVO);
+			partyCurrencyMappingVOs.add(partyCurrencyMappingVO);
+
+			  partyMasterVO.setPartyCurrencyMappingVO(partyCurrencyMappingVOs);
+		}	
 
 		return partyMasterVO;
 	}
@@ -699,140 +713,153 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 	}
 
 //Vendor file upload
-
 	@Override
 	@Transactional
 	public void vendorUpload(MultipartFile files, Long orgId, String createdBy) throws Exception {
-		List<VendorDTO> vendorDTOList = new ArrayList<>();
+	    List<VendorDTO> vendorDTOList = new ArrayList<>();
 
-		try (InputStream inputStream = files.getInputStream(); Workbook workbook = WorkbookFactory.create(inputStream)) {
+	    try (InputStream inputStream = files.getInputStream(); Workbook workbook = WorkbookFactory.create(inputStream)) {
 
-			processVendorSheet(workbook.getSheetAt(0), vendorDTOList, orgId, createdBy);
-			processStateSheets(workbook.getSheetAt(1), vendorDTOList);
-			processAddressSheets(workbook.getSheetAt(2), vendorDTOList);
-			processSpecialTds(workbook.getSheetAt(3), vendorDTOList);
+	        processVendorSheet(workbook.getSheetAt(0), vendorDTOList, orgId, createdBy);
+	        processStateSheets(workbook.getSheetAt(1), vendorDTOList);
+	        processAddressSheets(workbook.getSheetAt(2), vendorDTOList);
+	        processSpecialTds(workbook.getSheetAt(3), vendorDTOList);
+	        processCurrencyMapping(workbook.getSheetAt(4), vendorDTOList);
 
-			for (VendorDTO vendor : vendorDTOList) {
-				createUpdateVendor(vendor);
-			}
-		}
+	        for (VendorDTO vendor : vendorDTOList) {
+	            createUpdateVendor(vendor);
+	        }
+	    }
 	}
 
 	private void processVendorSheet(Sheet sheet, List<VendorDTO> vendorDTOList, Long orgId, String createdBy) {
-		for (Row row : sheet) {
-			if (row.getRowNum() == 0)
-				continue;
-			VendorDTO vendor = new VendorDTO();
+	    for (Row row : sheet) {
+	        if (row.getRowNum() == 0)
+	            continue;
+	        VendorDTO vendor = new VendorDTO();
 
-			vendor.setVendorName(getStringCellValue(row.getCell(0)));
-			vendor.setGstIn(getStringCellValue(row.getCell(1)));
-			vendor.setPanNo(getStringCellValue(row.getCell(2)));
-			vendor.setCreditLimit(getBigDecimalValue(row.getCell(3)));
-			Long creditDays = getLongCellValue(row.getCell(4));
-			vendor.setCreditDays(creditDays != null ? creditDays : 0);
-			vendor.setCreditTerms(getStringCellValue(row.getCell(5)));
-			vendor.setTaxRegistered(getStringCellValue(row.getCell(6)));
-			vendor.setBussinessType(getStringCellValue(row.getCell(7)));
-			vendor.setBussinessCategory(getStringCellValue(row.getCell(8)));
-			vendor.setAccountsType(getStringCellValue(row.getCell(9)));
-			vendor.setCreatedBy(createdBy);
-			vendor.setOrgId(orgId);
-			vendor.setActive(true);
+	        vendor.setVendorName(getStringCellValue(row.getCell(0)));
+	        vendor.setGstIn(getStringCellValue(row.getCell(1)));
+	        vendor.setPanNo(getStringCellValue(row.getCell(2)));
+	        vendor.setCreditLimit(getBigDecimalValue(row.getCell(3)));
+	        Long creditDays = getLongCellValue(row.getCell(4));
+	        vendor.setCreditDays(creditDays != null ? creditDays : 0);
+	        vendor.setCreditTerms(getStringCellValue(row.getCell(5)));
+	        vendor.setTaxRegistered(getStringCellValue(row.getCell(6)));
+	        vendor.setBussinessType(getStringCellValue(row.getCell(7)));
+	        vendor.setBussinessCategory(getStringCellValue(row.getCell(8)));
+	        vendor.setAccountsType(getStringCellValue(row.getCell(9)));
+	        vendor.setCreatedBy(createdBy);
+	        vendor.setOrgId(orgId);
+	        vendor.setActive(true);
 
-			vendorDTOList.add(vendor);
-		}
+	        // Initialize lists to prevent null pointer issues
+	        vendor.setVendorStateDTO(new ArrayList<>());
+	        vendor.setVendorAddressDTO(new ArrayList<>());
+	        vendor.setSpecialTdsDTO(new ArrayList<>());
+	        vendor.setVendorCurrencyMappingDTO(new ArrayList<>());
+
+	        vendorDTOList.add(vendor);
+	    }
 	}
 
 	private void processStateSheets(Sheet sheet, List<VendorDTO> vendorDTOList) {
-		for (Row row : sheet) {
-			if (row.getRowNum() == 0)
-				continue;
-			String vendorName = getStringCellValue(row.getCell(7));
+	    for (Row row : sheet) {
+	        if (row.getRowNum() == 0)
+	            continue;
+	        String vendorName = getStringCellValue(row.getCell(7));
 
-			vendorDTOList.stream().filter(v -> v.getVendorName().equals(vendorName)).findFirst().ifPresent(vendor -> {
-				if (vendor.getVendorStateDTO() == null) {
-					vendor.setVendorStateDTO(new ArrayList<>());
-				}
-				VendorsStateDTO state = new VendorsStateDTO();
-				state.setState(getStringCellValue(row.getCell(0)));
-				state.setStateCode(getStringCellValue(row.getCell(1)));
-				state.setStateNo(getLongCellValue(row.getCell(2)));
-				state.setGstIn(getStringCellValue(row.getCell(3)));
-				state.setContactPerson(getStringCellValue(row.getCell(4)));
-				state.setPhoneNo(getStringCellValue(row.getCell(5)));
-				state.setEMail(getStringCellValue(row.getCell(6)));
+	        vendorDTOList.stream().filter(v -> v.getVendorName().equals(vendorName)).findFirst().ifPresent(vendor -> {
+	            VendorsStateDTO state = new VendorsStateDTO();
+	            state.setState(getStringCellValue(row.getCell(0)));
+	            state.setStateCode(getStringCellValue(row.getCell(1)));
+	            state.setStateNo(getLongCellValue(row.getCell(2)));
+	            state.setGstIn(getStringCellValue(row.getCell(3)));
+	            state.setContactPerson(getStringCellValue(row.getCell(4)));
+	            state.setPhoneNo(getStringCellValue(row.getCell(5)));
+	            state.setEMail(getStringCellValue(row.getCell(6)));
 
-				vendor.getVendorStateDTO().add(state);
-			});
-		}
+	            vendor.getVendorStateDTO().add(state);
+	        });
+	    }
 	}
 
 	private void processAddressSheets(Sheet sheet, List<VendorDTO> vendorDTOList) {
-		for (Row row : sheet) {
-			if (row.getRowNum() == 0)
-				continue;
-			String vendorName = getStringCellValue(row.getCell(10));
+	    for (Row row : sheet) {
+	        if (row.getRowNum() == 0)
+	            continue;
+	        String vendorName = getStringCellValue(row.getCell(10));
 
-			vendorDTOList.stream().filter(v -> v.getVendorName().equals(vendorName)).findFirst().ifPresent(vendor -> {
-				if (vendor.getVendorAddressDTO() == null) {
-					vendor.setVendorAddressDTO(new ArrayList<>());
-				}
-				VendorsAddressDTO address = new VendorsAddressDTO();
-				address.setState(getStringCellValue(row.getCell(0)));
-				address.setCity(getStringCellValue(row.getCell(1)));
-				address.setBussinesPlace(getStringCellValue(row.getCell(3)));
-				address.setGstnIn(getStringCellValue(row.getCell(2)));
-				address.setAddressType(getStringCellValue(row.getCell(4)));
-				address.setAddressLane1(getStringCellValue(row.getCell(5)));
-				address.setAddressLane2(getStringCellValue(row.getCell(6)));
-				address.setAddressLane3(getStringCellValue(row.getCell(7)));
-				address.setPinCode(getLongCellValue(row.getCell(8)));
-				address.setContact(getStringCellValue(row.getCell(9)));
+	        vendorDTOList.stream().filter(v -> v.getVendorName().equals(vendorName)).findFirst().ifPresent(vendor -> {
+	            VendorsAddressDTO address = new VendorsAddressDTO();
+	            address.setState(getStringCellValue(row.getCell(0)));
+	            address.setCity(getStringCellValue(row.getCell(1)));
+	            address.setBussinesPlace(getStringCellValue(row.getCell(3)));
+	            address.setGstnIn(getStringCellValue(row.getCell(2)));
+	            address.setAddressType(getStringCellValue(row.getCell(4)));
+	            address.setAddressLane1(getStringCellValue(row.getCell(5)));
+	            address.setAddressLane2(getStringCellValue(row.getCell(6)));
+	            address.setAddressLane3(getStringCellValue(row.getCell(7)));
+	            address.setPinCode(getLongCellValue(row.getCell(8)));
+	            address.setContact(getStringCellValue(row.getCell(9)));
 
-				vendor.getVendorAddressDTO().add(address);
-			});
-		}
+	            vendor.getVendorAddressDTO().add(address);
+	        });
+	    }
 	}
 
 	private void processSpecialTds(Sheet sheet, List<VendorDTO> vendorDTOList) {
-		for (Row row : sheet) {
-			if (row.getRowNum() == 0)
-				continue;
-			String vendorName = getStringCellValue(row.getCell(8));
+	    for (Row row : sheet) {
+	        if (row.getRowNum() == 0)
+	            continue;
+	        String vendorName = getStringCellValue(row.getCell(8));
 
-			vendorDTOList.stream().filter(v -> v.getVendorName().equals(vendorName)).findFirst().ifPresent(vendor -> {
-				if (vendor.getSpecialTdsDTO() == null) {
-					vendor.setSpecialTdsDTO(new ArrayList<>());
-				}
-				SpecialTdsDTO tds = new SpecialTdsDTO();
-				tds.setSection(getStringCellValue(row.getCell(0)));
-				tds.setWhSection(getStringCellValue(row.getCell(1)));
-				tds.setRateFrom(getLongCellValue(row.getCell(3)));
-				tds.setRateTo(getLongCellValue(row.getCell(2)));
-				tds.setWhPercentage(getBigDecimalCellValues(row.getCell(4)));
-				tds.setSurPercentage(getBigDecimalCellValues(row.getCell(5)));
-				tds.setEdPercentage(getBigDecimalCellValues(row.getCell(6)));
-				tds.setTdsCertificateNo(getStringCellValue(row.getCell(7)));
+	        vendorDTOList.stream().filter(v -> v.getVendorName().equals(vendorName)).findFirst().ifPresent(vendor -> {
+	            SpecialTdsDTO tds = new SpecialTdsDTO();
+	            tds.setSection(getStringCellValue(row.getCell(0)));
+	            tds.setWhSection(getStringCellValue(row.getCell(1)));
+	            tds.setRateFrom(getLongCellValue(row.getCell(3)));
+	            tds.setRateTo(getLongCellValue(row.getCell(2)));
+	            tds.setWhPercentage(getBigDecimalCellValues(row.getCell(4)));
+	            tds.setSurPercentage(getBigDecimalCellValues(row.getCell(5)));
+	            tds.setEdPercentage(getBigDecimalCellValues(row.getCell(6)));
+	            tds.setTdsCertificateNo(getStringCellValue(row.getCell(7)));
 
-				vendor.getSpecialTdsDTO().add(tds);
-			});
-		}
+	            vendor.getSpecialTdsDTO().add(tds);
+	        });
+	    }
+	}
+
+	private void processCurrencyMapping(Sheet sheet, List<VendorDTO> vendorDTOList) {
+	    for (Row row : sheet) {
+	        if (row.getRowNum() == 0)
+	            continue;
+	        String vendorName = getStringCellValue(row.getCell(1));
+
+	        vendorDTOList.stream().filter(v -> v.getVendorName().equals(vendorName)).findFirst().ifPresent(vendor -> {
+	            VendorCurrencyMappingDTO cm = new VendorCurrencyMappingDTO();
+	            cm.setTransCurrency(getStringCellValue(row.getCell(0)));
+
+	            vendor.getVendorCurrencyMappingDTO().add(cm);
+	        });
+	    }
 	}
 
 	private BigDecimal getBigDecimalCellValues(Cell cell) {
-		if (cell == null || cell.getCellType() == CellType.BLANK) {
-			return BigDecimal.ZERO;
-		}
+	    if (cell == null || cell.getCellType() == CellType.BLANK) {
+	        return BigDecimal.ZERO;
+	    }
 
-		if (cell.getCellType() == CellType.NUMERIC) {
-			return BigDecimal.valueOf(cell.getNumericCellValue());
-		}
+	    if (cell.getCellType() == CellType.NUMERIC) {
+	        return BigDecimal.valueOf(cell.getNumericCellValue());
+	    }
 
-		try {
-			return new BigDecimal(cell.getStringCellValue().trim());
-		} catch (NumberFormatException e) {
-			return BigDecimal.ZERO; // Return zero if the value cannot be converted
-		}
+	    try {
+	        return new BigDecimal(cell.getStringCellValue().trim());
+	    } catch (NumberFormatException e) {
+	        return BigDecimal.ZERO; // Return zero if the value cannot be converted
+	    }
 	}
+
 
 }

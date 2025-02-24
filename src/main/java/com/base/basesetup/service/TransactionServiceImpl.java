@@ -2481,6 +2481,7 @@ public class TransactionServiceImpl implements TransactionService {
 	private void getJobCardVOFromJobCardDTO(@Valid TmsJobCardDTO tmsJobCardDTO, JobCardVO tmsJobCardVO) {
 		// tmsJobCardVO.setJobNo(tmsJobCardDTO.getJobNo());
 		tmsJobCardVO.setCustomer(tmsJobCardDTO.getCustomer());
+		tmsJobCardVO.setCustomerCode(tmsJobCardDTO.getCustomerCode());
 		tmsJobCardVO.setSalesCategory(tmsJobCardDTO.getSalesCategory());
 		tmsJobCardVO.setSalesPerson(tmsJobCardDTO.getSalesPerson());
 		tmsJobCardVO.setIncome(tmsJobCardDTO.getIncome());
@@ -2498,6 +2499,9 @@ public class TransactionServiceImpl implements TransactionService {
 		tmsJobCardVO.setCancelRemarks(tmsJobCardDTO.getCancelRemarks());
 		tmsJobCardVO.setActive(tmsJobCardDTO.isActive());
 		tmsJobCardVO.setFinYear(tmsJobCardDTO.getFinYear());
+		tmsJobCardVO.setProduct(tmsJobCardDTO.getProduct());
+		tmsJobCardVO.setType(tmsJobCardDTO.getType());
+
 
 		if (ObjectUtils.isNotEmpty(tmsJobCardDTO.getId())) {
 			List<CostCenterJobCardVO> costCenterTmsJobCardVO1 = costCenterTmsJobCardRepo.findByJobCardVO(tmsJobCardVO);

@@ -39,7 +39,8 @@ public class SecurityConfig {
 						"/api/user/**", "/images/**", "/api/transaction/**", "/api/GlobalParam/**",
 						"/api/arreceivable/**", "/api/transaction/**", "/api/GlobalParam/**", "/api/payable/**",
 						"/api/documentType/**", "/api/taxInvoice/**", "/api/arapAdjustments/**",
-						"/api/costdebitnote/**", "/api/costInvoice/**","/api/irnCreditNote/**","/api/multipleDocIdGeneration/**","/api/sampleExcel/**")
+						"/api/costdebitnote/**", "/api/costInvoice/**","/api/irnCreditNote/**","/api/multipleDocIdGeneration/**","/api/sampleExcel/**"
+						,"/api/rCostInvoiceGna/**")
 
 
 

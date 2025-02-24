@@ -40,6 +40,8 @@ public class JobCardVO {
 	private String jobNo;
 	@Column(name = "customer", length = 50)
 	private String customer;
+	@Column(name = "customercode", length = 20)
+	private String customerCode;
 	@Column(name = "operationclosed")
 	private boolean operationClosed;
 	@Column(name = "date")
@@ -89,6 +91,10 @@ public class JobCardVO {
 	private String cancelRemarks;
 	@Column(name = "finyear", length = 5)
 	private String finYear;
+	@Column(name = "product", length = 50)
+	private String product;
+	@Column(name = "type", length = 50)
+	private String type;
 
 	@OneToMany(mappedBy = "jobCardVO", cascade = CascadeType.ALL)
 	@JsonManagedReference
