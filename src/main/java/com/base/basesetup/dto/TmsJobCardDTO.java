@@ -29,6 +29,10 @@ public class TmsJobCardDTO {
 	private boolean closed;
 	private String product;
 	private String type;
+	private String source;	
+	private String details;
+	private String refNo;
+	private String refDate;
 
 	private Long orgId;
 	private String branch;

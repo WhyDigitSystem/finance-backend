@@ -64,6 +64,14 @@ public class JobCardVO {
 	private BigDecimal profit;
 	@Column(name = "remarks", length = 150)
 	private String remarks;
+	@Column(name = "source", length = 50)
+	private String source;	
+	@Column(name = "details", length = 50)
+	private String details;	
+	@Column(name = "refno", length = 50)
+	private String refNo;
+	@Column(name = "refdate", length = 50)
+	private String refDate;
 
 
 	// default fields
