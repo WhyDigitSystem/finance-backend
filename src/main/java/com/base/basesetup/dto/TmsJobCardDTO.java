@@ -4,6 +4,8 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import javax.persistence.Column;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -25,6 +27,8 @@ public class TmsJobCardDTO {
 	private BigDecimal expense;
 	private String remarks;
 	private boolean closed;
+	private String product;
+	private String type;
 
 	private Long orgId;
 	private String branch;

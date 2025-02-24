@@ -109,6 +109,17 @@ public class TaxInvoiceServiceImpl implements TaxInvoiceService {
 		if (ObjectUtils.isNotEmpty(taxInvoiceDTO.getId())) {
 			taxInvoiceVO = taxInvoiceRepo.findById(taxInvoiceDTO.getId())
 					.orElseThrow(() -> new ApplicationException("Tax Invoice not found"));
+			
+			if (taxInvoiceVO.getVId() != taxInvoiceDTO.getVId()) {
+				if (taxInvoiceRepo.existsByvIdAndOrgId(taxInvoiceDTO.getVId(),
+						taxInvoiceDTO.getOrgId())) {
+			
+					String errorMessage = String.format("This VId: %s already exists for this organization.",
+							taxInvoiceDTO.getVId());
+					throw new ApplicationException(errorMessage);
+				}
+				taxInvoiceVO.setVId(taxInvoiceDTO.getVId());
+				}
 
 			taxInvoiceVO.setModifiedBy(taxInvoiceDTO.getCreatedBy());
 			createUpdateTaxInvoiceVOByTaxInvoiceDTO(taxInvoiceDTO, taxInvoiceVO);
@@ -125,6 +136,14 @@ public class TaxInvoiceServiceImpl implements TaxInvoiceService {
 							taxInvoiceDTO.getFinYear(), taxInvoiceDTO.getBranchCode(), screenCode);
 			documentTypeMappingDetailsVO.setLastno(documentTypeMappingDetailsVO.getLastno() + 1);
 			documentTypeMappingDetailsRepo.save(documentTypeMappingDetailsVO);
+			
+			if (taxInvoiceRepo.existsByvIdAndOrgId(taxInvoiceDTO.getVId(),
+					taxInvoiceDTO.getOrgId())) {
+		
+				String errorMessage = String.format("This VId: %s already exists for this organization.",
+						taxInvoiceDTO.getVId());
+				throw new ApplicationException(errorMessage);
+			}
 
 			taxInvoiceVO.setCreatedBy(taxInvoiceDTO.getCreatedBy());
 			taxInvoiceVO.setModifiedBy(taxInvoiceDTO.getCreatedBy());

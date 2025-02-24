@@ -72,6 +72,8 @@ public interface TaxInvoiceRepo extends JpaRepository<TaxInvoiceVO, Long> {
 	@Query(nativeQuery = true,value = "select a.jobno from jobcard a where a.orgid=?1 and a.customercode=?2 and active=1 ")
 	Set<Object[]> getJobCardForTaxInvoice(Long orgId, String partyCode);
 
+	boolean existsByvIdAndOrgId(String vId, Long orgId);
+
 
 
 	

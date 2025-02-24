@@ -2499,6 +2499,9 @@ public class TransactionServiceImpl implements TransactionService {
 		tmsJobCardVO.setCancelRemarks(tmsJobCardDTO.getCancelRemarks());
 		tmsJobCardVO.setActive(tmsJobCardDTO.isActive());
 		tmsJobCardVO.setFinYear(tmsJobCardDTO.getFinYear());
+		tmsJobCardVO.setProduct(tmsJobCardDTO.getProduct());
+		tmsJobCardVO.setType(tmsJobCardDTO.getType());
+
 
 		if (ObjectUtils.isNotEmpty(tmsJobCardDTO.getId())) {
 			List<CostCenterJobCardVO> costCenterTmsJobCardVO1 = costCenterTmsJobCardRepo.findByJobCardVO(tmsJobCardVO);
