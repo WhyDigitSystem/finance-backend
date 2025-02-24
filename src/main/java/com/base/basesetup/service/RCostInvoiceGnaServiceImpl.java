@@ -590,6 +590,7 @@ public class RCostInvoiceGnaServiceImpl implements RCostInvoiceGnaService {
 		accountsDetailsVO.setSubLedgerCode(rCostInvoiceGnaVO.getPartyName());
 		accountsDetailsVO.setNArapAmount(rCostInvoiceGnaVO.getSumLcAmt());
 		accountsDetailsVO.setGstflag(6);
+		accountsDetailsVO.setTdsAmount(totaltdsAmount);
 		accountsDetailsVO.setAccountsVO(accountsVO);
 		accountsDetailsVOs.add(accountsDetailsVO);
 
@@ -608,6 +609,7 @@ public class RCostInvoiceGnaServiceImpl implements RCostInvoiceGnaService {
 			accountsDetailsVO.setACurrency(rCostInvoiceGnaVO.getCurrency());
 			accountsDetailsVO.setAExRate(rCostInvoiceGnaVO.getExRate());
 			accountsDetailsVO.setSubledgerName("None");
+//			accountsDetailsVO.setTdsAmount(totaltdsAmount);
 			accountsDetailsVO.setNArapAmount(BigDecimal.ZERO);
 			accountsDetailsVO.setGstflag(3);
 			accountsDetailsVO.setAccountsVO(accountsVO);
@@ -646,6 +648,7 @@ public class RCostInvoiceGnaServiceImpl implements RCostInvoiceGnaService {
 			gstAccountDetailsVO.setSubledgerName("None");
 			gstAccountDetailsVO.setSubLedgerCode("None");
 			gstAccountDetailsVO.setNArapAmount(BigDecimal.ZERO);
+//			gstAccountDetailsVO.setTdsAmount(totaltdsAmount);
 			gstAccountDetailsVO.setGstflag(3);
 			gstAccountDetailsVO.setAccountsVO(accountsVO);
 			accountsDetailsVOs.add(gstAccountDetailsVO);
