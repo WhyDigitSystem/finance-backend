@@ -2989,6 +2989,8 @@ public class TransactionServiceImpl implements TransactionService {
 		for (Object[] ch : getCustomer) {
 			Map<String, Object> map = new HashMap<>();
 			map.put("partyname", ch[0] != null ? ch[0].toString() : "");
+			map.put("partyCode", ch[1] != null ? ch[1].toString() : "");
+
 			list1.add(map);
 		}
 		return list1;

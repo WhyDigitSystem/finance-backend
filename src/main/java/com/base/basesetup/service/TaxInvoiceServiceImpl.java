@@ -110,7 +110,7 @@ public class TaxInvoiceServiceImpl implements TaxInvoiceService {
 			taxInvoiceVO = taxInvoiceRepo.findById(taxInvoiceDTO.getId())
 					.orElseThrow(() -> new ApplicationException("Tax Invoice not found"));
 			
-			if (taxInvoiceVO.getVId() != taxInvoiceDTO.getVId()) {
+			if (!taxInvoiceVO.getVId().equals(taxInvoiceDTO.getVId())) {
 				if (taxInvoiceRepo.existsByvIdAndOrgId(taxInvoiceDTO.getVId(),
 						taxInvoiceDTO.getOrgId())) {
 			

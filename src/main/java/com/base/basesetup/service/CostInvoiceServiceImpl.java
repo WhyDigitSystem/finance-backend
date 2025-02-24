@@ -1,3 +1,4 @@
+
 package com.base.basesetup.service;
 
 import java.math.BigDecimal;
@@ -171,19 +172,16 @@ public class CostInvoiceServiceImpl implements CostInvoiceService {
 			costInvoiceVO = costInvoiceRepo.findById(costInvoiceDTO.getId()).orElseThrow(
 					() -> new ApplicationException("Cost Invoice Not Found with id: " + costInvoiceDTO.getId()));
 			costInvoiceVO.setUpdatedBy(costInvoiceDTO.getCreatedBy());
-			
-			if (costInvoiceVO.getVId() != costInvoiceDTO.getVId()) {
-				if (costInvoiceRepo.existsByvIdAndOrgId(costInvoiceDTO.getVId(),
-						costInvoiceDTO.getOrgId())) {
-			
-					String errorMessage = String.format("This VId: %s already exists for this organization.",
-							costInvoiceDTO.getVId());
-					throw new ApplicationException(errorMessage);
-				}
-			
-				costInvoiceVO.setVId(costInvoiceDTO.getVId());
-				}
+		
+			if (!costInvoiceVO.getVId().equals(costInvoiceDTO.getVId())) {
+			    if (costInvoiceRepo.existsByvIdAndOrgId(costInvoiceDTO.getVId(), costInvoiceDTO.getOrgId())) {
+			        String errorMessage = String.format("This VId: %s already exists for this organization.", costInvoiceDTO.getVId());
+			        throw new ApplicationException(errorMessage);
+			    }
+			    costInvoiceVO.setVId(costInvoiceDTO.getVId());
+			}
 
+			
 			message = "CostInvoice Updation Successfully";
 		}
 
