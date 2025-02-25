@@ -34,5 +34,8 @@ public interface RCostInvoiceGnaService {
 
 	List<Map<String, Object>> getStateFromPartyMaster(Long orgId, String partyCode);
 
+	List<Map<String, Object>> getCityFromPartyMaster(Long orgId, String partyCode, String state);
+
+
 
 }

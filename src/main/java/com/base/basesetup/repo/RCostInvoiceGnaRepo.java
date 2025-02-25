@@ -47,13 +47,29 @@ public interface RCostInvoiceGnaRepo extends JpaRepository<RCostInvoiceGnaVO, Lo
 	@Query(nativeQuery = true,value="select currency,currencydescripition,buyingexrate,sellingexrate,ROW_NUMBER() OVER (ORDER BY currency) AS id from vw_exrates where orgid=?1 ")
 	Set<Object[]> getCurrencyAndExrateDetails(Long orgId);
 
-	@Query(nativeQuery = true,value=" SELECT b.statecode, b.state, a.gstin, c.city,\r\n"
-			+ " CONCAT(c.addressline1, ', ', c.addressline2, ', ', c.addressline3) AS address  ,ROW_NUMBER() OVER (ORDER BY currency) AS id \r\n"
-			+ " FROM partymaster a JOIN partystate b ON a.partymasterid = b.partymasterid JOIN \r\n"
-			+ " partyaddress c ON a.partymasterid = c.partymasterid AND b.state = c.state\r\n"
-			+ " WHERE a.orgid = ?1 AND a.partytype ='VENDOR' and partycode=?2 AND a.active = 1 ORDER BY b.statecode, \r\n"
-			+ " b.state, a.gstin, c.city, address")
+//	@Query(nativeQuery = true,value=" SELECT b.statecode, b.state, a.gstin, c.city,\r\n"
+//			+ " CONCAT(c.addressline1, ', ', c.addressline2, ', ', c.addressline3) AS address  ,ROW_NUMBER() OVER (ORDER BY currency) AS id \r\n"
+//			+ " FROM partymaster a JOIN partystate b ON a.partymasterid = b.partymasterid JOIN \r\n"
+//			+ " partyaddress c ON a.partymasterid = c.partymasterid AND b.state = c.state\r\n"
+//			+ " WHERE a.orgid = ?1 AND a.partytype ='VENDOR' and partycode=?2 AND a.active = 1 ORDER BY b.statecode, \r\n"
+//			+ " b.state, a.gstin, c.city, address")
+//	Set<Object[]> getStatedetailsFromPartyMaster(Long orgId, String partyCode);
+
+	@Query(nativeQuery = true,value=" SELECT b.statecode  , b.state, a.gstin ,ROW_NUMBER() OVER (ORDER BY currency) AS id \r\n"
+			+ "			FROM partymaster a JOIN partystate b ON a.partymasterid = b.partymasterid "
+			+ "			 WHERE a.orgid = ?1 AND a.partytype ='VENDOR' and partycode=?2  "
+			+ "			 AND a.active = 1 ORDER BY b.statecode, \r\n"
+			+ "		b.state, a.gstin")
 	Set<Object[]> getStatedetailsFromPartyMaster(Long orgId, String partyCode);
+	
+	@Query(nativeQuery = true,value=" SELECT  c.city,\r\n"
+			+ "			 CONCAT(c.addressline1, ', ', c.addressline2, ', ', c.addressline3) AS address  ,ROW_NUMBER() OVER (ORDER BY currency) AS id \r\n"
+			+ "			FROM partymaster a JOIN partystate b ON a.partymasterid = b.partymasterid JOIN \r\n"
+			+ "			 partyaddress c ON a.partymasterid = c.partymasterid AND b.state = c.state\r\n"
+			+ "			 WHERE a.orgid = ?1 AND a.partytype ='VENDOR' and partycode=?2 and c.state=?3 "
+			+ "			 AND a.active = 1 ORDER BY  \r\n"
+			+ "		      c.city, address")
+	Set<Object[]> getCitydetailsFromPartyMaster(Long orgId, String partyCode,String state);
 
 	@Query(nativeQuery = true, value = "select accountgroupname,currency,gstpercentage from groupledger where orgid=?1 and gsttaxflag!='NA' and category='TAX' and gsttaxflag='INPUT TAX' and gsttype=?2 and gstpercentage=?3  order by gstpercentage desc")
 	Set<Object[]> findInterDetailsForrCostInvoiceGnaPosting(Long orgId, String gstType, Double gstPercent);

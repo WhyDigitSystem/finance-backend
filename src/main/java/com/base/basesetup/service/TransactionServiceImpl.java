@@ -2448,6 +2448,17 @@ public class TransactionServiceImpl implements TransactionService {
 		if (ObjectUtils.isNotEmpty(tmsJobCardDTO.getId())) {
 			tmsJobCardVO = tmsJobCardRepo.findById(tmsJobCardDTO.getId())
 					.orElseThrow(() -> new ApplicationException("Invalid TmsJobCard details"));
+			
+			if (!tmsJobCardVO.getRefNo().equals(tmsJobCardDTO.getRefNo())) {
+				if (tmsJobCardRepo.existsByrefNoAndOrgId(tmsJobCardDTO.getRefNo(),
+						tmsJobCardDTO.getOrgId())) {
+			
+					String errorMessage = String.format("This RefNo: %s already exists for this organization.",
+							tmsJobCardDTO.getRefNo());
+					throw new ApplicationException(errorMessage);
+				}
+				tmsJobCardVO.setRefNo(tmsJobCardDTO.getRefNo());
+				}
 			tmsJobCardVO.setUpdatedBy(tmsJobCardVO.getCreatedBy());
 			getJobCardVOFromJobCardDTO(tmsJobCardDTO, tmsJobCardVO);
 			message = "TmsJobCard Updated Successfully";
@@ -2464,6 +2475,14 @@ public class TransactionServiceImpl implements TransactionService {
 							tmsJobCardDTO.getFinYear(), tmsJobCardDTO.getBranchCode(), screenCode);
 			documentTypeMappingDetailsVO.setLastno(documentTypeMappingDetailsVO.getLastno() + 1);
 			documentTypeMappingDetailsRepo.save(documentTypeMappingDetailsVO);
+			
+			if (tmsJobCardRepo.existsByrefNoAndOrgId(tmsJobCardDTO.getRefNo(),
+					tmsJobCardDTO.getOrgId())) {
+		
+				String errorMessage = String.format("This RefNo: %s already exists for this organization.",
+						tmsJobCardDTO.getRefNo());
+				throw new ApplicationException(errorMessage);
+			}
 
 			tmsJobCardVO.setCreatedBy(tmsJobCardDTO.getCreatedBy());
 			tmsJobCardVO.setUpdatedBy(tmsJobCardVO.getCreatedBy());
@@ -2501,6 +2520,12 @@ public class TransactionServiceImpl implements TransactionService {
 		tmsJobCardVO.setFinYear(tmsJobCardDTO.getFinYear());
 		tmsJobCardVO.setProduct(tmsJobCardDTO.getProduct());
 		tmsJobCardVO.setType(tmsJobCardDTO.getType());
+		tmsJobCardVO.setDetails(tmsJobCardDTO.getDetails());
+		tmsJobCardVO.setSource(tmsJobCardDTO.getSource());
+		tmsJobCardVO.setRefNo(tmsJobCardDTO.getRefNo());
+		tmsJobCardVO.setRefDate(tmsJobCardDTO.getRefDate());
+
+
 
 
 		if (ObjectUtils.isNotEmpty(tmsJobCardDTO.getId())) {
