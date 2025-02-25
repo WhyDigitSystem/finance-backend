@@ -583,6 +583,9 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 		partyMasterVO.setBussinessType(vendorDTO.getBussinessType());
 		partyMasterVO.setBussinessCate(vendorDTO.getBussinessCategory());
 		partyMasterVO.setAccountType(vendorDTO.getAccountsType());
+		partyMasterVO.setActive(vendorDTO.isActive());
+
+		
 
 		if (vendorDTO.isApproved()) {
 			partyMasterVO.setActive(true);
