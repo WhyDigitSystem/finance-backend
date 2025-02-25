@@ -206,14 +206,17 @@ public class RCostInvoiceGnaServiceImpl implements RCostInvoiceGnaService {
 			map.put("stateCode", ch[0] != null ? ch[0].toString() : ""); // Empty string if null
 			map.put("state", ch[1] != null ? ch[1].toString() : "");
 			map.put("gstin", ch[2] != null ? ch[2].toString() : "");
-			map.put("city", ch[3] != null ? ch[3].toString() : "");
-			map.put("address", ch[4] != null ? ch[4].toString() : "");
-			map.put("id", ch[5] != null ? ch[5].toString() : "");
+//			map.put("city", ch[3] != null ? ch[3].toString() : "");
+//			map.put("address", ch[4] != null ? ch[4].toString() : "");
+			map.put("id", ch[3] != null ? ch[3].toString() : "");
 
 			List1.add(map);
 		}
 		return List1;
 	}
+
+	
+
 
 	@Override
 	public Map<String, Object> updateCreateRCostInvoiceGna(RCostInvoiceGnaDTO rCostInvoiceGnaDTO)
@@ -664,6 +667,26 @@ public class RCostInvoiceGnaServiceImpl implements RCostInvoiceGnaService {
 		
 		return rCostInvoiceGnaVO;
 
+	}
+
+	@Override
+	public List<Map<String, Object>> getCityFromPartyMaster(Long orgId, String partyCode, String state) {
+		Set<Object[]> stateDetails = rCostInvoiceGnaRepo.getCitydetailsFromPartyMaster(orgId, partyCode,state);
+		return getCityDetails(stateDetails);
+
+	}
+	
+	private List<Map<String, Object>> getCityDetails(Set<Object[]> stateDetails) {
+		List<Map<String, Object>> List1 = new ArrayList<>();
+		for (Object[] ch : stateDetails) {
+			Map<String, Object> map = new HashMap<>();
+			map.put("city", ch[0] != null ? ch[0].toString() : "");
+			map.put("address", ch[1] != null ? ch[1].toString() : "");
+			map.put("id", ch[2] != null ? ch[2].toString() : "");
+
+			List1.add(map);
+		}
+		return List1;
 	}
 
 }
