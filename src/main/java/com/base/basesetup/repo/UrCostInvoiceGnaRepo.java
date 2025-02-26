@@ -49,7 +49,7 @@ public interface UrCostInvoiceGnaRepo extends JpaRepository<UrCostInvoiceGnaVO, 
 			+ " gstpercentage IN(?3) group by  accountgroupname,gstpercentage,currency order by gstpercentage desc")
 	Set<Object[]> findIntraDetailsForUrCostInvoiceGnaPosting(Long orgId, String gtsType, Double gstPercent);
 
-	UrCostInvoiceGnaVO findByOrgIdAndIdAndDocId(Long orgId, Long id, String docId);
+//	UrCostInvoiceGnaVO findByOrgIdAndIdAndDocId(Long orgId, Long id, String docId);
 	
 //	UrCostInvoiceGnaVO findByOrgIdAndIdAndDocId(Long orgId, Long id, String docId);
 
