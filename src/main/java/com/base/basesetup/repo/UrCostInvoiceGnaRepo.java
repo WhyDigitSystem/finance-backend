@@ -22,11 +22,13 @@ public interface UrCostInvoiceGnaRepo extends JpaRepository<UrCostInvoiceGnaVO, 
 	@Query(nativeQuery = true, value = "select concat(prefixfield,lpad(lastno,5,0)) AS docid from documenttypemappingdetails where orgid=?1 and finyear=?2 and branchcode=?3 and screencode=?4")
 	String getUrCostInvoiceGnaDocId(Long orgId, String finYear, String branchCode, String screenCode);
 
-	@Query(value = "select a from PartyMasterVO a where a.orgId=?1 and a.partyType=?2 and a.active=true")
+	@Query(value = "select a from PartyMasterVO a where a.orgId=?1 and a.partyType=?2 and a.active=true and a.gstRegistered='NO'")
 	List<PartyMasterVO> getAllVendorFromPartyMaster(Long orgId, String partyType);
 
-	@Query(nativeQuery = true, value = "SELECT b.statecode, b.state, a.gstin, c.city,CONCAT(c.addressline1, ', ', c.addressline2, ', ', c.addressline3) AS address FROM  partymaster a JOIN  partystate b ON a.partymasterid = b.partymasterid\r\n"
-			+ "JOIN   partyaddress c ON a.partymasterid = c.partymasterid AND b.state = c.state WHERE  a.orgid =?1 AND a.partytype = 'VENDOR' AND partycode =?2 AND a.active = 1\r\n"
+	@Query(nativeQuery = true, value = "SELECT b.statecode, b.state, a.gstin, c.city,CONCAT(c.addressline1, ', ', c.addressline2, ', ', c.addressline3) AS address FROM  \r\n"
+			+ "partymaster a,partyaddress c, partystate b WHERE \r\n"
+			+ "a.partymasterid = b.partymasterid  AND  a.partymasterid = c.partymasterid AND \r\n"
+			+ "b.state = c.state and   a.orgid =?1 AND a.partytype = 'VENDOR' AND partycode =?2 AND a.active = 1\r\n"
 			+ "ORDER BY b.statecode, b.state, a.gstin, c.city, address")
 	Set<Object[]> getVendorAddressFromPartyMaster(Long orgId, String supplierCode);
 
@@ -46,5 +48,9 @@ public interface UrCostInvoiceGnaRepo extends JpaRepository<UrCostInvoiceGnaVO, 
 	@Query(nativeQuery = true, value = "select  accountgroupname,gstpercentage,currency from groupledger where orgid=?1 and gsttaxflag!='NA' and category='TAX' and gsttaxflag IN ('INPUT TAX','OUTPUT TAX') and gsttype=?2 and\r\n"
 			+ " gstpercentage IN(?3) group by  accountgroupname,gstpercentage,currency order by gstpercentage desc")
 	Set<Object[]> findIntraDetailsForUrCostInvoiceGnaPosting(Long orgId, String gtsType, Double gstPercent);
+
+	UrCostInvoiceGnaVO findByOrgIdAndIdAndDocId(Long orgId, Long id, String docId);
+	
+//	UrCostInvoiceGnaVO findByOrgIdAndIdAndDocId(Long orgId, Long id, String docId);
 
 }
