@@ -207,7 +207,7 @@ public class UrCostInvoiceGnaController extends BaseController {
 	}
 	
 	@GetMapping("/getCurrencyAndExrateFromParty")
-	public ResponseEntity<ResponseDTO> getCurrencyAndExrateFromParty(@RequestParam Long orgId) {
+	public ResponseEntity<ResponseDTO> getCurrencyAndExrateFromParty(@RequestParam Long orgId,@RequestParam String supplierCode) {
 		String methodName = "getCurrencyAndExrateFromParty()";
 		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
 		String errorMsg = null;
@@ -216,7 +216,7 @@ public class UrCostInvoiceGnaController extends BaseController {
 		List<Map<String, Object>> mapp = new ArrayList<>();
 
 		try {
-			mapp = urCostInvoiceGnaService.getCurrencyAndExrateFromParty(orgId);
+			mapp = urCostInvoiceGnaService.getCurrencyAndExrateFromParty(orgId, supplierCode);
 		} catch (Exception e) {
 			errorMsg = e.getMessage();
 			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);

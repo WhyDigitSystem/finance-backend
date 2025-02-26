@@ -26,7 +26,7 @@ public interface UrCostInvoiceGnaService {
 
 	List<Map<String, Object>> getChargeLedgerFromGroup(Long orgId);
 
-	List<Map<String, Object>> getCurrencyAndExrateFromParty(Long orgId);
+	List<Map<String, Object>> getCurrencyAndExrateFromParty(Long orgId,String supplierCode);
 
 	List<Map<String, Object>> getVendorAddressFromPartyMaster(Long orgId, String supplierCode);
 

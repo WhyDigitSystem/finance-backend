@@ -532,8 +532,8 @@ public class UrCostInvoiceGnaServiceImpl implements UrCostInvoiceGnaService {
 	}
 
 	@Override
-	public List<Map<String, Object>> getCurrencyAndExrateFromParty(Long orgId) {
-		Set<Object[]> chCode = urCostInvoiceGnaRepo.getCurrencyAndExrateFromParty(orgId);
+	public List<Map<String, Object>> getCurrencyAndExrateFromParty(Long orgId,String supplierCode) {
+		Set<Object[]> chCode = urCostInvoiceGnaRepo.getCurrencyAndExrateFromParty(orgId,supplierCode);
 		return getCurrencyAndExrate(chCode);
 	}
 

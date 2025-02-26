@@ -32,8 +32,9 @@ public interface UrCostInvoiceGnaRepo extends JpaRepository<UrCostInvoiceGnaVO, 
 			+ "ORDER BY b.statecode, b.state, a.gstin, c.city, address")
 	Set<Object[]> getVendorAddressFromPartyMaster(Long orgId, String supplierCode);
 
-	@Query(nativeQuery = true, value = "select currency,buyingexrate,sellingexrate from vw_exrates where orgid=?1 order by currency")
-	Set<Object[]> getCurrencyAndExrateFromParty(Long orgId);
+	@Query(nativeQuery = true, value = "select a.currency,a.buyingexrate,a.sellingexrate from vw_exrates a, partymaster a1,partycurrencymapping b where\r\n"
+			+ "           a1.orgid=?1  and a1.partymasterid=b.partymasterid and a.orgid=a1.orgid and a1.partycode=?2  order by a.currency")
+	Set<Object[]> getCurrencyAndExrateFromParty(Long orgId,String supplierCode);
 
 	@Query(nativeQuery = true, value = "select accountgroupname from groupledger where orgid=?1 and category in ('OTHERS','TAX') and active = true  order by accountgroupname")
 	Set<Object[]> getChargeLedgerFromGroup(Long orgId);
@@ -49,8 +50,5 @@ public interface UrCostInvoiceGnaRepo extends JpaRepository<UrCostInvoiceGnaVO, 
 			+ " gstpercentage IN(?3) group by  accountgroupname,gstpercentage,currency order by gstpercentage desc")
 	Set<Object[]> findIntraDetailsForUrCostInvoiceGnaPosting(Long orgId, String gtsType, Double gstPercent);
 
-//	UrCostInvoiceGnaVO findByOrgIdAndIdAndDocId(Long orgId, Long id, String docId);
-	
-//	UrCostInvoiceGnaVO findByOrgIdAndIdAndDocId(Long orgId, Long id, String docId);
 
 }
