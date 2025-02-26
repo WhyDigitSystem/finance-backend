@@ -188,15 +188,15 @@ public class UrCostInvoiceGnaServiceImpl implements UrCostInvoiceGnaService {
 		accountsDetailsVOs.add(accountsDetailsVO);
 
 		if (urCostInvoiceGnaVO2.getRoundOff().compareTo(BigDecimal.ZERO) != 0) {
-			accountsDetailsVO.setNDebitAmount(urCostInvoiceGnaVO2.getRoundOff());
+			accountsDetailsVO.setNDebitAmount(urCostInvoiceGnaVO2.getTotChargeAmtLc());
 			accountsDetailsVO.setACategory("PAYABLE A/C");
 			accountsDetailsVO.setSubLedgerCode("None");
-			accountsDetailsVO.setDebitAmount(urCostInvoiceGnaVO2.getRoundOff());
+			accountsDetailsVO.setDebitAmount(urCostInvoiceGnaVO2.getTotChargeAmtLc());
 			accountsDetailsVO.setNCreditAmount(BigDecimal.ZERO);
 			accountsDetailsVO.setCreditAmount(BigDecimal.ZERO);
 			accountsDetailsVO.setArapFlag(false);
 			accountsDetailsVO.setArapAmount(BigDecimal.ZERO);
-			accountsDetailsVO.setBDebitAmount(urCostInvoiceGnaVO2.getRoundOff());
+			accountsDetailsVO.setBDebitAmount(urCostInvoiceGnaVO2.getTotChargeAmtLc());
 			accountsDetailsVO.setBCrAmount(BigDecimal.ZERO);
 			accountsDetailsVO.setBArapAmount(BigDecimal.ZERO);
 			accountsDetailsVO.setACurrency(urCostInvoiceGnaVO2.getCurrency());
@@ -443,6 +443,7 @@ public class UrCostInvoiceGnaServiceImpl implements UrCostInvoiceGnaService {
 		BigDecimal actBillAmtLc = sumOfLcAmount.subtract(totaltdsAmount);
 		BigDecimal roundedValue = netAmountLc.setScale(0, RoundingMode.HALF_UP);
 		BigDecimal roundOff = roundedValue.subtract(netAmountLc);
+		
 		urCostInvoiceGnaVO.setTotChargeAmtLc(sumOfLcAmount);
 		urCostInvoiceGnaVO.setActBillAmtLc(actBillAmtLc);
 		urCostInvoiceGnaVO.setRoundOff(roundOff);
