@@ -25,6 +25,7 @@ public class UrCostInvoiceGnaDTO {
 	private BigDecimal exRate;
 	private String supplierGstIn;
 	private String supplierGstInCode;
+	private String state;
 	private String remarks;
 	private String address;
 	private String otherInfo;

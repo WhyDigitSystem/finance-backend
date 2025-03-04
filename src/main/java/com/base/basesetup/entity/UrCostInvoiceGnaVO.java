@@ -68,6 +68,8 @@ public class UrCostInvoiceGnaVO {
 	private String supplierGstIn;
 	@Column(name = "suppliergstincode")
 	private String supplierGstInCode;
+	@Column(name = "state")
+	private String state;
 	@Column(name = "remarks")
 	private String remarks;
 	@Column(name = "address")
