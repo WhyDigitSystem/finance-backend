@@ -1,3 +1,4 @@
+
 package com.base.basesetup.service;
 
 import java.math.BigDecimal;
@@ -151,6 +152,15 @@ public class CostInvoiceServiceImpl implements CostInvoiceService {
 							costInvoiceDTO.getFinYear(), costInvoiceDTO.getBranchCode(), screenCode);
 			documentTypeMappingDetailsVO.setLastno(documentTypeMappingDetailsVO.getLastno() + 1);
 			documentTypeMappingDetailsRepo.save(documentTypeMappingDetailsVO);
+			
+				if (costInvoiceRepo.existsByvIdAndOrgId(costInvoiceDTO.getVId(),
+						costInvoiceDTO.getOrgId())) {
+			
+					String errorMessage = String.format("This VId: %s already exists for this organization.",
+							costInvoiceDTO.getVId());
+					throw new ApplicationException(errorMessage);
+				}
+			
 
 			costInvoiceVO.setCreatedBy(costInvoiceDTO.getCreatedBy());
 			costInvoiceVO.setUpdatedBy(costInvoiceDTO.getCreatedBy());
@@ -162,7 +172,16 @@ public class CostInvoiceServiceImpl implements CostInvoiceService {
 			costInvoiceVO = costInvoiceRepo.findById(costInvoiceDTO.getId()).orElseThrow(
 					() -> new ApplicationException("Cost Invoice Not Found with id: " + costInvoiceDTO.getId()));
 			costInvoiceVO.setUpdatedBy(costInvoiceDTO.getCreatedBy());
+		
+			if (!costInvoiceVO.getVId().equals(costInvoiceDTO.getVId())) {
+			    if (costInvoiceRepo.existsByvIdAndOrgId(costInvoiceDTO.getVId(), costInvoiceDTO.getOrgId())) {
+			        String errorMessage = String.format("This VId: %s already exists for this organization.", costInvoiceDTO.getVId());
+			        throw new ApplicationException(errorMessage);
+			    }
+			    costInvoiceVO.setVId(costInvoiceDTO.getVId());
+			}
 
+			
 			message = "CostInvoice Updation Successfully";
 		}
 
@@ -210,6 +229,9 @@ public class CostInvoiceServiceImpl implements CostInvoiceService {
 		costInvoiceVO.setUtrRef(costInvoiceDTO.getUtrRef());
 		costInvoiceVO.setCostType(costInvoiceDTO.getCostType());
 		costInvoiceVO.setJobOrderNo(costInvoiceDTO.getJobOrderNo());
+		costInvoiceVO.setVId(costInvoiceDTO.getVId());
+		costInvoiceVO.setVDate(costInvoiceDTO.getVDate());
+
 
 		if (costInvoiceDTO.getId() != null) {
 
@@ -803,12 +825,12 @@ public class CostInvoiceServiceImpl implements CostInvoiceService {
 			costInvoiceVO.setPurVoucherNo(savedAccountsVO.getDocId());
 			costInvoiceVO.setPurVoucherDate(savedAccountsVO.getDocDate());
 			
-			LocalDate purVouDate = savedAccountsVO.getDocDate();
-			int creditDays = costInvoiceVO.getCreditDays();
-			LocalDate dueDate = purVouDate.plusDays(creditDays);
-			// Save dueDate in your entity
-			accountsVO.setDueDate(dueDate);
-			costInvoiceVO.setDueDate(dueDate);
+//			LocalDate purVouDate = savedAccountsVO.getDocDate();
+//			int creditDays = costInvoiceVO.getCreditDays();
+//			LocalDate dueDate = purVouDate.plusDays(creditDays);
+//			// Save dueDate in your entity
+//			accountsVO.setDueDate(dueDate);
+//			costInvoiceVO.setDueDate(dueDate);
 			
 			costInvoiceVO.setApproveStatus(action);
 			costInvoiceVO.setApproveBy(actionBy);

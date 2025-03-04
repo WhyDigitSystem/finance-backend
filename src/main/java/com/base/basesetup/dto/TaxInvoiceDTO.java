@@ -4,6 +4,8 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
+import javax.persistence.Column;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -46,6 +48,11 @@ public class TaxInvoiceDTO {
 	private String invoiceNo;
 	private LocalDate invoiceDate;
 	private String jobOrderNo;
+	private String remarks;
+	
+	private String vId;
+	private LocalDate vDate;
+
 
 	
 	List<TaxInvoiceDetailsDTO> taxInvoiceDetailsDTO;

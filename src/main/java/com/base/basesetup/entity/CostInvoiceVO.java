@@ -139,6 +139,11 @@ public class CostInvoiceVO {
 	private BigDecimal gstInputLcAmt;
 	@Column(name = "joborderno",length = 50)
 	private String jobOrderNo;
+	
+	@Column(name = "vid", length = 50)
+	private String vId;
+	@Column(name = "vdate")
+	private LocalDate vDate;
 
 //	APPROVED
 	@Column(name = "approvestatus", length = 20)

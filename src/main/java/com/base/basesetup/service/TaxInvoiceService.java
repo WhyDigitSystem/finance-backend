@@ -47,6 +47,8 @@ public interface TaxInvoiceService {
 
 	List<Map<String, Object>> getAllJobNoByActice(Long orgId);
 
+	List<Map<String, Object>> getJobCardForTaxInvoice(Long orgId, String partyCode);
+
 
 
 }

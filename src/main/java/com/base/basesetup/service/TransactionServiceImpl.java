@@ -2448,6 +2448,17 @@ public class TransactionServiceImpl implements TransactionService {
 		if (ObjectUtils.isNotEmpty(tmsJobCardDTO.getId())) {
 			tmsJobCardVO = tmsJobCardRepo.findById(tmsJobCardDTO.getId())
 					.orElseThrow(() -> new ApplicationException("Invalid TmsJobCard details"));
+			
+			if (!tmsJobCardVO.getRefNo().equals(tmsJobCardDTO.getRefNo())) {
+				if (tmsJobCardRepo.existsByrefNoAndOrgId(tmsJobCardDTO.getRefNo(),
+						tmsJobCardDTO.getOrgId())) {
+			
+					String errorMessage = String.format("This RefNo: %s already exists for this organization.",
+							tmsJobCardDTO.getRefNo());
+					throw new ApplicationException(errorMessage);
+				}
+				tmsJobCardVO.setRefNo(tmsJobCardDTO.getRefNo());
+				}
 			tmsJobCardVO.setUpdatedBy(tmsJobCardVO.getCreatedBy());
 			getJobCardVOFromJobCardDTO(tmsJobCardDTO, tmsJobCardVO);
 			message = "TmsJobCard Updated Successfully";
@@ -2464,6 +2475,14 @@ public class TransactionServiceImpl implements TransactionService {
 							tmsJobCardDTO.getFinYear(), tmsJobCardDTO.getBranchCode(), screenCode);
 			documentTypeMappingDetailsVO.setLastno(documentTypeMappingDetailsVO.getLastno() + 1);
 			documentTypeMappingDetailsRepo.save(documentTypeMappingDetailsVO);
+			
+			if (tmsJobCardRepo.existsByrefNoAndOrgId(tmsJobCardDTO.getRefNo(),
+					tmsJobCardDTO.getOrgId())) {
+		
+				String errorMessage = String.format("This RefNo: %s already exists for this organization.",
+						tmsJobCardDTO.getRefNo());
+				throw new ApplicationException(errorMessage);
+			}
 
 			tmsJobCardVO.setCreatedBy(tmsJobCardDTO.getCreatedBy());
 			tmsJobCardVO.setUpdatedBy(tmsJobCardVO.getCreatedBy());
@@ -2481,6 +2500,7 @@ public class TransactionServiceImpl implements TransactionService {
 	private void getJobCardVOFromJobCardDTO(@Valid TmsJobCardDTO tmsJobCardDTO, JobCardVO tmsJobCardVO) {
 		// tmsJobCardVO.setJobNo(tmsJobCardDTO.getJobNo());
 		tmsJobCardVO.setCustomer(tmsJobCardDTO.getCustomer());
+		tmsJobCardVO.setCustomerCode(tmsJobCardDTO.getCustomerCode());
 		tmsJobCardVO.setSalesCategory(tmsJobCardDTO.getSalesCategory());
 		tmsJobCardVO.setSalesPerson(tmsJobCardDTO.getSalesPerson());
 		tmsJobCardVO.setIncome(tmsJobCardDTO.getIncome());
@@ -2498,6 +2518,15 @@ public class TransactionServiceImpl implements TransactionService {
 		tmsJobCardVO.setCancelRemarks(tmsJobCardDTO.getCancelRemarks());
 		tmsJobCardVO.setActive(tmsJobCardDTO.isActive());
 		tmsJobCardVO.setFinYear(tmsJobCardDTO.getFinYear());
+		tmsJobCardVO.setProduct(tmsJobCardDTO.getProduct());
+		tmsJobCardVO.setType(tmsJobCardDTO.getType());
+		tmsJobCardVO.setDetails(tmsJobCardDTO.getDetails());
+		tmsJobCardVO.setSource(tmsJobCardDTO.getSource());
+		tmsJobCardVO.setRefNo(tmsJobCardDTO.getRefNo());
+		tmsJobCardVO.setRefDate(tmsJobCardDTO.getRefDate());
+
+
+
 
 		if (ObjectUtils.isNotEmpty(tmsJobCardDTO.getId())) {
 			List<CostCenterJobCardVO> costCenterTmsJobCardVO1 = costCenterTmsJobCardRepo.findByJobCardVO(tmsJobCardVO);
@@ -2985,6 +3014,8 @@ public class TransactionServiceImpl implements TransactionService {
 		for (Object[] ch : getCustomer) {
 			Map<String, Object> map = new HashMap<>();
 			map.put("partyname", ch[0] != null ? ch[0].toString() : "");
+			map.put("partyCode", ch[1] != null ? ch[1].toString() : "");
+
 			list1.add(map);
 		}
 		return list1;

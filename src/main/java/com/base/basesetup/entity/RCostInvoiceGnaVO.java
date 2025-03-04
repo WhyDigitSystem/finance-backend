@@ -2,8 +2,8 @@ package com.base.basesetup.entity;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -16,30 +16,32 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
 import com.base.basesetup.dto.CreatedUpdatedDate;
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name="rcostinvoicegna")
+@Table(name = "rcostinvoicegna")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class RCostInvoiceGnaVO {
-	
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "rcostinvoicegnagen")
 	@SequenceGenerator(name = "rcostinvoicegnagen", sequenceName = "rcostinvoicegnaseq", initialValue = 1000000001, allocationSize = 1)
 	@Column(name = "rcostinvoicegnaid")
 	private Long id;
-	
+
 	@Column(name = "docid", length = 30)
 	private String docId;
 	@Column(name = "docdate")
@@ -78,12 +80,12 @@ public class RCostInvoiceGnaVO {
 	private String remarks;
 	@Column(name = "gsttype", length = 15)
 	private String gstType;
-	
-	//Default fields
+
+	// Default fields
 	@Column(name = "orgid", length = 15)
 	private Long orgId;
 	@Column(name = "active")
-	private boolean active;
+	private boolean active = true;
 	@Column(name = "modifiedby", length = 25)
 	private String updatedBy;
 	@Column(name = "createdby", length = 25)
@@ -106,7 +108,10 @@ public class RCostInvoiceGnaVO {
 	private String screenCode = "RCI";
 	@Column(name = "screenname", length = 25)
 	private String screenName = "REGISTER COSTINVOICE GNA";
-
+	@Column(name = "vid", length = 50)
+	private String vId;
+	@Column(name = "vdate")
+	private LocalDate vDate;
 
 //	SUMMARY
 	@Column(name = "actbillamtbc", precision = 10, scale = 2)
@@ -123,26 +128,24 @@ public class RCostInvoiceGnaVO {
 	private BigDecimal gstAmtLc;
 	@Column(name = "amountinwords")
 	private String amountInWords;
-	
+	@Column(name = "sumlcamt", precision = 10, scale = 2)
+	private BigDecimal sumLcAmt;
+	@Column(name = "sumbillamt", precision = 10, scale = 2)
+	private BigDecimal sumBillAmt;
 
-////	APPROVED
-	@Column(name = "approvestatus", length = 20)
-	private String approveStatus;
-	@Column(name = "approveby", length = 20)
-	private String approveBy;
-	@DateTimeFormat(pattern = "dd-MM-yyyy hh:mm:ss a")
-	@Column(name = "approveon")
-	private String approveOn;
-	
+	@OneToMany(mappedBy = "rCostInvoiceGnaVO", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@JsonManagedReference
+	private List<ChargeRCostInvoiceGnaVO> chargeRCostInvoiceGnaVO;
 
-	 @OneToMany(mappedBy = "rCostInvoiceGnaVO", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	 @JsonManagedReference
-	 private List<ChargeRCostInvoiceGnaVO> chargeRCostInvoiceGnaVO = new ArrayList<>();
+	@Transient
+	List<ChargeRCostInvoiceGnaVO> gstLines;
 
-	 @OneToMany(mappedBy = "rCostInvoiceGnaVO", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	 @JsonManagedReference
-	 private List<TdsRCostInvoiceGnaVO> tdsRCostInvoiceGnaVO = new ArrayList<>();
+	@Transient
+	List<ChargeRCostInvoiceGnaVO> normalCharges;
 
+	@OneToMany(mappedBy = "rCostInvoiceGnaVO", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@JsonManagedReference
+	private List<TdsRCostInvoiceGnaVO> tdsRCostInvoiceGnaVO;
 
 	@JsonGetter("active")
 	public String getActive() {
@@ -153,8 +156,8 @@ public class RCostInvoiceGnaVO {
 	public String getCancel() {
 		return cancel ? "T" : "F";
 	}
+
 	@Embedded
 	private CreatedUpdatedDate commonDate = new CreatedUpdatedDate();
-	
 
 }

@@ -22,9 +22,9 @@ import com.base.basesetup.common.CommonConstant;
 import com.base.basesetup.common.UserConstants;
 import com.base.basesetup.dto.RCostInvoiceGnaDTO;
 import com.base.basesetup.dto.ResponseDTO;
+import com.base.basesetup.entity.CostInvoiceVO;
 import com.base.basesetup.entity.PartyMasterVO;
 import com.base.basesetup.entity.RCostInvoiceGnaVO;
-import com.base.basesetup.entity.TdsMasterVO;
 import com.base.basesetup.service.RCostInvoiceGnaService;
 
 @CrossOrigin
@@ -72,7 +72,9 @@ public class RCostInvoiceGnaController extends BaseController{
 		String errorMsg = null;
 		Map<String, Object> responseObjectsMap = new HashMap<>();
 		ResponseDTO responseDTO = null;
-		RCostInvoiceGnaVO rCostInvoiceGnaVO = new RCostInvoiceGnaVO() ;
+//		RCostInvoiceGnaVO rCostInvoiceGnaVO = new RCostInvoiceGnaVO() ;
+		List<RCostInvoiceGnaVO> rCostInvoiceGnaVO = new ArrayList<>();
+
 		try {
 			rCostInvoiceGnaVO = rCostInvoiceGnaService.getAllRCostInvoiceGnaById(id);
 		} catch (Exception e) {
@@ -112,7 +114,7 @@ public class RCostInvoiceGnaController extends BaseController{
 		if (StringUtils.isBlank(errorMsg)) {
 			responseObjectsMap.put(CommonConstant.STRING_MESSAGE,
 					"RCostInvoiceGnaDocId information retrieved successfully");
-			responseObjectsMap.put("taxInvoiceDocId", mapp);
+			responseObjectsMap.put("rcostInvoiceGnaDocId", mapp);
 			responseDTO = createServiceResponse(responseObjectsMap);
 		} else {
 			responseDTO = createServiceResponseError(responseObjectsMap,
@@ -237,7 +239,7 @@ public class RCostInvoiceGnaController extends BaseController{
 	
 	@GetMapping("/getSectionNameFromTDSMaster")
 	public ResponseEntity<ResponseDTO> getSectionNameFromTDSMaster(@RequestParam Long orgId,
-			@RequestParam String section) {
+			@RequestParam String tds) {
 		String methodName = "getSectionNameFromTDSMaster()";
 		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
 		String errorMsg = null;
@@ -245,7 +247,7 @@ public class RCostInvoiceGnaController extends BaseController{
 		ResponseDTO responseDTO = null;
 		List<Map<String, Object>> tdsMasterVO = new ArrayList<>();
 		try {
-			tdsMasterVO = rCostInvoiceGnaService.getSectionNameFromTDSMaster(orgId, section);
+			tdsMasterVO = rCostInvoiceGnaService.getSectionNameFromTDSMaster(orgId, tds);
 		} catch (Exception e) {
 			errorMsg = e.getMessage();
 			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
@@ -292,7 +294,7 @@ public class RCostInvoiceGnaController extends BaseController{
 	
 	@GetMapping("/getStateFromPartyMaster")
 	public ResponseEntity<ResponseDTO> getStateFromPartyMaster(@RequestParam Long orgId,String partyCode) {
-		String methodName = "getChargeLedgerFromGroup()";
+		String methodName = "getStateFromPartyMaster()";
 		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
 		String errorMsg = null;
 		Map<String, Object> responseObjectsMap = new HashMap<>();
@@ -312,6 +314,34 @@ public class RCostInvoiceGnaController extends BaseController{
 			responseDTO = createServiceResponse(responseObjectsMap);
 		} else {
 			responseDTO = createServiceResponseError(responseObjectsMap, "StateDetails Failed to retrieve ChargeLedger ", errorMsg);
+		}
+
+		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+		return ResponseEntity.ok().body(responseDTO);
+	}
+	
+	@GetMapping("/getCityFromPartyMaster")
+	public ResponseEntity<ResponseDTO> getCityFromPartyMaster(@RequestParam Long orgId,String partyCode,String state) {
+		String methodName = "getCityFromPartyMaster()";
+		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+		String errorMsg = null;
+		Map<String, Object> responseObjectsMap = new HashMap<>();
+		ResponseDTO responseDTO = null;
+		List<Map<String, Object>> mapp = new ArrayList<>();
+
+		try {
+			mapp = rCostInvoiceGnaService.getCityFromPartyMaster(orgId,partyCode,state);
+		} catch (Exception e) {
+			errorMsg = e.getMessage();
+			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+		}
+
+		if (StringUtils.isBlank(errorMsg)) {
+			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "cityDetails  retrieved successfully");
+			responseObjectsMap.put("partyMasterVO", mapp);
+			responseDTO = createServiceResponse(responseObjectsMap);
+		} else {
+			responseDTO = createServiceResponseError(responseObjectsMap, "cityDetails Failed to retrieve ChargeLedger ", errorMsg);
 		}
 
 		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);

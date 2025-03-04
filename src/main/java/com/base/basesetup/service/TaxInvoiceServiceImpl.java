@@ -2,6 +2,7 @@ package com.base.basesetup.service;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -108,6 +109,17 @@ public class TaxInvoiceServiceImpl implements TaxInvoiceService {
 		if (ObjectUtils.isNotEmpty(taxInvoiceDTO.getId())) {
 			taxInvoiceVO = taxInvoiceRepo.findById(taxInvoiceDTO.getId())
 					.orElseThrow(() -> new ApplicationException("Tax Invoice not found"));
+			
+			if (!taxInvoiceVO.getVId().equals(taxInvoiceDTO.getVId())) {
+				if (taxInvoiceRepo.existsByvIdAndOrgId(taxInvoiceDTO.getVId(),
+						taxInvoiceDTO.getOrgId())) {
+			
+					String errorMessage = String.format("This VId: %s already exists for this organization.",
+							taxInvoiceDTO.getVId());
+					throw new ApplicationException(errorMessage);
+				}
+				taxInvoiceVO.setVId(taxInvoiceDTO.getVId());
+				}
 
 			taxInvoiceVO.setModifiedBy(taxInvoiceDTO.getCreatedBy());
 			createUpdateTaxInvoiceVOByTaxInvoiceDTO(taxInvoiceDTO, taxInvoiceVO);
@@ -124,6 +136,14 @@ public class TaxInvoiceServiceImpl implements TaxInvoiceService {
 							taxInvoiceDTO.getFinYear(), taxInvoiceDTO.getBranchCode(), screenCode);
 			documentTypeMappingDetailsVO.setLastno(documentTypeMappingDetailsVO.getLastno() + 1);
 			documentTypeMappingDetailsRepo.save(documentTypeMappingDetailsVO);
+			
+			if (taxInvoiceRepo.existsByvIdAndOrgId(taxInvoiceDTO.getVId(),
+					taxInvoiceDTO.getOrgId())) {
+		
+				String errorMessage = String.format("This VId: %s already exists for this organization.",
+						taxInvoiceDTO.getVId());
+				throw new ApplicationException(errorMessage);
+			}
 
 			taxInvoiceVO.setCreatedBy(taxInvoiceDTO.getCreatedBy());
 			taxInvoiceVO.setModifiedBy(taxInvoiceDTO.getCreatedBy());
@@ -171,6 +191,11 @@ public class TaxInvoiceServiceImpl implements TaxInvoiceService {
 		taxInvoiceVO.setPartyId(taxInvoiceDTO.getPartyId());
 		taxInvoiceVO.setJobOrderNo(taxInvoiceDTO.getJobOrderNo());
 		taxInvoiceVO.setPartyId(taxInvoiceDTO.getPartyId());
+		taxInvoiceVO.setRemarks(taxInvoiceDTO.getRemarks());
+		taxInvoiceVO.setVId(taxInvoiceDTO.getVId());
+		taxInvoiceVO.setVDate(taxInvoiceDTO.getVDate());
+
+
 
 		if (ObjectUtils.isNotEmpty(taxInvoiceVO.getId())) {
 			List<TaxInvoiceDetailsVO> taxInvoiceDetailsVO1 = taxInvoiceDetailsRepo.findByTaxInvoiceVO(taxInvoiceVO);
@@ -631,6 +656,13 @@ public class TaxInvoiceServiceImpl implements TaxInvoiceService {
 
 	        taxInvoiceVO.setInvoiceNo(savedAccountsVO.getDocId());
 	        taxInvoiceVO.setInvoiceDate(savedAccountsVO.getDocDate());
+			
+			LocalDate invoiceNo = savedAccountsVO.getDocDate();
+			int creditDays = taxInvoiceVO.getCreditDays();
+			LocalDate dueDate = invoiceNo.plusDays(creditDays);
+			// Save dueDate in your entity
+			savedAccountsVO.setDueDate(dueDate);
+			taxInvoiceVO.setDueDate(dueDate);
 	        taxInvoiceVO.setApproveStatus(action);
 	        taxInvoiceVO.setApproveBy(actionBy);
 	        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy hh:mm:ss a");
@@ -698,5 +730,22 @@ public class TaxInvoiceServiceImpl implements TaxInvoiceService {
 		return List1;
 	}
 
+	
+	@Override
+	public List<Map<String, Object>> getJobCardForTaxInvoice(Long orgId,String partyCode) {
+		Set<Object[]> chType = taxInvoiceRepo.getJobCardForTaxInvoice(orgId,partyCode);
+		return getJobCard(chType);
+	}
+
+	private List<Map<String, Object>> getJobCard(Set<Object[]> chType) {
+		List<Map<String, Object>> List1 = new ArrayList<>();
+		for (Object[] ch : chType) {
+			Map<String, Object> map = new HashMap<>();
+			map.put("jobCard", ch[0].toString());
+			List1.add(map);
+		}
+		return List1;
+
+	}
 
 }

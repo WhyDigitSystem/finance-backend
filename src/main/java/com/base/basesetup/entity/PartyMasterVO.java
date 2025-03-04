@@ -98,7 +98,7 @@ public class PartyMasterVO {
     @Column(name = "currency", length = 10)
     private String currency;
 
-    @Column(name = "panname", length = 50)
+    @Column(name = "panname", length = 150)
     private String panName;
 
     @Column(name = "airwaybillno", length = 30)

@@ -465,6 +465,33 @@ public class TaxInvoiceController extends BaseController {
 		return ResponseEntity.ok().body(responseDTO);
 	}
 
-	
+	@GetMapping("/getJobCardForTaxInvoice")
+	public ResponseEntity<ResponseDTO> getJobCardForTaxInvoice(@RequestParam Long orgId,@RequestParam String partyCode) {
+		String methodName = "getJobCardForTaxInvoice()";
+		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+		String errorMsg = null;
+		Map<String, Object> responseObjectsMap = new HashMap<>();
+		ResponseDTO responseDTO = null;
+		List<Map<String, Object>> mapp = new ArrayList<>();
+
+		try {
+			mapp = taxInvoiceService.getJobCardForTaxInvoice(orgId,partyCode);
+		} catch (Exception e) {
+			errorMsg = e.getMessage();
+			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+		}
+
+		if (StringUtils.isBlank(errorMsg)) {
+			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "JobCard retrieved successfully");
+			responseObjectsMap.put("taxInvoiceVO", mapp);
+			responseDTO = createServiceResponse(responseObjectsMap);
+		} else {
+			responseDTO = createServiceResponseError(responseObjectsMap, "Failed to retrieve JobCard", errorMsg);
+		}
+
+		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+		return ResponseEntity.ok().body(responseDTO);
+	}
+
 
 }
