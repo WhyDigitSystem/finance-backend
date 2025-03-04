@@ -447,32 +447,44 @@ public class UrCostInvoiceGnaServiceImpl implements UrCostInvoiceGnaService {
 		    accountDetails.setSubLedgerCode(accountName.equals("ACCOUNTS PAYABLE") ? urCostInvoiceGnaVO.getSupplierCode() : "None");
 		    accountDetails.setACategory(groupLedgerVO != null ? groupLedgerVO.getCategory() : "Unknown");
 
-		    // Handle debit/credit based on GST type
-		    if ("INTRA".equalsIgnoreCase(gstType)) {
-		        if (accountName.contains("OUTPUT")) {
-		            accountDetails.setNDebitAmount(BigDecimal.ZERO);
-		            accountDetails.setDebitAmount(BigDecimal.ZERO);
-		            accountDetails.setNCreditAmount(amount);
-		            accountDetails.setCreditAmount(amount);
-		        } else {
-		            accountDetails.setNDebitAmount(amount);
-		            accountDetails.setDebitAmount(amount);
-		            accountDetails.setNCreditAmount(BigDecimal.ZERO);
-		            accountDetails.setCreditAmount(BigDecimal.ZERO);
+		    // Handle debit/credit based on GST type and ledger
+		    try {
+		        if ("INTRA".equalsIgnoreCase(gstType)) {
+		            if (accountName.contains("OUTPUT")) {
+		                accountDetails.setNDebitAmount(BigDecimal.ZERO);
+		                accountDetails.setDebitAmount(BigDecimal.ZERO);
+		                accountDetails.setNCreditAmount(amount);
+		                accountDetails.setCreditAmount(amount);
+		            } else {
+		                accountDetails.setNDebitAmount(amount);
+		                accountDetails.setDebitAmount(amount);
+		                accountDetails.setNCreditAmount(BigDecimal.ZERO);
+		                accountDetails.setCreditAmount(BigDecimal.ZERO);
+		            }
+		        } else if ("INTER".equalsIgnoreCase(gstType)) {
+		            if (accountName.contains("INPUT")) {
+		                accountDetails.setNDebitAmount(BigDecimal.ZERO);
+		                accountDetails.setDebitAmount(BigDecimal.ZERO);
+		                accountDetails.setNCreditAmount(amount);
+		                accountDetails.setCreditAmount(amount);
+		            } else {
+		                accountDetails.setNDebitAmount(BigDecimal.ZERO);
+		                accountDetails.setDebitAmount(BigDecimal.ZERO);
+		                accountDetails.setNCreditAmount(amount);
+		                accountDetails.setCreditAmount(amount);
+		            }
 		        }
-		    } else if ("INTER".equalsIgnoreCase(gstType)) {
-		        if (accountName.contains("INPUT")) {
-		            accountDetails.setNDebitAmount(amount);
-		            accountDetails.setDebitAmount(amount);
-		            accountDetails.setNCreditAmount(BigDecimal.ZERO);
-		            accountDetails.setCreditAmount(BigDecimal.ZERO);
-		        } else {
-		            accountDetails.setNDebitAmount(BigDecimal.ZERO);
-		            accountDetails.setDebitAmount(BigDecimal.ZERO);
-		            accountDetails.setNCreditAmount(amount);
-		            accountDetails.setCreditAmount(amount);
-		        }
+		    } catch (Exception e) {
+		        System.err.println("Error handling GST logic for account: " + accountName + " - " + e.getMessage());
 		    }
+
+		    // Map amounts to Excel structure fields
+		    accountDetails.setBDebitAmount(accountDetails.getDebitAmount());
+//		    accountDetails.setBCrAmount(accountDetails.getCreditAmount());
+//		    accountDetails.setBArapAmount(accountDetails.getArapAmount());
+		    accountDetails.setACurrency(urCostInvoiceGnaVO.getCurrency());
+		    accountDetails.setAExRate(urCostInvoiceGnaVO.getExRate());
+		    accountDetails.setGstflag(accountName.contains("GST") ? 6 : 0);
 
 		    // Set ARAP flags and amounts
 		    accountDetails.setArapFlag(accountName.equals("ACCOUNTS PAYABLE"));
@@ -488,11 +500,6 @@ public class UrCostInvoiceGnaServiceImpl implements UrCostInvoiceGnaService {
 		AccountsVO savedAccountsVO = accountsRepo.save(accountsVO);
 		urCostInvoiceGnaVO.setPurVoucherNo(savedAccountsVO.getDocId());
 		urCostInvoiceGnaVO.setPurVoucherDate(savedAccountsVO.getDocDate());
-
-		System.out.println("Accounts details saved successfully with Doc ID: " + savedAccountsVO.getDocId());
-
-
-		// This matches the format in your Excel, let me know if any tweaks are needed! 🚀
 
 		    
 	}

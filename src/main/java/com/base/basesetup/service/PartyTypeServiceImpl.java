@@ -570,7 +570,7 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 
 	private PartyMasterVO getpartyMasterVOFromVendorDTO(PartyMasterVO partyMasterVO, @Valid VendorDTO vendorDTO) {
 
-		partyMasterVO.setPartyName(vendorDTO.getVendorName());
+		partyMasterVO.setPartyName(vendorDTO.getVendorName().toUpperCase());
 		partyMasterVO.setGstIn(vendorDTO.getGstIn());
 		partyMasterVO.setPanNo(vendorDTO.getPanNo());
 		partyMasterVO.setOrgId(vendorDTO.getOrgId());
