@@ -25,11 +25,15 @@ public class UrCostInvoiceGnaDTO {
 	private BigDecimal exRate;
 	private String supplierGstIn;
 	private String supplierGstInCode;
+	private String state;
 	private String remarks;
 	private String address;
 	private String otherInfo;
 	private String shipperRefNo;
 	private String gstType;
+	private String vId;
+	private LocalDate vDate;
+
 
 	private Long orgId;
 	private String createdBy;

@@ -29,6 +29,9 @@ public class RCostInvoiceGnaDTO {
 	private String address;
 	private String remarks;
 	private String gstType;
+	private String vId;
+	private LocalDate vDate;
+
 	
 	//Default fields
 	private Long orgId;

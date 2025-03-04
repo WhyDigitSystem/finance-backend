@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import com.base.basesetup.entity.GroupLedgerVO;
 import com.base.basesetup.entity.PartyMasterVO;
 import com.base.basesetup.entity.UrCostInvoiceGnaVO;
 
@@ -32,8 +33,9 @@ public interface UrCostInvoiceGnaRepo extends JpaRepository<UrCostInvoiceGnaVO, 
 			+ "ORDER BY b.statecode, b.state, a.gstin, c.city, address")
 	Set<Object[]> getVendorAddressFromPartyMaster(Long orgId, String supplierCode);
 
-	@Query(nativeQuery = true, value = "select currency,buyingexrate,sellingexrate from vw_exrates where orgid=?1 order by currency")
-	Set<Object[]> getCurrencyAndExrateFromParty(Long orgId);
+	@Query(nativeQuery = true, value = "select a.currency,a.buyingexrate,a.sellingexrate from vw_exrates a, partymaster a1,partycurrencymapping b where\r\n"
+			+ "           a1.orgid=?1  and a1.partymasterid=b.partymasterid and a.orgid=a1.orgid and a1.partycode=?2  order by a.currency")
+	Set<Object[]> getCurrencyAndExrateFromParty(Long orgId, String supplierCode);
 
 	@Query(nativeQuery = true, value = "select accountgroupname from groupledger where orgid=?1 and category in ('OTHERS','TAX') and active = true  order by accountgroupname")
 	Set<Object[]> getChargeLedgerFromGroup(Long orgId);
@@ -49,8 +51,14 @@ public interface UrCostInvoiceGnaRepo extends JpaRepository<UrCostInvoiceGnaVO, 
 			+ " gstpercentage IN(?3) group by  accountgroupname,gstpercentage,currency order by gstpercentage desc")
 	Set<Object[]> findIntraDetailsForUrCostInvoiceGnaPosting(Long orgId, String gtsType, Double gstPercent);
 
-	UrCostInvoiceGnaVO findByOrgIdAndIdAndDocId(Long orgId, Long id, String docId);
+	@Query(nativeQuery = true, value = "select  accountgroupname from groupledger where orgid=?1 and gsttaxflag!='NA' and category='TAX' and gsttaxflag IN ('INPUT TAX') and gsttype=?2")
+	Set<Object[]> findAccountsInputPostinInvoiceGnaPosting(Long orgId, String gtsType);
+
+	@Query(nativeQuery = true, value = "select  accountgroupname from groupledger where orgid=?1 and gsttaxflag!='NA' and category='TAX' and gsttaxflag IN ('OUTPUT TAX') and gsttype=?2")
+	Set<Object[]> findAccountsOutputPostinInvoiceGnaPosting(Long orgId, String gtsType);
 	
-//	UrCostInvoiceGnaVO findByOrgIdAndIdAndDocId(Long orgId, Long id, String docId);
+	@Query(nativeQuery = true, value = "select * from groupledger where orgid=?1 and gsttaxflag!='NA' and category='TAX' and gsttaxflag='OUTPUT TAX' and gsttype=?2 and gstpercentage=?3  order by gstpercentage desc")
+	List<GroupLedgerVO> getUrChargeLedgerDetails(Long orgId, String gstType, Double key);
+
 
 }

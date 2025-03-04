@@ -33,6 +33,8 @@ public class TdsUrCostInvoiceGnaVO {
 	private Long id;
 	@Column(name = "tdswithholding", length = 10)
 	private String tdsWithHolding;
+	@Column(name = "accountname")
+	private String accountName;
 	@Column(name = "tdswithholdingper", precision = 10, scale = 2)
 	private BigDecimal tdsWithHoldingPer;
 	@Column(name = "section", length = 255)

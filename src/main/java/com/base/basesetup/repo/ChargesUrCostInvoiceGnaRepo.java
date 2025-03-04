@@ -13,4 +13,11 @@ public interface ChargesUrCostInvoiceGnaRepo extends JpaRepository<ChargesUrCost
 
 	List<ChargesUrCostInvoiceGnaVO> findByUrCostInvoiceGnaVO(UrCostInvoiceGnaVO urCostInvoiceGnaVO);
 
+//	List<ChargesUrCostInvoiceGnaVO> findByChargeLedgerAndInvoiceId(String accountsDocId, Long id);
+//
+//	ChargesUrCostInvoiceGnaVO findByInputAmount(Long id);
+//
+//	ChargesUrCostInvoiceGnaVO findByOutputAmount(Long id);
+
+
 }

@@ -1943,7 +1943,7 @@ public class MasterServiceImpl implements MasterService {
 	private void getPartyMasterVOFromPartyMasterDTO(@Valid PartyMasterDTO partyMasterDTO, PartyMasterVO partyMasterVO) {
 		partyMasterVO.setPartyType(partyMasterDTO.getPartyType());
 		partyMasterVO.setCustomerType(partyMasterDTO.getCustomerType());
-		partyMasterVO.setPartyName(partyMasterDTO.getPartyName());
+		partyMasterVO.setPartyName(partyMasterDTO.getPartyName().toUpperCase());
 		partyMasterVO.setGstPartyName(partyMasterDTO.getGstPartyName());
 		partyMasterVO.setCompany(partyMasterDTO.getCompany());
 		partyMasterVO.setAgentName(partyMasterDTO.getAgentName());

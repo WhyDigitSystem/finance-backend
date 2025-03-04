@@ -68,6 +68,8 @@ public class UrCostInvoiceGnaVO {
 	private String supplierGstIn;
 	@Column(name = "suppliergstincode")
 	private String supplierGstInCode;
+	@Column(name = "state")
+	private String state;
 	@Column(name = "remarks")
 	private String remarks;
 	@Column(name = "address")
@@ -78,6 +80,10 @@ public class UrCostInvoiceGnaVO {
 	private String shipperRefNo;
 	@Column(name = "gsttype", length = 15)
 	private String gstType;
+	@Column(name = "vid", length = 50)
+	private String vId;
+	@Column(name = "vdate")
+	private LocalDate vDate;
 
 	// default fields
 	@Column(name = "orgid", length = 15)
