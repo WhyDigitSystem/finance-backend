@@ -108,6 +108,10 @@ public class RCostInvoiceGnaVO {
 	private String screenCode = "RCI";
 	@Column(name = "screenname", length = 25)
 	private String screenName = "REGISTER COSTINVOICE GNA";
+	@Column(name = "vid", length = 50)
+	private String vId;
+	@Column(name = "vdate")
+	private LocalDate vDate;
 
 //	SUMMARY
 	@Column(name = "actbillamtbc", precision = 10, scale = 2)

@@ -30,6 +30,9 @@ public class UrCostInvoiceGnaDTO {
 	private String otherInfo;
 	private String shipperRefNo;
 	private String gstType;
+	private String vId;
+	private LocalDate vDate;
+
 
 	private Long orgId;
 	private String createdBy;

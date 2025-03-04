@@ -13,5 +13,6 @@ public class TdsUrCostInvoiceGnaDTO {
 	private String tdsWithHolding;
 	private BigDecimal tdsWithHoldingPer;
 	private String section;
+	private String accountName;
 
 }

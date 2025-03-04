@@ -22,10 +22,10 @@ public interface RCostInvoiceGnaRepo extends JpaRepository<RCostInvoiceGnaVO, Lo
 	@Query(nativeQuery = true, value = "select concat(prefixfield,lpad(lastno,5,0)) AS docid from documenttypemappingdetails where orgid=?1 and finyear=?2 and branchcode=?3 and screencode=?4")
 	String getRCostInvoiceGnaDocId(Long orgId, String finYear, String branchCode, String screenCode);
 
-	@Query(nativeQuery = true, value = "SELECT * FROM finance.partymaster WHERE partytype = ?1 and gstregistered='YES'  AND active = 1")
-	List<PartyMasterVO> getPartyDetailsForRCostInvoice(String partyType);
+//	@Query(nativeQuery = true, value = "SELECT * FROM finance.partymaster WHERE partytype = ?1 and gstregistered='YES'  AND active = 1")
+//	List<PartyMasterVO> getPartyDetailsForRCostInvoice(String partyType);
 
-	@Query(value = "select a from PartyMasterVO a where a.orgId=?1 and a.partyType=?2 and a.active=true")
+	@Query(value = "select a from PartyMasterVO a where a.orgId=?1 and a.partyType=?2 and a.active=true and a.gstRegistered='YES'")
 	List<PartyMasterVO> getAllVendorFromPartyMaster(Long orgId, String partyType);
 	
 	@Query(nativeQuery = true,value = "select accountgroupname from groupledger where orgid=?1 and category in ('OTHERS','TAX') and active = 1  order by accountgroupname")
