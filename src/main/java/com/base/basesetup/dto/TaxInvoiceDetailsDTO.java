@@ -20,7 +20,7 @@ public class TaxInvoiceDetailsDTO {
 	private String ledger;
 	private String chargeName;
 	private String taxable;
-	private String desc;
+	private String description;
 	private int qty;
 	private BigDecimal rate;
 	private String currency;

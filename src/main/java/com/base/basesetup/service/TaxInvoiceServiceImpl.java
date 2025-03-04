@@ -219,7 +219,7 @@ public class TaxInvoiceServiceImpl implements TaxInvoiceService {
 			taxInvoiceDetailsVO.setChargeName(taxInvoiceDetailsDTO.getChargeName());
 			taxInvoiceDetailsVO.setTaxable(taxInvoiceDetailsDTO.getTaxable());
 			taxInvoiceDetailsVO.setQty(taxInvoiceDetailsDTO.getQty());
-			taxInvoiceDetailsVO.setDesc(taxInvoiceDetailsDTO.getDesc());
+			taxInvoiceDetailsVO.setDescription(taxInvoiceDetailsDTO.getDescription());
 			taxInvoiceDetailsVO.setRate(taxInvoiceDetailsDTO.getRate());
 			taxInvoiceDetailsVO.setCurrency(taxInvoiceDetailsDTO.getCurrency());
 			taxInvoiceDetailsVO.setExRate(taxInvoiceDetailsDTO.getExRate());

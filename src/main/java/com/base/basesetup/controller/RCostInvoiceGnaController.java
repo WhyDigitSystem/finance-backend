@@ -347,6 +347,28 @@ public class RCostInvoiceGnaController extends BaseController{
 		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
 		return ResponseEntity.ok().body(responseDTO);
 	}
+	
+	@PutMapping("/approveRCostInvoiceGna")
+	public ResponseEntity<ResponseDTO> approveRCostInvoiceGna(@RequestParam Long orgId, @RequestParam Long id,
+			@RequestParam String docId, @RequestParam String action, @RequestParam String actionBy) {
+		String methodName = "approveRCostInvoiceGna()";
+		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+		String errorMsg = null;
+		Map<String, Object> responseObjectsMap = new HashMap<>();
+		ResponseDTO responseDTO = null;
+		try {
+			RCostInvoiceGnaVO rCostInvoiceGnaVO = rCostInvoiceGnaService.approveRCostInvoiceGna(orgId, id, docId, action, actionBy);
+			responseObjectsMap.put("rCostInvoiceGnaVO", rCostInvoiceGnaVO);
+			responseDTO = createServiceResponse(responseObjectsMap);
+		} catch (Exception e) {
+			errorMsg = e.getMessage();
+			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+			responseDTO = createServiceResponseError(responseObjectsMap, errorMsg, errorMsg);
+		}
+		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+		return ResponseEntity.ok().body(responseDTO);
+	}
+	
   
 
 }
