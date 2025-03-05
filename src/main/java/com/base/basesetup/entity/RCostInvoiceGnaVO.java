@@ -132,7 +132,24 @@ public class RCostInvoiceGnaVO {
 	private BigDecimal sumLcAmt;
 	@Column(name = "sumbillamt", precision = 10, scale = 2)
 	private BigDecimal sumBillAmt;
-
+	@Column(name = "totaltdsamt", precision = 10, scale = 2)
+	private BigDecimal totalTdsAmt;
+	@Column(name = "mode", length = 10)
+	private String mode;
+	@Column(name = "addresstype")
+	private String addressType;
+	@Column(name = "state")
+	private String state;
+	
+	//APPROVED
+	@Column(name = "approvestatus", length = 20)
+	private String approveStatus;
+	@Column(name = "approveby", length = 20)
+	private String approveBy;
+	@DateTimeFormat(pattern = "dd-MM-yyyy hh:mm:ss a")
+	@Column(name = "approveon")
+	private String approveOn;
+	
 	@OneToMany(mappedBy = "rCostInvoiceGnaVO", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	@JsonManagedReference
 	private List<ChargeRCostInvoiceGnaVO> chargeRCostInvoiceGnaVO;

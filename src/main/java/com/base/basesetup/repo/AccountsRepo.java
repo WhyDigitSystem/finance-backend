@@ -24,5 +24,9 @@ public interface AccountsRepo extends JpaRepository<AccountsVO, Long> {
 	String geturCostInvoiceGnaDocId(Long orgId, String finYear, String branchCode, String screenCode,
 			String accountsScreenCode);
 
+	@Query(nativeQuery = true, value = "select concat(prefixfield,lpad(lastno,5,0)) AS docid from multipledocidgendetails where orgid=?1  and finyear=?2  and branchcode=?3 and sourcescreencode=?4 and screencode=?5 ")
+	String getRCostInvoiceGnaDocId(Long orgId, String finYear, String branchCode, String sourceScreenCode,
+			String screenCode);
+
 
 }

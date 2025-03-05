@@ -31,4 +31,7 @@ public interface UrCostInvoiceGnaService {
 	List<Map<String, Object>> getVendorAddressFromPartyMaster(Long orgId, String supplierCode);
 
 	List<Map<String, Object>> getSectionNameFromMaster(Long orgId, String section);
+
+	UrCostInvoiceGnaVO approveUrCostInvoiceGnaVO(Long orgId, Long id, String docId, String action, String actionBy)
+			throws ApplicationException;
 }

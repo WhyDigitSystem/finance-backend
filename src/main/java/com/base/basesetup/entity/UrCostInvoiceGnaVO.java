@@ -16,6 +16,8 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import org.springframework.format.annotation.DateTimeFormat;
+
 import com.base.basesetup.dto.CreatedUpdatedDate;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
@@ -84,6 +86,8 @@ public class UrCostInvoiceGnaVO {
 	private String vId;
 	@Column(name = "vdate")
 	private LocalDate vDate;
+	@Column(name = "addresstype")
+	private String addressType;
 
 	// default fields
 	@Column(name = "orgid", length = 15)
@@ -104,6 +108,10 @@ public class UrCostInvoiceGnaVO {
 	private String branchCode;
 	@Column(name = "finyear", length = 10)
 	private String finYear;
+	@Column(name = "status")
+	private String status;
+	@Column(name = "mode", length = 10)
+	private String mode;
 	@Column(name = "screencode", length = 10)
 	private String screenCode = "URCI";
 	@Column(name = "screenname", length = 25)
@@ -124,14 +132,14 @@ public class UrCostInvoiceGnaVO {
 	private BigDecimal output;
 	
 
-////	APPROVED
-//	@Column(name = "approvestatus", length = 20)
-//	private String approveStatus;
-//	@Column(name = "approveby", length = 20)
-//	private String approveBy;
-//	@DateTimeFormat(pattern = "dd-MM-yyyy hh:mm:ss a")
-//	@Column(name = "approveon")
-//	private String approveOn;
+//	APPROVED
+	@Column(name = "approvestatus", length = 20)
+	private String approveStatus;
+	@Column(name = "approveby", length = 20)
+	private String approveBy;
+	@DateTimeFormat(pattern = "dd-MM-yyyy hh:mm:ss a")
+	@Column(name = "approveon")
+	private String approveOn;
 
 	@OneToMany(mappedBy = "urCostInvoiceGnaVO", cascade = CascadeType.ALL)
 	@JsonManagedReference

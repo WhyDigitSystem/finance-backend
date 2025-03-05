@@ -51,14 +51,17 @@ public interface UrCostInvoiceGnaRepo extends JpaRepository<UrCostInvoiceGnaVO, 
 			+ " gstpercentage IN(?3) group by  accountgroupname,gstpercentage,currency order by gstpercentage desc")
 	Set<Object[]> findIntraDetailsForUrCostInvoiceGnaPosting(Long orgId, String gtsType, Double gstPercent);
 
-	@Query(nativeQuery = true, value = "select  accountgroupname from groupledger where orgid=?1 and gsttaxflag!='NA' and category='TAX' and gsttaxflag IN ('INPUT TAX') and gsttype=?2")
-	Set<Object[]> findAccountsInputPostinInvoiceGnaPosting(Long orgId, String gtsType);
+	@Query(nativeQuery = true, value = "SELECT * FROM chargesurcostinvoicegna WHERE LOWER(chargeLedger) LIKE '%input%' AND  urcostinvoicegnaid =?1")
+	Set<Object[]> findAccountsInputPostinInvoiceGnaPosting(Long id);
 
-	@Query(nativeQuery = true, value = "select  accountgroupname from groupledger where orgid=?1 and gsttaxflag!='NA' and category='TAX' and gsttaxflag IN ('OUTPUT TAX') and gsttype=?2")
-	Set<Object[]> findAccountsOutputPostinInvoiceGnaPosting(Long orgId, String gtsType);
+	@Query(nativeQuery = true, value = "SELECT * FROM chargesurcostinvoicegna a, urcostinvoicegna a1 WHERE \r\n"
+			+ "LOWER(chargeLedger) LIKE '%output%' AND a.urcostinvoicegnaid =?1 and a1.orgid=?2 and a.urcostinvoicegnaid=a1.urcostinvoicegnaid")
+	Set<Object[]> findAccountsOutputPostinInvoiceGnaPosting(Long id);
 	
-	@Query(nativeQuery = true, value = "select * from groupledger where orgid=?1 and gsttaxflag!='NA' and category='TAX' and gsttaxflag='OUTPUT TAX' and gsttype=?2 and gstpercentage=?3  order by gstpercentage desc")
-	List<GroupLedgerVO> getUrChargeLedgerDetails(Long orgId, String gstType, Double key);
+	@Query(nativeQuery = true, value = "SELECT * FROM chargesurcostinvoicegna WHERE  urcostinvoicegnaid =?1 and chargeledger=?2")
+	Set<Object[]> getUrChargeLedgerDetails(Long id,String chargeLedger);
+
+	UrCostInvoiceGnaVO findByOrgIdAndIdAndDocId(Long orgId, Long id, String docId);
 
 
 }

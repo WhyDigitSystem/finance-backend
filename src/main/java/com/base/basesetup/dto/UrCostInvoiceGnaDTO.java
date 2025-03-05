@@ -4,6 +4,8 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
+import javax.persistence.Column;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -33,6 +35,8 @@ public class UrCostInvoiceGnaDTO {
 	private String gstType;
 	private String vId;
 	private LocalDate vDate;
+	private String addressType;
+	private String mode;
 
 
 	private Long orgId;

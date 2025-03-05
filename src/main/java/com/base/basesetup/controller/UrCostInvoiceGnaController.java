@@ -23,6 +23,7 @@ import com.base.basesetup.dto.ResponseDTO;
 import com.base.basesetup.dto.UrCostInvoiceGnaDTO;
 import com.base.basesetup.entity.PartyMasterVO;
 import com.base.basesetup.entity.PartyStateVO;
+import com.base.basesetup.entity.TaxInvoiceVO;
 import com.base.basesetup.entity.UrCostInvoiceGnaVO;
 import com.base.basesetup.service.UrCostInvoiceGnaService;
 
@@ -288,6 +289,28 @@ public class UrCostInvoiceGnaController extends BaseController {
 		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
 		return ResponseEntity.ok().body(responseDTO);
 
+	}
+	
+	
+	
+	@PutMapping("/approveUrCostInvoiceGnaVO")
+	public ResponseEntity<ResponseDTO> approveUrCostInvoiceGnaVO(@RequestParam Long orgId,@RequestParam Long id,@RequestParam String docId,@RequestParam String action,@RequestParam String actionBy) {
+		String methodName = "approveTaxInvoice()";
+		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+		String errorMsg = null;
+		Map<String, Object> responseObjectsMap = new HashMap<>();
+		ResponseDTO responseDTO = null;
+		try {
+			UrCostInvoiceGnaVO urCostInvoiceGnaVO = urCostInvoiceGnaService.approveUrCostInvoiceGnaVO(orgId, id, docId, action, actionBy);
+			responseObjectsMap.put("urCostInvoiceGnaVO", urCostInvoiceGnaVO);
+			responseDTO = createServiceResponse(responseObjectsMap);
+		} catch (Exception e) {
+			errorMsg = e.getMessage();
+			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+			responseDTO = createServiceResponseError(responseObjectsMap, errorMsg, errorMsg);
+		}
+		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+		return ResponseEntity.ok().body(responseDTO);
 	}
 	
 }
