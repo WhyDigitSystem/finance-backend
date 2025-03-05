@@ -6,6 +6,7 @@ import java.util.Map;
 import org.springframework.stereotype.Service;
 
 import com.base.basesetup.dto.RCostInvoiceGnaDTO;
+import com.base.basesetup.entity.CostInvoiceVO;
 import com.base.basesetup.entity.PartyMasterVO;
 import com.base.basesetup.entity.RCostInvoiceGnaVO;
 import com.base.basesetup.entity.TdsMasterVO;
@@ -35,6 +36,10 @@ public interface RCostInvoiceGnaService {
 	List<Map<String, Object>> getStateFromPartyMaster(Long orgId, String partyCode);
 
 	List<Map<String, Object>> getCityFromPartyMaster(Long orgId, String partyCode, String state);
+
+	RCostInvoiceGnaVO approveRCostInvoiceGna(Long orgId, Long id, String docId, String action, String actionBy)
+			throws ApplicationException;
+
 
 
 

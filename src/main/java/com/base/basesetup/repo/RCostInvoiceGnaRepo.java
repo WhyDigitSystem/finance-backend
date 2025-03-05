@@ -77,5 +77,7 @@ public interface RCostInvoiceGnaRepo extends JpaRepository<RCostInvoiceGnaVO, Lo
 	@Query(nativeQuery = true, value = "select accountgroupname,currency,gstpercentage from groupledger where orgid=?1 and gsttaxflag!='NA' and category='TAX' and gsttaxflag='INPUT TAX' and gsttype=?2 and gstpercentage=?3  order by gstpercentage desc")
 	Set<Object[]> findIntraDetailsForrCostInvoiceGnaPosting(Long orgId, String gstType, Double gstPercent);
 
+	RCostInvoiceGnaVO findByOrgIdAndIdAndDocId(Long orgId, Long id, String docId);
+
 }
 	

@@ -45,6 +45,8 @@ public class TaxInvoiceDetailsVO {
 	private String chargeName;
 	@Column(name = "taxable",length = 10)
 	private String taxable;
+	@Column(name = "description",length = 255)
+	private String description;
 	@Column(name = "qty")
 	private int qty;
 	
