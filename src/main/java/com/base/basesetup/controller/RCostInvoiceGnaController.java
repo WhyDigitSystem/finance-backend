@@ -321,7 +321,7 @@ public class RCostInvoiceGnaController extends BaseController{
 	}
 	
 	@GetMapping("/getCityFromPartyMaster")
-	public ResponseEntity<ResponseDTO> getCityFromPartyMaster(@RequestParam Long orgId,String partyCode,String state) {
+	public ResponseEntity<ResponseDTO> getCityFromPartyMaster(@RequestParam Long orgId,@RequestParam  String partyCode,@RequestParam String state,@RequestParam String addressType) {
 		String methodName = "getCityFromPartyMaster()";
 		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
 		String errorMsg = null;
@@ -330,7 +330,7 @@ public class RCostInvoiceGnaController extends BaseController{
 		List<Map<String, Object>> mapp = new ArrayList<>();
 
 		try {
-			mapp = rCostInvoiceGnaService.getCityFromPartyMaster(orgId,partyCode,state);
+			mapp = rCostInvoiceGnaService.getCityFromPartyMaster(orgId,partyCode,state,addressType);
 		} catch (Exception e) {
 			errorMsg = e.getMessage();
 			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
@@ -347,6 +347,36 @@ public class RCostInvoiceGnaController extends BaseController{
 		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
 		return ResponseEntity.ok().body(responseDTO);
 	}
+
+	@GetMapping("/findByAddressTypeFromPartyAddress")
+	public ResponseEntity<ResponseDTO> findByAddressTypeFromPartyAddress(@RequestParam Long orgId,@RequestParam  String state,@RequestParam String partyCode) {
+		String methodName = "findByAddressTypeFromPartyAddress()";
+		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+		String errorMsg = null;
+		Map<String, Object> responseObjectsMap = new HashMap<>();
+		ResponseDTO responseDTO = null;
+		List<Map<String, Object>> mapp = new ArrayList<>();
+
+		try {
+			mapp = rCostInvoiceGnaService.findByAddressTypeFromPartyAddress(orgId,state,partyCode);
+		} catch (Exception e) {
+			errorMsg = e.getMessage();
+			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+		}
+
+		if (StringUtils.isBlank(errorMsg)) {
+			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "AddressType  retrieved successfully");
+			responseObjectsMap.put("partyMasterVO", mapp);
+			responseDTO = createServiceResponse(responseObjectsMap);
+		} else {
+			responseDTO = createServiceResponseError(responseObjectsMap, "AddressType Failed to retrieve ChargeLedger ", errorMsg);
+		}
+
+		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+		return ResponseEntity.ok().body(responseDTO);
+	}
+	
+	
 	
 	@PutMapping("/approveRCostInvoiceGna")
 	public ResponseEntity<ResponseDTO> approveRCostInvoiceGna(@RequestParam Long orgId, @RequestParam Long id,

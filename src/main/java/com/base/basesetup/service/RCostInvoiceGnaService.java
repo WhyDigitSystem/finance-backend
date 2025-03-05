@@ -35,7 +35,9 @@ public interface RCostInvoiceGnaService {
 
 	List<Map<String, Object>> getStateFromPartyMaster(Long orgId, String partyCode);
 
-	List<Map<String, Object>> getCityFromPartyMaster(Long orgId, String partyCode, String state);
+	List<Map<String, Object>> getCityFromPartyMaster(Long orgId, String partyCode, String state,String addressType);
+	
+	List<Map<String, Object>> findByAddressTypeFromPartyAddress(Long orgId, String state, String partyCode);
 
 	RCostInvoiceGnaVO approveRCostInvoiceGna(Long orgId, Long id, String docId, String action, String actionBy)
 			throws ApplicationException;

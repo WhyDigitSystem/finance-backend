@@ -288,6 +288,8 @@ public class RCostInvoiceGnaServiceImpl implements RCostInvoiceGnaService {
 		rCostInvoiceGnaVO.setVId(rCostInvoiceGnaDTO.getVId());
 		rCostInvoiceGnaVO.setVDate(rCostInvoiceGnaDTO.getVDate());
 		rCostInvoiceGnaVO.setMode(rCostInvoiceGnaDTO.getMode());
+		rCostInvoiceGnaVO.setAddressType(rCostInvoiceGnaDTO.getAddressType());
+		rCostInvoiceGnaVO.setState(rCostInvoiceGnaDTO.getState());
 
 		// Default fields
 		rCostInvoiceGnaVO.setOrgId(rCostInvoiceGnaDTO.getOrgId());
@@ -676,8 +678,8 @@ public class RCostInvoiceGnaServiceImpl implements RCostInvoiceGnaService {
 	}
 
 	@Override
-	public List<Map<String, Object>> getCityFromPartyMaster(Long orgId, String partyCode, String state) {
-		Set<Object[]> stateDetails = rCostInvoiceGnaRepo.getCitydetailsFromPartyMaster(orgId, partyCode,state);
+	public List<Map<String, Object>> getCityFromPartyMaster(Long orgId, String partyCode, String state,String addressType) {
+		Set<Object[]> stateDetails = rCostInvoiceGnaRepo.getCitydetailsFromPartyMaster(orgId, partyCode,state,addressType);
 		return getCityDetails(stateDetails);
 
 	}
@@ -688,8 +690,6 @@ public class RCostInvoiceGnaServiceImpl implements RCostInvoiceGnaService {
 			Map<String, Object> map = new HashMap<>();
 			map.put("city", ch[0] != null ? ch[0].toString() : "");
 			map.put("address", ch[1] != null ? ch[1].toString() : "");
-			map.put("id", ch[2] != null ? ch[2].toString() : "");
-
 			List1.add(map);
 		}
 		return List1;
@@ -861,4 +861,21 @@ public class RCostInvoiceGnaServiceImpl implements RCostInvoiceGnaService {
 		}
 	}
 
+
+	@Override
+	public List<Map<String, Object>> findByAddressTypeFromPartyAddress(Long orgId, String state, String partyCode) {
+		Set<Object[]> chCode = rCostInvoiceGnaRepo.findByAddressTypeFromPartyAddress( orgId, state, partyCode);
+		return findByAddressType(chCode);
+	}
+
+	private List<Map<String, Object>> findByAddressType(Set<Object[]> chCode) {
+		List<Map<String, Object>> List1 = new ArrayList<>();
+		for (Object[] ch : chCode) {
+			Map<String, Object> map = new HashMap<>();
+			map.put("addressType", ch[0] != null ? ch[0].toString() : "");
+			List1.add(map);
+		}
+		return List1;
+
+}
 }

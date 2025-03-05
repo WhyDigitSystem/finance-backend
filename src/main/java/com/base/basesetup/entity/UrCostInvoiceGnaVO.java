@@ -86,6 +86,8 @@ public class UrCostInvoiceGnaVO {
 	private String vId;
 	@Column(name = "vdate")
 	private LocalDate vDate;
+	@Column(name = "addresstype")
+	private String addressType;
 
 	// default fields
 	@Column(name = "orgid", length = 15)
@@ -108,6 +110,8 @@ public class UrCostInvoiceGnaVO {
 	private String finYear;
 	@Column(name = "status")
 	private String status;
+	@Column(name = "mode", length = 10)
+	private String mode;
 	@Column(name = "screencode", length = 10)
 	private String screenCode = "URCI";
 	@Column(name = "screenname", length = 25)
