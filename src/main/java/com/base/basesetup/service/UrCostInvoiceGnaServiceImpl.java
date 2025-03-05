@@ -747,43 +747,63 @@ public class UrCostInvoiceGnaServiceImpl implements UrCostInvoiceGnaService {
 				accountsDetailsVOs.add(accountsDetailsVO1);
 
 			}
+			
 
-			// Group and process GST-related ledgers
-			Map<String, BigDecimal> ledgerSumMap = new HashMap<>();
-			for (ChargesUrCostInvoiceGnaVO gstVO : urCostInvoiceGnaVO.getChargesUrCostInvoiceGnaVO()) {
-				String ledger = gstVO.getChargeLedger();
-				System.out.println(ledger);
-				BigDecimal lcAmount = gstVO.getLcAmount();
+			 Map<String, BigDecimal> ledgerSumMap = new HashMap<>();
+			    for (ChargesUrCostInvoiceGnaVO gstVO : urCostInvoiceGnaVO.getChargesUrCostInvoiceGnaVO()) {
+			        String ledger = gstVO.getChargeLedger();
+			        BigDecimal lcAmount = gstVO.getLcAmount();
 
-				ledgerSumMap.put(ledger, ledgerSumMap.getOrDefault(ledger, BigDecimal.ZERO).add(lcAmount));
-			}
+			        ledgerSumMap.put(ledger, ledgerSumMap.getOrDefault(ledger, BigDecimal.ZERO).add(lcAmount));
+			    }
 
-			// Add GST ledger entries
-			for (Map.Entry<String, BigDecimal> entry : ledgerSumMap.entrySet()) {
-				GroupLedgerVO groupLedgerVO = groupLedgerRepo.findByAccountGroupName(entry.getKey());
+			    for (Map.Entry<String, BigDecimal> entry : ledgerSumMap.entrySet()) {
+			        AccountsDetailsVO accountDetails = new AccountsDetailsVO();
+			        GroupLedgerVO groupLedgerVO = groupLedgerRepo.findByAccountGroupName(entry.getKey());
 
-				AccountsDetailsVO gstAccountDetailsVO = new AccountsDetailsVO();
-				gstAccountDetailsVO.setACategory(groupLedgerVO.getCategory());
-				gstAccountDetailsVO.setNDebitAmount(entry.getValue());
-				gstAccountDetailsVO.setDebitAmount(entry.getValue());
-				gstAccountDetailsVO.setNCreditAmount(BigDecimal.ZERO);
-				gstAccountDetailsVO.setCreditAmount(BigDecimal.ZERO);
-				gstAccountDetailsVO.setArapFlag(false);
-				gstAccountDetailsVO.setArapAmount(BigDecimal.ZERO);
-				gstAccountDetailsVO.setBDebitAmount(entry.getValue());
-				gstAccountDetailsVO.setBCrAmount(BigDecimal.ZERO);
-				gstAccountDetailsVO.setBArapAmount(BigDecimal.ZERO);
-				gstAccountDetailsVO.setAccountName(groupLedgerVO.getAccountGroupName());
-				gstAccountDetailsVO.setACurrency(urCostInvoiceGnaVO.getCurrency());
-				gstAccountDetailsVO.setAExRate(urCostInvoiceGnaVO.getExRate());
-				gstAccountDetailsVO.setSubledgerName("None");
-				gstAccountDetailsVO.setSubLedgerCode("None");
-				gstAccountDetailsVO.setNArapAmount(BigDecimal.ZERO);
-//				gstAccountDetailsVO.setTdsAmount(totaltdsAmount);
-				gstAccountDetailsVO.setGstflag(3);
-				gstAccountDetailsVO.setAccountsVO(accountsVO);
-				accountsDetailsVOs.add(gstAccountDetailsVO);
-			}
+			        String accountName = entry.getKey();
+			        BigDecimal amount = entry.getValue();
+			        String gstType = urCostInvoiceGnaVO.getGstType();
+
+			        accountDetails.setAccountName(accountName);
+			        accountDetails.setSubledgerName(accountName.equals("ACCOUNTS PAYABLE") ? urCostInvoiceGnaVO.getSupplierName() : "None");
+			        accountDetails.setSubLedgerCode(accountName.equals("ACCOUNTS PAYABLE") ? urCostInvoiceGnaVO.getSupplierCode() : "None");
+			        accountDetails.setACategory(groupLedgerVO != null ? groupLedgerVO.getCategory() : "Unknown");
+
+			        try {
+			            if ("INTRA".equalsIgnoreCase(gstType)) {
+			                if (accountName.contains("OUTPUT")) {
+			                    accountDetails.setNDebitAmount(BigDecimal.ZERO);
+			                    accountDetails.setDebitAmount(BigDecimal.ZERO);
+			                    accountDetails.setNCreditAmount(amount);
+			                    accountDetails.setCreditAmount(amount);
+			                } else if (accountName.contains("INPUT")) {
+			                    accountDetails.setNDebitAmount(amount);
+			                    accountDetails.setDebitAmount(amount);
+			                    accountDetails.setNCreditAmount(BigDecimal.ZERO);
+			                    accountDetails.setCreditAmount(BigDecimal.ZERO);
+			                }
+			            } else if ("INTER".equalsIgnoreCase(gstType)) {
+			                if (accountName.contains("INPUT")) {
+			                    accountDetails.setNDebitAmount(amount);
+			                    accountDetails.setDebitAmount(amount);
+			                    accountDetails.setNCreditAmount(BigDecimal.ZERO);
+			                    accountDetails.setCreditAmount(BigDecimal.ZERO);
+			                } else if (accountName.contains("OUTPUT")) {
+			                    accountDetails.setNDebitAmount(BigDecimal.ZERO);
+			                    accountDetails.setDebitAmount(BigDecimal.ZERO);
+			                    accountDetails.setNCreditAmount(amount);
+			                    accountDetails.setCreditAmount(amount);
+			                }
+			            } else {
+			                System.err.println("Invalid GST Type: " + gstType);
+			            }
+			        } catch (Exception e) {
+			            System.err.println("Error handling GST logic for account: " + accountName + " - " + e.getMessage());
+			        }
+
+			        accountsDetailsVOs.add(accountDetails);
+			    }
 			accountsVO.setAccountsDetailsVO(accountsDetailsVOs);
 
 			// Save AccountsVO and update TaxInvoiceVO

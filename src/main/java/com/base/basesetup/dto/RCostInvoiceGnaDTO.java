@@ -4,6 +4,8 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
+import javax.persistence.Column;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -14,6 +16,7 @@ import lombok.NoArgsConstructor;
 public class RCostInvoiceGnaDTO {
 	
 	private Long id;
+	private String mode;
 	private String partyType;
 	private String partyCode;
 	private String supplierBillNo;

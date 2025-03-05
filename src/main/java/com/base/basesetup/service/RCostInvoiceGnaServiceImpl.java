@@ -287,6 +287,7 @@ public class RCostInvoiceGnaServiceImpl implements RCostInvoiceGnaService {
 		rCostInvoiceGnaVO.setGstType(rCostInvoiceGnaDTO.getGstType());
 		rCostInvoiceGnaVO.setVId(rCostInvoiceGnaDTO.getVId());
 		rCostInvoiceGnaVO.setVDate(rCostInvoiceGnaDTO.getVDate());
+		rCostInvoiceGnaVO.setMode(rCostInvoiceGnaDTO.getMode());
 
 		// Default fields
 		rCostInvoiceGnaVO.setOrgId(rCostInvoiceGnaDTO.getOrgId());
