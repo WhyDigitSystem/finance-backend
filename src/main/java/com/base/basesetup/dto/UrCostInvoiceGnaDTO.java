@@ -33,6 +33,7 @@ public class UrCostInvoiceGnaDTO {
 	private String gstType;
 	private String vId;
 	private LocalDate vDate;
+	private String status;
 
 
 	private Long orgId;

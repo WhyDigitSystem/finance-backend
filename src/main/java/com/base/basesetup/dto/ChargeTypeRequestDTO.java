@@ -18,6 +18,7 @@ public class ChargeTypeRequestDTO {
 	private String salesAccount;
 	private String purchaseAccount;
 	private String taxable;
+	private String product;
 	private int taxablePercentage;
 	private String govtSac;
 	private String excempted;
