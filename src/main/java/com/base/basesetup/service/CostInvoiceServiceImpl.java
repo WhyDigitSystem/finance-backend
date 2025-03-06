@@ -271,6 +271,7 @@ public class CostInvoiceServiceImpl implements CostInvoiceService {
 			chargerCostInvoiceVO.setGovChargeCode(chargerCostInvoiceDTO.getGovChargeCode());
 			chargerCostInvoiceVO.setExempted(chargerCostInvoiceDTO.getExempted());
 			chargerCostInvoiceVO.setTaxable(chargerCostInvoiceDTO.getTaxable());
+			chargerCostInvoiceVO.setDescription(chargerCostInvoiceDTO.getDescription());
 			chargerCostInvoiceVO.setGSTPercent(chargerCostInvoiceDTO.getGstPercent());
 			chargerCostInvoiceVO.setLedger(chargerCostInvoiceDTO.getLedger());
 

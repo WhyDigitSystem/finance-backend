@@ -24,6 +24,7 @@ public class ChargerCostInvoiceDTO {
 	private String gst;
 	private BigDecimal rate;
 	private int qty;
+	private String description;
 	private Float gstPercent;
 	private String ledger;
 	private String govChargeCode;
