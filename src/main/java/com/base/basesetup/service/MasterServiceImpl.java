@@ -752,24 +752,15 @@ public class MasterServiceImpl implements MasterService {
 			if (tdsMasterRepo.existsBySectionNameAndOrgId(tdsMasterDTO.getSectionName(), tdsMasterDTO.getOrgId())) {
 				throw new ApplicationException("The given section name already exists.");
 			}
-			if (tdsMasterRepo.existsBySectionAndOrgId(tdsMasterDTO.getSection(), tdsMasterDTO.getOrgId())) {
-				throw new ApplicationException("The given Section already exists.");
-			}
 			tdsMasterVO.setUpdatedBy(tdsMasterDTO.getCreatedBy());
 			tdsMasterVO.setCreatedBy(tdsMasterDTO.getCreatedBy());
 		}
 
 		if (isUpdate) {
 			TdsMasterVO tdsMaster = tdsMasterRepo.findById(tdsMasterDTO.getId()).orElse(null);
-			if (!tdsMaster.getSection().equalsIgnoreCase(tdsMasterDTO.getSection())) {
-				if (tdsMasterRepo.existsBySectionAndOrgIdAndId(tdsMasterDTO.getSection(), tdsMasterDTO.getOrgId(),
-						tdsMasterDTO.getId())) {
-					throw new ApplicationException("The given section already exists.");
-				}
-			}
 			if (!tdsMaster.getSectionName().equals(tdsMasterDTO.getSectionName())) {
-				if (tdsMasterRepo.existsBySectionNameAndOrgIdAndId(tdsMasterDTO.getSectionName(),
-						tdsMasterDTO.getOrgId(), tdsMasterDTO.getId())) {
+				if (tdsMasterRepo.existsBySectionNameAndOrgId(tdsMasterDTO.getSectionName(),
+						tdsMasterDTO.getOrgId())) {
 					throw new ApplicationException("The given Section name already exists.");
 				}
 			}
