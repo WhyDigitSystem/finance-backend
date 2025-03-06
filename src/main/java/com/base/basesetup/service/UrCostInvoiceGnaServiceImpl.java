@@ -751,44 +751,69 @@ public class UrCostInvoiceGnaServiceImpl implements UrCostInvoiceGnaService {
 
 			}
 			
+			Map<String, BigDecimal> ledgerSumMap = new HashMap<>();
 
-			Map<String, BigDecimal> ledgerSumMap = urCostInvoiceGnaVO.getChargesUrCostInvoiceGnaVO().stream()
-		            .collect(Collectors.toMap(
-		                    ChargesUrCostInvoiceGnaVO::getChargeLedger,
-		                    ChargesUrCostInvoiceGnaVO::getLcAmount,
-		                    BigDecimal::add
-		            ));
-		    
-		    ledgerSumMap.forEach((accountName, amount) -> {
-		    	LOGGER.info("Processing account: {} with amount: {}", accountName, amount);
-		        
-		        AccountsDetailsVO accountDetails = new AccountsDetailsVO();
-		        GroupLedgerVO groupLedgerVO = groupLedgerRepo.findByAccountGroupName(accountName);
-		        
-		        if (groupLedgerVO == null) {
-		        	LOGGER.warn("GroupLedger not found for account: {}", accountName);
-		        }
-		        
-		        accountDetails.setAccountName(accountName);
-		        accountDetails.setSubledgerName(accountName.equalsIgnoreCase("ACCOUNTS PAYABLE") ? urCostInvoiceGnaVO.getSupplierName() : "None");
-		        accountDetails.setSubLedgerCode(accountName.equalsIgnoreCase("ACCOUNTS PAYABLE") ? urCostInvoiceGnaVO.getSupplierCode() : "None");
-		        accountDetails.setACategory(groupLedgerVO != null ? groupLedgerVO.getCategory() : "Unknown");
-		        
-		        try {
-		            setDebitCreditAmounts(accountDetails, accountName, amount, urCostInvoiceGnaVO.getGstType());
-		        } catch (Exception e) {
-		        	LOGGER.error("Error handling GST logic for account: {} - {}", accountName, e.getMessage(), e);
-		        }
-		        
-		        accountsDetailsVOs.add(accountDetails);
-		    });
+			// Summarize ledger amounts
+			for (ChargesUrCostInvoiceGnaVO gstVO : urCostInvoiceGnaVO.getChargesUrCostInvoiceGnaVO()) {
+			    ledgerSumMap.merge(gstVO.getChargeLedger(), gstVO.getLcAmount(), BigDecimal::add);
+			}
 
+			for (Map.Entry<String, BigDecimal> entry : ledgerSumMap.entrySet()) {
+			    AccountsDetailsVO accountDetails = new AccountsDetailsVO();
+			    GroupLedgerVO groupLedgerVO = groupLedgerRepo.findByAccountGroupName(entry.getKey());
+
+			    String accountName = entry.getKey();
+			    BigDecimal amount = entry.getValue();
+			    String gstType = urCostInvoiceGnaVO.getGstType();
+			    
+			    accountDetails.setAccountName(accountName);
+			    accountDetails.setSubledgerName(accountName.equals("ACCOUNTS PAYABLE") ? urCostInvoiceGnaVO.getSupplierName() : "None");
+			    accountDetails.setSubLedgerCode(accountName.equals("ACCOUNTS PAYABLE") ? urCostInvoiceGnaVO.getSupplierCode() : "None");
+			    accountDetails.setACategory(groupLedgerVO != null ? groupLedgerVO.getCategory() : "Unknown");
+
+			    // Handle debit/credit based on GST type
+			    if ("INTRA".equalsIgnoreCase(gstType)) {
+			        if (accountName.contains("OUTPUT")) {
+			            accountDetails.setNDebitAmount(BigDecimal.ZERO);
+			            accountDetails.setDebitAmount(BigDecimal.ZERO);
+			            accountDetails.setNCreditAmount(amount);
+			            accountDetails.setCreditAmount(amount);
+			        } else {
+			            accountDetails.setNDebitAmount(amount);
+			            accountDetails.setDebitAmount(amount);
+			            accountDetails.setNCreditAmount(BigDecimal.ZERO);
+			            accountDetails.setCreditAmount(BigDecimal.ZERO);
+			        }
+			    } else if ("INTER".equalsIgnoreCase(gstType)) {
+			        if (accountName.contains("INPUT")) {
+			            accountDetails.setNDebitAmount(amount);
+			            accountDetails.setDebitAmount(amount); // Fix: Save debit amount for INPUT GST
+			            accountDetails.setNCreditAmount(BigDecimal.ZERO);
+			            accountDetails.setCreditAmount(BigDecimal.ZERO);
+			        } else {
+			            accountDetails.setNDebitAmount(BigDecimal.ZERO);
+			            accountDetails.setDebitAmount(BigDecimal.ZERO);
+			            accountDetails.setNCreditAmount(amount);
+			            accountDetails.setCreditAmount(amount); // Fix: Save credit amount for OUTPUT GST
+			        }
+			    }
+
+			    // Set ARAP flags and amounts
+			    accountDetails.setArapFlag(accountName.equals("ACCOUNTS PAYABLE"));
+			    accountDetails.setArapAmount(accountName.equals("ACCOUNTS PAYABLE") ? amount : BigDecimal.ZERO);
+			    
+			    // Add account details to list
+			    accountDetails.setAccountsVO(accountsVO);
+			    accountsDetailsVOs.add(accountDetails);
+			}
+
+			// Save accounts and update voucher details
 			accountsVO.setAccountsDetailsVO(accountsDetailsVOs);
-
-			// Save AccountsVO and update TaxInvoiceVO
 			AccountsVO savedAccountsVO = accountsRepo.save(accountsVO);
 			urCostInvoiceGnaVO.setPurVoucherNo(savedAccountsVO.getDocId());
 			urCostInvoiceGnaVO.setPurVoucherDate(savedAccountsVO.getDocDate());
+
+			System.out.println("Accounts details saved successfully with Doc ID: " + savedAccountsVO.getDocId());
 
 			urCostInvoiceGnaVO.setApproveStatus(action);
 			urCostInvoiceGnaVO.setApproveBy(actionBy);
@@ -804,53 +829,4 @@ public class UrCostInvoiceGnaServiceImpl implements UrCostInvoiceGnaService {
 		}
 	}
 	
-	private void setDebitCreditAmounts(AccountsDetailsVO accountDetails, String accountName, BigDecimal amount, String gstType) {
-		LOGGER.debug("Setting debit/credit amounts for account: {}, GST Type: {}", accountName, gstType);
-	    
-	    switch (gstType.toUpperCase()) {
-	        case "INTRA":
-	            handleIntraGst(accountDetails, accountName, amount);
-	            break;
-	        case "INTER":
-	            handleInterGst(accountDetails, accountName, amount);
-	            break;
-	        default:
-	        	LOGGER.warn("Invalid GST Type: {} for account: {}", gstType, accountName);
-	            break;
-	    }
-	}
-
-	private void handleIntraGst(AccountsDetailsVO accountDetails, String accountName, BigDecimal amount) {
-		LOGGER.debug("Handling INTRA GST for account: {} with amount: {}", accountName, amount);
-	    if (accountName.contains("OUTPUT")) {
-	        setCreditAmounts(accountDetails, amount);
-	    } else if (accountName.contains("INPUT")) {
-	        setDebitAmounts(accountDetails, amount);
-	    }
-	}
-
-	private void handleInterGst(AccountsDetailsVO accountDetails, String accountName, BigDecimal amount) {
-		LOGGER.debug("Handling INTER GST for account: {} with amount: {}", accountName, amount);
-	    if (accountName.contains("INPUT")) {
-	        setDebitAmounts(accountDetails, amount);
-	    } else if (accountName.contains("OUTPUT")) {
-	        setCreditAmounts(accountDetails, amount);
-	    }
-	}
-
-	private void setDebitAmounts(AccountsDetailsVO accountDetails, BigDecimal amount) {
-		LOGGER.debug("Setting debit amounts: {}", amount);
-	    accountDetails.setNDebitAmount(amount);
-	    accountDetails.setDebitAmount(amount);
-	    accountDetails.setNCreditAmount(BigDecimal.ZERO);
-	    accountDetails.setCreditAmount(BigDecimal.ZERO);
-	}
-
-	private void setCreditAmounts(AccountsDetailsVO accountDetails, BigDecimal amount) {
-		LOGGER.debug("Setting credit amounts: {}", amount);
-	    accountDetails.setNDebitAmount(BigDecimal.ZERO);
-	    accountDetails.setDebitAmount(BigDecimal.ZERO);
-	    accountDetails.setNCreditAmount(amount);
-	    accountDetails.setCreditAmount(amount);
-	}
 }

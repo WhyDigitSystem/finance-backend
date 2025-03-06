@@ -1,5 +1,6 @@
 package com.base.basesetup.service;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -18,6 +19,7 @@ import org.springframework.context.ApplicationContextException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.base.basesetup.dto.BankDetailsDTO;
 import com.base.basesetup.dto.CityDTO;
 import com.base.basesetup.dto.CompanyDTO;
 import com.base.basesetup.dto.CountryDTO;
@@ -30,6 +32,9 @@ import com.base.basesetup.dto.RegionDTO;
 import com.base.basesetup.dto.Role;
 import com.base.basesetup.dto.ScreenNamesDTO;
 import com.base.basesetup.dto.StateDTO;
+import com.base.basesetup.dto.TdsUrCostInvoiceGnaDTO;
+import com.base.basesetup.entity.BankDetailsVO;
+import com.base.basesetup.entity.ChargesUrCostInvoiceGnaVO;
 import com.base.basesetup.entity.CityVO;
 import com.base.basesetup.entity.CompanyVO;
 import com.base.basesetup.entity.CountryVO;
@@ -41,8 +46,10 @@ import com.base.basesetup.entity.FinancialYearVO;
 import com.base.basesetup.entity.RegionVO;
 import com.base.basesetup.entity.ScreenNamesVO;
 import com.base.basesetup.entity.StateVO;
+import com.base.basesetup.entity.TdsUrCostInvoiceGnaVO;
 import com.base.basesetup.entity.UserVO;
 import com.base.basesetup.exception.ApplicationException;
+import com.base.basesetup.repo.BankDetailsRepo;
 import com.base.basesetup.repo.CityRepo;
 import com.base.basesetup.repo.CompanyRepo;
 import com.base.basesetup.repo.CountryRepo;
@@ -112,6 +119,9 @@ public class CommonMasterServiceImpl implements CommonMasterService {
 	
 	@Autowired
 	DesignationRepo designationRepo;
+	
+	@Autowired
+	BankDetailsRepo bankDetailsRepo;
 
 	// Company
 
@@ -232,6 +242,7 @@ public class CommonMasterServiceImpl implements CommonMasterService {
 		companyVO.setCancel(companyDTO.isCancel());
 		companyVO.setGst(companyDTO.getGst());
 		companyVO.setCeo(companyDTO.getCeo());
+				
 
 		try {
 			companyVO.setPassword(encoder.encode(CryptoUtils.getDecrypt(companyDTO.getPassword())));
@@ -278,6 +289,32 @@ public class CommonMasterServiceImpl implements CommonMasterService {
 		companyVO.setRole(companyDTO.getRole());
 		companyVO.setGst(companyDTO.getGst());
 		companyVO.setCeo(companyDTO.getCeo());
+		
+		if (ObjectUtils.isNotEmpty(companyDTO.getId())) {
+			List<BankDetailsVO> bankDetailsVO1 = bankDetailsRepo
+					.findByCompanyVO(companyVO);
+			bankDetailsRepo.deleteAll(bankDetailsVO1);		
+		}
+
+		List<BankDetailsVO> bankDetailsVOs = new ArrayList<>();
+		for (BankDetailsDTO bankDetailsDTO : companyDTO.getBankDetailsDTO()) {
+			BankDetailsVO bankDetailsVO = new BankDetailsVO();
+
+			bankDetailsVO.setBankName(bankDetailsDTO.getBankName());
+			bankDetailsVO.setAccountCode(bankDetailsDTO.getAccountCode());
+			bankDetailsVO.setBeneficiaryName(bankDetailsDTO.getBeneficiaryName());
+			bankDetailsVO.setBranch(bankDetailsDTO.getBranch());
+			
+			bankDetailsVO.setIfsc(bankDetailsDTO.getIfsc());
+			bankDetailsVO.setAccountNo(bankDetailsDTO.getAccountNo());
+			bankDetailsVO.setAccountType(bankDetailsDTO.getAccountType());
+			bankDetailsVO.setPrimaryAccount(bankDetailsDTO.isPrimaryAccount());
+
+			bankDetailsVO.setCompanyVO(companyVO);
+			bankDetailsVOs.add(bankDetailsVO);
+
+		}
+		companyVO.setBankDetailsVO(bankDetailsVOs);
 	}
 
 	@Override
