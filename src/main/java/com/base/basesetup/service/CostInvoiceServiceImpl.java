@@ -274,6 +274,7 @@ public class CostInvoiceServiceImpl implements CostInvoiceService {
 			chargerCostInvoiceVO.setDescription(chargerCostInvoiceDTO.getDescription());
 			chargerCostInvoiceVO.setGSTPercent(chargerCostInvoiceDTO.getGstPercent());
 			chargerCostInvoiceVO.setLedger(chargerCostInvoiceDTO.getLedger());
+			chargerCostInvoiceVO.setParty(chargerCostInvoiceDTO.getParty());
 
 //			FIELD DECLARATION
 			BigDecimal fcAmount = BigDecimal.ZERO;
@@ -614,6 +615,7 @@ public class CostInvoiceServiceImpl implements CostInvoiceService {
 		for (Object[] ch : getJob) {
 			Map<String, Object> map = new HashMap<>();
 			map.put("jobNo", ch[0] != null ? ch[0].toString() : ""); // Empty string if null
+			map.put("customerName", ch[1] != null ? ch[1].toString() : ""); 
 			List1.add(map);
 		}
 		return List1;

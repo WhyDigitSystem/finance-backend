@@ -47,6 +47,7 @@ public class IrnCreditNoteDTO {
 	private String shipperRefNo;
 	private String creditRemarks;
 	private String jobNo;
+	private LocalDate dueDate;
 
 
 	List<IrnCreditNoteDetailsDTO> irnCreditNoteDetailsDTO;

@@ -167,7 +167,7 @@ public class IrnCreditNoteServiceImpl implements IrnCreditNoteService {
 	    irnCreditNoteVO.setCreditRemarks(irnCreditNoteDTO.getCreditRemarks());
 	    irnCreditNoteVO.setOriginBillDate(irnCreditNoteDTO.getOriginBillDate());
 	    irnCreditNoteVO.setJobNo(irnCreditNoteDTO.getJobNo());
-
+	    irnCreditNoteVO.setDueDate(irnCreditNoteDTO.getDueDate());
 	    
 		if (ObjectUtils.isNotEmpty(irnCreditNoteVO.getId())) {
 			List<IrnCreditNoteDetailsVO> irnCreditNoteDetailsVO1 = irnCreditChargesRepo.findByIrnCreditNoteVO(irnCreditNoteVO);

@@ -1056,7 +1056,7 @@ public class CommonMasterController extends BaseController {
 		return ResponseEntity.ok().body(responseDTO);
 	}
 	
-	@GetMapping("getCompanyByOrgId")
+	@GetMapping("getBankDetailsByOrgId")
 	public ResponseEntity<ResponseDTO> getCompanyByOrgId(@RequestParam Long orgId) {
 		String methodName = "getCompanyByOrgId()";
 		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);

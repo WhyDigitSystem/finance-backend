@@ -75,6 +75,7 @@ public class ChargerCostInvoiceVO {
 	private String exempted;
 	@Column(name = "taxable", length = 10)
 	private String taxable;
+	private String party;
 
 	@ManyToOne
 	@JsonBackReference

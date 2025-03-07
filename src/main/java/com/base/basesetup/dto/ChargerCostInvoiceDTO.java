@@ -30,5 +30,6 @@ public class ChargerCostInvoiceDTO {
 	private String govChargeCode;
 	private String taxable;
 	private String exempted;
+	private String party;
 
 }
