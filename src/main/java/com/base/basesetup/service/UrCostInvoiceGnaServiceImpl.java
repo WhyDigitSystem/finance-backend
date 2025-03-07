@@ -785,17 +785,18 @@ public class UrCostInvoiceGnaServiceImpl implements UrCostInvoiceGnaService {
 			            accountDetails.setCreditAmount(BigDecimal.ZERO);
 			        }
 			    } else if ("INTER".equalsIgnoreCase(gstType)) {
-			        if (accountName.contains("INPUT")) {
-			            accountDetails.setNDebitAmount(amount);
-			            accountDetails.setDebitAmount(amount); // Fix: Save debit amount for INPUT GST
-			            accountDetails.setNCreditAmount(BigDecimal.ZERO);
-			            accountDetails.setCreditAmount(BigDecimal.ZERO);
-			        } else {
+			        if (accountName.contains("OUT PUT")) {   	
 			            accountDetails.setNDebitAmount(BigDecimal.ZERO);
-			            accountDetails.setDebitAmount(BigDecimal.ZERO);
+			            accountDetails.setDebitAmount(BigDecimal.ZERO); // Fix: Save debit amount for INPUT GST
 			            accountDetails.setNCreditAmount(amount);
-			            accountDetails.setCreditAmount(amount); // Fix: Save credit amount for OUTPUT GST
-			        }
+			            accountDetails.setCreditAmount(amount);
+			        } else {
+			            accountDetails.setNDebitAmount(amount);
+			            accountDetails.setDebitAmount(amount);
+			            accountDetails.setNCreditAmount(BigDecimal.ZERO);
+			            accountDetails.setCreditAmount(BigDecimal.ZERO); // Fix: Save credit amount for OUTPUT GST
+			        
+			    }
 			    }
 
 			    // Set ARAP flags and amounts
