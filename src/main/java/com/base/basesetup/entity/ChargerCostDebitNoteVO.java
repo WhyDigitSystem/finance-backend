@@ -72,6 +72,8 @@ public class ChargerCostDebitNoteVO {
 //	private String exempted;
 	@Column(name = "taxable", length = 10)
 	private String taxable;
+	@Column(name = "description")
+	private String description;
 
 	@ManyToOne
 	@JoinColumn(name = "costdebitnoteid")

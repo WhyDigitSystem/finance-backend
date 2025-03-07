@@ -198,6 +198,7 @@ public class CostDebitNoteServiceImpl implements CostDebitNoteService {
 			chargerCostDebitVO.setGovChargeCode(chargerCostDebitDTO.getGovChargeCode());
 //			chargerCostDebitVO.setExempted(chargerCostDebitDTO.getExempted());
 			chargerCostDebitVO.setTaxable(chargerCostDebitDTO.getTaxable());
+			chargerCostDebitVO.setDescription(chargerCostDebitDTO.getDescription());
 			chargerCostDebitVO.setGSTPercent(chargerCostDebitDTO.getGstPercent());
 
 //			FIELD DECLARATION

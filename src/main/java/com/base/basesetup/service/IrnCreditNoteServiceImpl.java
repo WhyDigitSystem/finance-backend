@@ -196,6 +196,7 @@ public class IrnCreditNoteServiceImpl implements IrnCreditNoteService {
 			irnCreditNoteDetailsVO.setExRate(irnCreditNoteDetailsDTO.getExRate());
 			irnCreditNoteDetailsVO.setExempted(irnCreditNoteDetailsDTO.getExempted());
 			irnCreditNoteDetailsVO.setSac(irnCreditNoteDetailsDTO.getSac());
+			irnCreditNoteDetailsVO.setDescription(irnCreditNoteDetailsDTO.getDescription());
 			irnCreditNoteDetailsVO.setGSTPercent(irnCreditNoteDetailsDTO.getGSTPercent());
 
 			BigDecimal fcAmount;
