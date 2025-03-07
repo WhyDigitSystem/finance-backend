@@ -1311,6 +1311,9 @@ public class CommonMasterServiceImpl implements CommonMasterService {
 			bankMap.put("accountCode", bank[1] != null ? bank[1].toString() : "");
 			bankMap.put("accountNo", bank[2] != null ? bank[2].toString() : "");
 			bankMap.put("ifsc", bank[3] != null ? bank[3].toString() : "");
+			bankMap.put("accountType", bank[4] != null ? bank[4].toString() : "");
+			bankMap.put("beneficiaryName", bank[5] != null ? bank[5].toString() : "");
+			bankMap.put("branch", bank[6] != null ? bank[6].toString() : "");
 
 			bankDetailsList.add(bankMap); // Add the Map to the list
 		}
