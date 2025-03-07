@@ -177,7 +177,7 @@ public class CostDebitNoteVO {
 
 	@OneToMany(mappedBy = "costDebitNoteVO", cascade = CascadeType.ALL)
 	@JsonManagedReference
-	List<ChargerCostDebitNoteVO> costDebitChargesVO;
+	List<ChargerCostDebitNoteVO> chargerCostDebitNoteVO;
 
 	@OneToMany(mappedBy = "costDebitNoteVO", cascade = CascadeType.ALL)
 	@JsonManagedReference
