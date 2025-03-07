@@ -33,5 +33,7 @@ public interface CurrencyRepo extends JpaRepository<CurrencyVO, Long> {
 
 	boolean existsByOrgIdAndCountryAndSubCurrencyIgnoreCase(Long orgId, String country, String subCurrency);
 
+	
+
 
 }

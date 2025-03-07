@@ -19,6 +19,7 @@ import com.base.basesetup.dto.FinancialYearDTO;
 import com.base.basesetup.dto.RegionDTO;
 import com.base.basesetup.dto.ScreenNamesDTO;
 import com.base.basesetup.dto.StateDTO;
+import com.base.basesetup.entity.BankDetailsVO;
 import com.base.basesetup.entity.CityVO;
 import com.base.basesetup.entity.CompanyVO;
 import com.base.basesetup.entity.CountryVO;
@@ -142,6 +143,8 @@ public interface CommonMasterService {
 	Optional<DesignationVO> getDesignationById(Long id);
 
 	List<DesignationVO> getDesignationByOrgId(Long orgId);
+
+	List<Map<String, Object>> getCompanyByOrgId(Long orgId);
 
 
 
