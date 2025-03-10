@@ -57,7 +57,7 @@ public class TaxInvoiceDTO {
 	
 	List<TaxInvoiceDetailsDTO> taxInvoiceDetailsDTO;
 
-	
+	List<TaxInvoiceAnnexureDTO> taxInvoiceAnnexureDTO;
 	
 	
 }

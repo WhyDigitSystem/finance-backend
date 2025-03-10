@@ -168,7 +168,8 @@ public class IrnCreditNoteServiceImpl implements IrnCreditNoteService {
 	    irnCreditNoteVO.setOriginBillDate(irnCreditNoteDTO.getOriginBillDate());
 	    irnCreditNoteVO.setJobNo(irnCreditNoteDTO.getJobNo());
 	    irnCreditNoteVO.setDueDate(irnCreditNoteDTO.getDueDate());
-	    
+	    irnCreditNoteVO.setVdate(irnCreditNoteDTO.getVdate());
+	    irnCreditNoteVO.setVid(irnCreditNoteDTO.getVid());    
 		if (ObjectUtils.isNotEmpty(irnCreditNoteVO.getId())) {
 			List<IrnCreditNoteDetailsVO> irnCreditNoteDetailsVO1 = irnCreditChargesRepo.findByIrnCreditNoteVO(irnCreditNoteVO);
 			irnCreditChargesRepo.deleteAll(irnCreditNoteDetailsVO1);
@@ -342,7 +343,7 @@ public class IrnCreditNoteServiceImpl implements IrnCreditNoteService {
 			irnCreditNoteVO.setTotalInvAmountLc(roundedTotalInvAmountLC);
 
 		} else {
-		    throw new IllegalArgumentException("INRCREDITNOTE " + roundedTotalInvAmountLC + " must be less than or equal to TAXINVOICE "+ totalInvAmountLc);
+		    throw new IllegalArgumentException("CREDIT NOTE " + roundedTotalInvAmountLC + " must be less than or equal to TAXINVOICE "+ totalInvAmountLc);
 		}
 
 		

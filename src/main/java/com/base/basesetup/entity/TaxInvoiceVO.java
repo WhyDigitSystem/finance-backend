@@ -176,6 +176,11 @@ public class TaxInvoiceVO {
 	@OneToMany(mappedBy = "taxInvoiceVO", cascade = CascadeType.ALL)
 	@JsonManagedReference
 	List<TaxInvoiceGstVO> taxInvoiceGstVO;
+	
+	@OneToMany(mappedBy = "taxInvoiceVO", cascade = CascadeType.ALL)
+	@JsonManagedReference
+	List<TaxInvoiceAnnexureVO> taxInvoiceAnnexureVO;
+	
 
 	@Embedded
 	@Builder.Default

@@ -48,6 +48,8 @@ public class IrnCreditNoteDTO {
 	private String creditRemarks;
 	private String jobNo;
 	private LocalDate dueDate;
+	private String vid;
+	private LocalDate vdate;
 
 
 	List<IrnCreditNoteDetailsDTO> irnCreditNoteDetailsDTO;

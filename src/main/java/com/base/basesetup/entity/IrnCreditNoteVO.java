@@ -149,6 +149,8 @@ public class IrnCreditNoteVO {
 	@Column(name = "jobno")
 	private String jobNo;
 	private LocalDate dueDate;
+	private String vid;
+	private LocalDate vdate;
 	
 	@OneToMany(mappedBy = "irnCreditNoteVO", cascade = CascadeType.ALL)
 	@JsonManagedReference

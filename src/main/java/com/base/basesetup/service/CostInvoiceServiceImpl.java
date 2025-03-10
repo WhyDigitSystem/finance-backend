@@ -231,6 +231,8 @@ public class CostInvoiceServiceImpl implements CostInvoiceService {
 		costInvoiceVO.setJobOrderNo(costInvoiceDTO.getJobOrderNo());
 		costInvoiceVO.setVId(costInvoiceDTO.getVId());
 		costInvoiceVO.setVDate(costInvoiceDTO.getVDate());
+		
+		
 
 
 		if (costInvoiceDTO.getId() != null) {
@@ -446,6 +448,7 @@ public class CostInvoiceServiceImpl implements CostInvoiceService {
 		costInvoiceVO.setRoundOff(roundOff);
 		costInvoiceVO.setGstInputLcAmt(taxAmount);
 		costInvoiceVO.setSumLcAmt(sumDebitAmount);
+
 		return costInvoiceVO;
 
 	}
@@ -721,6 +724,7 @@ public class CostInvoiceServiceImpl implements CostInvoiceService {
 			accountsVO.setFinYear(costInvoiceVO.getFinYear());
 			accountsVO.setBranch(costInvoiceVO.getBranch());
 			accountsVO.setBranchCode(costInvoiceVO.getBranchCode());
+			//accountsVO.setAmountInWords(costInvoiceVO.getAmountInWords());
 			accountsVO.setRefNo(costInvoiceVO.getDocId());
 			accountsVO.setRefDate(costInvoiceVO.getDocDate());
 			accountsVO.setCurrency(costInvoiceVO.getCurrency());
