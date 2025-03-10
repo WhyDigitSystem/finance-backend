@@ -151,6 +151,12 @@ public class IrnCreditNoteVO {
 	private LocalDate dueDate;
 	private String vid;
 	private LocalDate vdate;
+	@Column(name="billofentry")
+	private String billOfEntry;
+	@Column(name="billingremarks")
+	private String billingRemarks;
+	@Column(name="partyid")
+	private String partyId;
 	
 	@OneToMany(mappedBy = "irnCreditNoteVO", cascade = CascadeType.ALL)
 	@JsonManagedReference

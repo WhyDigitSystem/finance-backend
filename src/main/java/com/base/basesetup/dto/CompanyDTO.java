@@ -38,6 +38,8 @@ public class CompanyDTO {
 	private String gst;
 	private int role;
 	
+	private byte[] companyLogo;
+	
 	List<BankDetailsDTO>bankDetailsDTO;
 
 }

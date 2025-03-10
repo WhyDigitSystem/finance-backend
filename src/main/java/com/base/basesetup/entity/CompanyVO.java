@@ -9,6 +9,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Lob;
 import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
@@ -81,6 +82,11 @@ public class CompanyVO {
 	private int role;
 	private String ceo;
 	private String gst;
+	
+	
+	@Lob
+	@Column(name = "companylogo", columnDefinition = "LONGBLOB")
+	private byte[] companyLogo;
 	
 	@OneToMany(mappedBy = "companyVO", cascade = CascadeType.ALL)
 	@JsonManagedReference

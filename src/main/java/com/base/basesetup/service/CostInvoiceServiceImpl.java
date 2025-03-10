@@ -75,6 +75,9 @@ public class CostInvoiceServiceImpl implements CostInvoiceService {
 
 	@Autowired
 	GroupLedgerRepo groupLedgerRepo;
+	
+	@Autowired
+	AmountInWordsConverterService amountInWordsConverterService;
 
 	// costInvoice
 
@@ -448,6 +451,9 @@ public class CostInvoiceServiceImpl implements CostInvoiceService {
 		costInvoiceVO.setRoundOff(roundOff);
 		costInvoiceVO.setGstInputLcAmt(taxAmount);
 		costInvoiceVO.setSumLcAmt(sumDebitAmount);
+		
+		costInvoiceVO.setAmountInWords(
+				amountInWordsConverterService.convert(costInvoiceVO.getNetBillCurrAmt().longValue()));
 
 		return costInvoiceVO;
 
@@ -724,7 +730,7 @@ public class CostInvoiceServiceImpl implements CostInvoiceService {
 			accountsVO.setFinYear(costInvoiceVO.getFinYear());
 			accountsVO.setBranch(costInvoiceVO.getBranch());
 			accountsVO.setBranchCode(costInvoiceVO.getBranchCode());
-			//accountsVO.setAmountInWords(costInvoiceVO.getAmountInWords());
+			accountsVO.setAmountInWords(costInvoiceVO.getAmountInWords());
 			accountsVO.setRefNo(costInvoiceVO.getDocId());
 			accountsVO.setRefDate(costInvoiceVO.getDocDate());
 			accountsVO.setCurrency(costInvoiceVO.getCurrency());

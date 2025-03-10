@@ -50,6 +50,9 @@ public class IrnCreditNoteDTO {
 	private LocalDate dueDate;
 	private String vid;
 	private LocalDate vdate;
+    private String billOfEntry;
+	private String billingRemarks;
+	private String partyId;
 
 
 	List<IrnCreditNoteDetailsDTO> irnCreditNoteDetailsDTO;

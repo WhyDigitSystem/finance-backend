@@ -1,5 +1,6 @@
 package com.base.basesetup.service;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -18,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContextException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.base.basesetup.dto.BankDetailsDTO;
 import com.base.basesetup.dto.CityDTO;
@@ -1282,8 +1284,8 @@ public class CommonMasterServiceImpl implements CommonMasterService {
 		designationVO.setOrgId(designationDTO.getOrgId());
 
 	}
-
-	@Override
+ 
+	@Override     
 	public Optional<DesignationVO> getDesignationById(Long id) {
 		// TODO Auto-generated method stub
 		return designationRepo.findById(id);
@@ -1320,4 +1322,12 @@ public class CommonMasterServiceImpl implements CommonMasterService {
 		return bankDetailsList;
 	}
 
+	@Override
+	public CompanyVO uploadCompanyLogoInBloob(MultipartFile file, Long id) throws IOException {
+		CompanyVO companyVO = companyRepo.findById(id).get();
+		companyVO.setCompanyLogo(file.getBytes());
+		return companyRepo.save(companyVO);
+	}
+	
+	
 }

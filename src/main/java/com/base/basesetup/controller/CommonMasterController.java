@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.base.basesetup.common.CommonConstant;
 import com.base.basesetup.common.UserConstants;
@@ -644,6 +645,32 @@ public class CommonMasterController extends BaseController {
 		return ResponseEntity.ok().body(responseDTO);
 	}
 
+	@PostMapping("/uploadCompanyLogoInBloob")
+	public ResponseEntity<ResponseDTO> uploadCompanyLogoInBloob(@RequestParam("file") MultipartFile file,
+			@RequestParam Long id) {
+		String methodName = "uploadCompanyLogoInBloob()";
+		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+		String errorMsg = null;
+		Map<String, Object> responseObjectsMap = new HashMap<>();
+		ResponseDTO responseDTO = null;
+		CompanyVO companyVO = null;
+		try {
+			companyVO = commonMasterService.uploadCompanyLogoInBloob(file, id);
+		} catch (Exception e) {
+			errorMsg = e.getMessage();
+			LOGGER.error("Unable To Upload PartImage", methodName, errorMsg);
+		}
+		if (StringUtils.isBlank(errorMsg)) {
+			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "Company Logo Successfully Upload");
+			responseObjectsMap.put("companyVO", companyVO);
+			responseDTO = createServiceResponse(responseObjectsMap);
+		} else {
+			responseDTO = createServiceResponseError(responseObjectsMap, "Company Logo Upload Failed", errorMsg);
+		}
+		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+		return ResponseEntity.ok().body(responseDTO);
+	}
+	
 	// FINANCIAL YEAR
 
 	@PutMapping("/createUpdateFinYear")

@@ -153,6 +153,8 @@ public class CostInvoiceVO {
 	@DateTimeFormat(pattern = "dd-MM-yyyy hh:mm:ss a")
 	@Column(name = "approveon")
 	private String approveOn;
+	@Column(name="amountinwords")
+	private String amountInWords;
 
 	@OneToMany(mappedBy = "costInvoiceVO", cascade = CascadeType.ALL)
 	@JsonManagedReference

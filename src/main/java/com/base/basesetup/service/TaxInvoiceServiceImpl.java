@@ -390,8 +390,8 @@ public class TaxInvoiceServiceImpl implements TaxInvoiceService {
 		taxInvoiceVO.setAmountInWords(
 				amountInWordsConverterService.convert(taxInvoiceVO.getTotalInvAmountLc().longValue()));
 		taxInvoiceVO.setRoundOffAmountLc(roundOffAmountLC);
-
-		BigDecimal roundedTotalInvAmountBC = totalInvAmountBC.setScale(0, RoundingMode.HALF_UP);
+ 
+ 		BigDecimal roundedTotalInvAmountBC = totalInvAmountBC.setScale(0, RoundingMode.HALF_UP);
 		taxInvoiceVO.setTotalInvAmountBc(roundedTotalInvAmountBC);
 
 		taxInvoiceVO.setTaxInvoiceDetailsVO(taxInvoiceDetailsVOs);
