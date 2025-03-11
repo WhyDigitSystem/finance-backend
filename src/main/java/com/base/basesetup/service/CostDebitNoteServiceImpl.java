@@ -139,7 +139,7 @@ public class CostDebitNoteServiceImpl implements CostDebitNoteService {
 		costDebitNoteVO.setShipperRefNo(costDebitNoteDTO.getShipperRefNo());
 		costDebitNoteVO.setGstType(costDebitNoteDTO.getGstType());
 		costDebitNoteVO.setOrgId(costDebitNoteDTO.getOrgId());
-		System.out.println("Test    ....:" + costDebitNoteDTO.getOrgId());
+//		System.out.println("Test    ....:" + costDebitNoteDTO.getOrgId());
 		costDebitNoteVO.setCreatedBy(costDebitNoteDTO.getCreatedBy());
 		costDebitNoteVO.setCancelRemarks(costDebitNoteDTO.getCancelRemarks());
 		costDebitNoteVO.setBranch(costDebitNoteDTO.getBranch());
@@ -152,7 +152,7 @@ public class CostDebitNoteServiceImpl implements CostDebitNoteService {
 		costDebitNoteVO.setUtrRef(costDebitNoteDTO.getUtrRef());
 //		costDebitNoteVO.setCostType(costDebitNoteDTO.getCostType());
 		costDebitNoteVO.setOrginBill(costDebitNoteDTO.getOrginBill());
-		System.out.println("Test    ....:" + costDebitNoteDTO.getOrginBill());
+//		System.out.println("Test    ....:" + costDebitNoteDTO.getOrginBill());
 		costDebitNoteVO.setOrginBillDate(costDebitNoteDTO.getOriginBillDate());
 //		costDebitNoteVO.setApproved(costDebitNoteDTO.isApproved());
 		costDebitNoteVO.setMode(costDebitNoteDTO.getMode());
@@ -284,7 +284,7 @@ public class CostDebitNoteServiceImpl implements CostDebitNoteService {
 					igstSummaryVO.setCurrency(currency);
 					igstSummaryVO.setGSTPercent(gstPer);
 					igstSummaryVO.setLedger(ledger);
-					igstSummaryVO.setQty(Integer.valueOf(0));
+					igstSummaryVO.setQty(0);
 					igstSummaryVO.setRate(BigDecimal.ZERO);
 					igstSummaryVO.setExRate(BigDecimal.ZERO);
 					igstSummaryVO.setFcAmt(BigDecimal.ZERO);
@@ -635,7 +635,7 @@ public class CostDebitNoteServiceImpl implements CostDebitNoteService {
 			accountsDetailsVO.setAExRate(costDebitNoteVO.getExRate());
 			accountsDetailsVO.setSubledgerName(costDebitNoteVO.getSupplierName());
 			accountsDetailsVO.setSubLedgerCode(costDebitNoteVO.getSupplierCode());
-			accountsDetailsVO.setNArapAmount(costDebitNoteVO.getNetBillCurrAmt());
+			accountsDetailsVO.setNArapAmount(BigDecimal.ZERO);
 			accountsDetailsVO.setGstflag(6);
 			accountsDetailsVO.setAccountsVO(accountsVO);
 			accountsDetailsVOs.add(accountsDetailsVO);

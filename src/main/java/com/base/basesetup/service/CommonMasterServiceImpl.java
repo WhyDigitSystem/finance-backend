@@ -244,6 +244,7 @@ public class CommonMasterServiceImpl implements CommonMasterService {
 		companyVO.setCancel(companyDTO.isCancel());
 		companyVO.setGst(companyDTO.getGst());
 		companyVO.setCeo(companyDTO.getCeo());
+		companyVO.setTermsAndConditions(companyDTO.getTermsAndConditions());
 
 		try {
 			companyVO.setPassword(encoder.encode(CryptoUtils.getDecrypt(companyDTO.getPassword())));
@@ -290,6 +291,7 @@ public class CommonMasterServiceImpl implements CommonMasterService {
 		companyVO.setRole(companyDTO.getRole());
 		companyVO.setGst(companyDTO.getGst());
 		companyVO.setCeo(companyDTO.getCeo());
+		companyVO.setTermsAndConditions(companyDTO.getTermsAndConditions());
 
 		if (ObjectUtils.isNotEmpty(companyDTO.getId())) {
 			List<BankDetailsVO> bankDetailsVO1 = bankDetailsRepo.findByCompanyVO(companyVO);

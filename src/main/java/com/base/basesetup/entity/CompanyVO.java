@@ -82,6 +82,8 @@ public class CompanyVO {
 	private int role;
 	private String ceo;
 	private String gst;
+	@Column(name = "termsandconditions",length=10000)
+	private String termsAndConditions;
 	
 	
 	@Lob

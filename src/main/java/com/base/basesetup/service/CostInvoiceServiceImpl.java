@@ -32,6 +32,7 @@ import com.base.basesetup.entity.GroupLedgerVO;
 import com.base.basesetup.entity.MultipleDocIdGenerationDetailsVO;
 import com.base.basesetup.entity.PartyMasterVO;
 import com.base.basesetup.entity.TaxInvoiceGstVO;
+import com.base.basesetup.entity.TdsCostDebitNoteVO;
 import com.base.basesetup.entity.TdsCostInvoiceVO;
 import com.base.basesetup.exception.ApplicationException;
 import com.base.basesetup.repo.AccountsDetailsRepo;
@@ -356,14 +357,14 @@ public class CostInvoiceServiceImpl implements CostInvoiceService {
 					igstSummaryVO.setCurrency(currency);
 					igstSummaryVO.setGSTPercent(gstPer);
 					igstSummaryVO.setLedger(ledger);
-					igstSummaryVO.setQty(Integer.valueOf(1));
-					igstSummaryVO.setRate(BigDecimal.ONE);
-					igstSummaryVO.setExRate(BigDecimal.ONE);
-					igstSummaryVO.setFcAmt(BigDecimal.ONE);
+					igstSummaryVO.setQty(0);
+					igstSummaryVO.setRate(BigDecimal.ZERO);
+					igstSummaryVO.setExRate(BigDecimal.ZERO);
+					igstSummaryVO.setFcAmt(BigDecimal.ZERO);
 					igstSummaryVO.setLcAmt(igstLcAmount);
-					igstSummaryVO.setFcAmt(BigDecimal.ONE);
-					igstSummaryVO.setBillAmt(BigDecimal.ONE);
-					igstSummaryVO.setGstAmount(BigDecimal.ONE);
+					igstSummaryVO.setFcAmt(BigDecimal.ZERO);
+					igstSummaryVO.setBillAmt(BigDecimal.ZERO);
+					igstSummaryVO.setGstAmount(BigDecimal.ZERO);
 					igstSummaryVO.setCostInvoiceVO(costInvoiceVO);
 					chargerCostInvoiceVOs.add(igstSummaryVO);
 				}
@@ -394,13 +395,13 @@ public class CostInvoiceServiceImpl implements CostInvoiceService {
 					cgstSummaryVO.setGSTPercent(Double.parseDouble(entry1[1].toString()));
 					cgstSummaryVO.setCurrency(entry1[2].toString());
 					cgstSummaryVO.setLedger(entry1[0].toString());
-					cgstSummaryVO.setQty(1);
-					cgstSummaryVO.setRate(BigDecimal.ONE);
-					cgstSummaryVO.setExRate(BigDecimal.ONE);
-					cgstSummaryVO.setFcAmt(BigDecimal.ONE);
+					cgstSummaryVO.setQty(0);
+					cgstSummaryVO.setRate(BigDecimal.ZERO);
+					cgstSummaryVO.setExRate(BigDecimal.ZERO);
+					cgstSummaryVO.setFcAmt(BigDecimal.ZERO);
 					cgstSummaryVO.setLcAmt(cgstAmount);
-					cgstSummaryVO.setBillAmt(BigDecimal.ONE);
-					cgstSummaryVO.setGstAmount(BigDecimal.ONE);
+					cgstSummaryVO.setBillAmt(BigDecimal.ZERO);
+					cgstSummaryVO.setGstAmount(BigDecimal.ZERO);
 					cgstSummaryVO.setCostInvoiceVO(costInvoiceVO);
 					chargerCostInvoiceVOs.add(cgstSummaryVO);
 				}
@@ -737,7 +738,7 @@ public class CostInvoiceServiceImpl implements CostInvoiceService {
 			accountsVO.setExRate(costInvoiceVO.getExRate());
 
 			// Calculate total debit/credit amounts
-			BigDecimal totalDebitAmount = costInvoiceVO.getTotChargesLcAmt().add(costInvoiceVO.getGstInputLcAmt());// tax
+			BigDecimal totalDebitAmount = costInvoiceVO.getNetBillCurrAmt();// tax
 			accountsVO.setTotalDebitAmount(totalDebitAmount);
 			accountsVO.setTotalCreditAmount(totalDebitAmount);
 			accountsVO.setDueDate(costInvoiceVO.getDueDate());
@@ -760,21 +761,44 @@ public class CostInvoiceServiceImpl implements CostInvoiceService {
 			accountsDetailsVO.setACategory("PAYABLE A/C");
 			accountsDetailsVO.setAccountName("PAYABLE A/C");
 			accountsDetailsVO.setDebitAmount(BigDecimal.ZERO);
-			accountsDetailsVO.setNCreditAmount(costInvoiceVO.getSumLcAmt());
-			accountsDetailsVO.setCreditAmount(costInvoiceVO.getSumLcAmt());
+			accountsDetailsVO.setNCreditAmount(costInvoiceVO.getNetBillCurrAmt());
+			accountsDetailsVO.setCreditAmount(costInvoiceVO.getNetBillCurrAmt());
 			accountsDetailsVO.setArapFlag(true);
-			accountsDetailsVO.setArapAmount(costInvoiceVO.getSumLcAmt());
+			accountsDetailsVO.setArapAmount(costInvoiceVO.getNetBillCurrAmt());
 			accountsDetailsVO.setBDebitAmount(BigDecimal.ZERO);
-			accountsDetailsVO.setBCrAmount(costInvoiceVO.getSumLcAmt());
-			accountsDetailsVO.setBArapAmount(costInvoiceVO.getSumLcAmt());
+			accountsDetailsVO.setBCrAmount(BigDecimal.ZERO);
+			accountsDetailsVO.setBArapAmount(BigDecimal.ZERO);
 			accountsDetailsVO.setACurrency(costInvoiceVO.getCurrency());
 			accountsDetailsVO.setAExRate(costInvoiceVO.getExRate());
 			accountsDetailsVO.setSubledgerName(costInvoiceVO.getSupplierName());
 			accountsDetailsVO.setSubLedgerCode(costInvoiceVO.getSupplierCode());
-			accountsDetailsVO.setNArapAmount(costInvoiceVO.getSumLcAmt());
+			accountsDetailsVO.setNArapAmount(BigDecimal.ZERO);
 			accountsDetailsVO.setGstflag(6);
 			accountsDetailsVO.setAccountsVO(accountsVO);
 			accountsDetailsVOs.add(accountsDetailsVO);
+			
+			
+			for (TdsCostInvoiceVO tdsCostInvoiceVO : costInvoiceVO.getTdsCostInvoiceVO()) {
+				AccountsDetailsVO accountsDetailsVO1 = new AccountsDetailsVO();
+				accountsDetailsVO1.setNDebitAmount(BigDecimal.ZERO);
+				accountsDetailsVO1.setACategory(tdsCostInvoiceVO.getSection());
+				accountsDetailsVO1.setAccountName(tdsCostInvoiceVO.getSection());
+				accountsDetailsVO1.setDebitAmount(BigDecimal.ZERO);
+				accountsDetailsVO1.setNCreditAmount(tdsCostInvoiceVO.getTotTdsWhAmnt());
+				accountsDetailsVO1.setCreditAmount(tdsCostInvoiceVO.getTotTdsWhAmnt());
+				accountsDetailsVO1.setArapFlag(false);
+				accountsDetailsVO1.setArapAmount(BigDecimal.ZERO);
+				accountsDetailsVO1.setBDebitAmount(BigDecimal.ZERO);
+				accountsDetailsVO1.setBCrAmount(BigDecimal.ZERO);
+				accountsDetailsVO1.setBArapAmount(BigDecimal.ZERO);
+				accountsDetailsVO1.setSubledgerName("None");
+				accountsDetailsVO1.setSubLedgerCode("None");
+				accountsDetailsVO1.setNArapAmount(BigDecimal.ZERO);
+				accountsDetailsVO1.setGstflag(6);
+				accountsDetailsVO1.setAccountsVO(accountsVO);
+				accountsDetailsVOs.add(accountsDetailsVO1);
+
+			}
 
 			if (costInvoiceVO.getRoundOff() != 0) {
 				accountsDetailsVO.setNDebitAmount(BigDecimal.valueOf(costInvoiceVO.getRoundOff()));

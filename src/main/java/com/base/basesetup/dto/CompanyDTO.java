@@ -3,6 +3,8 @@ package com.base.basesetup.dto;
 
 import java.util.List;
 
+import javax.persistence.Column;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -37,6 +39,7 @@ public class CompanyDTO {
 	private String ceo;
 	private String gst;
 	private int role;
+	private String termsAndConditions;
 	
 	private byte[] companyLogo;
 	
