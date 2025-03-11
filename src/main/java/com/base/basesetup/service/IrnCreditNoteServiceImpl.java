@@ -15,25 +15,26 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.base.basesetup.dto.IrnCreditNoteAnnexureDTO;
 import com.base.basesetup.dto.IrnCreditNoteDTO;
 import com.base.basesetup.dto.IrnCreditNoteDetailsDTO;
 import com.base.basesetup.entity.AccountsDetailsVO;
 import com.base.basesetup.entity.AccountsVO;
-import com.base.basesetup.entity.CostInvoiceVO;
 import com.base.basesetup.entity.DocumentTypeMappingDetailsVO;
 import com.base.basesetup.entity.GroupLedgerVO;
+import com.base.basesetup.entity.IrnCreditNoteAnnexureVO;
 import com.base.basesetup.entity.IrnCreditNoteDetailsVO;
 import com.base.basesetup.entity.IrnCreditNoteGstVO;
 import com.base.basesetup.entity.IrnCreditNoteVO;
 import com.base.basesetup.entity.MultipleDocIdGenerationDetailsVO;
 import com.base.basesetup.entity.PartyMasterVO;
-import com.base.basesetup.entity.TaxInvoiceDetailsVO;
-import com.base.basesetup.entity.TaxInvoiceGstVO;
+import com.base.basesetup.entity.TaxInvoiceAnnexureVO;
 import com.base.basesetup.entity.TaxInvoiceVO;
 import com.base.basesetup.exception.ApplicationException;
 import com.base.basesetup.repo.AccountsRepo;
 import com.base.basesetup.repo.DocumentTypeMappingDetailsRepo;
 import com.base.basesetup.repo.GroupLedgerRepo;
+import com.base.basesetup.repo.IrnCreditNoteAnnexureRepo;
 import com.base.basesetup.repo.IrnCreditNoteDetailsRepo;
 import com.base.basesetup.repo.IrnCreditNoteGstRepo;
 import com.base.basesetup.repo.IrnCreditNoteRepo;
@@ -73,6 +74,9 @@ public class IrnCreditNoteServiceImpl implements IrnCreditNoteService {
 
 	@Autowired
 	DocumentTypeMappingDetailsRepo documentTypeMappingDetailsRepo;
+	
+	@Autowired
+	IrnCreditNoteAnnexureRepo irnCreditNoteAnnexureRepo;
 
 	@Override
 	public List<IrnCreditNoteVO> getAllIrnCreditByOrgId(Long orgId) {
@@ -173,10 +177,15 @@ public class IrnCreditNoteServiceImpl implements IrnCreditNoteService {
 	    irnCreditNoteVO.setBillOfEntry(irnCreditNoteDTO.getBillOfEntry());    
 	    irnCreditNoteVO.setBillingRemarks(irnCreditNoteDTO.getBillingRemarks());
 	    irnCreditNoteVO.setPartyId(irnCreditNoteDTO.getPartyId());
+	    
 		if (ObjectUtils.isNotEmpty(irnCreditNoteVO.getId())) {
 			List<IrnCreditNoteDetailsVO> irnCreditNoteDetailsVO1 = irnCreditChargesRepo.findByIrnCreditNoteVO(irnCreditNoteVO);
 			irnCreditChargesRepo.deleteAll(irnCreditNoteDetailsVO1);
+			
+			List<IrnCreditNoteAnnexureVO> annexureVOs = irnCreditNoteAnnexureRepo.findByIrnCreditNoteVO(irnCreditNoteVO);
+			irnCreditNoteAnnexureRepo.deleteAll(annexureVOs);
 		}
+		
 		BigDecimal totalChargeAmountLC = BigDecimal.ZERO;
 		BigDecimal totalChargeAmountBC = BigDecimal.ZERO;
 		BigDecimal totalTaxAmountLC = BigDecimal.ZERO;
@@ -247,6 +256,41 @@ public class IrnCreditNoteServiceImpl implements IrnCreditNoteService {
 			irnCreditNoteDetailsVO.setIrnCreditNoteVO(irnCreditNoteVO);
 			irnCreditNoteDetailsVOs.add(irnCreditNoteDetailsVO);
 		}
+		
+		List<IrnCreditNoteAnnexureVO> invoiceAnnexureVOs = new ArrayList<IrnCreditNoteAnnexureVO>();
+		
+		double subtotal=0.0;
+
+		for (IrnCreditNoteAnnexureDTO irnCreditNoteAnnexureDTO : irnCreditNoteDTO.getIrnCreditNoteAnnexureDTO()) {
+
+			IrnCreditNoteAnnexureVO irnCreditNoteAnnexureVO = new IrnCreditNoteAnnexureVO();
+
+			irnCreditNoteAnnexureVO.setTransDate(irnCreditNoteAnnexureDTO.getTransDate());
+			irnCreditNoteAnnexureVO.setTransNo(irnCreditNoteAnnexureDTO.getTransNo());
+			irnCreditNoteAnnexureVO.setKitId(irnCreditNoteAnnexureDTO.getKitId());
+			irnCreditNoteAnnexureVO.setDsec(irnCreditNoteAnnexureDTO.getDsec());
+			irnCreditNoteAnnexureVO.setSkuType(irnCreditNoteAnnexureDTO.getSkuType());
+			irnCreditNoteAnnexureVO.setQty(irnCreditNoteAnnexureDTO.getQty());
+			irnCreditNoteAnnexureVO.setRate(irnCreditNoteAnnexureDTO.getRate());
+			
+			double amt=irnCreditNoteAnnexureDTO.getQty() * irnCreditNoteAnnexureDTO.getRate();
+			
+			irnCreditNoteAnnexureVO.setAmount(amt);
+			
+			subtotal+=amt;
+			
+			irnCreditNoteAnnexureVO.setIrnCreditNoteVO(irnCreditNoteVO);
+
+			invoiceAnnexureVOs.add(irnCreditNoteAnnexureVO);
+
+		}
+		
+		for (IrnCreditNoteAnnexureVO annexureVO : invoiceAnnexureVOs) {
+		    annexureVO.setSubtotal(subtotal); // Ensure `setSubtotal` method exists in IrnCreditNoteAnnexureVO
+		}
+		
+		irnCreditNoteVO.setIrnCreditNoteAnnexureVO(invoiceAnnexureVOs);
+		
 		Map<Integer, BigDecimal> gstSumMap = new HashMap<>();
 		for (IrnCreditNoteDetailsVO detailsVO : irnCreditNoteDetailsVOs) {
 			int gst = detailsVO.getGSTPercent();

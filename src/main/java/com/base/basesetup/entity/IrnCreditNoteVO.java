@@ -166,6 +166,10 @@ public class IrnCreditNoteVO {
 	@OneToMany(mappedBy = "irnCreditNoteVO", cascade = CascadeType.ALL)
 	@JsonManagedReference
 	List<IrnCreditNoteGstVO> irnCreditNoteGstVO;
+	
+	@OneToMany(mappedBy = "irnCreditNoteVO", cascade = CascadeType.ALL)
+	@JsonManagedReference
+	List<IrnCreditNoteAnnexureVO> irnCreditNoteAnnexureVO;
 
 	@Embedded
 	@Builder.Default

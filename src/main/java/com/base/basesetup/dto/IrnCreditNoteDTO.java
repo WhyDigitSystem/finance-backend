@@ -56,5 +56,7 @@ public class IrnCreditNoteDTO {
 
 
 	List<IrnCreditNoteDetailsDTO> irnCreditNoteDetailsDTO;
+	
+	List<IrnCreditNoteAnnexureDTO> irnCreditNoteAnnexureDTO;
 
 }
