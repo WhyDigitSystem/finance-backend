@@ -47,7 +47,7 @@ public class IrnCreditNoteAnnexureVO {
 
 	private double amount;
 	
-	private double subtotal;
+//	private double subtotal;
 	
 	
 	@ManyToOne

@@ -109,6 +109,7 @@ public class IrnCreditNoteVO {
 	private String billCurr;
 	@Column(name = "billcurrrate", precision = 10, scale = 2)
 	private BigDecimal billCurrRate;
+	private double annexureSubTotal;
 	
 	@Column(name = "creditdays",length = 5)
 	private int creditDays;

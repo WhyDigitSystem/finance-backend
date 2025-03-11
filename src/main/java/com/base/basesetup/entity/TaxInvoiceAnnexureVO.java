@@ -47,6 +47,8 @@ public class TaxInvoiceAnnexureVO {
 
 	private double amount;
 	
+//	private double subTotal;
+	
 	
 	@ManyToOne
 	@JsonBackReference

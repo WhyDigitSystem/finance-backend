@@ -21,13 +21,13 @@ public class ChargerCostDebitNoteDTO {
 	private String currency;
 	private BigDecimal exRate;
 	private String gst;
-	private BigDecimal fcAmt;
-	private BigDecimal lcAmt;
-	private BigDecimal billAmt;
+//	private BigDecimal fcAmt;
+//	private BigDecimal lcAmt;
+//	private BigDecimal billAmt;
 	private BigDecimal rate;
 	private int qty;
 	private Float GSTPercent;
-	private BigDecimal gstAmount;
+//	private BigDecimal gstAmount;
 	private String ledger;
 	private String govChargeCode;
 	private String taxable;

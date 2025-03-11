@@ -203,8 +203,11 @@ public class TaxInvoiceServiceImpl implements TaxInvoiceService {
 			List<TaxInvoiceDetailsVO> taxInvoiceDetailsVO1 = taxInvoiceDetailsRepo.findByTaxInvoiceVO(taxInvoiceVO);
 			taxInvoiceDetailsRepo.deleteAll(taxInvoiceDetailsVO1);
 
-			List<TaxInvoiceAnnexureVO> annexureVOs = taxInvoiceAnnexureRepo.findByTaxInvoiceVO(taxInvoiceVO);
-			taxInvoiceAnnexureRepo.deleteAll(annexureVOs);
+			List<TaxInvoiceAnnexureVO> annexureVO1 = taxInvoiceAnnexureRepo.findByTaxInvoiceVO(taxInvoiceVO);
+			taxInvoiceAnnexureRepo.deleteAll(annexureVO1);
+			
+			List<TaxInvoiceGstVO> taxInvoiceGstVO1 = taxInvoiceGstRepo.findByTaxInvoiceVO(taxInvoiceVO);
+			taxInvoiceGstRepo.deleteAll(taxInvoiceGstVO1);
 
 		}
 		BigDecimal totalChargeAmountLC = BigDecimal.ZERO;
@@ -277,8 +280,12 @@ public class TaxInvoiceServiceImpl implements TaxInvoiceService {
 			taxInvoiceDetailsVO.setTaxInvoiceVO(taxInvoiceVO);
 			taxInvoiceDetailsVOs.add(taxInvoiceDetailsVO);
 		}
+		taxInvoiceVO.setTaxInvoiceDetailsVO(taxInvoiceDetailsVOs);
+		
+		double subtotal=0.0;
 
 		List<TaxInvoiceAnnexureVO> invoiceAnnexureVOs = new ArrayList<TaxInvoiceAnnexureVO>();
+		
 
 		for (TaxInvoiceAnnexureDTO taxInvoiceAnnexureDTO : taxInvoiceDTO.getTaxInvoiceAnnexureDTO()) {
 
@@ -291,13 +298,23 @@ public class TaxInvoiceServiceImpl implements TaxInvoiceService {
 			taxInvoiceAnnexureVO.setSkuType(taxInvoiceAnnexureDTO.getSkuType());
 			taxInvoiceAnnexureVO.setQty(taxInvoiceAnnexureDTO.getQty());
 			taxInvoiceAnnexureVO.setRate(taxInvoiceAnnexureDTO.getRate());
-			taxInvoiceAnnexureVO.setAmount(taxInvoiceAnnexureDTO.getAmount());
+			
+//			double subtotal=0.0;
+			
+			double amt=taxInvoiceAnnexureDTO.getQty()*taxInvoiceAnnexureDTO.getRate();
+			
+			taxInvoiceAnnexureVO.setAmount(amt);
+			
+			subtotal+=amt;
+			
+			//taxInvoiceAnnexureVO.setSubTotal(subtotal);
 
 			taxInvoiceAnnexureVO.setTaxInvoiceVO(taxInvoiceVO);
 
 			invoiceAnnexureVOs.add(taxInvoiceAnnexureVO);
 
 		}
+
 
 		taxInvoiceVO.setTaxInvoiceAnnexureVO(invoiceAnnexureVOs);
 
@@ -349,6 +366,7 @@ public class TaxInvoiceServiceImpl implements TaxInvoiceService {
 			taxInvoiceGstVO.setTaxInvoiceVO(taxInvoiceVO);
 			taxInvoiceGstVOList.add(taxInvoiceGstVO);
 		}
+//		taxInvoiceVO.setTaxInvoiceGstVO(taxInvoiceGstVOList);
 
 		Map<String, BigDecimal> ledgerSumMap = new HashMap<>();
 		for (TaxInvoiceDetailsVO detailsVO : taxInvoiceDetailsVOs) {
@@ -357,10 +375,10 @@ public class TaxInvoiceServiceImpl implements TaxInvoiceService {
 
 			ledgerSumMap.put(ledger, ledgerSumMap.getOrDefault(ledger, BigDecimal.ZERO).add(lcAmount));
 		}
-		if (ObjectUtils.isNotEmpty(taxInvoiceVO.getId())) {
-			List<TaxInvoiceGstVO> taxInvoiceGstVO = taxInvoiceGstRepo.findByTaxInvoiceVO(taxInvoiceVO);
-			taxInvoiceGstRepo.deleteAll(taxInvoiceGstVO);
-		}
+//		if (ObjectUtils.isNotEmpty(taxInvoiceVO.getId())) {
+//			List<TaxInvoiceGstVO> taxInvoiceGstVO1 = taxInvoiceGstRepo.findByTaxInvoiceVO(taxInvoiceVO);
+//			taxInvoiceGstRepo.deleteAll(taxInvoiceGstVO1);
+//		}
 
 		for (Map.Entry<String, BigDecimal> entry : ledgerSumMap.entrySet()) {
 			TaxInvoiceGstVO taxInvoiceGstVO = new TaxInvoiceGstVO();
@@ -382,6 +400,7 @@ public class TaxInvoiceServiceImpl implements TaxInvoiceService {
 		taxInvoiceVO.setTotalChargeAmountBc(totalChargeAmountBC);
 		taxInvoiceVO.setTotalTaxAmountLc(totalTaxAmountLC);
 		taxInvoiceVO.setTotalTaxAmountBc(totalTaxAmountBC);
+		taxInvoiceVO.setAnnexureSubTotal(subtotal);
 
 		BigDecimal originalTotalInvAmountLC = totalChargeAmountLC.add(totalTaxAmountLC);
 		BigDecimal roundedTotalInvAmountLC = totalInvAmountLC.setScale(0, RoundingMode.HALF_UP);

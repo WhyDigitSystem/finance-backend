@@ -50,6 +50,8 @@ public class CostDebitNoteDTO {
 	private String utrRef;
 //	private String costType;
 	private boolean approved;
+	private String vId;
+	private LocalDate vDate;
 
 	private String orginBill;
 	private LocalDate originBillDate;

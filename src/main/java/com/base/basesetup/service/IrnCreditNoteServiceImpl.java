@@ -182,8 +182,12 @@ public class IrnCreditNoteServiceImpl implements IrnCreditNoteService {
 			List<IrnCreditNoteDetailsVO> irnCreditNoteDetailsVO1 = irnCreditChargesRepo.findByIrnCreditNoteVO(irnCreditNoteVO);
 			irnCreditChargesRepo.deleteAll(irnCreditNoteDetailsVO1);
 			
-			List<IrnCreditNoteAnnexureVO> annexureVOs = irnCreditNoteAnnexureRepo.findByIrnCreditNoteVO(irnCreditNoteVO);
-			irnCreditNoteAnnexureRepo.deleteAll(annexureVOs);
+			List<IrnCreditNoteAnnexureVO> annexureVO1 = irnCreditNoteAnnexureRepo.findByIrnCreditNoteVO(irnCreditNoteVO);
+			irnCreditNoteAnnexureRepo.deleteAll(annexureVO1);
+	
+				List<IrnCreditNoteGstVO> irnCreditNoteGstVO1 = irnCreditGstRepo.findByIrnCreditNoteVO(irnCreditNoteVO);
+				irnCreditGstRepo.deleteAll(irnCreditNoteGstVO1);
+		
 		}
 		
 		BigDecimal totalChargeAmountLC = BigDecimal.ZERO;
@@ -257,9 +261,11 @@ public class IrnCreditNoteServiceImpl implements IrnCreditNoteService {
 			irnCreditNoteDetailsVOs.add(irnCreditNoteDetailsVO);
 		}
 		
+		double subtotal=0.0;
+		
 		List<IrnCreditNoteAnnexureVO> invoiceAnnexureVOs = new ArrayList<IrnCreditNoteAnnexureVO>();
 		
-		double subtotal=0.0;
+		
 
 		for (IrnCreditNoteAnnexureDTO irnCreditNoteAnnexureDTO : irnCreditNoteDTO.getIrnCreditNoteAnnexureDTO()) {
 
@@ -275,11 +281,11 @@ public class IrnCreditNoteServiceImpl implements IrnCreditNoteService {
 			
 			double amt=irnCreditNoteAnnexureDTO.getQty() * irnCreditNoteAnnexureDTO.getRate();
 			
-			irnCreditNoteAnnexureVO.setAmount(amt);
+//			irnCreditNoteAnnexureVO.setAmount(amt);
 			
 			subtotal+=amt;
 			
-			irnCreditNoteAnnexureVO.setSubtotal(subtotal);			
+//			irnCreditNoteAnnexureVO.setSubtotal(subtotal);			
 			irnCreditNoteAnnexureVO.setIrnCreditNoteVO(irnCreditNoteVO);
 
 			invoiceAnnexureVOs.add(irnCreditNoteAnnexureVO);
@@ -347,10 +353,7 @@ public class IrnCreditNoteServiceImpl implements IrnCreditNoteService {
 
 			ledgerSumMap.put(ledger, ledgerSumMap.getOrDefault(ledger, BigDecimal.ZERO).add(lcAmount));
 		}
-		if (ObjectUtils.isNotEmpty(irnCreditNoteVO.getId())) {
-			List<IrnCreditNoteGstVO> irnCreditNoteGstVO = irnCreditGstRepo.findByIrnCreditNoteVO(irnCreditNoteVO);
-			irnCreditGstRepo.deleteAll(irnCreditNoteGstVO);
-		}
+
 		
 		for (Map.Entry<String, BigDecimal> entry : ledgerSumMap.entrySet()) {
 			IrnCreditNoteGstVO irnCreditNoteGstVO = new IrnCreditNoteGstVO();
@@ -372,6 +375,7 @@ public class IrnCreditNoteServiceImpl implements IrnCreditNoteService {
 		irnCreditNoteVO.setTotalChargeAmountBc(totalChargeAmountBC);
 		irnCreditNoteVO.setTotalTaxAmountLc(totalTaxAmountLC);
 		irnCreditNoteVO.setTotalTaxAmountBc(totalTaxAmountBC);
+		irnCreditNoteVO.setAnnexureSubTotal(subtotal);
 
 		BigDecimal originalTotalInvAmountLC = totalChargeAmountLC.add(totalTaxAmountLC);
 		BigDecimal roundedTotalInvAmountLC = totalInvAmountLC.setScale(0, RoundingMode.HALF_UP);
