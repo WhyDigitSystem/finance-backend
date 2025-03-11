@@ -279,15 +279,16 @@ public class IrnCreditNoteServiceImpl implements IrnCreditNoteService {
 			
 			subtotal+=amt;
 			
+			irnCreditNoteAnnexureVO.setSubtotal(subtotal);			
 			irnCreditNoteAnnexureVO.setIrnCreditNoteVO(irnCreditNoteVO);
 
 			invoiceAnnexureVOs.add(irnCreditNoteAnnexureVO);
 
 		}
 		
-		for (IrnCreditNoteAnnexureVO annexureVO : invoiceAnnexureVOs) {
-		    annexureVO.setSubtotal(subtotal); // Ensure `setSubtotal` method exists in IrnCreditNoteAnnexureVO
-		}
+//		for (IrnCreditNoteAnnexureVO annexureVO : invoiceAnnexureVOs) {
+//		    annexureVO.setSubtotal(subtotal); // Ensure `setSubtotal` method exists in IrnCreditNoteAnnexureVO
+//		}
 		
 		irnCreditNoteVO.setIrnCreditNoteAnnexureVO(invoiceAnnexureVOs);
 		
