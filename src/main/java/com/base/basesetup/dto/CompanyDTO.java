@@ -41,7 +41,7 @@ public class CompanyDTO {
 	private int role;
 	private String termsAndConditions;
 	
-	private byte[] companyLogo;
+	private String companyLogo;
 	
 	List<BankDetailsDTO>bankDetailsDTO;
 

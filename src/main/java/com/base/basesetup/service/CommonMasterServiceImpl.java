@@ -1327,7 +1327,7 @@ public class CommonMasterServiceImpl implements CommonMasterService {
 	@Override
 	public CompanyVO uploadCompanyLogoInBloob(MultipartFile file, Long id) throws IOException {
 		CompanyVO companyVO = companyRepo.findById(id).get();
-		companyVO.setCompanyLogo(file.getBytes());
+		companyVO.setCompanyLogo(file.getBytes().toString());
 		return companyRepo.save(companyVO);
 	}
 	

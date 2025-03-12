@@ -87,8 +87,8 @@ public class CompanyVO {
 	
 	
 	@Lob
-	@Column(name = "companylogo", columnDefinition = "LONGBLOB")
-	private byte[] companyLogo;
+	@Column(name = "companylogo", columnDefinition = "CLOB")
+	private String companyLogo;
 	
 	@OneToMany(mappedBy = "companyVO", cascade = CascadeType.ALL)
 	@JsonManagedReference
