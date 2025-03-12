@@ -245,6 +245,7 @@ public class CommonMasterServiceImpl implements CommonMasterService {
 		companyVO.setGst(companyDTO.getGst());
 		companyVO.setCeo(companyDTO.getCeo());
 		companyVO.setTermsAndConditions(companyDTO.getTermsAndConditions());
+		companyVO.setPanNo(companyDTO.getPanNo());
 
 		try {
 			companyVO.setPassword(encoder.encode(CryptoUtils.getDecrypt(companyDTO.getPassword())));
@@ -292,6 +293,7 @@ public class CommonMasterServiceImpl implements CommonMasterService {
 		companyVO.setGst(companyDTO.getGst());
 		companyVO.setCeo(companyDTO.getCeo());
 		companyVO.setTermsAndConditions(companyDTO.getTermsAndConditions());
+		companyVO.setPanNo(companyDTO.getPanNo());
 
 		if (ObjectUtils.isNotEmpty(companyDTO.getId())) {
 			List<BankDetailsVO> bankDetailsVO1 = bankDetailsRepo.findByCompanyVO(companyVO);
@@ -1327,7 +1329,7 @@ public class CommonMasterServiceImpl implements CommonMasterService {
 	@Override
 	public CompanyVO uploadCompanyLogoInBloob(MultipartFile file, Long id) throws IOException {
 		CompanyVO companyVO = companyRepo.findById(id).get();
-		companyVO.setCompanyLogo(file.getBytes().toString());
+		companyVO.setCompanyLogo(file.getBytes());
 		return companyRepo.save(companyVO);
 	}
 	
