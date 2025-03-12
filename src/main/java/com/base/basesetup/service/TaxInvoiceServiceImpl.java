@@ -285,6 +285,7 @@ public class TaxInvoiceServiceImpl implements TaxInvoiceService {
 		double subtotal = 0.0;
 
 		List<TaxInvoiceAnnexureVO> invoiceAnnexureVOs = new ArrayList<TaxInvoiceAnnexureVO>();
+		if(taxInvoiceDTO.getTaxInvoiceAnnexureDTO()!= null) {
 
 		for (TaxInvoiceAnnexureDTO taxInvoiceAnnexureDTO : taxInvoiceDTO.getTaxInvoiceAnnexureDTO()) {
 
@@ -312,6 +313,7 @@ public class TaxInvoiceServiceImpl implements TaxInvoiceService {
 
 			invoiceAnnexureVOs.add(taxInvoiceAnnexureVO);
 
+		}
 		}
 
 		taxInvoiceVO.setTaxInvoiceAnnexureVO(invoiceAnnexureVOs);

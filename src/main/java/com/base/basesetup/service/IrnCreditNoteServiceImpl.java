@@ -265,7 +265,7 @@ public class IrnCreditNoteServiceImpl implements IrnCreditNoteService {
 		
 		List<IrnCreditNoteAnnexureVO> invoiceAnnexureVOs = new ArrayList<IrnCreditNoteAnnexureVO>();
 		
-		
+		if(irnCreditNoteDTO.getIrnCreditNoteAnnexureDTO()!= null) {
 
 		for (IrnCreditNoteAnnexureDTO irnCreditNoteAnnexureDTO : irnCreditNoteDTO.getIrnCreditNoteAnnexureDTO()) {
 
@@ -281,7 +281,7 @@ public class IrnCreditNoteServiceImpl implements IrnCreditNoteService {
 			
 			double amt=irnCreditNoteAnnexureDTO.getQty() * irnCreditNoteAnnexureDTO.getRate();
 			
-//			irnCreditNoteAnnexureVO.setAmount(amt);
+			irnCreditNoteAnnexureVO.setAmount(amt);
 			
 			subtotal+=amt;
 			
@@ -290,6 +290,7 @@ public class IrnCreditNoteServiceImpl implements IrnCreditNoteService {
 
 			invoiceAnnexureVOs.add(irnCreditNoteAnnexureVO);
 
+		}
 		}
 		
 //		for (IrnCreditNoteAnnexureVO annexureVO : invoiceAnnexureVOs) {
@@ -378,32 +379,32 @@ public class IrnCreditNoteServiceImpl implements IrnCreditNoteService {
 		irnCreditNoteVO.setAnnexureSubTotal(subtotal);
 
 		BigDecimal originalTotalInvAmountLC = totalChargeAmountLC.add(totalTaxAmountLC);
-		BigDecimal roundedTotalInvAmountLC = totalInvAmountLC.setScale(0, RoundingMode.HALF_UP);
-		BigDecimal roundOffAmountLC = roundedTotalInvAmountLC.subtract(originalTotalInvAmountLC);
+//		BigDecimal roundedTotalInvAmountLC = totalInvAmountLC.setScale(0, RoundingMode.HALF_UP);
+//		BigDecimal roundOffAmountLC = roundedTotalInvAmountLC.subtract(originalTotalInvAmountLC);
 		
 		TaxInvoiceVO taxInvoiceVO = taxInvoiceRepo.findByOrgIdAndDocId( irnCreditNoteDTO.getOrgId(), irnCreditNoteDTO.getOriginBillNo());
 		if (taxInvoiceVO == null) {
 		    new  ApplicationException("No TaxInvoice found for given orgId and docId");
 		}
 		
-		BigDecimal totalInvAmountLc = taxInvoiceVO.getTotalInvAmountLc();
+		BigDecimal totalInvAmountLc1 = taxInvoiceVO.getTotalInvAmountLc();
 
 //		System.out.println(totalInvAmountLc);
 //		System.out.println(roundedTotalInvAmountLC);
 
-		if (roundedTotalInvAmountLC.compareTo(totalInvAmountLc) <= 0) {  
-			irnCreditNoteVO.setTotalInvAmountLc(roundedTotalInvAmountLC);
+		if (totalInvAmountLC.compareTo(totalInvAmountLc1) <= 0) {  
+			irnCreditNoteVO.setTotalInvAmountLc(totalInvAmountLC);
 
 		} else {
-		    throw new IllegalArgumentException("CREDIT NOTE " + roundedTotalInvAmountLC + " must be less than or equal to TAXINVOICE "+ totalInvAmountLc);
+		    throw new IllegalArgumentException("CREDIT NOTE " + totalInvAmountLC + " must be less than or equal to TAXINVOICE "+ totalInvAmountLc1);
 		}
 
 		
 		irnCreditNoteVO.setAmountInWords(amountInWordsConverterService.convert(irnCreditNoteVO.getTotalInvAmountLc()));
-		irnCreditNoteVO.setRoundOffAmountLc(roundOffAmountLC);
+//		irnCreditNoteVO.setRoundOffAmountLc(roundOffAmountLC);
 
-		BigDecimal roundedTotalInvAmountBC = totalInvAmountBC.setScale(0, RoundingMode.HALF_UP);
-		irnCreditNoteVO.setTotalInvAmountBc(roundedTotalInvAmountBC);
+//		BigDecimal roundedTotalInvAmountBC = totalInvAmountBC.setScale(0, RoundingMode.HALF_UP);
+		irnCreditNoteVO.setTotalInvAmountBc(totalInvAmountBC);
 //		totalInvAmountLc
 		irnCreditNoteVO.setIrnCreditNoteDetailsVO(irnCreditNoteDetailsVOs);
 
