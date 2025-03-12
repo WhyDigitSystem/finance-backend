@@ -205,7 +205,7 @@ public class TaxInvoiceServiceImpl implements TaxInvoiceService {
 
 			List<TaxInvoiceAnnexureVO> annexureVO1 = taxInvoiceAnnexureRepo.findByTaxInvoiceVO(taxInvoiceVO);
 			taxInvoiceAnnexureRepo.deleteAll(annexureVO1);
-			
+
 			List<TaxInvoiceGstVO> taxInvoiceGstVO1 = taxInvoiceGstRepo.findByTaxInvoiceVO(taxInvoiceVO);
 			taxInvoiceGstRepo.deleteAll(taxInvoiceGstVO1);
 
@@ -281,11 +281,10 @@ public class TaxInvoiceServiceImpl implements TaxInvoiceService {
 			taxInvoiceDetailsVOs.add(taxInvoiceDetailsVO);
 		}
 		taxInvoiceVO.setTaxInvoiceDetailsVO(taxInvoiceDetailsVOs);
-		
-		double subtotal=0.0;
+
+		double subtotal = 0.0;
 
 		List<TaxInvoiceAnnexureVO> invoiceAnnexureVOs = new ArrayList<TaxInvoiceAnnexureVO>();
-		
 
 		for (TaxInvoiceAnnexureDTO taxInvoiceAnnexureDTO : taxInvoiceDTO.getTaxInvoiceAnnexureDTO()) {
 
@@ -298,23 +297,22 @@ public class TaxInvoiceServiceImpl implements TaxInvoiceService {
 			taxInvoiceAnnexureVO.setSkuType(taxInvoiceAnnexureDTO.getSkuType());
 			taxInvoiceAnnexureVO.setQty(taxInvoiceAnnexureDTO.getQty());
 			taxInvoiceAnnexureVO.setRate(taxInvoiceAnnexureDTO.getRate());
-			
+
 //			double subtotal=0.0;
-			
-			double amt=taxInvoiceAnnexureDTO.getQty()*taxInvoiceAnnexureDTO.getRate();
-			
+
+			double amt = taxInvoiceAnnexureDTO.getQty() * taxInvoiceAnnexureDTO.getRate();
+
 			taxInvoiceAnnexureVO.setAmount(amt);
-			
-			subtotal+=amt;
-			
-			//taxInvoiceAnnexureVO.setSubTotal(subtotal);
+
+			subtotal += amt;
+
+			// taxInvoiceAnnexureVO.setSubTotal(subtotal);
 
 			taxInvoiceAnnexureVO.setTaxInvoiceVO(taxInvoiceVO);
 
 			invoiceAnnexureVOs.add(taxInvoiceAnnexureVO);
 
 		}
-
 
 		taxInvoiceVO.setTaxInvoiceAnnexureVO(invoiceAnnexureVOs);
 
@@ -403,15 +401,15 @@ public class TaxInvoiceServiceImpl implements TaxInvoiceService {
 		taxInvoiceVO.setAnnexureSubTotal(subtotal);
 
 		BigDecimal originalTotalInvAmountLC = totalChargeAmountLC.add(totalTaxAmountLC);
-		BigDecimal roundedTotalInvAmountLC = totalInvAmountLC.setScale(0, RoundingMode.HALF_UP);
-		BigDecimal roundOffAmountLC = roundedTotalInvAmountLC.subtract(originalTotalInvAmountLC);
-		taxInvoiceVO.setTotalInvAmountLc(roundedTotalInvAmountLC);
-		taxInvoiceVO.setAmountInWords(
-				amountInWordsConverterService.convert(taxInvoiceVO.getTotalInvAmountLc().longValue()));
-		taxInvoiceVO.setRoundOffAmountLc(roundOffAmountLC);
- 
- 		BigDecimal roundedTotalInvAmountBC = totalInvAmountBC.setScale(0, RoundingMode.HALF_UP);
-		taxInvoiceVO.setTotalInvAmountBc(roundedTotalInvAmountBC);
+//		BigDecimal roundedTotalInvAmountLC = totalInvAmountLC.setScale(0, RoundingMode.HALF_UP);
+//		BigDecimal roundOffAmountLC = roundedTotalInvAmountLC.subtract(originalTotalInvAmountLC);
+		taxInvoiceVO.setTotalInvAmountLc(totalInvAmountLC);
+		taxInvoiceVO.setAmountInWords(amountInWordsConverterService.convert(taxInvoiceVO.getTotalInvAmountLc()));
+
+//		taxInvoiceVO.setRoundOffAmountLc(roundOffAmountLC);
+
+// 		BigDecimal roundedTotalInvAmountBC = totalInvAmountBC.setScale(0, RoundingMode.HALF_UP);
+		taxInvoiceVO.setTotalInvAmountBc(totalInvAmountBC);
 
 		taxInvoiceVO.setTaxInvoiceDetailsVO(taxInvoiceDetailsVOs);
 

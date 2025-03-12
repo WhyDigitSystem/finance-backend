@@ -509,7 +509,7 @@ public class RCostInvoiceGnaServiceImpl implements RCostInvoiceGnaService {
 		rCostInvoiceGnaVO.setSumLcAmt(sumOfLcAmount);
 		rCostInvoiceGnaVO.setSumBillAmt(sumOfBillAmount);
 		rCostInvoiceGnaVO.setAmountInWords(
-				amountInWordsConverterService.convert(rCostInvoiceGnaVO.getActBillAmtLc().longValue()));
+				amountInWordsConverterService.convert(rCostInvoiceGnaVO.getActBillAmtLc()));
 
 		// AccountsPosting
 

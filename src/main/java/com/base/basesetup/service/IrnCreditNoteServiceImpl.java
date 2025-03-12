@@ -399,7 +399,7 @@ public class IrnCreditNoteServiceImpl implements IrnCreditNoteService {
 		}
 
 		
-		irnCreditNoteVO.setAmountInWords(amountInWordsConverterService.convert(irnCreditNoteVO.getTotalInvAmountLc().longValue()));
+		irnCreditNoteVO.setAmountInWords(amountInWordsConverterService.convert(irnCreditNoteVO.getTotalInvAmountLc()));
 		irnCreditNoteVO.setRoundOffAmountLc(roundOffAmountLC);
 
 		BigDecimal roundedTotalInvAmountBC = totalInvAmountBC.setScale(0, RoundingMode.HALF_UP);

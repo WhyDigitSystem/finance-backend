@@ -412,7 +412,7 @@ public class CostDebitNoteServiceImpl implements CostDebitNoteService {
 		costDebitNoteVO.setGstInputLcAmt(gstInputAmount);
 		costDebitNoteVO.setSumLcAmt(sumDebitAmount);
 		costDebitNoteVO.setAmountInWords(
-				amountInWordsConverterService.convert(costInvoiceVO.getNetBillCurrAmt().longValue()));
+				amountInWordsConverterService.convert(costInvoiceVO.getNetBillCurrAmt()));
 		
 //		costDebitNoteVO.setChargerCostDebitNoteVO(chargerCostDebitVOs);
 

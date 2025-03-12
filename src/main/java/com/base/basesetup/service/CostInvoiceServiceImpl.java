@@ -454,7 +454,7 @@ public class CostInvoiceServiceImpl implements CostInvoiceService {
 		costInvoiceVO.setSumLcAmt(sumDebitAmount);
 		
 		costInvoiceVO.setAmountInWords(
-				amountInWordsConverterService.convert(costInvoiceVO.getNetBillCurrAmt().longValue()));
+				amountInWordsConverterService.convert(costInvoiceVO.getNetBillCurrAmt()));
 
 		return costInvoiceVO;
 
