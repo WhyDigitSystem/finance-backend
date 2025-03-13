@@ -85,6 +85,8 @@ public class CompanyVO {
 	private String gst;
 	@Column(name = "termsandconditions",length=10000)
 	private String termsAndConditions;
+	@Column(name = "cin")
+	private String cin;
 	@Column(name = "panno", length = 10)
     @Size(min = 10, max = 10, message = "PanNo must be exactly 10 characters.")
     private String panNo;

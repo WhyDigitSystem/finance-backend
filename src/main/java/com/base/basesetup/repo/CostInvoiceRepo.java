@@ -7,7 +7,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import com.base.basesetup.entity.CostInvoiceVO;
-import com.base.basesetup.entity.GroupLedgerVO;
 import com.base.basesetup.entity.PartyMasterVO;
 
 public interface CostInvoiceRepo extends JpaRepository<CostInvoiceVO, Long> {
@@ -17,6 +16,9 @@ public interface CostInvoiceRepo extends JpaRepository<CostInvoiceVO, Long> {
 
 	@Query(nativeQuery = true, value = "select * from costinvoice where costinvoiceid=?1")
 	List<CostInvoiceVO> getAllCostInvoiceById(Long id);
+	
+	@Query(value = "select a from CostInvoiceVO a where a.id=?1")
+	CostInvoiceVO getCostInvoiceById(Long id);
 
 	@Query(nativeQuery = true, value = "select * from costinvoice where active = 1")
 	List<CostInvoiceVO> findCostInvoiceByActive();

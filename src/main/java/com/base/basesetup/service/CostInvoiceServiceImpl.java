@@ -3,7 +3,6 @@ package com.base.basesetup.service;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -31,8 +30,6 @@ import com.base.basesetup.entity.DocumentTypeMappingDetailsVO;
 import com.base.basesetup.entity.GroupLedgerVO;
 import com.base.basesetup.entity.MultipleDocIdGenerationDetailsVO;
 import com.base.basesetup.entity.PartyMasterVO;
-import com.base.basesetup.entity.TaxInvoiceGstVO;
-import com.base.basesetup.entity.TdsCostDebitNoteVO;
 import com.base.basesetup.entity.TdsCostInvoiceVO;
 import com.base.basesetup.exception.ApplicationException;
 import com.base.basesetup.repo.AccountsDetailsRepo;
@@ -232,6 +229,7 @@ public class CostInvoiceServiceImpl implements CostInvoiceService {
 		costInvoiceVO.setAccuralid(costInvoiceDTO.getAccuralid());
 		costInvoiceVO.setUtrRef(costInvoiceDTO.getUtrRef());
 		costInvoiceVO.setCostType(costInvoiceDTO.getCostType());
+		costInvoiceVO.setSupplierId(costInvoiceDTO.getSupplierId());
 		costInvoiceVO.setJobOrderNo(costInvoiceDTO.getJobOrderNo());
 		costInvoiceVO.setVId(costInvoiceDTO.getVId());
 		costInvoiceVO.setVDate(costInvoiceDTO.getVDate());
@@ -899,4 +897,16 @@ public class CostInvoiceServiceImpl implements CostInvoiceService {
 		return List1;
 
 	}
+	
+	@Override
+	public CostInvoiceVO getCostInvoiceById(Long id) {
+		CostInvoiceVO costInvoiceVO = new CostInvoiceVO();
+
+		costInvoiceVO = costInvoiceRepo.getCostInvoiceById(id);
+
+		return costInvoiceVO;
+	}
+	
+	
 }
+
