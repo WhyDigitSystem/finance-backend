@@ -113,6 +113,7 @@ public class TaxInvoiceServiceImpl implements TaxInvoiceService {
 		TaxInvoiceVO taxInvoiceVO = new TaxInvoiceVO();
 		String message;
 		if (ObjectUtils.isNotEmpty(taxInvoiceDTO.getId())) {
+
 			taxInvoiceVO = taxInvoiceRepo.findById(taxInvoiceDTO.getId())
 					.orElseThrow(() -> new ApplicationException("Tax Invoice not found"));
 
@@ -130,7 +131,14 @@ public class TaxInvoiceServiceImpl implements TaxInvoiceService {
 			createUpdateTaxInvoiceVOByTaxInvoiceDTO(taxInvoiceDTO, taxInvoiceVO);
 			message = "Tax Invoice Updated Successfully";
 		} else {
-			// GETDOCID API
+
+			if (taxInvoiceRepo.existsByvIdAndOrgId(taxInvoiceDTO.getVId(), taxInvoiceDTO.getOrgId())) {
+
+				String errorMessage = String.format("This VId: %s already exists for this organization.",
+						taxInvoiceDTO.getVId());
+				throw new ApplicationException(errorMessage);
+			}
+
 			String docId = taxInvoiceRepo.getTaxInvoiceDocId(taxInvoiceDTO.getOrgId(), taxInvoiceDTO.getFinYear(),
 					taxInvoiceDTO.getBranchCode(), screenCode);
 			taxInvoiceVO.setDocId(docId);
@@ -142,16 +150,10 @@ public class TaxInvoiceServiceImpl implements TaxInvoiceService {
 			documentTypeMappingDetailsVO.setLastno(documentTypeMappingDetailsVO.getLastno() + 1);
 			documentTypeMappingDetailsRepo.save(documentTypeMappingDetailsVO);
 
-			if (taxInvoiceRepo.existsByvIdAndOrgId(taxInvoiceDTO.getVId(), taxInvoiceDTO.getOrgId())) {
-
-				String errorMessage = String.format("This VId: %s already exists for this organization.",
-						taxInvoiceDTO.getVId());
-				throw new ApplicationException(errorMessage);
-			}
-
+			createUpdateTaxInvoiceVOByTaxInvoiceDTO(taxInvoiceDTO, taxInvoiceVO);
 			taxInvoiceVO.setCreatedBy(taxInvoiceDTO.getCreatedBy());
 			taxInvoiceVO.setModifiedBy(taxInvoiceDTO.getCreatedBy());
-			createUpdateTaxInvoiceVOByTaxInvoiceDTO(taxInvoiceDTO, taxInvoiceVO);
+//			createUpdateTaxInvoiceVOByTaxInvoiceDTO(taxInvoiceDTO, taxInvoiceVO);
 			message = "Tax Invoice Created Successfully";
 		}
 
@@ -285,35 +287,35 @@ public class TaxInvoiceServiceImpl implements TaxInvoiceService {
 		double subtotal = 0.0;
 
 		List<TaxInvoiceAnnexureVO> invoiceAnnexureVOs = new ArrayList<TaxInvoiceAnnexureVO>();
-		if(taxInvoiceDTO.getTaxInvoiceAnnexureDTO()!= null) {
+		if (taxInvoiceDTO.getTaxInvoiceAnnexureDTO() != null) {
 
-		for (TaxInvoiceAnnexureDTO taxInvoiceAnnexureDTO : taxInvoiceDTO.getTaxInvoiceAnnexureDTO()) {
+			for (TaxInvoiceAnnexureDTO taxInvoiceAnnexureDTO : taxInvoiceDTO.getTaxInvoiceAnnexureDTO()) {
 
-			TaxInvoiceAnnexureVO taxInvoiceAnnexureVO = new TaxInvoiceAnnexureVO();
+				TaxInvoiceAnnexureVO taxInvoiceAnnexureVO = new TaxInvoiceAnnexureVO();
 
-			taxInvoiceAnnexureVO.setTransDate(taxInvoiceAnnexureDTO.getTransDate());
-			taxInvoiceAnnexureVO.setTransNo(taxInvoiceAnnexureDTO.getTransNo());
-			taxInvoiceAnnexureVO.setKitId(taxInvoiceAnnexureDTO.getKitId());
-			taxInvoiceAnnexureVO.setDsec(taxInvoiceAnnexureDTO.getDsec());
-			taxInvoiceAnnexureVO.setSkuType(taxInvoiceAnnexureDTO.getSkuType());
-			taxInvoiceAnnexureVO.setQty(taxInvoiceAnnexureDTO.getQty());
-			taxInvoiceAnnexureVO.setRate(taxInvoiceAnnexureDTO.getRate());
+				taxInvoiceAnnexureVO.setTransDate(taxInvoiceAnnexureDTO.getTransDate());
+				taxInvoiceAnnexureVO.setTransNo(taxInvoiceAnnexureDTO.getTransNo());
+				taxInvoiceAnnexureVO.setKitId(taxInvoiceAnnexureDTO.getKitId());
+				taxInvoiceAnnexureVO.setDsec(taxInvoiceAnnexureDTO.getDsec());
+				taxInvoiceAnnexureVO.setSkuType(taxInvoiceAnnexureDTO.getSkuType());
+				taxInvoiceAnnexureVO.setQty(taxInvoiceAnnexureDTO.getQty());
+				taxInvoiceAnnexureVO.setRate(taxInvoiceAnnexureDTO.getRate());
 
 //			double subtotal=0.0;
 
-			double amt = taxInvoiceAnnexureDTO.getQty() * taxInvoiceAnnexureDTO.getRate();
+				double amt = taxInvoiceAnnexureDTO.getQty() * taxInvoiceAnnexureDTO.getRate();
 
-			taxInvoiceAnnexureVO.setAmount(amt);
+				taxInvoiceAnnexureVO.setAmount(amt);
 
-			subtotal += amt;
+				subtotal += amt;
 
-			// taxInvoiceAnnexureVO.setSubTotal(subtotal);
+				// taxInvoiceAnnexureVO.setSubTotal(subtotal);
 
-			taxInvoiceAnnexureVO.setTaxInvoiceVO(taxInvoiceVO);
+				taxInvoiceAnnexureVO.setTaxInvoiceVO(taxInvoiceVO);
 
-			invoiceAnnexureVOs.add(taxInvoiceAnnexureVO);
+				invoiceAnnexureVOs.add(taxInvoiceAnnexureVO);
 
-		}
+			}
 		}
 
 		taxInvoiceVO.setTaxInvoiceAnnexureVO(invoiceAnnexureVOs);

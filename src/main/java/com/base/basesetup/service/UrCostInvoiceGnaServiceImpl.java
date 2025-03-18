@@ -9,7 +9,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.ObjectUtils;
 import org.slf4j.Logger;
@@ -750,65 +749,68 @@ public class UrCostInvoiceGnaServiceImpl implements UrCostInvoiceGnaService {
 				accountsDetailsVOs.add(accountsDetailsVO1);
 
 			}
-			
-			Map<String, BigDecimal> ledgerSumMap = new HashMap<>();
 
-			// Summarize ledger amounts
+			// Create a map to store the sum of amounts grouped by ledger
+			Map<String, BigDecimal> ledgerSumMap = new HashMap<>();
 			for (ChargesUrCostInvoiceGnaVO gstVO : urCostInvoiceGnaVO.getChargesUrCostInvoiceGnaVO()) {
-			    ledgerSumMap.merge(gstVO.getChargeLedger(), gstVO.getLcAmount(), BigDecimal::add);
+				String ledger = gstVO.getChargeLedger();
+				BigDecimal lcAmount = gstVO.getLcAmount();
+				ledgerSumMap.put(ledger, ledgerSumMap.getOrDefault(ledger, BigDecimal.ZERO).add(lcAmount));
 			}
 
 			for (Map.Entry<String, BigDecimal> entry : ledgerSumMap.entrySet()) {
-			    AccountsDetailsVO accountDetails = new AccountsDetailsVO();
-			    GroupLedgerVO groupLedgerVO = groupLedgerRepo.findByAccountGroupName(entry.getKey());
+				AccountsDetailsVO accountDetails = new AccountsDetailsVO();
+				GroupLedgerVO groupLedgerVO = groupLedgerRepo.findByAccountGroupName(entry.getKey());
 
-			    String accountName = entry.getKey();
-			    BigDecimal amount = entry.getValue();
-			    String gstType = urCostInvoiceGnaVO.getGstType();
-			    
-			    accountDetails.setAccountName(accountName);
-			    accountDetails.setSubledgerName(accountName.equals("ACCOUNTS PAYABLE") ? urCostInvoiceGnaVO.getSupplierName() : "None");
-			    accountDetails.setSubLedgerCode(accountName.equals("ACCOUNTS PAYABLE") ? urCostInvoiceGnaVO.getSupplierCode() : "None");
-			    accountDetails.setACategory(groupLedgerVO != null ? groupLedgerVO.getCategory() : "Unknown");
+				String accountName = entry.getKey();
+				BigDecimal amount = entry.getValue();
+				String gstType = urCostInvoiceGnaVO.getGstType();
 
-			    // Handle debit/credit based on GST type
-			    if ("INTRA".equalsIgnoreCase(gstType)) {
-			        if (accountName.contains("OUTPUT")) {
-			            accountDetails.setNDebitAmount(BigDecimal.ZERO);
-			            accountDetails.setDebitAmount(BigDecimal.ZERO);
-			            accountDetails.setNCreditAmount(amount);
-			            accountDetails.setCreditAmount(amount);
-			        } else {
-			            accountDetails.setNDebitAmount(amount);
-			            accountDetails.setDebitAmount(amount);
-			            accountDetails.setNCreditAmount(BigDecimal.ZERO);
-			            accountDetails.setCreditAmount(BigDecimal.ZERO);
-			        }
-			    } else if ("INTER".equalsIgnoreCase(gstType)) {
-			        if (accountName.contains("OUT PUT")) {   	
-			            accountDetails.setNDebitAmount(BigDecimal.ZERO);
-			            accountDetails.setDebitAmount(BigDecimal.ZERO); // Fix: Save debit amount for INPUT GST
-			            accountDetails.setNCreditAmount(amount);
-			            accountDetails.setCreditAmount(amount);
-			        } else {
-			            accountDetails.setNDebitAmount(amount);
-			            accountDetails.setDebitAmount(amount);
-			            accountDetails.setNCreditAmount(BigDecimal.ZERO);
-			            accountDetails.setCreditAmount(BigDecimal.ZERO); // Fix: Save credit amount for OUTPUT GST
-			        
-			    }
-			    }
+				accountDetails.setAccountName(accountName);
+				accountDetails.setSubledgerName(
+						accountName.equals("ACCOUNTS PAYABLE") ? urCostInvoiceGnaVO.getSupplierName() : "None");
+				accountDetails.setSubLedgerCode(
+						accountName.equals("ACCOUNTS PAYABLE") ? urCostInvoiceGnaVO.getSupplierCode() : "None");
+				accountDetails.setACategory(groupLedgerVO != null ? groupLedgerVO.getCategory() : "Unknown");
 
-			    // Set ARAP flags and amounts
-			    accountDetails.setArapFlag(accountName.equals("ACCOUNTS PAYABLE"));
-			    accountDetails.setArapAmount(accountName.equals("ACCOUNTS PAYABLE") ? amount : BigDecimal.ZERO);
-			    
-			    // Add account details to list
-			    accountDetails.setAccountsVO(accountsVO);
-			    accountsDetailsVOs.add(accountDetails);
+				// Handle debit/credit based on GST type
+				if ("INTRA".equalsIgnoreCase(gstType)) {
+					if (accountName.contains("OUTPUT")) {
+						accountDetails.setNDebitAmount(BigDecimal.ZERO);
+						accountDetails.setDebitAmount(BigDecimal.ZERO);
+						accountDetails.setNCreditAmount(amount);
+						accountDetails.setCreditAmount(amount);
+					} else {
+						accountDetails.setNDebitAmount(amount);
+						accountDetails.setDebitAmount(amount);
+						accountDetails.setNCreditAmount(BigDecimal.ZERO);
+						accountDetails.setCreditAmount(BigDecimal.ZERO);
+					}
+				} else if ("INTER".equalsIgnoreCase(gstType)) {
+					if (accountName.contains("OUT PUT")) {
+						accountDetails.setNDebitAmount(BigDecimal.ZERO);
+						accountDetails.setDebitAmount(BigDecimal.ZERO); // Fix: Save debit amount for INPUT GST
+						accountDetails.setNCreditAmount(amount);
+						accountDetails.setCreditAmount(amount);
+					} else {
+						accountDetails.setNDebitAmount(amount);
+						accountDetails.setDebitAmount(amount);
+						accountDetails.setNCreditAmount(BigDecimal.ZERO);
+						accountDetails.setCreditAmount(BigDecimal.ZERO); // Fix: Save credit amount for OUTPUT GST
+
+					}
+				}
+
+				// Set ARAP flags and amounts
+				accountDetails.setArapFlag(accountName.equals("ACCOUNTS PAYABLE"));
+				accountDetails.setArapAmount(accountName.equals("ACCOUNTS PAYABLE") ? amount : BigDecimal.ZERO);
+
+				// Add account details to list
+				accountDetails.setAccountsVO(accountsVO);
+				accountsDetailsVOs.add(accountDetails);
 			}
 
-			// Save accounts and update voucher details
+//			// Save accounts and update voucher details
 			accountsVO.setAccountsDetailsVO(accountsDetailsVOs);
 			AccountsVO savedAccountsVO = accountsRepo.save(accountsVO);
 			urCostInvoiceGnaVO.setPurVoucherNo(savedAccountsVO.getDocId());
@@ -829,5 +831,5 @@ public class UrCostInvoiceGnaServiceImpl implements UrCostInvoiceGnaService {
 			throw new ApplicationException("This Invoice Already Rejected");
 		}
 	}
-	
+
 }

@@ -73,7 +73,7 @@ public class CostInvoiceServiceImpl implements CostInvoiceService {
 
 	@Autowired
 	GroupLedgerRepo groupLedgerRepo;
-	
+
 	@Autowired
 	AmountInWordsConverterService amountInWordsConverterService;
 
@@ -142,7 +142,13 @@ public class CostInvoiceServiceImpl implements CostInvoiceService {
 
 			costInvoiceVO = new CostInvoiceVO();
 
-			// GETDOCID API
+			if (costInvoiceRepo.existsByvIdAndOrgId(costInvoiceDTO.getVId(), costInvoiceDTO.getOrgId())) {
+
+				String errorMessage = String.format("This VId: %s already exists for this organization.",
+						costInvoiceDTO.getVId());
+				throw new ApplicationException(errorMessage);
+			}
+
 			String docId = costInvoiceRepo.getCostInvoiceDocId(costInvoiceDTO.getOrgId(), costInvoiceDTO.getFinYear(),
 					costInvoiceDTO.getBranchCode(), screenCode);
 			costInvoiceVO.setDocId(docId);
@@ -153,16 +159,8 @@ public class CostInvoiceServiceImpl implements CostInvoiceService {
 							costInvoiceDTO.getFinYear(), costInvoiceDTO.getBranchCode(), screenCode);
 			documentTypeMappingDetailsVO.setLastno(documentTypeMappingDetailsVO.getLastno() + 1);
 			documentTypeMappingDetailsRepo.save(documentTypeMappingDetailsVO);
-			
-				if (costInvoiceRepo.existsByvIdAndOrgId(costInvoiceDTO.getVId(),
-						costInvoiceDTO.getOrgId())) {
-			
-					String errorMessage = String.format("This VId: %s already exists for this organization.",
-							costInvoiceDTO.getVId());
-					throw new ApplicationException(errorMessage);
-				}
-			
 
+			getCostInvoiceVOFromCostInvoiceDTO(costInvoiceVO, costInvoiceDTO);
 			costInvoiceVO.setCreatedBy(costInvoiceDTO.getCreatedBy());
 			costInvoiceVO.setUpdatedBy(costInvoiceDTO.getCreatedBy());
 
@@ -170,23 +168,25 @@ public class CostInvoiceServiceImpl implements CostInvoiceService {
 		}
 
 		else {
+
 			costInvoiceVO = costInvoiceRepo.findById(costInvoiceDTO.getId()).orElseThrow(
 					() -> new ApplicationException("Cost Invoice Not Found with id: " + costInvoiceDTO.getId()));
 			costInvoiceVO.setUpdatedBy(costInvoiceDTO.getCreatedBy());
-		
+
 			if (!costInvoiceVO.getVId().equals(costInvoiceDTO.getVId())) {
-			    if (costInvoiceRepo.existsByvIdAndOrgId(costInvoiceDTO.getVId(), costInvoiceDTO.getOrgId())) {
-			        String errorMessage = String.format("This VId: %s already exists for this organization.", costInvoiceDTO.getVId());
-			        throw new ApplicationException(errorMessage);
-			    }
-			    costInvoiceVO.setVId(costInvoiceDTO.getVId());
+				if (costInvoiceRepo.existsByvIdAndOrgId(costInvoiceDTO.getVId(), costInvoiceDTO.getOrgId())) {
+					String errorMessage = String.format("This VId: %s already exists for this organization.",
+							costInvoiceDTO.getVId());
+					throw new ApplicationException(errorMessage);
+				}
+				costInvoiceVO.setVId(costInvoiceDTO.getVId());
 			}
 
-			
+			getCostInvoiceVOFromCostInvoiceDTO(costInvoiceVO, costInvoiceDTO);
 			message = "CostInvoice Updation Successfully";
 		}
 
-		costInvoiceVO = getCostInvoiceVOFromCostInvoiceDTO(costInvoiceVO, costInvoiceDTO);
+//	 getCostInvoiceVOFromCostInvoiceDTO(costInvoiceVO, costInvoiceDTO);
 		costInvoiceRepo.save(costInvoiceVO);
 
 		Map<String, Object> response = new HashMap<>();
@@ -233,9 +233,6 @@ public class CostInvoiceServiceImpl implements CostInvoiceService {
 		costInvoiceVO.setJobOrderNo(costInvoiceDTO.getJobOrderNo());
 		costInvoiceVO.setVId(costInvoiceDTO.getVId());
 		costInvoiceVO.setVDate(costInvoiceDTO.getVDate());
-		
-		
-
 
 		if (costInvoiceDTO.getId() != null) {
 
@@ -450,9 +447,8 @@ public class CostInvoiceServiceImpl implements CostInvoiceService {
 		costInvoiceVO.setRoundOff(roundOff);
 		costInvoiceVO.setGstInputLcAmt(taxAmount);
 		costInvoiceVO.setSumLcAmt(sumDebitAmount);
-		
-		costInvoiceVO.setAmountInWords(
-				amountInWordsConverterService.convert(costInvoiceVO.getNetBillCurrAmt()));
+
+		costInvoiceVO.setAmountInWords(amountInWordsConverterService.convert(costInvoiceVO.getNetBillCurrAmt()));
 
 		return costInvoiceVO;
 
@@ -623,7 +619,7 @@ public class CostInvoiceServiceImpl implements CostInvoiceService {
 		for (Object[] ch : getJob) {
 			Map<String, Object> map = new HashMap<>();
 			map.put("jobNo", ch[0] != null ? ch[0].toString() : ""); // Empty string if null
-			map.put("customerName", ch[1] != null ? ch[1].toString() : ""); 
+			map.put("customerName", ch[1] != null ? ch[1].toString() : "");
 			List1.add(map);
 		}
 		return List1;
@@ -774,8 +770,7 @@ public class CostInvoiceServiceImpl implements CostInvoiceService {
 			accountsDetailsVO.setGstflag(6);
 			accountsDetailsVO.setAccountsVO(accountsVO);
 			accountsDetailsVOs.add(accountsDetailsVO);
-			
-			
+
 			for (TdsCostInvoiceVO tdsCostInvoiceVO : costInvoiceVO.getTdsCostInvoiceVO()) {
 				AccountsDetailsVO accountsDetailsVO1 = new AccountsDetailsVO();
 				accountsDetailsVO1.setNDebitAmount(BigDecimal.ZERO);
@@ -798,26 +793,26 @@ public class CostInvoiceServiceImpl implements CostInvoiceService {
 
 			}
 
-			if (costInvoiceVO.getRoundOff() != 0) {
-				accountsDetailsVO.setNDebitAmount(BigDecimal.valueOf(costInvoiceVO.getRoundOff()));
-				accountsDetailsVO.setACategory("PAYABLE A/C");
-				accountsDetailsVO.setSubLedgerCode("None");
-				accountsDetailsVO.setDebitAmount(BigDecimal.valueOf(costInvoiceVO.getRoundOff()));
-				accountsDetailsVO.setNCreditAmount(BigDecimal.ZERO);
-				accountsDetailsVO.setCreditAmount(BigDecimal.ZERO);
-				accountsDetailsVO.setArapFlag(false);
-				accountsDetailsVO.setArapAmount(BigDecimal.ZERO);
-				accountsDetailsVO.setBDebitAmount(BigDecimal.valueOf(costInvoiceVO.getRoundOff()));
-				accountsDetailsVO.setBCrAmount(BigDecimal.ZERO);
-				accountsDetailsVO.setBArapAmount(BigDecimal.ZERO);
-				accountsDetailsVO.setACurrency(costInvoiceVO.getCurrency());
-				accountsDetailsVO.setAExRate(costInvoiceVO.getExRate());
-				accountsDetailsVO.setSubledgerName("None");
-				accountsDetailsVO.setNArapAmount(BigDecimal.ZERO);
-				accountsDetailsVO.setGstflag(3);
-				accountsDetailsVO.setAccountsVO(accountsVO);
-				accountsDetailsVOs.add(accountsDetailsVO);
-			}
+//			if (costInvoiceVO.getRoundOff() != 0) {
+//				accountsDetailsVO.setNDebitAmount(BigDecimal.valueOf(costInvoiceVO.getRoundOff()));
+//				accountsDetailsVO.setACategory("PAYABLE A/C");
+//				accountsDetailsVO.setSubLedgerCode("None");
+//				accountsDetailsVO.setDebitAmount(BigDecimal.valueOf(costInvoiceVO.getRoundOff()));
+//				accountsDetailsVO.setNCreditAmount(BigDecimal.ZERO);
+//				accountsDetailsVO.setCreditAmount(BigDecimal.ZERO);
+//				accountsDetailsVO.setArapFlag(false);
+//				accountsDetailsVO.setArapAmount(BigDecimal.ZERO);
+//				accountsDetailsVO.setBDebitAmount(BigDecimal.valueOf(costInvoiceVO.getRoundOff()));
+//				accountsDetailsVO.setBCrAmount(BigDecimal.ZERO);
+//				accountsDetailsVO.setBArapAmount(BigDecimal.ZERO);
+//				accountsDetailsVO.setACurrency(costInvoiceVO.getCurrency());
+//				accountsDetailsVO.setAExRate(costInvoiceVO.getExRate());
+//				accountsDetailsVO.setSubledgerName("None");
+//				accountsDetailsVO.setNArapAmount(BigDecimal.ZERO);
+//				accountsDetailsVO.setGstflag(3);
+//				accountsDetailsVO.setAccountsVO(accountsVO);
+//				accountsDetailsVOs.add(accountsDetailsVO);
+//			}
 
 			// Group and process GST-related ledgers
 			Map<String, BigDecimal> ledgerSumMap = new HashMap<>();
@@ -859,14 +854,14 @@ public class CostInvoiceServiceImpl implements CostInvoiceService {
 			AccountsVO savedAccountsVO = accountsRepo.save(accountsVO);
 			costInvoiceVO.setPurVoucherNo(savedAccountsVO.getDocId());
 			costInvoiceVO.setPurVoucherDate(savedAccountsVO.getDocDate());
-			
+
 //			LocalDate purVouDate = savedAccountsVO.getDocDate();
 //			int creditDays = costInvoiceVO.getCreditDays();
 //			LocalDate dueDate = purVouDate.plusDays(creditDays);
 //			// Save dueDate in your entity
 //			accountsVO.setDueDate(dueDate);
 //			costInvoiceVO.setDueDate(dueDate);
-			
+
 			costInvoiceVO.setApproveStatus(action);
 			costInvoiceVO.setApproveBy(actionBy);
 			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy hh:mm:ss a");
@@ -897,7 +892,7 @@ public class CostInvoiceServiceImpl implements CostInvoiceService {
 		return List1;
 
 	}
-	
+
 	@Override
 	public CostInvoiceVO getCostInvoiceById(Long id) {
 		CostInvoiceVO costInvoiceVO = new CostInvoiceVO();
@@ -906,7 +901,5 @@ public class CostInvoiceServiceImpl implements CostInvoiceService {
 
 		return costInvoiceVO;
 	}
-	
-	
-}
 
+}
