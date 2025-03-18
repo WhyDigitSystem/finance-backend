@@ -134,6 +134,12 @@ public class RCostInvoiceGnaVO {
 	private BigDecimal sumBillAmt;
 	@Column(name = "totaltdsamt", precision = 10, scale = 2)
 	private BigDecimal totalTdsAmt;
+	@Column(name = "mode", length = 10)
+	private String mode;
+	@Column(name = "addresstype")
+	private String addressType;
+	@Column(name = "state")
+	private String state;
 	
 	//APPROVED
 	@Column(name = "approvestatus", length = 20)

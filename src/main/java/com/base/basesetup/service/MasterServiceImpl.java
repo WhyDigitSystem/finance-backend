@@ -752,24 +752,15 @@ public class MasterServiceImpl implements MasterService {
 			if (tdsMasterRepo.existsBySectionNameAndOrgId(tdsMasterDTO.getSectionName(), tdsMasterDTO.getOrgId())) {
 				throw new ApplicationException("The given section name already exists.");
 			}
-			if (tdsMasterRepo.existsBySectionAndOrgId(tdsMasterDTO.getSection(), tdsMasterDTO.getOrgId())) {
-				throw new ApplicationException("The given Section already exists.");
-			}
 			tdsMasterVO.setUpdatedBy(tdsMasterDTO.getCreatedBy());
 			tdsMasterVO.setCreatedBy(tdsMasterDTO.getCreatedBy());
 		}
 
 		if (isUpdate) {
 			TdsMasterVO tdsMaster = tdsMasterRepo.findById(tdsMasterDTO.getId()).orElse(null);
-			if (!tdsMaster.getSection().equalsIgnoreCase(tdsMasterDTO.getSection())) {
-				if (tdsMasterRepo.existsBySectionAndOrgIdAndId(tdsMasterDTO.getSection(), tdsMasterDTO.getOrgId(),
-						tdsMasterDTO.getId())) {
-					throw new ApplicationException("The given section already exists.");
-				}
-			}
 			if (!tdsMaster.getSectionName().equals(tdsMasterDTO.getSectionName())) {
-				if (tdsMasterRepo.existsBySectionNameAndOrgIdAndId(tdsMasterDTO.getSectionName(),
-						tdsMasterDTO.getOrgId(), tdsMasterDTO.getId())) {
+				if (tdsMasterRepo.existsBySectionNameAndOrgId(tdsMasterDTO.getSectionName(),
+						tdsMasterDTO.getOrgId())) {
 					throw new ApplicationException("The given Section name already exists.");
 				}
 			}
@@ -1565,6 +1556,7 @@ public class MasterServiceImpl implements MasterService {
 		chargeTypeRequestVO.setTaxablePercentage(chargeTypeRequestDTO.getTaxablePercentage());
 		chargeTypeRequestVO.setGovtSac(chargeTypeRequestDTO.getGovtSac().toUpperCase());
 		chargeTypeRequestVO.setExcempted(chargeTypeRequestDTO.getExcempted().toUpperCase());
+		chargeTypeRequestVO.setProduct(chargeTypeRequestDTO.getProduct().toUpperCase());
 		chargeTypeRequestVO.setGstTax(chargeTypeRequestDTO.getGstTax());
 		chargeTypeRequestVO.setOrgId(chargeTypeRequestDTO.getOrgId());
 		chargeTypeRequestVO.setActive(chargeTypeRequestDTO.isActive());
@@ -2255,6 +2247,7 @@ public class MasterServiceImpl implements MasterService {
 						String govtSacNumber = getStringCellValue1(row.getCell(9));
 						double gstTax = Double.parseDouble(getStringCellValue1(row.getCell(10)));
 						String activeString = getStringCellValue1(row.getCell(11));
+						String product = getStringCellValue1(row.getCell(12));
 						// Convert activeString to integer and handle the conditions
 						boolean active;
 						if ("1".equals(activeString)) {
@@ -2286,7 +2279,7 @@ public class MasterServiceImpl implements MasterService {
 						chargeTypeRequestVO.setGstTax((float) gstTax);
 						chargeTypeRequestVO.setActive(active);
 						chargeTypeRequestVO.setOrgId(orgId);
-						chargeTypeRequestVO.setProduct("ALL");
+						chargeTypeRequestVO.setProduct(product.toUpperCase());
 						chargeTypeRequestVO.setCreatedBy(createdBy);
 						chargeTypeRequestVO.setUpdatedBy(createdBy);
 						chargeTypeRequestRepo.save(chargeTypeRequestVO);
@@ -2321,8 +2314,9 @@ public class MasterServiceImpl implements MasterService {
 				&& "Taxable".equalsIgnoreCase(getStringCellValue1(headerRow.getCell(7)))
 				&& "Taxable %".equalsIgnoreCase(getStringCellValue1(headerRow.getCell(8)))
 				&& "Govt Sac Number".equalsIgnoreCase(getStringCellValue1(headerRow.getCell(9)))
-				&& "Tax %".equalsIgnoreCase(getStringCellValue1(headerRow.getCell(9)))
-				&& "Active".equalsIgnoreCase(getStringCellValue1(headerRow.getCell(10)));
+				&& "Tax %".equalsIgnoreCase(getStringCellValue1(headerRow.getCell(10)))
+				&& "Active".equalsIgnoreCase(getStringCellValue1(headerRow.getCell(11)))
+				&& "product".equalsIgnoreCase(getStringCellValue1(headerRow.getCell(12)));
 	}
 
 	@Override

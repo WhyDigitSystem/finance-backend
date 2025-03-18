@@ -118,6 +118,12 @@ public class CostDebitNoteVO {
 //	private String costType;
 	@Column(name = "approved")
 	private boolean approved;
+	@Column(name = "vid", length = 50)
+	private String vId;
+	@Column(name = "vdate")
+	private LocalDate vDate;
+	@Column(name="amountinwords")
+	private String amountInWords;
 
 //	SUMMARY
 	@Column(name = "totchargesbillcurramt", precision = 10, scale = 2)
@@ -177,7 +183,7 @@ public class CostDebitNoteVO {
 
 	@OneToMany(mappedBy = "costDebitNoteVO", cascade = CascadeType.ALL)
 	@JsonManagedReference
-	List<ChargerCostDebitNoteVO> costDebitChargesVO;
+	List<ChargerCostDebitNoteVO> chargerCostDebitNoteVO;
 
 	@OneToMany(mappedBy = "costDebitNoteVO", cascade = CascadeType.ALL)
 	@JsonManagedReference

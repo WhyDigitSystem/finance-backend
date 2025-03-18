@@ -66,7 +66,7 @@ public class JobCardVO {
 	private String remarks;
 	@Column(name = "source", length = 50)
 	private String source;	
-	@Column(name = "details", length = 50)
+	@Column(name = "details", length = 100)
 	private String details;	
 	@Column(name = "refno", length = 50)
 	private String refNo;

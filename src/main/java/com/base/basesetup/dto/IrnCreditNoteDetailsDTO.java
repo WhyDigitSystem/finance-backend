@@ -25,5 +25,6 @@ public class IrnCreditNoteDetailsDTO {
 	private BigDecimal exRate;
 	private String exempted;
 	private String sac;
+	private String description;
 	private int GSTPercent;
 }

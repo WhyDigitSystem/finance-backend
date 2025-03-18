@@ -14,6 +14,7 @@ import lombok.NoArgsConstructor;
 public class RCostInvoiceGnaDTO {
 	
 	private Long id;
+	private String mode;
 	private String partyType;
 	private String partyCode;
 	private String supplierBillNo;
@@ -31,6 +32,8 @@ public class RCostInvoiceGnaDTO {
 	private String gstType;
 	private String vId;
 	private LocalDate vDate;
+	private String addressType;
+	private String state;
 
 	
 	//Default fields

@@ -1,5 +1,6 @@
 package com.base.basesetup.service;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -7,6 +8,7 @@ import java.util.Optional;
 import javax.validation.Valid;
 
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.base.basesetup.dto.CityDTO;
 import com.base.basesetup.dto.CompanyDTO;
@@ -19,6 +21,7 @@ import com.base.basesetup.dto.FinancialYearDTO;
 import com.base.basesetup.dto.RegionDTO;
 import com.base.basesetup.dto.ScreenNamesDTO;
 import com.base.basesetup.dto.StateDTO;
+import com.base.basesetup.entity.BankDetailsVO;
 import com.base.basesetup.entity.CityVO;
 import com.base.basesetup.entity.CompanyVO;
 import com.base.basesetup.entity.CountryVO;
@@ -102,6 +105,8 @@ public interface CommonMasterService {
 	CompanyVO updateCompany(CompanyDTO companyDTO) throws ApplicationException;
 
 	void deleteCompany(Long companyid);
+	
+	CompanyVO uploadCompanyLogoInBloob(MultipartFile file, Long id) throws IOException;
 
 	// FINANCIAL YEAR
 
@@ -142,6 +147,10 @@ public interface CommonMasterService {
 	Optional<DesignationVO> getDesignationById(Long id);
 
 	List<DesignationVO> getDesignationByOrgId(Long orgId);
+
+	List<Map<String, Object>> getCompanyByOrgId(Long orgId);
+
+	
 
 
 

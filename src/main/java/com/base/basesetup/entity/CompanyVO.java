@@ -1,16 +1,23 @@
 package com.base.basesetup.entity;
 
+import java.util.List;
+
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Lob;
+import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
+import javax.validation.constraints.Size;
 
 import com.base.basesetup.dto.CreatedUpdatedDate;
 import com.fasterxml.jackson.annotation.JsonGetter;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -76,6 +83,22 @@ public class CompanyVO {
 	private int role;
 	private String ceo;
 	private String gst;
+	@Column(name = "termsandconditions",length=10000)
+	private String termsAndConditions;
+	@Column(name = "cin")
+	private String cin;
+	@Column(name = "panno", length = 10)
+    @Size(min = 10, max = 10, message = "PanNo must be exactly 10 characters.")
+    private String panNo;
+	
+	
+	@Lob
+	@Column(name = "companylogo", columnDefinition = "LONGCLOB")
+	private byte[] companyLogo;
+	
+	@OneToMany(mappedBy = "companyVO", cascade = CascadeType.ALL)
+	@JsonManagedReference
+	List<BankDetailsVO> bankDetailsVO;
 
 	@JsonGetter("active")
 	public String getActive() {

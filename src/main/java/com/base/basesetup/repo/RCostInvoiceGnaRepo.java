@@ -62,14 +62,14 @@ public interface RCostInvoiceGnaRepo extends JpaRepository<RCostInvoiceGnaVO, Lo
 			+ "		b.state, a.gstin")
 	Set<Object[]> getStatedetailsFromPartyMaster(Long orgId, String partyCode);
 	
-	@Query(nativeQuery = true,value=" SELECT  c.city,\r\n"
-			+ "			 CONCAT(c.addressline1, ', ', c.addressline2, ', ', c.addressline3) AS address  ,ROW_NUMBER() OVER (ORDER BY currency) AS id \r\n"
-			+ "			FROM partymaster a JOIN partystate b ON a.partymasterid = b.partymasterid JOIN \r\n"
-			+ "			 partyaddress c ON a.partymasterid = c.partymasterid AND b.state = c.state\r\n"
-			+ "			 WHERE a.orgid = ?1 AND a.partytype ='VENDOR' and partycode=?2 and c.state=?3 "
-			+ "			 AND a.active = 1 ORDER BY  \r\n"
-			+ "		      c.city, address")
-	Set<Object[]> getCitydetailsFromPartyMaster(Long orgId, String partyCode,String state);
+	@Query(nativeQuery = true,value="SELECT  a1.businessplace,CONCAT(a1.addressline1, ',', a1.addressline2, ',', a1.addressline3) AS address FROM partymaster a,partyaddress a1, partystate a2\r\n"
+			+ "where a.partymasterid=a1.partymasterid and a.partymasterid=a2.partymasterid  and a1.state = a2.state and  a.orgid =?1 AND a.partycode =?2\r\n"
+			+ " and a1.state=?3 and a1.addresstype=?4 AND  a.active = 1 ORDER BY  a1.businessplace, address")
+	Set<Object[]> getCitydetailsFromPartyMaster(Long orgId, String partyCode,String state,String addressType);
+	
+	@Query(nativeQuery = true, value = "select a.addresstype from partyaddress a , partystate a1,partymaster a2 where  a2.orgid=?1 and  a.state=?2 and a.state=a1.state and a.partymasterid=a2.partymasterid and \r\n"
+			+ "a2.partymasterid=a1.partymasterid and a2.partycode=?3")
+	Set<Object[]> findByAddressTypeFromPartyAddress(Long orgId, String state, String partyCode);
 
 	@Query(nativeQuery = true, value = "select accountgroupname,currency,gstpercentage from groupledger where orgid=?1 and gsttaxflag!='NA' and category='TAX' and gsttaxflag='INPUT TAX' and gsttype=?2 and gstpercentage=?3  order by gstpercentage desc")
 	Set<Object[]> findInterDetailsForrCostInvoiceGnaPosting(Long orgId, String gstType, Double gstPercent);
