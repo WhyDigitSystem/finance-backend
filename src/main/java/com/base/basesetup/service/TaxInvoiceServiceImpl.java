@@ -793,4 +793,44 @@ public class TaxInvoiceServiceImpl implements TaxInvoiceService {
 
 	}
 
+	@Override
+	public List<Map<String, Object>> getReportDetailsForSalesRegister(String finyear, String fromDate, String toDate,
+			Long orgId, String branchCode, String partyCode) {
+		Set<Object[]> chType = taxInvoiceRepo.getReportDetailsForSalesRegister(finyear, fromDate, toDate, orgId, branchCode,  partyCode);
+		return getReportDetailsForSalesRegister(chType);
+	}
+
+	private List<Map<String, Object>> getReportDetailsForSalesRegister(Set<Object[]> chType) {
+	    List<Map<String, Object>> resultList = new ArrayList<>();
+	    for (Object[] ch : chType) {
+	        Map<String, Object> map = new HashMap<>();
+	        map.put("orgId", ch[0] != null ? ch[0].toString() : "");
+	        map.put("branchCode", ch[1] != null ? ch[1].toString() : "");
+	        map.put("docId", ch[2] != null ? ch[2].toString() : "");
+	        map.put("docDate", ch[3] != null ? ch[3].toString() : "");
+	        map.put("jobOrderNo", ch[4] != null ? ch[4].toString() : "");
+	        map.put("voucherNo", ch[5] != null ? ch[5].toString() : "");
+	        map.put("voucherDate", ch[6] != null ? ch[6].toString() : "");
+	        map.put("billToParty", ch[7] != null ? ch[7].toString() : "");
+	        map.put("controllingOff", ch[8] != null ? ch[8].toString() : ""); // Fix applied here
+	        map.put("billCurrency", ch[9] != null ? ch[9].toString() : "");
+	        map.put("billCurrencyRate", ch[10] != null ? ch[10].toString() : "");
+	        map.put("totalInvAmountBC", ch[11] != null ? ch[11].toString() : "");
+	        map.put("totalInvAmountLC", ch[12] != null ? ch[12].toString() : "");
+	        map.put("totalTaxableAmountLC", ch[13] != null ? ch[13].toString() : "");
+	        map.put("gstType", ch[14] != null ? ch[14].toString() : "");
+	        map.put("totalTaxAmountLC", ch[15] != null ? ch[15].toString() : "");
+	        map.put("totalTaxAmountBC", ch[16] != null ? ch[16].toString() : "");
+	        map.put("roundOffAmountLC", ch[17] != null ? ch[17].toString() : "");
+	        map.put("fcAmount", ch[18] != null ? ch[18].toString() : "");
+	        map.put("lcAmount", ch[19] != null ? ch[19].toString() : "");
+	        map.put("rate", ch[20] != null ? ch[20].toString() : "");
+	        map.put("billAmount", ch[21] != null ? ch[21].toString() : "");
+
+	        resultList.add(map);
+	    }
+	    return resultList;
+	}
+
+
 }

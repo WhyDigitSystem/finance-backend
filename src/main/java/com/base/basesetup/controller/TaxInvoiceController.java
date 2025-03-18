@@ -493,5 +493,36 @@ public class TaxInvoiceController extends BaseController {
 		return ResponseEntity.ok().body(responseDTO);
 	}
 
+	
+	//ReportSalesRegister
+	
+	@GetMapping("/getReportDetailsForSalesRegister")
+	public ResponseEntity<ResponseDTO> getReportDetailsForSalesRegister(@RequestParam String finyear,@RequestParam String fromDate,@RequestParam String toDate ,@RequestParam Long orgId,@RequestParam String branchCode,@RequestParam String partyCode) {
+		String methodName = "getReportDetailsForSalesRegister()";
+		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+		String errorMsg = null;
+		Map<String, Object> responseObjectsMap = new HashMap<>();
+		ResponseDTO responseDTO = null;
+		List<Map<String, Object>> mapp = new ArrayList<>();
+
+		try {
+			mapp = taxInvoiceService.getReportDetailsForSalesRegister(finyear,fromDate,toDate,orgId,branchCode,partyCode);
+		} catch (Exception e) {
+			errorMsg = e.getMessage();
+			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+		}
+
+		if (StringUtils.isBlank(errorMsg)) {
+			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "SalesRegisterReport retrieved successfully");
+			responseObjectsMap.put("taxInvoiceVO", mapp);
+			responseDTO = createServiceResponse(responseObjectsMap);
+		} else {
+			responseDTO = createServiceResponseError(responseObjectsMap, "Failed to retrieve SalesRegisterReport", errorMsg);
+		}
+
+		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+		return ResponseEntity.ok().body(responseDTO);
+	}
+
 
 }
