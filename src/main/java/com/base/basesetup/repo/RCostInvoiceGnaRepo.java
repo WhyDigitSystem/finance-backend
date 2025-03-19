@@ -79,5 +79,35 @@ public interface RCostInvoiceGnaRepo extends JpaRepository<RCostInvoiceGnaVO, Lo
 
 	RCostInvoiceGnaVO findByOrgIdAndIdAndDocId(Long orgId, Long id, String docId);
 
+	@Query(value ="Select branchcode,docid,docdate ,supplietype, suppliername, supplierbillno,  suppliergstin,gsttype,\r\n"
+			+ "sum(charges) charges,sum(OIGST)Output_IGST ,sum(OCGST)Output_CGST ,sum(OSGST)Output_SGST  From (\r\n"
+			+ "Select  branchcode,docid,docdate,edocid,edocdt ,supplietype, suppliername, supplierbillno,  suppliergstin \r\n"
+			+ ",gsttype,charges,\r\n"
+			+ "0 OIGST ,\r\n"
+			+ "0 OCGST,\r\n"
+			+ "0 OSGST\r\n"
+			+ "From (\r\n"
+			+ "select a.branchcode,c.docid,c.docdate,a.docid edocid,a.docdate edocdt \r\n"
+			+ ",a.supplietype,a.suppliername,a.supplierbillno,a.suppliergstin\r\n"
+			+ ",a.gsttype,sum(b.lcamt) charges,0 InputGST, 0 OutputGST \r\n"
+			+ "from costinvoice a, chargercostinvoice b,  accounts c\r\n"
+			+ "Where a.costinvoiceid = b.costinvoiceid \r\n"
+			+ "and a.costinvoiceid = c.sourceid\r\n"
+			+ "And a.cancel ='F'\r\n"
+			+ "and a.orgid=?1\r\n"
+			+ "and a.finyear=?2\r\n"
+			+ "And c.docdate between ?4 and ?5\r\n"
+			+ "and (a.branchcode =?2 or 'ALL' =?2)\r\n"
+			+ "Group by  \r\n"
+			+ "a.branchcode,c.docid ,c.docdate,a.docid,a.docdate\r\n"
+			+ ",a.supplietype,a.suppliername,a.supplierbillno,a.suppliergstin\r\n"
+			+ ",a.gsttype\r\n"
+			+ ")a\r\n"
+			+ ")b\r\n"
+			+ "Group by branchcode,docid,docdate ,supplietype, suppliername, supplierbillno,  suppliergstin,gsttype\r\n"
+			+ "Order by 1,2,4,3  ",nativeQuery =true)
+	Set<Object[]> findRegisterCostInvoiceReport(Long orgId, String branchCode, String finYear, String fromDate,
+			String toDate);
+
 }
 	

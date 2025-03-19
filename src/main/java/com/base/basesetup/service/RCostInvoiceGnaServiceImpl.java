@@ -729,4 +729,36 @@ public class RCostInvoiceGnaServiceImpl implements RCostInvoiceGnaService {
 		return List1;
 
 	}
+
+	@Override
+	public List<Map<String, Object>> getRegisterCostInvoiceReport(Long orgId, String branchCode, String finYear,
+			String fromDate, String toDate) {
+		Set<Object[]> chCode = rCostInvoiceGnaRepo.findRegisterCostInvoiceReport(orgId, branchCode, finYear, fromDate,
+				toDate);
+		return findRegisterCostInvoice(chCode);
+	}
+
+	private List<Map<String, Object>> findRegisterCostInvoice(Set<Object[]> chCode) {
+		List<Map<String, Object>> List1 = new ArrayList<>();
+		for (Object[] ch : chCode) {
+			Map<String, Object> map = new HashMap<>();
+
+			map.put("branchCode", ch[0] != null ? ch[0].toString() : "");
+			map.put("docId", ch[1] != null ? ch[1].toString() : "");
+			map.put("docDate", ch[2] != null ? ch[2].toString() : "");
+			map.put("supplieType", ch[3] != null ? ch[3].toString() : "");
+			map.put("supplierName", ch[4] != null ? ch[4].toString() : "");
+			map.put("supplierBillNo", ch[5] != null ? ch[5].toString() : "");
+			map.put("supplierGstin", ch[6] != null ? ch[6].toString() : "");
+			map.put("gstType", ch[7] != null ? ch[7].toString() : "");
+			map.put("charges", ch[8] != null ? ch[8].toString() : "");
+			map.put("outputIgst", ch[9] != null ? ch[9].toString() : "");
+			map.put("outputCgst", ch[10] != null ? ch[10].toString() : "");
+			map.put("outputSgst", ch[11] != null ? ch[11].toString() : "");
+
+			List1.add(map);
+		}
+		return List1;
+
+	}
 }
