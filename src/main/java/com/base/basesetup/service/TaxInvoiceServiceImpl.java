@@ -834,5 +834,21 @@ public class TaxInvoiceServiceImpl implements TaxInvoiceService {
 	    return resultList;
 	}
 
+	@Override
+	public List<Map<String, Object>> getDsahboardRevenue(Long orgId, String billMonth, String finYear) {
+		
+		Set<Object[]> chType = taxInvoiceRepo.getDsahboardRevenue(orgId, billMonth,finYear);
+		return getDsahboard(chType);
+	}
 
+	private List<Map<String, Object>> getDsahboard(Set<Object[]> chType) {
+		List<Map<String, Object>> List1 = new ArrayList<>();
+		for (Object[] ch : chType) {
+			Map<String, Object> map = new HashMap<>();
+			map.put("amount", ch[0].toString());
+			List1.add(map);
+		}
+		return List1;
+
+	}
 }

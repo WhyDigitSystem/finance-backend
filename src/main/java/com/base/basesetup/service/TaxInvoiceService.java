@@ -53,6 +53,8 @@ public interface TaxInvoiceService {
 	List<Map<String, Object>> getReportDetailsForSalesRegister(String finyear, String fromDate, String toDate,
 			Long orgId, String branchCode, String partyCode);
 
+	List<Map<String, Object>> getDsahboardRevenue(Long orgId, String billMonth, String finYear);
+
 
 
 }
