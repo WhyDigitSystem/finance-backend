@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import org.apache.commons.lang3.ObjectUtils;
@@ -794,7 +795,7 @@ public class TaxInvoiceServiceImpl implements TaxInvoiceService {
 	}
 
 	@Override
-	public List<Map<String, Object>> getReportDetailsForSalesRegister(String finyear, String fromDate, String toDate,
+	public List<Map<String, Object>> getReportDetailsForSalesRegister(String finyear, String fromDate,String toDate,
 			Long orgId, String branchCode, String partyCode) {
 		Set<Object[]> chType = taxInvoiceRepo.getReportDetailsForSalesRegister(finyear, fromDate, toDate, orgId, branchCode,  partyCode);
 		return getReportDetailsForSalesRegister(chType);
@@ -804,7 +805,7 @@ public class TaxInvoiceServiceImpl implements TaxInvoiceService {
 	    List<Map<String, Object>> resultList = new ArrayList<>();
 	    for (Object[] ch : chType) {
 	        Map<String, Object> map = new HashMap<>();
-	        map.put("orgId", ch[0] != null ? ch[0].toString() : "");
+	        
 	        map.put("branchCode", ch[1] != null ? ch[1].toString() : "");
 	        map.put("docId", ch[2] != null ? ch[2].toString() : "");
 	        map.put("docDate", ch[3] != null ? ch[3].toString() : "");
@@ -812,20 +813,21 @@ public class TaxInvoiceServiceImpl implements TaxInvoiceService {
 	        map.put("voucherNo", ch[5] != null ? ch[5].toString() : "");
 	        map.put("voucherDate", ch[6] != null ? ch[6].toString() : "");
 	        map.put("billToParty", ch[7] != null ? ch[7].toString() : "");
-	        map.put("controllingOff", ch[8] != null ? ch[8].toString() : ""); // Fix applied here
+	        map.put("controllingOff", ch[8] != null ? ch[8].toString() : "");
 	        map.put("billCurrency", ch[9] != null ? ch[9].toString() : "");
 	        map.put("billCurrencyRate", ch[10] != null ? ch[10].toString() : "");
-	        map.put("totalInvAmountBC", ch[11] != null ? ch[11].toString() : "");
-	        map.put("totalInvAmountLC", ch[12] != null ? ch[12].toString() : "");
-	        map.put("totalTaxableAmountLC", ch[13] != null ? ch[13].toString() : "");
+	        map.put("totalInvAmountBC", ch[11] != null ? new BigDecimal(ch[11].toString()) : BigDecimal.ZERO);
+	        map.put("totalInvAmountLC", ch[12] != null ? new BigDecimal(ch[12].toString()) : BigDecimal.ZERO);
+	        map.put("totalTaxableAmountLC", ch[13] != null ? new BigDecimal(ch[13].toString()) : BigDecimal.ZERO);
 	        map.put("gstType", ch[14] != null ? ch[14].toString() : "");
-	        map.put("totalTaxAmountLC", ch[15] != null ? ch[15].toString() : "");
-	        map.put("totalTaxAmountBC", ch[16] != null ? ch[16].toString() : "");
-	        map.put("roundOffAmountLC", ch[17] != null ? ch[17].toString() : "");
-	        map.put("fcAmount", ch[18] != null ? ch[18].toString() : "");
-	        map.put("lcAmount", ch[19] != null ? ch[19].toString() : "");
-	        map.put("rate", ch[20] != null ? ch[20].toString() : "");
-	        map.put("billAmount", ch[21] != null ? ch[21].toString() : "");
+	        map.put("totalTaxAmountLC", ch[15] != null ? new BigDecimal(ch[15].toString()) : BigDecimal.ZERO);
+	        map.put("totalTaxAmountBC", ch[16] != null ? new BigDecimal(ch[16].toString()) : BigDecimal.ZERO);
+	        map.put("roundOffAmountLC", ch[17] != null ? new BigDecimal(ch[17].toString()) : BigDecimal.ZERO);
+	        map.put("fcAmount", ch[18] != null ? new BigDecimal(ch[18].toString()) : BigDecimal.ZERO);
+	        map.put("lcAmount", ch[19] != null ? new BigDecimal(ch[19].toString()) : BigDecimal.ZERO);
+	        map.put("rate", ch[20] != null ? new BigDecimal(ch[20].toString()) : BigDecimal.ZERO);
+	        map.put("billAmount", ch[21] != null ? new BigDecimal(ch[21].toString()) : BigDecimal.ZERO);
+	        map.put("partyType", ch[22] != null ? ch[22].toString() : "");
 
 	        resultList.add(map);
 	    }

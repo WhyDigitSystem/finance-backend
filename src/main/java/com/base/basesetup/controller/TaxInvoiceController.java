@@ -3,6 +3,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -497,7 +498,8 @@ public class TaxInvoiceController extends BaseController {
 	//ReportSalesRegister
 	
 	@GetMapping("/getReportDetailsForSalesRegister")
-	public ResponseEntity<ResponseDTO> getReportDetailsForSalesRegister(@RequestParam String finyear,@RequestParam String fromDate,@RequestParam String toDate ,@RequestParam Long orgId,@RequestParam String branchCode,@RequestParam String partyCode) {
+	public ResponseEntity<ResponseDTO> getReportDetailsForSalesRegister(@RequestParam String finyear, @RequestParam(required = false) String fromDate,
+	        @RequestParam(required = false) String toDate ,@RequestParam Long orgId,@RequestParam String branchCode,@RequestParam String partyCode) {
 		String methodName = "getReportDetailsForSalesRegister()";
 		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
 		String errorMsg = null;
