@@ -95,7 +95,7 @@ public interface RCostInvoiceGnaRepo extends JpaRepository<RCostInvoiceGnaVO, Lo
 			+ "and a.costinvoiceid = c.sourceid\r\n"
 			+ "And a.cancel ='F'\r\n"
 			+ "and a.orgid=?1\r\n"
-			+ "and a.finyear=?2\r\n"
+			+ "and a.finyear=?3\r\n"
 			+ "And c.docdate between ?4 and ?5\r\n"
 			+ "and (a.branchcode =?2 or 'ALL' =?2)\r\n"
 			+ "Group by  \r\n"
