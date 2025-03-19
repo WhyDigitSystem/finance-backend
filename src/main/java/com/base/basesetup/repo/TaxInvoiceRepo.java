@@ -1,6 +1,7 @@
 package com.base.basesetup.repo;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -74,9 +75,70 @@ public interface TaxInvoiceRepo extends JpaRepository<TaxInvoiceVO, Long> {
 
 	boolean existsByvIdAndOrgId(String vId, Long orgId);
 
+	@Query(nativeQuery = true,value = "SELECT      \r\n"
+			+ "    a.orgid, a.branchcode, a.docid, a.docdate, a.joborderno, \r\n"
+			+ "    c.docid AS voucherno, c.docdate AS voucherdate, \r\n"
+			+ "    e.partyname AS billtoparty, e.controllingoff, \r\n"
+			+ "    a.billcurr, a.billcurrrate, a.totalinvamountbc, a.totalinvamountlc, \r\n"
+			+ "    a.totaltaxableamountlc, a.gsttype, a.totaltaxamountlc, a.totaltaxamountbc, \r\n"
+			+ "    a.roundoffamountlc, \r\n"
+			+ "    SUM(b.fcamount) AS fcamt, SUM(b.lcamount) AS lcamt, \r\n"
+			+ "    SUM(b.rate) AS rate, SUM(b.billamount) AS billamount ,\r\n"
+			+ "    a.partytype\r\n"
+			+ "FROM taxinvoice a \r\n"
+			+ "JOIN taxinvoicedetails b ON a.taxinvoiceid = b.taxinvoiceid   \r\n"
+			+ "JOIN accounts c ON a.docid = c.refno  \r\n"
+			+ "JOIN partymaster e ON a.partycode = e.partycode\r\n"
+			+ "WHERE c.finyear = ?1\r\n"
+			+ "AND (\r\n"
+			+ "    (?2 IS NULL OR ?2 = '' OR ?3 IS NULL OR ?3 = '') \r\n"
+			+ "    OR c.docdate BETWEEN STR_TO_DATE(?2, '%Y-%m-%d') AND STR_TO_DATE(?3, '%Y-%m-%d')\r\n"
+			+ ")\r\n"
+			+ "AND a.orgid = ?4\r\n"
+			+ "AND (a.branchcode = ?5 OR ?5 = 'ALL') \r\n"
+			+ "AND (e.partycode = ?6 OR ?6 = 'ALL')  \r\n"
+			+ "GROUP BY a.orgid, a.branchcode, a.docid, a.docdate, a.joborderno, \r\n"
+			+ "         c.docid, c.docdate, e.partyname, e.controllingoff, \r\n"
+			+ "         a.billcurr, a.billcurrrate, a.totalinvamountbc, a.totalinvamountlc, \r\n"
+			+ "         a.totaltaxableamountlc, a.gsttype, a.totaltaxamountlc, a.totaltaxamountbc, \r\n"
+			+ "         a.roundoffamountlc , a.partytype\r\n"
+			+ "UNION\r\n"
+			+ "SELECT \r\n"
+			+ "    a.orgid, a.branchcode, a.docid, a.docdate, a.jobno AS joborderno, \r\n"
+			+ "    c.docid AS voucherno, c.docdate AS voucherdate, \r\n"
+			+ "    e.partyname AS billtoparty, e.controllingoff, \r\n"
+			+ "    a.billcurr, a.billcurrrate, a.totalinvamountbc, a.totalinvamountlc, \r\n"
+			+ "    a.totaltaxableamountlc, a.gsttype, \r\n"
+			+ "    a.totaltaxamountlc, \r\n"
+			+ "    0 AS totaltaxamountbc, \r\n"
+			+ "    a.roundoffamountlc,  \r\n"
+			+ "    SUM(b.fcamount) AS fcamt, SUM(b.lcamount) AS lcamt, \r\n"
+			+ "    SUM(b.rate) AS rate, SUM(b.billamount) AS billamount , a.partytype\r\n"
+			+ "FROM irncreditnote a \r\n"
+			+ "JOIN irncreditnotedetails b ON a.irncreditnoteid = b.irncreditnoteid\r\n"
+			+ "JOIN accounts c ON a.docid = c.refno\r\n"
+			+ "JOIN partymaster e ON a.partycode = e.partycode\r\n"
+			+ "WHERE c.finyear = ?1\r\n"
+			+ "AND (\r\n"
+			+ "    (?2 IS NULL OR ?2 = '' OR ?3 IS NULL OR ?3 = '') \r\n"
+			+ "    OR c.docdate BETWEEN STR_TO_DATE(?2, '%Y-%m-%d') AND STR_TO_DATE(?3, '%Y-%m-%d')\r\n"
+			+ ")\r\n"
+			+ "\r\n"
+			+ "AND a.orgid = ?4\r\n"
+			+ "AND (a.branchcode = ?5 OR ?5 = 'ALL') \r\n"
+			+ "AND (e.partycode = ?6 OR ?6 = 'ALL') \r\n"
+			+ "GROUP BY a.orgid, a.branchcode, a.docid, a.docdate, a.jobno, \r\n"
+			+ "         e.partyname, e.controllingoff, \r\n"
+			+ "         a.billcurr, a.billcurrrate, a.totalinvamountbc, a.totalinvamountlc, \r\n"
+			+ "         a.totaltaxableamountlc, a.gsttype, a.totaltaxamountlc, \r\n"
+			+ "         a.roundoffamountlc, c.docid, c.docdate, a.partytype\r\n"
+			+ "ORDER BY docdate, docid;\r\n"
+			+ "")
+	Set<Object[]> getReportDetailsForSalesRegister(String finyear, String fromDate, String toDate, Long orgId,
+			String branchCode, String partyCode);
+
 
 
 
 	
-
 }
