@@ -60,4 +60,6 @@ public interface CostInvoiceService {
 			throws ApplicationException;
 
 	List<Map<String, Object>> getCreditDaysFromVendor(Long orgId, String supplierCode);
+
+	CostInvoiceVO getCostInvoiceById(Long id);
 }

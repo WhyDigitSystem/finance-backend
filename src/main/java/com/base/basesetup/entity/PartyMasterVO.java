@@ -59,7 +59,7 @@ public class PartyMasterVO {
     @Column(name = "accounttype", length = 15)
     private String accountType;
 
-    @Column(name = "bussinesstype", length = 15)
+    @Column(name = "bussinesstype", length = 100)
     private String bussinessType;
 
     @Column(name = "carriercode", length = 25)

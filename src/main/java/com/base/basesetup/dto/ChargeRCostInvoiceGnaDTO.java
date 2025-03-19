@@ -17,7 +17,6 @@ public class ChargeRCostInvoiceGnaDTO {
 	private BigDecimal exRate;
 	private BigDecimal rate;
 	private float gstPer;
-	private BigDecimal gtaamount;
 
 
 	

@@ -22,7 +22,7 @@ public interface JobCardRepo extends JpaRepository<JobCardVO, Long> {
 			+ "	and a.orgid=?1  and a.partyname=?2 group by a1.salesperson")
 	Set<Object[]> findBySalesPreson(Long orgId, String partyName);
 
-	@Query(nativeQuery = true, value = "select partyname , partycode from partymaster where orgid=?1 and active=1 group by partyname,partycode")
+	@Query(nativeQuery = true, value = "select partyname , partycode from partymaster where orgid=?1 and active=1 and partytype='CUSTOMER' group by partyname,partycode")
 	Set<Object[]> findAllCustomers(Long orgId);
 
 	@Query(nativeQuery = true, value = "select a.totalinvamountlc from taxinvoice a where a.orgid=?1 and a.partyname=?2 and a.approvestatus='Approved'\r\n"
