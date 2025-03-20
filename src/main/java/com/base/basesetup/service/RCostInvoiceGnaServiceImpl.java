@@ -732,9 +732,9 @@ public class RCostInvoiceGnaServiceImpl implements RCostInvoiceGnaService {
 
 	@Override
 	public List<Map<String, Object>> getRegisterCostInvoiceReport(Long orgId, String branchCode, String finYear,
-			String fromDate, String toDate) {
+			String fromDate, String toDate,String partyCode) {
 		Set<Object[]> chCode = rCostInvoiceGnaRepo.findRegisterCostInvoiceReport(orgId, branchCode, finYear, fromDate,
-				toDate);
+				toDate,partyCode);
 		return findRegisterCostInvoice(chCode);
 	}
 

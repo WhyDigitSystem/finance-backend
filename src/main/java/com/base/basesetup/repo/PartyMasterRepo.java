@@ -1,14 +1,13 @@
 package com.base.basesetup.repo;
 
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import com.base.basesetup.entity.PartyMasterVO;
-
-
 
 @Repository
 public interface PartyMasterRepo extends JpaRepository<PartyMasterVO, Long> {
@@ -19,7 +18,7 @@ public interface PartyMasterRepo extends JpaRepository<PartyMasterVO, Long> {
 	@Query(nativeQuery = true, value = "select * from partymaster where orgid=?1")
 	List<PartyMasterVO> findByOrgId(Long orgid);
 
-	@Query(nativeQuery = true,value="select concat(prefixfield,lpad(lastno,5,0)) AS docid from documenttypemappingdetails where orgid=?1 and finyear=?2 and branchcode=?3 and screencode=?4")
+	@Query(nativeQuery = true, value = "select concat(prefixfield,lpad(lastno,5,0)) AS docid from documenttypemappingdetails where orgid=?1 and finyear=?2 and branchcode=?3 and screencode=?4")
 	String getPartyMasterDocId(Long orgId, String finYear, String branchCode, String screenCode);
 
 	@Query(value = "select a from PartyMasterVO a where a.orgId=?1 and a.partyType=?2 and a.active=true")
@@ -27,20 +26,225 @@ public interface PartyMasterRepo extends JpaRepository<PartyMasterVO, Long> {
 
 	PartyMasterVO findByPartyCode(String partyCode);
 
-	@Query(nativeQuery =true,value ="select * from partymaster where orgid=?1 and partytype='CUSTOMER'")
+	@Query(nativeQuery = true, value = "select * from partymaster where orgid=?1 and partytype='CUSTOMER'")
 	List<PartyMasterVO> getAllCustomers(Long orgId);
 
-	@Query(nativeQuery =true,value ="select * from partymaster where orgid=?1 and partytype='VENDOR'")
+	@Query(nativeQuery = true, value = "select * from partymaster where orgid=?1 and partytype='VENDOR'")
 	List<PartyMasterVO> getAllVendors(Long orgId);
 
 	boolean existsByPartyNameAndOrgId(String customerName, long orgId);
 
 	boolean existsByPartyNameAndOrgIdAndPartyType(String customerName, long orgId, String partyType);
 
-
+	@Query(nativeQuery = true, value = "SELECT \r\n"
+			+ "    1 AS sno,\r\n"
+			+ "    0 AS recordid,\r\n"
+			+ "    NULL AS docid,\r\n"
+			+ "    NULL AS docdate,\r\n"
+			+ "    NULL AS refno,\r\n"
+			+ "    NULL AS refdate,\r\n"
+			+ "    NULL AS supprefno,\r\n"
+			+ "    NULL AS supprefdate,\r\n"
+			+ "    p.partycode,\r\n"
+			+ "    p.partyname,\r\n"
+			+ "    NULL AS currency,\r\n"
+			+ "    (SUM(t2.bdebitamount) - SUM(t2.bcreditamount)) AS opbal,\r\n"
+			+ "    0 AS dbamount,\r\n"
+			+ "    0 AS cramount,\r\n"
+			+ "    0 AS billdbamount,\r\n"
+			+ "    0 AS billcramount\r\n"
+			+ "FROM \r\n"
+			+ "    accountsdetails t2\r\n"
+			+ "JOIN \r\n"
+			+ "    accounts t1 ON t1.accountsid = t2.accountsid\r\n"
+			+ "JOIN \r\n"
+			+ "    partymaster p ON t2.subledgercode = p.partycode\r\n"
+			+ "JOIN \r\n"
+			+ "    branch dm ON dm.branchcode = t1.branchcode\r\n"
+			+ "WHERE \r\n"
+			+ "    t1.CANCEL = 0\r\n"
+			+ "    AND (\r\n"
+			+ "        ?5 IS NULL \r\n"
+			+ "        OR ?5 = ''\r\n"
+			+ "        OR t1.docdate = STR_TO_DATE(?5, '%Y-%m-%d')\r\n"
+			+ "    )\r\n"
+			+ "    AND (p.partyname = ?2 or 'ALL'=?2)\r\n"
+			+ "    AND (p.partytype = ?3 or 'CUSTOMER'=?3 OR 'VENDOR'=?3 OR 'ALL'= ?3 )\r\n"
+			+ "    AND t2.acategory IN ('PAYABLE A/C', 'RECEIVABLE A/C')\r\n"
+			+ "    AND t1.orgid = ?1\r\n"
+			+ "    AND ('ALL' = ?4 OR t1.branch = ?4)\r\n"
+			+ "GROUP BY \r\n"
+			+ "    t2.accountname,\r\n"
+			+ "    p.partycode,\r\n"
+			+ "    p.partyname\r\n"
+			+ "\r\n"
+			+ "UNION\r\n"
+			+ "\r\n"
+			+ "SELECT \r\n"
+			+ "    2 AS sno,\r\n"
+			+ "    t1.accountsid AS recordid,\r\n"
+			+ "    t1.docid,\r\n"
+			+ "    t1.docdate,\r\n"
+			+ "    t1.refno,\r\n"
+			+ "    t1.refdate,\r\n"
+			+ "    t1.supplierrefno,\r\n"
+			+ "    t1.supplierrefdate,\r\n"
+			+ "    p.partycode,\r\n"
+			+ "    p.partyname,\r\n"
+			+ "    t1.currency,\r\n"
+			+ "    0 AS opbal,\r\n"
+			+ "    SUM(t2.bdebitamount) AS dbamount,\r\n"
+			+ "    SUM(t2.bcreditamount) AS cramount,\r\n"
+			+ "    SUM(t2.debitamount) AS billdbamount,\r\n"
+			+ "    SUM(t2.creditamount) AS billcramount\r\n"
+			+ "FROM \r\n"
+			+ "    accountsdetails t2\r\n"
+			+ "JOIN \r\n"
+			+ "    accounts t1 ON t1.accountsid = t2.accountsid\r\n"
+			+ "JOIN \r\n"
+			+ "    partymaster p ON t2.subledgercode = p.partycode\r\n"
+			+ "JOIN \r\n"
+			+ "    branch dm ON dm.branchcode = t1.branchcode\r\n"
+			+ "WHERE \r\n"
+			+ "    t1.CANCEL = 0\r\n"
+			+ "    AND (\r\n"
+			+ "        ?5 IS NULL \r\n"
+			+ "        OR ?5 = ''\r\n"
+			+ "        OR t1.docdate BETWEEN STR_TO_DATE(?5, '%Y-%m-%d') AND STR_TO_DATE(?6, '%Y-%m-%d')\r\n"
+			+ "        OR ?6 IS NULL \r\n"
+			+ "        OR ?6 = ''\r\n"
+			+ "    )\r\n"
+			+ "    AND (p.partyname = ?2 or 'ALL'=?2)\r\n"
+			+ "    AND t1.orgid = ?1\r\n"
+			+ "    AND (p.partytype = ?3 or 'CUSTOMER'=?3 OR 'VENDOR'=?3  OR 'ALL'= ?3 )\r\n"
+			+ "    AND ('ALL' = ?4 OR t1.branch = ?4)\r\n"
+			+ "    AND t2.acategory IN ('PAYABLE A/C', 'RECEIVABLE A/C')\r\n"
+			+ "GROUP BY \r\n"
+			+ "    t1.accountsid,\r\n"
+			+ "    t1.docid,\r\n"
+			+ "    t1.docdate,\r\n"
+			+ "    t1.refno,\r\n"
+			+ "    t1.refdate,\r\n"
+			+ "    t1.supplierrefno,\r\n"
+			+ "    t1.supplierrefdate,\r\n"
+			+ "    p.partyname,\r\n"
+			+ "    p.partycode,\r\n"
+			+ "    t1.currency\r\n"
+			+ "ORDER BY \r\n"
+			+ "    sno, docdate, docid")
+	Set<Object[]> getAllPartyLedgerReport(Long orgId,String partyName,String partyType,String branch,String fromDate,String toDate);
 	
-
-
+	
+	@Query(nativeQuery = true, value = "WITH \r\n"
+			+ "    b AS (\r\n"
+			+ "        SELECT \r\n"
+			+ "            branch, \r\n"
+			+ "            branchcode\r\n"
+			+ "        FROM  \r\n"
+			+ "            branch \r\n"
+			+ "    ), \r\n"
+			+ "    p AS (\r\n"
+			+ "        SELECT \r\n"
+			+ "            partycode, \r\n"
+			+ "            partyname \r\n"
+			+ "        FROM \r\n"
+			+ "            partymaster\r\n"
+			+ "    ), \r\n"
+			+ "    a AS (\r\n"
+			+ "        SELECT \r\n"
+			+ "            subledgername \r\n"
+			+ "        FROM \r\n"
+			+ "            (\r\n"
+			+ "                SELECT \r\n"
+			+ "                    subledgername, \r\n"
+			+ "                    COUNT(accountsid) AS count_accounts,\r\n"
+			+ "                    ROW_NUMBER() OVER (PARTITION BY accountsid ORDER BY COUNT(accountsid) DESC) AS row_num  \r\n"
+			+ "                FROM \r\n"
+			+ "                    accountsdetails\r\n"
+			+ "                WHERE \r\n"
+			+ "                    subledgername = 'None' \r\n"
+			+ "                GROUP BY \r\n"
+			+ "                    subledgername, accountsid\r\n"
+			+ "            ) t  \r\n"
+			+ "        WHERE \r\n"
+			+ "            row_num = 1\r\n"
+			+ "    )\r\n"
+			+ "SELECT \r\n"
+			+ "    1 AS ids, \r\n"
+			+ "    0 AS recordid, \r\n"
+			+ "    b.branch AS branchname, \r\n"
+			+ "    NULL AS voucher_date, \r\n"
+			+ "    NULL AS voucher_number, \r\n"
+			+ "    t2.subledgername AS partyname,\r\n"
+			+ "    (SUM(t2.bdebitamount) - SUM(t2.bcreditamount)) AS opbal, \r\n"
+			+ "    NULL AS currency, \r\n"
+			+ "    0 AS dbamount, \r\n"
+			+ "    0 AS cramount, \r\n"
+			+ "    0 AS ndbamount, \r\n"
+			+ "    0 AS ncramount \r\n"
+			+ "FROM \r\n"
+			+ "    accountsdetails t2\r\n"
+			+ "JOIN \r\n"
+			+ "    accounts t1 ON t1.accountsid = t2.accountsid\r\n"
+			+ "JOIN \r\n"
+			+ "    b ON t1.branchcode = b.branchcode\r\n"
+			+ "JOIN \r\n"
+			+ "    p ON t2.subledgercode = p.partycode\r\n"
+			+ "WHERE \r\n"
+			+ "    t1.CANCEL = 0\r\n"
+			+ "    AND t1.docdate < STR_TO_DATE(?3, '%Y-%m-%d')\r\n"
+			+ "    AND ('ALL' =?2 OR b.branchcode = ?2)\r\n"
+			+ "    AND t1.orgid =?1\r\n"
+			+ "GROUP BY \r\n"
+			+ "    b.branch, \r\n"
+			+ "    p.partyname, \r\n"
+			+ "    t2.subledgername\r\n"
+			+ "\r\n"
+			+ "UNION \r\n"
+			+ "SELECT \r\n"
+			+ "    2 AS ids, \r\n"
+			+ "    t1.accountsid AS recordid, \r\n"
+			+ "    b.branch AS branchname, \r\n"
+			+ "    t1.docdate AS voucher_date, \r\n"
+			+ "    t1.docid AS voucher_number, \r\n"
+			+ "    t2.subledgername AS partyname,\r\n"
+			+ "    0 AS opbal, \r\n"
+			+ "    t1.currency, \r\n"
+			+ "    SUM(t2.bdebitamount) AS dbamount, \r\n"
+			+ "    SUM(t2.bcreditamount) AS cramount, \r\n"
+			+ "    SUM(t2.debitamount) AS ndbamount, \r\n"
+			+ "    SUM(t2.creditamount) AS ncramount \r\n"
+			+ "FROM \r\n"
+			+ "    accountsdetails t2\r\n"
+			+ "JOIN \r\n"
+			+ "    accounts t1 ON t1.accountsid = t2.accountsid\r\n"
+			+ "JOIN \r\n"
+			+ "    b ON t1.branchcode = b.branchcode\r\n"
+			+ "JOIN \r\n"
+			+ "    p ON t2.subledgercode = p.partycode\r\n"
+			+ "LEFT JOIN \r\n"
+			+ "    a ON a.subledgername = t2.subledgername\r\n"
+			+ "WHERE \r\n"
+			+ "    t1.CANCEL = 0 \r\n"
+			+ "    AND t1.docdate BETWEEN STR_TO_DATE(?3, '%Y-%m-%d') AND STR_TO_DATE(?4, '%Y-%m-%d')\r\n"
+			+ "    AND ('ALL' =?2 OR b.branchcode =?2)\r\n"
+			+ "    AND t1.orgid =?1\r\n"
+			+ "GROUP BY \r\n"
+			+ "    b.branch, \r\n"
+			+ "    t1.currency, \r\n"
+			+ "    t1.docdate, \r\n"
+			+ "    t1.docid, \r\n"
+			+ "    t1.refno, \r\n"
+			+ "    t1.refdate, \r\n"
+			+ "    t1.chequeno, \r\n"
+			+ "    t1.chequedate, \r\n"
+			+ "    t1.remarks, \r\n"
+			+ "    a.subledgername, \r\n"
+			+ "    t1.currency, \r\n"
+			+ "    t1.exrate, \r\n"
+			+ "    p.partyname, \r\n"
+			+ "    t1.accountsid, \r\n"
+			+ "    t2.subledgername")
+	Set<Object[]> getAllLedgerReport(Long orgId,String branchCode,String fromDate,String toDate);
 
 }
-

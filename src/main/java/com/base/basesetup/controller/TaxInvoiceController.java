@@ -498,8 +498,8 @@ public class TaxInvoiceController extends BaseController {
 	//ReportSalesRegister
 	
 	@GetMapping("/getReportDetailsForSalesRegister")
-	public ResponseEntity<ResponseDTO> getReportDetailsForSalesRegister(@RequestParam String finyear, @RequestParam(required = false) String fromDate,
-	        @RequestParam(required = false) String toDate ,@RequestParam Long orgId,@RequestParam String branchCode,@RequestParam String partyCode) {
+	public ResponseEntity<ResponseDTO> getReportDetailsForSalesRegister(@RequestParam (required =false) String finyear, @RequestParam(required = false) String fromDate,
+	        @RequestParam(required = false) String toDate ,@RequestParam(required =false) Long orgId,@RequestParam(required =false) String branchCode,@RequestParam(required =false) String partyCode) {
 		String methodName = "getReportDetailsForSalesRegister()";
 		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
 		String errorMsg = null;
