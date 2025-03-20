@@ -904,4 +904,22 @@ public class CostInvoiceServiceImpl implements CostInvoiceService {
 		return costInvoiceVO;
 	}
 
+	@Override
+	public List<Map<String, Object>> getDsahboardCost(Long orgId, String billMonth, String finYear) {
+		Set<Object[]> chType = costInvoiceRepo.getDsahboardCost(orgId, billMonth,finYear);
+		return getDash(chType);
+	}
+
+	private List<Map<String, Object>> getDash(Set<Object[]> chType) {
+		List<Map<String, Object>> List1 = new ArrayList<>();
+		for (Object[] ch : chType) {
+			if(ch!=null) {
+			Map<String, Object> map = new HashMap<>();
+			map.put("amount", ch[0] != null ? ch[0].toString() : "0");
+			List1.add(map);
+		}
+		}
+		return List1;
+
+	}
 }

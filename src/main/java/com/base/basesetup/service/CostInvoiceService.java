@@ -62,4 +62,6 @@ public interface CostInvoiceService {
 	List<Map<String, Object>> getCreditDaysFromVendor(Long orgId, String supplierCode);
 
 	CostInvoiceVO getCostInvoiceById(Long id);
+
+	List<Map<String, Object>> getDsahboardCost(Long orgId, String billMonth, String finYear);
 }
