@@ -413,4 +413,60 @@ public class PartyTypeController extends BaseController {
 		return ResponseEntity.ok().body(responseDTO);
 	}
 
+	@GetMapping("/getAllPartyLedgerReport")
+	public ResponseEntity<ResponseDTO> getAllPartyLedgerReport(@RequestParam(required = false) Long orgId,@RequestParam(required = false) String partyName,@RequestParam(required = false) String partyType, @RequestParam(required = false) String branch,@RequestParam(required = false) String fromDate,@RequestParam(required = false) String toDate) {
+		String methodName = "getAllPartyLedgerReport()";
+		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+		String errorMsg = null;
+		Map<String, Object> responseObjectsMap = new HashMap<>();
+		ResponseDTO responseDTO = null;
+		List<Map<String, Object>> mapp = new ArrayList<>();
+
+		try {
+			mapp = partyTypeService.getAllPartyLedgerReport(orgId, partyName,partyType, branch, fromDate, toDate);
+		} catch (Exception e) {
+			errorMsg = e.getMessage();
+			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+		}
+
+		if (StringUtils.isBlank(errorMsg)) {
+			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "PartyLedger retrieved successfully");
+			responseObjectsMap.put("partyMasterVO", mapp);
+			responseDTO = createServiceResponse(responseObjectsMap);
+		} else {
+			responseDTO = createServiceResponseError(responseObjectsMap, "Failed to retrieve PartyLedger", errorMsg);
+		}
+
+		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+		return ResponseEntity.ok().body(responseDTO);
+	}
+	
+	
+	@GetMapping("/getAllLedgerReport")
+	public ResponseEntity<ResponseDTO> getAllLedgerReport(@RequestParam(required = false) Long orgId,@RequestParam(required = false) String accountName, @RequestParam(required = false) String branchCode,@RequestParam(required = false) String fromDate,@RequestParam(required = false) String toDate) {
+		String methodName = "getAllLedgerReport()";
+		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+		String errorMsg = null;
+		Map<String, Object> responseObjectsMap = new HashMap<>();
+		ResponseDTO responseDTO = null;
+		List<Map<String, Object>> mapp = new ArrayList<>();
+
+		try {
+			mapp = partyTypeService.getAllLedgerReport(orgId,accountName, branchCode, fromDate, toDate);
+		} catch (Exception e) {
+			errorMsg = e.getMessage();
+			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+		}
+
+		if (StringUtils.isBlank(errorMsg)) {
+			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "LedgerReport retrieved successfully");
+			responseObjectsMap.put("partyMasterVO", mapp);
+			responseDTO = createServiceResponse(responseObjectsMap);
+		} else {
+			responseDTO = createServiceResponseError(responseObjectsMap, "Failed to retrieve LedgerReport", errorMsg);
+		}
+
+		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+		return ResponseEntity.ok().body(responseDTO);
+	}
 }

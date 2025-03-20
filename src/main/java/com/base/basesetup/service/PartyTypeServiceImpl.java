@@ -306,21 +306,22 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 //	}
 
 	private String getStringCellValue(Cell cell) {
-	    if (cell == null) return "";
+		if (cell == null)
+			return "";
 
-	    switch (cell.getCellType()) {
-	        case STRING:
-	            return cell.getStringCellValue().trim();
-	        case NUMERIC:
-	            double numericValue = cell.getNumericCellValue();
-	            if (numericValue == Math.floor(numericValue)) {
-	                // If it's a whole number, convert without decimal point
-	                return String.valueOf((long) numericValue);
-	            }
-	            return String.valueOf(numericValue);
-	        default:
-	            return "";
-	    }
+		switch (cell.getCellType()) {
+		case STRING:
+			return cell.getStringCellValue().trim();
+		case NUMERIC:
+			double numericValue = cell.getNumericCellValue();
+			if (numericValue == Math.floor(numericValue)) {
+				// If it's a whole number, convert without decimal point
+				return String.valueOf((long) numericValue);
+			}
+			return String.valueOf(numericValue);
+		default:
+			return "";
+		}
 	}
 
 	private Long getLongCellValue(Cell cell) {
@@ -346,13 +347,13 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 
 		if (ObjectUtils.isEmpty(customersDTO.getId())) {
 			String partyType = "CUSTOMER";
-			if (partyMasterRepo.existsByPartyNameAndOrgIdAndPartyType(customersDTO.getCustomerName(), customersDTO.getOrgId(),partyType)) {
+			if (partyMasterRepo.existsByPartyNameAndOrgIdAndPartyType(customersDTO.getCustomerName(),
+					customersDTO.getOrgId(), partyType)) {
 				String errorMessage = String.format("This CustomerName: %s Already Exists in This Organization",
 						customersDTO.getCustomerName());
 				throw new ApplicationException(errorMessage);
 			}
 
-		
 			// PARTCODE DOCID API
 			String partyTypeDocId = partyTypeRepo.getPartyTypeDocId(customersDTO.getOrgId(), partyType);
 			partyMasterVO.setPartyCode(partyTypeDocId);
@@ -375,7 +376,7 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 			if (!partyMasterVO.getPartyName().equalsIgnoreCase(customersDTO.getCustomerName())) {
 				String partyType = "CUSTOMER";
 				if (partyMasterRepo.existsByPartyNameAndOrgIdAndPartyType(customersDTO.getCustomerName(),
-						customersDTO.getOrgId(),partyType)) {
+						customersDTO.getOrgId(), partyType)) {
 					String errorMessage = String.format("This CustomerName: %s Already Exists in This Organization",
 							customersDTO.getCustomerName());
 					throw new ApplicationException(errorMessage);
@@ -520,13 +521,13 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 
 		if (ObjectUtils.isEmpty(vendorDTO.getId())) {
 			String partyType = "VENDOR";
-			if (partyMasterRepo.existsByPartyNameAndOrgIdAndPartyType(vendorDTO.getVendorName(), vendorDTO.getOrgId(),partyType)) {
+			if (partyMasterRepo.existsByPartyNameAndOrgIdAndPartyType(vendorDTO.getVendorName(), vendorDTO.getOrgId(),
+					partyType)) {
 				String errorMessage = String.format("This Vendor Name: %s Already Exists in This Organization",
 						vendorDTO.getVendorName());
 				throw new ApplicationException(errorMessage);
 			}
 
-			
 			// PARTCODE DOCID API
 			String partyTypeDocId = partyTypeRepo.getPartyTypeVendorDocId(vendorDTO.getOrgId(), partyType);
 			partyMasterVO.setPartyCode(partyTypeDocId);
@@ -546,7 +547,8 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 
 			if (!partyMasterVO.getPartyName().equalsIgnoreCase(vendorDTO.getVendorName())) {
 				String partyType = "VENDOR";
-				if (partyMasterRepo.existsByPartyNameAndOrgIdAndPartyType(vendorDTO.getVendorName(), vendorDTO.getOrgId(),partyType)) {
+				if (partyMasterRepo.existsByPartyNameAndOrgIdAndPartyType(vendorDTO.getVendorName(),
+						vendorDTO.getOrgId(), partyType)) {
 					String errorMessage = String.format("This Vendor Name: %s Already Exists in This Organization",
 							vendorDTO.getVendorName());
 					throw new ApplicationException(errorMessage);
@@ -585,8 +587,6 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 		partyMasterVO.setAccountType(vendorDTO.getAccountsType());
 		partyMasterVO.setActive(vendorDTO.isActive());
 
-		
-
 		if (vendorDTO.isApproved()) {
 			partyMasterVO.setActive(true);
 		}
@@ -601,8 +601,9 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 
 			List<PartySpecialTDSVO> partySpecialTDSVO1 = partySpecialTDSRepo.findByPartyMasterVO(partyMasterVO);
 			partySpecialTDSRepo.deleteAll(partySpecialTDSVO1);
-			
-			List<PartyCurrencyMappingVO> partyCurrencyMappingVO1 = partyCurrencyMappingRepo.findByPartyMasterVO(partyMasterVO);
+
+			List<PartyCurrencyMappingVO> partyCurrencyMappingVO1 = partyCurrencyMappingRepo
+					.findByPartyMasterVO(partyMasterVO);
 			partyCurrencyMappingRepo.deleteAll(partyCurrencyMappingVO1);
 
 		}
@@ -672,7 +673,7 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 			// Add the SalesItemParticularsVO to the list
 			partyMasterVO.setPartySpecialTDSVO(specialTDSVOs);
 		}
-		
+
 		List<PartyCurrencyMappingVO> partyCurrencyMappingVOs = new ArrayList<>();
 		for (VendorCurrencyMappingDTO vendorCurrencyMappingDTO : vendorDTO.getVendorCurrencyMappingDTO()) {
 			PartyCurrencyMappingVO partyCurrencyMappingVO = new PartyCurrencyMappingVO();
@@ -680,8 +681,8 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 			partyCurrencyMappingVO.setPartyMasterVO(partyMasterVO);
 			partyCurrencyMappingVOs.add(partyCurrencyMappingVO);
 
-			  partyMasterVO.setPartyCurrencyMappingVO(partyCurrencyMappingVOs);
-		}	
+			partyMasterVO.setPartyCurrencyMappingVO(partyCurrencyMappingVOs);
+		}
 
 		return partyMasterVO;
 	}
@@ -696,8 +697,6 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 	public List<PartyMasterVO> getAllVendors(Long orgId) {
 		return partyMasterRepo.getAllVendors(orgId);
 	}
-
-
 
 	@Override
 	public List<Map<String, Object>> getSectionNameFromTds(Long orgId, String section) {
@@ -719,150 +718,208 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 	@Override
 	@Transactional
 	public void vendorUpload(MultipartFile files, Long orgId, String createdBy) throws Exception {
-	    List<VendorDTO> vendorDTOList = new ArrayList<>();
+		List<VendorDTO> vendorDTOList = new ArrayList<>();
 
-	    try (InputStream inputStream = files.getInputStream(); Workbook workbook = WorkbookFactory.create(inputStream)) {
+		try (InputStream inputStream = files.getInputStream();
+				Workbook workbook = WorkbookFactory.create(inputStream)) {
 
-	        processVendorSheet(workbook.getSheetAt(0), vendorDTOList, orgId, createdBy);
-	        processStateSheets(workbook.getSheetAt(1), vendorDTOList);
-	        processAddressSheets(workbook.getSheetAt(2), vendorDTOList);
-	        processSpecialTds(workbook.getSheetAt(3), vendorDTOList);
-	        processCurrencyMapping(workbook.getSheetAt(4), vendorDTOList);
+			processVendorSheet(workbook.getSheetAt(0), vendorDTOList, orgId, createdBy);
+			processStateSheets(workbook.getSheetAt(1), vendorDTOList);
+			processAddressSheets(workbook.getSheetAt(2), vendorDTOList);
+			processSpecialTds(workbook.getSheetAt(3), vendorDTOList);
+			processCurrencyMapping(workbook.getSheetAt(4), vendorDTOList);
 
-	        for (VendorDTO vendor : vendorDTOList) {
-	            createUpdateVendor(vendor);
-	        }
-	    }
+			for (VendorDTO vendor : vendorDTOList) {
+				createUpdateVendor(vendor);
+			}
+		}
 	}
 
 	private void processVendorSheet(Sheet sheet, List<VendorDTO> vendorDTOList, Long orgId, String createdBy) {
-	    for (Row row : sheet) {
-	        if (row.getRowNum() == 0)
-	            continue;
-	        VendorDTO vendor = new VendorDTO();
+		for (Row row : sheet) {
+			if (row.getRowNum() == 0)
+				continue;
+			VendorDTO vendor = new VendorDTO();
 
-	        vendor.setVendorName(getStringCellValue(row.getCell(0)));
-	        vendor.setGstIn(getStringCellValue(row.getCell(1)));
-	        vendor.setPanNo(getStringCellValue(row.getCell(2)));
-	        vendor.setCreditLimit(getBigDecimalValue(row.getCell(3)));
-	        Long creditDays = getLongCellValue(row.getCell(4));
-	        vendor.setCreditDays(creditDays != null ? creditDays : 0);
-	        vendor.setCreditTerms(getStringCellValue(row.getCell(5)));
-	        vendor.setTaxRegistered(getStringCellValue(row.getCell(6)));
-	        vendor.setBussinessType(getStringCellValue(row.getCell(7)));
-	        vendor.setBussinessCategory(getStringCellValue(row.getCell(8)));
-	        vendor.setAccountsType(getStringCellValue(row.getCell(9)));
-	        vendor.setCreatedBy(createdBy);
-	        vendor.setOrgId(orgId);
-	        vendor.setActive(true);
+			vendor.setVendorName(getStringCellValue(row.getCell(0)));
+			vendor.setGstIn(getStringCellValue(row.getCell(1)));
+			vendor.setPanNo(getStringCellValue(row.getCell(2)));
+			vendor.setCreditLimit(getBigDecimalValue(row.getCell(3)));
+			Long creditDays = getLongCellValue(row.getCell(4));
+			vendor.setCreditDays(creditDays != null ? creditDays : 0);
+			vendor.setCreditTerms(getStringCellValue(row.getCell(5)));
+			vendor.setTaxRegistered(getStringCellValue(row.getCell(6)));
+			vendor.setBussinessType(getStringCellValue(row.getCell(7)));
+			vendor.setBussinessCategory(getStringCellValue(row.getCell(8)));
+			vendor.setAccountsType(getStringCellValue(row.getCell(9)));
+			vendor.setCreatedBy(createdBy);
+			vendor.setOrgId(orgId);
+			vendor.setActive(true);
 
-	        // Initialize lists to prevent null pointer issues
-	        vendor.setVendorStateDTO(new ArrayList<>());
-	        vendor.setVendorAddressDTO(new ArrayList<>());
-	        vendor.setSpecialTdsDTO(new ArrayList<>());
-	        vendor.setVendorCurrencyMappingDTO(new ArrayList<>());
+			// Initialize lists to prevent null pointer issues
+			vendor.setVendorStateDTO(new ArrayList<>());
+			vendor.setVendorAddressDTO(new ArrayList<>());
+			vendor.setSpecialTdsDTO(new ArrayList<>());
+			vendor.setVendorCurrencyMappingDTO(new ArrayList<>());
 
-	        vendorDTOList.add(vendor);
-	    }
+			vendorDTOList.add(vendor);
+		}
 	}
 
 	private void processStateSheets(Sheet sheet, List<VendorDTO> vendorDTOList) {
-	    for (Row row : sheet) {
-	        if (row.getRowNum() == 0)
-	            continue;
-	        String vendorName = getStringCellValue(row.getCell(7));
+		for (Row row : sheet) {
+			if (row.getRowNum() == 0)
+				continue;
+			String vendorName = getStringCellValue(row.getCell(7));
 
-	        vendorDTOList.stream().filter(v -> v.getVendorName().equals(vendorName)).findFirst().ifPresent(vendor -> {
-	            VendorsStateDTO state = new VendorsStateDTO();
-	            state.setState(getStringCellValue(row.getCell(0)));
-	            state.setStateCode(getStringCellValue(row.getCell(1)));
-	            state.setStateNo(getLongCellValue(row.getCell(2)));
-	            state.setGstIn(getStringCellValue(row.getCell(3)));
-	            state.setContactPerson(getStringCellValue(row.getCell(4)));
-	            state.setPhoneNo(getStringCellValue(row.getCell(5)));
-	            state.setEMail(getStringCellValue(row.getCell(6)));
+			vendorDTOList.stream().filter(v -> v.getVendorName().equals(vendorName)).findFirst().ifPresent(vendor -> {
+				VendorsStateDTO state = new VendorsStateDTO();
+				state.setState(getStringCellValue(row.getCell(0)));
+				state.setStateCode(getStringCellValue(row.getCell(1)));
+				state.setStateNo(getLongCellValue(row.getCell(2)));
+				state.setGstIn(getStringCellValue(row.getCell(3)));
+				state.setContactPerson(getStringCellValue(row.getCell(4)));
+				state.setPhoneNo(getStringCellValue(row.getCell(5)));
+				state.setEMail(getStringCellValue(row.getCell(6)));
 
-	            vendor.getVendorStateDTO().add(state);
-	        });
-	    }
+				vendor.getVendorStateDTO().add(state);
+			});
+		}
 	}
 
 	private void processAddressSheets(Sheet sheet, List<VendorDTO> vendorDTOList) {
-	    for (Row row : sheet) {
-	        if (row.getRowNum() == 0)
-	            continue;
-	        String vendorName = getStringCellValue(row.getCell(10));
+		for (Row row : sheet) {
+			if (row.getRowNum() == 0)
+				continue;
+			String vendorName = getStringCellValue(row.getCell(10));
 
-	        vendorDTOList.stream().filter(v -> v.getVendorName().equals(vendorName)).findFirst().ifPresent(vendor -> {
-	            VendorsAddressDTO address = new VendorsAddressDTO();
-	            address.setState(getStringCellValue(row.getCell(0)));
-	            address.setCity(getStringCellValue(row.getCell(1)));
-	            address.setBussinesPlace(getStringCellValue(row.getCell(3)));
-	            address.setGstnIn(getStringCellValue(row.getCell(2)));
-	            address.setAddressType(getStringCellValue(row.getCell(4)));
-	            address.setAddressLane1(getStringCellValue(row.getCell(5)));
-	            address.setAddressLane2(getStringCellValue(row.getCell(6)));
-	            address.setAddressLane3(getStringCellValue(row.getCell(7)));
-	            address.setPinCode(getLongCellValue(row.getCell(8)));
-	            address.setContact(getStringCellValue(row.getCell(9)));
+			vendorDTOList.stream().filter(v -> v.getVendorName().equals(vendorName)).findFirst().ifPresent(vendor -> {
+				VendorsAddressDTO address = new VendorsAddressDTO();
+				address.setState(getStringCellValue(row.getCell(0)));
+				address.setCity(getStringCellValue(row.getCell(1)));
+				address.setBussinesPlace(getStringCellValue(row.getCell(3)));
+				address.setGstnIn(getStringCellValue(row.getCell(2)));
+				address.setAddressType(getStringCellValue(row.getCell(4)));
+				address.setAddressLane1(getStringCellValue(row.getCell(5)));
+				address.setAddressLane2(getStringCellValue(row.getCell(6)));
+				address.setAddressLane3(getStringCellValue(row.getCell(7)));
+				address.setPinCode(getLongCellValue(row.getCell(8)));
+				address.setContact(getStringCellValue(row.getCell(9)));
 
-	            vendor.getVendorAddressDTO().add(address);
-	        });
-	    }
+				vendor.getVendorAddressDTO().add(address);
+			});
+		}
 	}
 
 	private void processSpecialTds(Sheet sheet, List<VendorDTO> vendorDTOList) {
-	    for (Row row : sheet) {
-	        if (row.getRowNum() == 0)
-	            continue;
-	        String vendorName = getStringCellValue(row.getCell(8));
+		for (Row row : sheet) {
+			if (row.getRowNum() == 0)
+				continue;
+			String vendorName = getStringCellValue(row.getCell(8));
 
-	        vendorDTOList.stream().filter(v -> v.getVendorName().equals(vendorName)).findFirst().ifPresent(vendor -> {
-	            SpecialTdsDTO tds = new SpecialTdsDTO();
-	            tds.setSection(getStringCellValue(row.getCell(0)));
-	            tds.setWhSection(getStringCellValue(row.getCell(1)));
-	            tds.setRateFrom(getLongCellValue(row.getCell(3)));
-	            tds.setRateTo(getLongCellValue(row.getCell(2)));
-	            tds.setWhPercentage(getBigDecimalCellValues(row.getCell(4)));
-	            tds.setSurPercentage(getBigDecimalCellValues(row.getCell(5)));
-	            tds.setEdPercentage(getBigDecimalCellValues(row.getCell(6)));
-	            tds.setTdsCertificateNo(getStringCellValue(row.getCell(7)));
+			vendorDTOList.stream().filter(v -> v.getVendorName().equals(vendorName)).findFirst().ifPresent(vendor -> {
+				SpecialTdsDTO tds = new SpecialTdsDTO();
+				tds.setSection(getStringCellValue(row.getCell(0)));
+				tds.setWhSection(getStringCellValue(row.getCell(1)));
+				tds.setRateFrom(getLongCellValue(row.getCell(3)));
+				tds.setRateTo(getLongCellValue(row.getCell(2)));
+				tds.setWhPercentage(getBigDecimalCellValues(row.getCell(4)));
+				tds.setSurPercentage(getBigDecimalCellValues(row.getCell(5)));
+				tds.setEdPercentage(getBigDecimalCellValues(row.getCell(6)));
+				tds.setTdsCertificateNo(getStringCellValue(row.getCell(7)));
 
-	            vendor.getSpecialTdsDTO().add(tds);
-	        });
-	    }
+				vendor.getSpecialTdsDTO().add(tds);
+			});
+		}
 	}
 
 	private void processCurrencyMapping(Sheet sheet, List<VendorDTO> vendorDTOList) {
-	    for (Row row : sheet) {
-	        if (row.getRowNum() == 0)
-	            continue;
-	        String vendorName = getStringCellValue(row.getCell(1));
+		for (Row row : sheet) {
+			if (row.getRowNum() == 0)
+				continue;
+			String vendorName = getStringCellValue(row.getCell(1));
 
-	        vendorDTOList.stream().filter(v -> v.getVendorName().equals(vendorName)).findFirst().ifPresent(vendor -> {
-	            VendorCurrencyMappingDTO cm = new VendorCurrencyMappingDTO();
-	            cm.setTransCurrency(getStringCellValue(row.getCell(0)));
+			vendorDTOList.stream().filter(v -> v.getVendorName().equals(vendorName)).findFirst().ifPresent(vendor -> {
+				VendorCurrencyMappingDTO cm = new VendorCurrencyMappingDTO();
+				cm.setTransCurrency(getStringCellValue(row.getCell(0)));
 
-	            vendor.getVendorCurrencyMappingDTO().add(cm);
-	        });
-	    }
+				vendor.getVendorCurrencyMappingDTO().add(cm);
+			});
+		}
 	}
 
 	private BigDecimal getBigDecimalCellValues(Cell cell) {
-	    if (cell == null || cell.getCellType() == CellType.BLANK) {
-	        return BigDecimal.ZERO;
-	    }
+		if (cell == null || cell.getCellType() == CellType.BLANK) {
+			return BigDecimal.ZERO;
+		}
 
-	    if (cell.getCellType() == CellType.NUMERIC) {
-	        return BigDecimal.valueOf(cell.getNumericCellValue());
-	    }
+		if (cell.getCellType() == CellType.NUMERIC) {
+			return BigDecimal.valueOf(cell.getNumericCellValue());
+		}
 
-	    try {
-	        return new BigDecimal(cell.getStringCellValue().trim());
-	    } catch (NumberFormatException e) {
-	        return BigDecimal.ZERO; // Return zero if the value cannot be converted
-	    }
+		try {
+			return new BigDecimal(cell.getStringCellValue().trim());
+		} catch (NumberFormatException e) {
+			return BigDecimal.ZERO; // Return zero if the value cannot be converted
+		}
 	}
 
+	@Override
+	public List<Map<String, Object>> getAllPartyLedgerReport(Long orgId,String partyName,String partyType,String branch,String fromDate,String toDate) {
+		Set<Object[]> chType = partyMasterRepo.getAllPartyLedgerReport(orgId, partyName,partyType, branch, fromDate, toDate);
+		return getAllPartyLedger(chType);
+	}
+
+	private List<Map<String, Object>> getAllPartyLedger(Set<Object[]> chType) {
+		List<Map<String, Object>> List1 = new ArrayList<>();
+		for (Object[] ch : chType) {
+			Map<String, Object> map = new HashMap<>();
+			map.put("sno", ch[0].toString());
+			map.put("recoredid", ch[1] != null ? ch[1].toString() : "");
+			map.put("docid", ch[2] != null ? ch[2].toString() : "");
+			map.put("docdate", ch[3] != null ? ch[3].toString() : "");
+			map.put("refno", ch[4] != null ? ch[4].toString() : "");
+			map.put("refdate", ch[5] != null ? ch[5].toString() : "");
+			map.put("supplierrefno", ch[6] != null ? ch[6].toString() : "");
+			map.put("supplierrefdate", ch[7] != null ? ch[7].toString() : ""); // Handle as string, empty if null
+			map.put("partycode", ch[8] != null ? ch[8].toString() : "");
+			map.put("partyname", ch[9] != null ? ch[9].toString() : "");
+			map.put("currency", ch[10] != null ? ch[10].toString() : "");
+			map.put("opbal", ch[11] != null ? ch[11].toString() : "");
+			map.put("dbAmount", ch[12] != null ? ch[12].toString() : "");
+			map.put("cramount", ch[13] != null ? ch[13].toString() : "");
+			map.put("billdbamount", ch[14] != null ? ch[14].toString() : "");
+			map.put("billcramount", ch[15] != null ? ch[15].toString() : ""); // Handle as string, empty if nul
+			List1.add(map);
+		}
+		return List1;
+	}
+
+	@Override
+	public List<Map<String, Object>> getAllLedgerReport(Long orgId,String accountName, String branchCode, String fromDate, String toDate) {
+		Set<Object[]> chType = partyMasterRepo.getAllLedgerReport(orgId,accountName, branchCode, fromDate, toDate);
+		return getAllLedger(chType);
+	}
+
+	private List<Map<String, Object>> getAllLedger(Set<Object[]> chType) {
+		List<Map<String, Object>> List1 = new ArrayList<>();
+		for (Object[] ch : chType) {
+			Map<String, Object> map = new HashMap<>();
+			map.put("ids", ch[0].toString());
+			map.put("recordid", ch[1] != null ? ch[1].toString() : "");
+			map.put("branchName", ch[2] != null ? ch[2].toString() : "");
+			map.put("voucherDate", ch[3] != null ? ch[3].toString() : "");
+			map.put("voucherNo", ch[4] != null ? ch[4].toString() : "");
+			map.put("partyname", ch[5] != null ? ch[5].toString() : "");
+			map.put("opbal", ch[6] != null ? ch[6].toString() : "");
+			map.put("currency", ch[7] != null ? ch[7].toString() : ""); // Handle as string, empty if null
+			map.put("dbAmount", ch[8] != null ? ch[8].toString() : "");
+			map.put("cramount", ch[9] != null ? ch[9].toString() : "");
+			map.put("ndAmount", ch[10] != null ? ch[10].toString() : "");
+			map.put("ncAmount", ch[11] != null ? ch[11].toString() : "");
+			List1.add(map);
+		}
+		return List1;
+	}
 
 }

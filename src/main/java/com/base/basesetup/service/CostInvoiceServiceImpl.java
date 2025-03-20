@@ -728,6 +728,8 @@ public class CostInvoiceServiceImpl implements CostInvoiceService {
 			accountsVO.setAmountInWords(costInvoiceVO.getAmountInWords());
 			accountsVO.setRefNo(costInvoiceVO.getDocId());
 			accountsVO.setRefDate(costInvoiceVO.getDocDate());
+			accountsVO.setVId(costInvoiceVO.getVId());
+			accountsVO.setVDate(costInvoiceVO.getVDate());
 			accountsVO.setCurrency(costInvoiceVO.getCurrency());
 			accountsVO.setExRate(costInvoiceVO.getExRate());
 

@@ -43,7 +43,7 @@ public interface RCostInvoiceGnaService {
 			throws ApplicationException;
 
 	List<Map<String, Object>> getRegisterCostInvoiceReport(Long orgId, String branchCode, String finYear,
-			String fromDate, String toDate);
+			String fromDate, String toDate,String partyCode);
 
 
 

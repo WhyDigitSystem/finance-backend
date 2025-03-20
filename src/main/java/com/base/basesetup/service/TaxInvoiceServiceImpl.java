@@ -592,6 +592,8 @@ public class TaxInvoiceServiceImpl implements TaxInvoiceService {
 			accountsVO.setCreatedon(taxInvoiceVO.getCommonDate().getModifiedon().toUpperCase());
 			accountsVO.setRefNo(taxInvoiceVO.getDocId());
 			accountsVO.setRefDate(taxInvoiceVO.getDocDate());
+			accountsVO.setVId(taxInvoiceVO.getVId());
+			accountsVO.setVDate(taxInvoiceVO.getVDate());
 			accountsVO.setCurrency(taxInvoiceVO.getBillCurr());
 			accountsVO.setExRate(taxInvoiceVO.getBillCurrRate());
 			accountsVO.setRemarks(taxInvoiceVO.getBillingRemarks());
@@ -844,9 +846,11 @@ public class TaxInvoiceServiceImpl implements TaxInvoiceService {
 	private List<Map<String, Object>> getDsahboard(Set<Object[]> chType) {
 		List<Map<String, Object>> List1 = new ArrayList<>();
 		for (Object[] ch : chType) {
+			if(ch!=null) {
 			Map<String, Object> map = new HashMap<>();
-			map.put("amount", ch[0].toString());
+			map.put("amount", ch[0] != null ? ch[0].toString() : "0");
 			List1.add(map);
+		}
 		}
 		return List1;
 

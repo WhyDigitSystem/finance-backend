@@ -400,11 +400,12 @@ public class RCostInvoiceGnaController extends BaseController{
 	}
 	
 	@GetMapping("/getRegisterCostInvoiceReport")
-	public ResponseEntity<ResponseDTO> getRegisterCosiInvoiceReport(@RequestParam Long orgId,
-			@RequestParam String branchCode,
-			@RequestParam String finYear,
-			@RequestParam  String fromDate,
-			@RequestParam  String toDate) {
+	public ResponseEntity<ResponseDTO> getRegisterCosiInvoiceReport(@RequestParam(required = false) Long orgId,
+			@RequestParam(required = false) String branchCode,
+			@RequestParam(required = false) String finYear,
+			@RequestParam (required = false) String fromDate,
+			@RequestParam (required = false) String toDate,
+			@RequestParam (required = false) String partyCode) {
 		String methodName = "getRegisterCostInvoiceReport()";
 		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
 		String errorMsg = null;
@@ -413,7 +414,7 @@ public class RCostInvoiceGnaController extends BaseController{
 		List<Map<String, Object>> mapp = new ArrayList<>();
 
 		try {
-			mapp = rCostInvoiceGnaService.getRegisterCostInvoiceReport(orgId,branchCode,finYear,fromDate,toDate);
+			mapp = rCostInvoiceGnaService.getRegisterCostInvoiceReport(orgId,branchCode,finYear,fromDate,toDate,partyCode);
 		} catch (Exception e) {
 			errorMsg = e.getMessage();
 			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
@@ -421,7 +422,7 @@ public class RCostInvoiceGnaController extends BaseController{
 
 		if (StringUtils.isBlank(errorMsg)) {
 			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "Cost InvoiceReport  retrieved successfully");
-			responseObjectsMap.put("partyMasterVO", mapp);
+			responseObjectsMap.put("rCostinvoiceReport", mapp);
 			responseDTO = createServiceResponse(responseObjectsMap);
 		} else {
 			responseDTO = createServiceResponseError(responseObjectsMap, "Cost InvoiceReport Failed to retrieve ChargeLedger ", errorMsg);
