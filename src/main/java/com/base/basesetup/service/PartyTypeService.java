@@ -56,5 +56,5 @@ public interface PartyTypeService {
 	
 	List<Map<String, Object>> getAllPartyLedgerReport(Long orgId,String partyName,String partyType,String branch,String fromDate,String toDate);
 	
-	List<Map<String, Object>> getAllLedgerReport(Long orgId,String branchCode,String fromDate,String toDate);
+	List<Map<String, Object>> getAllLedgerReport(Long orgId,String accountName,String branchCode,String fromDate,String toDate);
 }

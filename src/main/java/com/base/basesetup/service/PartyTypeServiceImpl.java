@@ -896,8 +896,8 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 	}
 
 	@Override
-	public List<Map<String, Object>> getAllLedgerReport(Long orgId, String branchCode, String fromDate, String toDate) {
-		Set<Object[]> chType = partyMasterRepo.getAllLedgerReport(orgId, branchCode, fromDate, toDate);
+	public List<Map<String, Object>> getAllLedgerReport(Long orgId,String accountName, String branchCode, String fromDate, String toDate) {
+		Set<Object[]> chType = partyMasterRepo.getAllLedgerReport(orgId,accountName, branchCode, fromDate, toDate);
 		return getAllLedger(chType);
 	}
 

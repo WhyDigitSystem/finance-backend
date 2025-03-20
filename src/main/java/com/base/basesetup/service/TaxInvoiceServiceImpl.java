@@ -592,6 +592,8 @@ public class TaxInvoiceServiceImpl implements TaxInvoiceService {
 			accountsVO.setCreatedon(taxInvoiceVO.getCommonDate().getModifiedon().toUpperCase());
 			accountsVO.setRefNo(taxInvoiceVO.getDocId());
 			accountsVO.setRefDate(taxInvoiceVO.getDocDate());
+			accountsVO.setVId(taxInvoiceVO.getVId());
+			accountsVO.setVDate(taxInvoiceVO.getVDate());
 			accountsVO.setCurrency(taxInvoiceVO.getBillCurr());
 			accountsVO.setExRate(taxInvoiceVO.getBillCurrRate());
 			accountsVO.setRemarks(taxInvoiceVO.getBillingRemarks());
