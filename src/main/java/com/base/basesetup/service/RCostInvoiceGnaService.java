@@ -42,7 +42,7 @@ public interface RCostInvoiceGnaService {
 	RCostInvoiceGnaVO approveRCostInvoiceGna(Long orgId, Long id, String docId, String action, String actionBy)
 			throws ApplicationException;
 
-	List<Map<String, Object>> getRegisterCostInvoiceReport(Long orgId, String branchCode, String finYear,
+	List<Map<String, Object>> getRegisterCostInvoiceReport(Long orgId, String branchCode,
 			String fromDate, String toDate,String partyCode);
 
 

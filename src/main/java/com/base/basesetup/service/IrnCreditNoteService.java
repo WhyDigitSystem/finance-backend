@@ -15,7 +15,7 @@ import com.base.basesetup.exception.ApplicationException;
 public interface IrnCreditNoteService {
 	
 //	IrnCredit
-	List<IrnCreditNoteVO> getAllIrnCreditByOrgId(Long orgId);
+	List<IrnCreditNoteVO> getAllIrnCreditByOrgId(Long orgId,String finYear, String branchCode);
 	
 	List<IrnCreditNoteVO> getAllIrnCreditById(Long id);
 

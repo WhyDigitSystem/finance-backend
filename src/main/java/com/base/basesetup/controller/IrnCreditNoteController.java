@@ -38,7 +38,7 @@ public class IrnCreditNoteController extends BaseController {
 	IrnCreditNoteService irnCreditService;
 
 	@GetMapping("/getAllIrnCreditByOrgId")
-	public ResponseEntity<ResponseDTO> getAllIrnCreditByOrgId(@RequestParam Long orgId) {
+	public ResponseEntity<ResponseDTO> getAllIrnCreditByOrgId(@RequestParam Long orgId,@RequestParam String finYear,@RequestParam String branchCode) {
 		String methodName = "getAllIrnCreditByOrgId()";
 		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
 		String errorMsg = null;
@@ -46,7 +46,7 @@ public class IrnCreditNoteController extends BaseController {
 		ResponseDTO responseDTO = null;
 		List<IrnCreditNoteVO> irnCreditVO = new ArrayList<>();
 		try {
-			irnCreditVO = irnCreditService.getAllIrnCreditByOrgId(orgId);
+			irnCreditVO = irnCreditService.getAllIrnCreditByOrgId(orgId,finYear,branchCode);
 		} catch (Exception e) {
 			errorMsg = e.getMessage();
 			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);

@@ -731,9 +731,9 @@ public class RCostInvoiceGnaServiceImpl implements RCostInvoiceGnaService {
 	}
 
 	@Override
-	public List<Map<String, Object>> getRegisterCostInvoiceReport(Long orgId, String branchCode, String finYear,
+	public List<Map<String, Object>> getRegisterCostInvoiceReport(Long orgId, String branchCode,
 			String fromDate, String toDate,String partyCode) {
-		Set<Object[]> chCode = rCostInvoiceGnaRepo.findRegisterCostInvoiceReport(orgId, branchCode, finYear, fromDate,
+		Set<Object[]> chCode = rCostInvoiceGnaRepo.findRegisterCostInvoiceReport(orgId, branchCode,  fromDate,
 				toDate,partyCode);
 		return findRegisterCostInvoice(chCode);
 	}
@@ -744,8 +744,8 @@ public class RCostInvoiceGnaServiceImpl implements RCostInvoiceGnaService {
 			Map<String, Object> map = new HashMap<>();
 
 			map.put("branchCode", ch[0] != null ? ch[0].toString() : "");
-			map.put("docId", ch[1] != null ? ch[1].toString() : "");
-			map.put("docDate", ch[2] != null ? ch[2].toString() : "");
+			map.put("vid", ch[1] != null ? ch[1].toString() : "");
+			map.put("vdate", ch[2] != null ? ch[2].toString() : "");
 			map.put("supplieType", ch[3] != null ? ch[3].toString() : "");
 			map.put("supplierName", ch[4] != null ? ch[4].toString() : "");
 			map.put("supplierBillNo", ch[5] != null ? ch[5].toString() : "");

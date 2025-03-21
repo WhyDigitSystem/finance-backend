@@ -252,5 +252,8 @@ public interface PartyMasterRepo extends JpaRepository<PartyMasterVO, Long> {
 			+ "    t1.accountsid, \r\n"
 			+ "    t2.subledgername")
 	Set<Object[]> getAllLedgerReport(Long orgId,String accountName, String branchCode,String fromDate,String toDate);
+	
+	@Query(nativeQuery = true, value = "select accountgroupname from groupledger where orgid=?1  and  category in('PAYABLE A/C','RECEIVABLE A/C')")
+	Set<Object[]> getAccountNameFromGroup(Long orgId);
 
 }

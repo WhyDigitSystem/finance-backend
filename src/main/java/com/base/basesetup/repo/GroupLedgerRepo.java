@@ -24,7 +24,13 @@ boolean existsByAccountGroupNameAndOrgId(String accountGroupName, Long orgId);
 @Query(nativeQuery = true, value = "select accountgroupname from groupledger where orgid=?1 and type='GROUP' and active=1 group by accountgroupname")
 Set<Object[]> getGroupDetails(Long orgId);
 
+
+//@Query(nativeQuery = true, value = "select accountgroupname from groupledger where type='ACCOUNT' and active=1  and accountgroupname =?1 group by accountgroupname")
+//GroupLedgerVO findByAccountGroupName(String key);
+
+@Query(nativeQuery = true, value = "SELECT groupledgerid, accountgroupname FROM groupledger WHERE type='ACCOUNT' AND active=1 AND accountgroupname =?1")
 GroupLedgerVO findByAccountGroupName(String key);
+
 
 @Query(nativeQuery = true, value = "select * from groupledger where orgid=?1 and gsttaxflag!='NA' and category='TAX' and gsttaxflag='OUTPUT TAX' and gsttype=?2 and gstpercentage=?3  order by gstpercentage desc")
 List<GroupLedgerVO> getTaxLedgerDetails(Long orgId, String gstType, Double key);
@@ -35,7 +41,6 @@ boolean existsByAccountCodeAndOrgId(String accountCode, Long orgId);
 GroupLedgerVO getOrgIdAndMainAccountGroupName(Long orgId, String groupName);
 
 
-
 @Query(nativeQuery =true,value ="select * from  groupledger where active=1 and orgid=?1 and accountgroupname=?2  and type='group' and groupname is not null")
 GroupLedgerVO getOrgIdAndSubAccountGroupName(Long orgId, String groupName);
 
@@ -44,5 +49,8 @@ GroupLedgerVO getOrgIdAndMainAccountCode(Long orgId, String parentCode);
 
 @Query(nativeQuery =true,value ="select * from  groupledger where active=1 and orgid=?1 and accountcode=?2  and type='group' and groupname is not null")
 GroupLedgerVO getOrgIdAndSubAccountCode(Long orgId, String parentCode);
+
+
+
 
 }

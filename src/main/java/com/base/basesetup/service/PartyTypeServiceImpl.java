@@ -885,11 +885,11 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 			map.put("partycode", ch[8] != null ? ch[8].toString() : "");
 			map.put("partyname", ch[9] != null ? ch[9].toString() : "");
 			map.put("currency", ch[10] != null ? ch[10].toString() : "");
-			map.put("opbal", ch[11] != null ? ch[11].toString() : "");
-			map.put("dbAmount", ch[12] != null ? ch[12].toString() : "");
-			map.put("cramount", ch[13] != null ? ch[13].toString() : "");
-			map.put("billdbamount", ch[14] != null ? ch[14].toString() : "");
-			map.put("billcramount", ch[15] != null ? ch[15].toString() : ""); // Handle as string, empty if nul
+			map.put("opbal", ch[11] != null ? new BigDecimal(ch[11].toString()) : BigDecimal.ZERO);
+			map.put("dbAmount", ch[12] != null ? new BigDecimal(ch[12].toString()) : BigDecimal.ZERO);
+			map.put("cramount", ch[13] != null ? new BigDecimal(ch[13].toString()) : BigDecimal.ZERO);
+			map.put("billdbamount", ch[14] != null ? new BigDecimal(ch[14].toString()) : BigDecimal.ZERO);
+			map.put("billcramount", ch[15] != null ? new BigDecimal(ch[15].toString()) : BigDecimal.ZERO); // Handle as string, empty if nul
 			List1.add(map);
 		}
 		return List1;
@@ -911,15 +911,31 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 			map.put("voucherDate", ch[3] != null ? ch[3].toString() : "");
 			map.put("voucherNo", ch[4] != null ? ch[4].toString() : "");
 			map.put("partyname", ch[5] != null ? ch[5].toString() : "");
-			map.put("opbal", ch[6] != null ? ch[6].toString() : "");
+			map.put("opbal", ch[6] != null ? new BigDecimal(ch[6].toString()) : BigDecimal.ZERO);
 			map.put("currency", ch[7] != null ? ch[7].toString() : ""); // Handle as string, empty if null
-			map.put("dbAmount", ch[8] != null ? ch[8].toString() : "");
-			map.put("cramount", ch[9] != null ? ch[9].toString() : "");
-			map.put("ndAmount", ch[10] != null ? ch[10].toString() : "");
-			map.put("ncAmount", ch[11] != null ? ch[11].toString() : "");
+			map.put("dbAmount", ch[8] != null ? new BigDecimal(ch[8].toString()) : BigDecimal.ZERO);
+			map.put("cramount", ch[9] != null ? new BigDecimal(ch[9].toString()) : BigDecimal.ZERO);
+			map.put("ndAmount", ch[10] != null ? new BigDecimal(ch[10].toString()) : BigDecimal.ZERO);
+			map.put("ncAmount", ch[11] != null ? new BigDecimal(ch[11].toString()) : BigDecimal.ZERO);
 			List1.add(map);
 		}
 		return List1;
 	}
 
+	@Override
+	public List<Map<String, Object>> getAccountNameFromGroup(Long orgId) {
+		Set<Object[]> chType = partyMasterRepo.getAccountNameFromGroup(orgId);
+		return getAccountName(chType);
+	}
+
+	private List<Map<String, Object>> getAccountName(Set<Object[]> chType) {
+		List<Map<String, Object>> List1 = new ArrayList<>();
+		for (Object[] ch : chType) {
+			Map<String, Object> map = new HashMap<>();
+			map.put("accountName", ch[0].toString());
+			List1.add(map);
+		}
+		return List1;
+
+}
 }

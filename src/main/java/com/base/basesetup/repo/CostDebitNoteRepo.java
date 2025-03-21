@@ -13,8 +13,8 @@ import com.base.basesetup.entity.CostDebitNoteVO;
 @Repository
 public interface CostDebitNoteRepo extends JpaRepository<CostDebitNoteVO, Long> {
 
-	@Query(value = "SELECT * FROM costdebitnote where orgid=?1", nativeQuery = true)
-	List<CostDebitNoteVO> getByCostDebitNoteByOrgId(Long orgId);
+	@Query(value = "SELECT * FROM costdebitnote where orgid=?1 and finyear=?2 and branchcode=?3", nativeQuery = true)
+	List<CostDebitNoteVO> getByCostDebitNoteByOrgId(Long orgId,String finYear, String branchCode);
 
 	@Query(value = "SELECT * FROM costdebitnote where costdebitnoteid=?1", nativeQuery = true)
 	List<CostDebitNoteVO> getByCostDebitNoteById(Long id);

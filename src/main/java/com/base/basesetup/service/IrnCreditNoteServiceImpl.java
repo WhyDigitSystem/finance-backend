@@ -79,12 +79,11 @@ public class IrnCreditNoteServiceImpl implements IrnCreditNoteService {
 	IrnCreditNoteAnnexureRepo irnCreditNoteAnnexureRepo;
 
 	@Override
-	public List<IrnCreditNoteVO> getAllIrnCreditByOrgId(Long orgId) {
+	public List<IrnCreditNoteVO> getAllIrnCreditByOrgId(Long orgId,String finYear, String branchCode) {
 		List<IrnCreditNoteVO> irnCreditVO = new ArrayList<>();
-		if (ObjectUtils.isNotEmpty(orgId)) { 
-			LOGGER.info("Successfully Received  IrnCredit BY OrgId : {}", orgId);
-			irnCreditVO = irnCreditRepo.getAllIrnCreditByOrgId(orgId);
-		} 
+	
+			irnCreditVO = irnCreditRepo.getAllIrnCreditByOrgId(orgId,finYear,branchCode);
+	
 		return irnCreditVO;
 	} 
 

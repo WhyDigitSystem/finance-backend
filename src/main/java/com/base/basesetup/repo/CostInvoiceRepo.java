@@ -11,8 +11,8 @@ import com.base.basesetup.entity.PartyMasterVO;
 
 public interface CostInvoiceRepo extends JpaRepository<CostInvoiceVO, Long> {
 
-	@Query(nativeQuery = true, value = "select * from costinvoice where orgid=?1")
-	List<CostInvoiceVO> getAllCostInvoiceByOrgId(Long orgId);
+	@Query(nativeQuery = true, value = "select * from costinvoice where orgid=?1 and finyear=?2 and branchcode=?3")
+	List<CostInvoiceVO> getAllCostInvoiceByOrgId(Long orgId,String finYear, String branchCode);
 
 	@Query(nativeQuery = true, value = "select * from costinvoice where costinvoiceid=?1")
 	List<CostInvoiceVO> getAllCostInvoiceById(Long id);
