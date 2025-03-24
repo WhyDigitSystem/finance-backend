@@ -36,7 +36,10 @@ public interface PartyMasterRepo extends JpaRepository<PartyMasterVO, Long> {
 
 	boolean existsByPartyNameAndOrgIdAndPartyType(String customerName, long orgId, String partyType);
 
-	@Query(nativeQuery = true, value = "SELECT \r\n"
+	@Query(nativeQuery = true, value = "select\r\n"
+			+ "sno,recordid,vid,vdate,refno,refdate,supprefno,supprefdate,partycode,partyname,currency,opbal,\r\n"
+			+ "dbamount,cramount,billdbamount,billcramount from (\r\n"
+			+ "SELECT \r\n"
 			+ "    1 AS sno,\r\n"
 			+ "    0 AS recordid,\r\n"
 			+ "    NULL AS vid,\r\n"
@@ -62,14 +65,14 @@ public interface PartyMasterRepo extends JpaRepository<PartyMasterVO, Long> {
 			+ "JOIN \r\n"
 			+ "    branch dm ON dm.branchcode = t1.branchcode\r\n"
 			+ "WHERE \r\n"
-			+ "    t1.CANCEL = 0\r\n"
+			+ "     t1.CANCEL = 0\r\n"
 			+ "    AND (\r\n"
 			+ "        ?5 IS NULL \r\n"
 			+ "        OR ?5 = '' \r\n"
 			+ "        OR t1.vdate = STR_TO_DATE(?5, '%Y-%m-%d')\r\n"
 			+ "    )\r\n"
 			+ "    AND (p.partyname = ?2 OR 'ALL' = ?2)\r\n"
-			+ "    AND (p.partytype = ?3 OR 'CUSTOMER' = ?3 OR 'VENDOR' = ?3 OR 'ALL' = ?3)\r\n"
+			+ "    AND (p.partytype = ?3 OR 'CUSTOMER' = ?3 AND 'VENDOR' = ?3 OR 'ALL' = ?3)\r\n"
 			+ "    AND t2.acategory IN ('PAYABLE A/C', 'RECEIVABLE A/C')\r\n"
 			+ "    AND t1.orgid = ?1\r\n"
 			+ "    AND ('ALL' = ?4 OR t1.branch = ?4)\r\n"
@@ -106,17 +109,17 @@ public interface PartyMasterRepo extends JpaRepository<PartyMasterVO, Long> {
 			+ "JOIN \r\n"
 			+ "    branch dm ON dm.branchcode = t1.branchcode\r\n"
 			+ "WHERE \r\n"
-			+ "    t1.CANCEL = 0\r\n"
+			+ "      t1.CANCEL = 0\r\n"
 			+ "    AND (\r\n"
 			+ "        ?5 IS NULL \r\n"
 			+ "        OR ?5 = '' \r\n"
-			+ "        OR t1.vdate BETWEEN STR_TO_DATE(?5, '%Y-%m-%d') AND STR_TO_DATE(?6, '%Y-%m-%d')\r\n"
+			+ "        OR t1.vdate BETWEEN STR_TO_DATE(?5, '%Y-%m-%d') AND STR_TO_DATE(?6, '%Y-%m-%d') \r\n"
 			+ "        OR ?6 IS NULL \r\n"
 			+ "        OR ?6 = ''\r\n"
 			+ "    )\r\n"
 			+ "    AND (p.partyname = ?2 OR 'ALL' = ?2)\r\n"
 			+ "    AND t1.orgid = ?1\r\n"
-			+ "    AND (p.partytype = ?3 OR 'CUSTOMER' = ?3 OR 'VENDOR' = ?3 OR 'ALL' = ?3)\r\n"
+			+ "    AND (p.partytype = ?3 OR 'CUSTOMER' = ?3 and 'VENDOR' = ?3 OR 'ALL' = ?3)\r\n"
 			+ "    AND ('ALL' = ?4 OR t1.branch = ?4)\r\n"
 			+ "    AND t2.acategory IN ('PAYABLE A/C', 'RECEIVABLE A/C')\r\n"
 			+ "GROUP BY \r\n"
@@ -130,9 +133,9 @@ public interface PartyMasterRepo extends JpaRepository<PartyMasterVO, Long> {
 			+ "    p.partyname,\r\n"
 			+ "    p.partycode,\r\n"
 			+ "    t1.currency\r\n"
-			+ "\r\n"
+			+ ") a\r\n"
 			+ "ORDER BY \r\n"
-			+ "    sno, vid, vdate")
+			+ "    partyname,sno, vid, vdate")
 	Set<Object[]> getAllPartyLedgerReport(Long orgId,String partyName,String partyType,String branch,String fromDate,String toDate);
 	
 	
