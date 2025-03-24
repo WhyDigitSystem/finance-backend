@@ -755,6 +755,7 @@ public class RCostInvoiceGnaServiceImpl implements RCostInvoiceGnaService {
 			map.put("outputIgst", ch[9] != null ? ch[9].toString() : "");
 			map.put("outputCgst", ch[10] != null ? ch[10].toString() : "");
 			map.put("outputSgst", ch[11] != null ? ch[11].toString() : "");
+			map.put("gstPercent", ch[12] != null ? Double.valueOf(ch[12].toString()) : 0.0);
 
 			List1.add(map);
 		}

@@ -92,6 +92,7 @@ public interface RCostInvoiceGnaRepo extends JpaRepository<RCostInvoiceGnaVO, Lo
 			+ "    SUM(OIGST) AS Output_IGST,\r\n"
 			+ "    SUM(OCGST) AS Output_CGST,\r\n"
 			+ "    SUM(OSGST) AS Output_SGST\r\n"
+			+ "     MAX(gstpercent) AS gstpercent\r\n"
 			+ "FROM (\r\n"
 			+ "    SELECT \r\n"
 			+ "        branchcode,\r\n"
@@ -108,6 +109,7 @@ public interface RCostInvoiceGnaRepo extends JpaRepository<RCostInvoiceGnaVO, Lo
 			+ "        0 AS OIGST,\r\n"
 			+ "        0 AS OCGST,\r\n"
 			+ "        0 AS OSGST\r\n"
+			+ "        gstpercent\r\n "
 			+ "    FROM (\r\n"
 			+ "        SELECT \r\n"
 			+ "            a.branchcode,\r\n"
@@ -123,6 +125,7 @@ public interface RCostInvoiceGnaRepo extends JpaRepository<RCostInvoiceGnaVO, Lo
 			+ "            SUM(b.lcamt) AS charges,\r\n"
 			+ "            0 AS InputGST,\r\n"
 			+ "            0 AS OutputGST\r\n"
+			+ "     MAX(gstpercent) AS gstpercent\r\n"
 			+ "        FROM \r\n"
 			+ "            costinvoice a\r\n"
 			+ "        JOIN \r\n"
@@ -150,7 +153,7 @@ public interface RCostInvoiceGnaRepo extends JpaRepository<RCostInvoiceGnaVO, Lo
 			+ "GROUP BY \r\n"
 			+ "    branchcode, docid, docdate, supplietype, suppliername, supplierbillno, suppliergstin, gsttype\r\n"
 			+ "ORDER BY \r\n"
-			+ "    1, 2, 4, 3;\r\n"
+			+ "    1, 2, 4, 3\r\n"
 			+ " ",nativeQuery =true)
 	Set<Object[]> findRegisterCostInvoiceReport(Long orgId, String branchCode, String finYear, String fromDate,
 			String toDate,String partyCode);
