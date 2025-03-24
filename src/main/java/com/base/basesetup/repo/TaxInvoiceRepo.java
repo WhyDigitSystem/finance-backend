@@ -173,7 +173,7 @@ public interface TaxInvoiceRepo extends JpaRepository<TaxInvoiceVO, Long> {
 	Set<Object[]> getReportDetailsForSalesRegister( String fromDate, String toDate, Long orgId,
 			String branchCode, String partyCode);
 
-	@Query(nativeQuery = true,value = "select sum(amount) as totalAmount from vw_revenue where orgid=?1 and billmonth=?2 or 'ALL'= ?2 and finyear=?3 ")
+	@Query(nativeQuery = true,value = "select sum(amount) as totalAmount from vw_revenue where orgid=?1 and (billmonth=?2 or 'ALL'=?2) and finyear=?3")
 	Set<Object[]> getDsahboardRevenue(Long orgId, String billMonth, String finYear);
 
 

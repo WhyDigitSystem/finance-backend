@@ -90,7 +90,7 @@ public interface CostInvoiceRepo extends JpaRepository<CostInvoiceVO, Long> {
 
 	boolean existsByvIdAndOrgId(String vId, Long orgId);
 
-	@Query(nativeQuery = true,value = "select sum(amount) as totalAmount from vw_cost where orgid=?1 and billmonth=?2 or 'ALL'= ?2 and finyear=?3 ")
+	@Query(nativeQuery = true,value = "select sum(amount) as totalAmount from vw_cost where orgid=?1 and (billmonth=?2 or 'ALL'=?2) and finyear=?3")
 	Set<Object[]> getDsahboardCost(Long orgId, String billMonth, String finYear);
 
 }
