@@ -47,4 +47,6 @@ public interface ARService {
 // 	ReceiptRegister
 	List<Map<String, Object>> getAllReceiptRegister(Long orgId,
 			String fromDate, String toDate, String subLedgerName);
+
+	List<Map<String, Object>> getReciptFillGrid(Long orgId, String partyCode);
 }
