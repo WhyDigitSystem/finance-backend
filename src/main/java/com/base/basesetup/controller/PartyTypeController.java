@@ -414,8 +414,8 @@ public class PartyTypeController extends BaseController {
 	}
 
 	@GetMapping("/getAllPartyLedgerReport")
-	public ResponseEntity<ResponseDTO> getAllPartyLedgerReport(@RequestParam(required = false) Long orgId,@RequestParam(required = false) String partyName,
-			@RequestParam(required = false) String partyType, @RequestParam(required = false) String branch, String fromDate, String toDate) {
+	public ResponseEntity<ResponseDTO> getAllPartyLedgerReport(@RequestParam(required = true) Long orgId,@RequestParam(required = true) String partyName,
+			@RequestParam(required = true) String partyType, @RequestParam(required = true) String branch,@RequestParam(required = true) String fromDate,@RequestParam(required = true) String toDate) {
 		String methodName = "getAllPartyLedgerReport()";
 		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
 		String errorMsg = null;
@@ -444,8 +444,8 @@ public class PartyTypeController extends BaseController {
 	
 	
 	@GetMapping("/getAllLedgerReport")
-	public ResponseEntity<ResponseDTO> getAllLedgerReport(@RequestParam(required = false) Long orgId,@RequestParam(required = false) String accountName,
-			@RequestParam(required = false) String branchCode,String fromDate, String toDate) {
+	public ResponseEntity<ResponseDTO> getAllLedgerReport(@RequestParam(required = true) Long orgId,@RequestParam(required = true) String accountName,
+			@RequestParam(required = true) String branchCode,@RequestParam(required = true) String fromDate,@RequestParam(required = true) String toDate) {
 		String methodName = "getAllLedgerReport()";
 		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
 		String errorMsg = null;
