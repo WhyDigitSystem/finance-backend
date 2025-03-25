@@ -98,6 +98,8 @@ public class ArapAdjustmentsVO {
 	private boolean gstFlag;
 	@Column(name = "subledgername", length = 50)
 	private String subLedgerName;
+	@Column(name = "amount")
+	private BigDecimal amount;
 
 	@Embedded
 	@Builder.Default

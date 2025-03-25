@@ -1,5 +1,6 @@
 package com.base.basesetup.service;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -116,7 +117,8 @@ public class ARServiceImpl implements ARService {
 		receiptVO.setCustomerName(receiptDTO.getCustomerName());
 		receiptVO.setCustomerCode(receiptDTO.getCustomerCode());
 		receiptVO.setBankCashAcc(receiptDTO.getBankCashAcc());
-		receiptVO.setReceiptAmt(receiptDTO.getReceiptAmt());
+		BigDecimal reciptAmount = receiptDTO.getReceiptAmt();
+		receiptVO.setReceiptAmt(reciptAmount);
 		receiptVO.setBankChargeAcc(receiptDTO.getBankChargeAcc());
 		receiptVO.setBankCharges(receiptDTO.getBankCharges());
 		receiptVO.setInCurrencyBnkChargs(receiptDTO.getInCurrencyBnkChargs());
@@ -125,7 +127,7 @@ public class ARServiceImpl implements ARService {
 		receiptVO.setChequeBank(receiptDTO.getChequeBank());
 		receiptVO.setReceiptType(receiptDTO.getReceiptType());
 		receiptVO.setChequeUtiNo(receiptDTO.getChequeUtiNo());
-		receiptVO.setChequeUtiDt(receiptDTO.getChequeUtiDt());
+		receiptVO.setChequeUtiDate(receiptDTO.getChequeUtiDate());
 		receiptVO.setReceivedFrom(receiptDTO.getReceivedFrom());
 		receiptVO.setReceiptType1(receiptDTO.getReceiptType1());
 		receiptVO.setCurrency(receiptDTO.getCurrency());
@@ -142,28 +144,52 @@ public class ARServiceImpl implements ARService {
 		}
 
 		List<ReceiptInvDetailsVO> receiptInvDetailsVOs = new ArrayList<>();
-		for (ReceiptInvDetailsDTO receiptInvDetailsDTO : receiptDTO.getReceiptInvDetailaDTO()) {
-			ReceiptInvDetailsVO receiptInvDetailsVO = new ReceiptInvDetailsVO();
+		BigDecimal onaccount = BigDecimal.ZERO;  // Initialize onAccount
 
-			receiptInvDetailsVO.setInvNo(receiptInvDetailsDTO.getInvNo());
-			receiptInvDetailsVO.setInvDate(receiptInvDetailsDTO.getInvDate());
-			receiptInvDetailsVO.setRefNo(receiptInvDetailsDTO.getRefNo());
-			receiptInvDetailsVO.setRefDate(receiptInvDetailsDTO.getRefDate());
-			receiptInvDetailsVO.setMasterRef(receiptInvDetailsDTO.getMasterRef());
-			receiptInvDetailsVO.setHouseRef(receiptInvDetailsDTO.getHouseRef());
-			receiptInvDetailsVO.setCurrency(receiptInvDetailsDTO.getCurrency());
-			receiptInvDetailsVO.setExRate(receiptInvDetailsDTO.getExRate());
-			receiptInvDetailsVO.setAmount(receiptInvDetailsDTO.getAmount());
-			receiptInvDetailsVO.setChargeAmt(receiptInvDetailsDTO.getChargeAmt());
-			receiptInvDetailsVO.setOutstanding(receiptInvDetailsDTO.getOutstanding());
-			receiptInvDetailsVO.setSettled(receiptInvDetailsDTO.getSettled());
-			receiptInvDetailsVO.setRecExRate(receiptInvDetailsDTO.getRecExRate());
-			receiptInvDetailsVO.setTxnSettled(receiptInvDetailsDTO.getTxnSettled());
-			receiptInvDetailsVO.setGainAmt(receiptInvDetailsDTO.getGainAmt());
-			receiptInvDetailsVO.setReceiptVO(receiptVO);
-			receiptInvDetailsVOs.add(receiptInvDetailsVO);
+		List<ReceiptInvDetailsDTO> receiptDetailsList = receiptDTO.getReceiptInvDetailaDTO();
+		BigDecimal receiptAmount = receiptDTO.getReceiptAmt();  // Assign receipt amount
+
+		if (receiptDetailsList != null && !receiptDetailsList.isEmpty()) {
+		    for (ReceiptInvDetailsDTO receiptInvDetailsDTO : receiptDetailsList) {
+		        ReceiptInvDetailsVO receiptInvDetailsVO = new ReceiptInvDetailsVO();
+
+		        receiptInvDetailsVO.setInvNo(receiptInvDetailsDTO.getInvNo());
+		        receiptInvDetailsVO.setInvDate(receiptInvDetailsDTO.getInvDate());
+		        receiptInvDetailsVO.setRefNo(receiptInvDetailsDTO.getRefNo());
+		        receiptInvDetailsVO.setRefDate(receiptInvDetailsDTO.getRefDate());
+		        receiptInvDetailsVO.setMasterRef(receiptInvDetailsDTO.getMasterRef());
+		        receiptInvDetailsVO.setHouseRef(receiptInvDetailsDTO.getHouseRef());
+		        receiptInvDetailsVO.setCurrency(receiptInvDetailsDTO.getCurrency());
+		        receiptInvDetailsVO.setExRate(receiptInvDetailsDTO.getExRate());
+		        receiptInvDetailsVO.setAmount(receiptInvDetailsDTO.getAmount());
+		        receiptInvDetailsVO.setChargeAmt(receiptInvDetailsDTO.getChargeAmt());
+		        receiptInvDetailsVO.setOutstanding(receiptInvDetailsDTO.getOutstanding());
+
+		        BigDecimal settledAmount = receiptInvDetailsDTO.getSettled() != null 
+		                                   ? receiptInvDetailsDTO.getSettled() 
+		                                   : BigDecimal.ZERO;
+		        receiptInvDetailsVO.setSettled(settledAmount);
+		        receiptInvDetailsVO.setRecExRate(receiptInvDetailsDTO.getRecExRate());
+		        receiptInvDetailsVO.setTxnSettled(receiptInvDetailsDTO.getTxnSettled());
+		        receiptInvDetailsVO.setGainAmt(receiptInvDetailsDTO.getGainAmt());
+		        receiptInvDetailsVO.setReceiptVO(receiptVO);
+		        receiptInvDetailsVOs.add(receiptInvDetailsVO);
+
+		        // Accumulate settled amount for onAccount calculation
+		        onaccount = onaccount.add(settledAmount);
+		    }
+
+		    // onAccount = receiptAmount - sum(settled amounts)
+		    onaccount = receiptAmount.subtract(onaccount);
+		} else {
+		    // If no child entries, full receipt amount goes to onAccount
+		    onaccount = receiptAmount;
 		}
+
+		// Ensure onAccount is set properly
+		receiptVO.setOnAccount(onaccount);
 		receiptVO.setReceiptInvDetailsVO(receiptInvDetailsVOs);
+
 		return receiptVO;
 	}
 
