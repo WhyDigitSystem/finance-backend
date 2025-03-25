@@ -140,6 +140,7 @@ public class ArapAdjustmentsServiceImpl implements ArapAdjustmentsService{
 	    arapAdjustmentsVO.setTdsAmt(arapAdjustmentsDTO.getTdsAmt());
 	    arapAdjustmentsVO.setSubLedgerName(arapAdjustmentsDTO.getSubLedgerName());
 	    arapAdjustmentsVO.setGstFlag(arapAdjustmentsDTO.isGstFlag());
+	    arapAdjustmentsVO.setAmount(arapAdjustmentsDTO.getAmount());
 		
 	    
         return arapAdjustmentsVO;
