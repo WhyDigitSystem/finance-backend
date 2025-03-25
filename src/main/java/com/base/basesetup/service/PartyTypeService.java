@@ -53,6 +53,7 @@ public interface PartyTypeService {
 
 	List<Map<String, Object>> getSectionNameFromTds(Long orgId, String section);
 
+	List<Map<String, Object>> getAccountNameFromGroup(Long orgId);
 	
 	List<Map<String, Object>> getAllPartyLedgerReport(Long orgId,String partyName,String partyType,String branch,String fromDate,String toDate);
 	

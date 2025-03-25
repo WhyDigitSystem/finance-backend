@@ -1124,8 +1124,8 @@ public class MasterServiceImpl implements MasterService {
 	}
 
 	@Override
-	public List<SacCodeVO> getAllActiveSacCodeByOrgId(Long orgId) {
-		List<SacCodeVO> sacCodeVO = new ArrayList<>();
+	public List<HSNSacCodeVO> getAllActiveSacCodeByOrgId(Long orgId) {
+		List<HSNSacCodeVO> sacCodeVO = new ArrayList<>();
 		sacCodeVO = sacCodeRepo.getAllActiveSacCodeByOrgId(orgId);
 
 		return sacCodeVO;

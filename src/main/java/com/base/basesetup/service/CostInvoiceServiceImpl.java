@@ -30,6 +30,7 @@ import com.base.basesetup.entity.DocumentTypeMappingDetailsVO;
 import com.base.basesetup.entity.GroupLedgerVO;
 import com.base.basesetup.entity.MultipleDocIdGenerationDetailsVO;
 import com.base.basesetup.entity.PartyMasterVO;
+import com.base.basesetup.entity.TaxInvoiceVO;
 import com.base.basesetup.entity.TdsCostInvoiceVO;
 import com.base.basesetup.exception.ApplicationException;
 import com.base.basesetup.repo.AccountsDetailsRepo;
@@ -80,15 +81,11 @@ public class CostInvoiceServiceImpl implements CostInvoiceService {
 	// costInvoice
 
 	@Override
-	public List<CostInvoiceVO> getAllCostInvoiceByOrgId(Long orgId) {
+	public List<CostInvoiceVO> getAllCostInvoiceByOrgId(Long orgId,String finYear, String branchCode) {
+		
 		List<CostInvoiceVO> costInvoiceVO = new ArrayList<>();
-		if (ObjectUtils.isNotEmpty(orgId)) {
-			LOGGER.info("Successfully Received  CostInvoice BY OrgId : {}", orgId);
-			costInvoiceVO = costInvoiceRepo.getAllCostInvoiceByOrgId(orgId);
-		} else {
-			LOGGER.info("Successfully Received  CostInvoice For All OrgId.");
-			costInvoiceVO = costInvoiceRepo.findAll();
-		}
+		costInvoiceVO = costInvoiceRepo.getAllCostInvoiceByOrgId(orgId, finYear, branchCode);
+
 		return costInvoiceVO;
 	}
 

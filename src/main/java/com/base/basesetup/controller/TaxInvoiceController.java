@@ -498,7 +498,7 @@ public class TaxInvoiceController extends BaseController {
 	//ReportSalesRegister
 	
 	@GetMapping("/getReportDetailsForSalesRegister")
-	public ResponseEntity<ResponseDTO> getReportDetailsForSalesRegister(@RequestParam (required =false) String finyear, @RequestParam(required = false) String fromDate,
+	public ResponseEntity<ResponseDTO> getReportDetailsForSalesRegister(@RequestParam(required = false) String fromDate,
 	        @RequestParam(required = false) String toDate ,@RequestParam(required =false) Long orgId,@RequestParam(required =false) String branchCode,@RequestParam(required =false) String partyCode) {
 		String methodName = "getReportDetailsForSalesRegister()";
 		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
@@ -508,7 +508,7 @@ public class TaxInvoiceController extends BaseController {
 		List<Map<String, Object>> mapp = new ArrayList<>();
 
 		try {
-			mapp = taxInvoiceService.getReportDetailsForSalesRegister(finyear,fromDate,toDate,orgId,branchCode,partyCode);
+			mapp = taxInvoiceService.getReportDetailsForSalesRegister(fromDate,toDate,orgId,branchCode,partyCode);
 		} catch (Exception e) {
 			errorMsg = e.getMessage();
 			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);

@@ -402,7 +402,6 @@ public class RCostInvoiceGnaController extends BaseController{
 	@GetMapping("/getRegisterCostInvoiceReport")
 	public ResponseEntity<ResponseDTO> getRegisterCosiInvoiceReport(@RequestParam(required = false) Long orgId,
 			@RequestParam(required = false) String branchCode,
-			@RequestParam(required = false) String finYear,
 			@RequestParam (required = false) String fromDate,
 			@RequestParam (required = false) String toDate,
 			@RequestParam (required = false) String partyCode) {
@@ -414,7 +413,7 @@ public class RCostInvoiceGnaController extends BaseController{
 		List<Map<String, Object>> mapp = new ArrayList<>();
 
 		try {
-			mapp = rCostInvoiceGnaService.getRegisterCostInvoiceReport(orgId,branchCode,finYear,fromDate,toDate,partyCode);
+			mapp = rCostInvoiceGnaService.getRegisterCostInvoiceReport(orgId,branchCode,fromDate,toDate,partyCode);
 		} catch (Exception e) {
 			errorMsg = e.getMessage();
 			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);

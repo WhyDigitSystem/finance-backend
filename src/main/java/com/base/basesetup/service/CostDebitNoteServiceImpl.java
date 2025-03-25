@@ -420,9 +420,9 @@ public class CostDebitNoteServiceImpl implements CostDebitNoteService {
 	}
 
 	@Override
-	public List<CostDebitNoteVO> getCostDebitNoteByOrgId(Long orgId) {
+	public List<CostDebitNoteVO> getCostDebitNoteByOrgId(Long orgId,String finYear, String branchCode) {
 
-		return costDebitNoteRepo.getByCostDebitNoteByOrgId(orgId);
+		return costDebitNoteRepo.getByCostDebitNoteByOrgId(orgId,finYear,branchCode);
 	}
 
 	@Override

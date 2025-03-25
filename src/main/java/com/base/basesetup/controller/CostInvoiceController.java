@@ -42,7 +42,7 @@ public class CostInvoiceController extends BaseController {
 	// CostInvoice
 
 	@GetMapping("/getAllCostInvoiceByOrgId")
-	public ResponseEntity<ResponseDTO> getAllCostInvoiceByOrgId(@RequestParam(required = false) Long orgId) {
+	public ResponseEntity<ResponseDTO> getAllCostInvoiceByOrgId(@RequestParam Long orgId,@RequestParam String finYear,@RequestParam String branchCode) {
 		String methodName = "getAllCostInvoiceByOrgId()";
 		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
 		String errorMsg = null;
@@ -50,7 +50,7 @@ public class CostInvoiceController extends BaseController {
 		ResponseDTO responseDTO = null;
 		List<CostInvoiceVO> costInvoiceVO = new ArrayList<>();
 		try {
-			costInvoiceVO = costInvoiceService.getAllCostInvoiceByOrgId(orgId);
+			costInvoiceVO = costInvoiceService.getAllCostInvoiceByOrgId(orgId,finYear,branchCode);
 		} catch (Exception e) {
 			errorMsg = e.getMessage();
 			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);

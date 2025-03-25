@@ -17,7 +17,7 @@ public interface CostInvoiceService {
 
 	// CostInvoice
 
-	List<CostInvoiceVO> getAllCostInvoiceByOrgId(Long orgId);
+	List<CostInvoiceVO> getAllCostInvoiceByOrgId(Long orgId,String finYear, String branchCode);
 
 	Map<String, Object> updateCreateCostInvoice(@Valid CostInvoiceDTO costInvoiceDTO) throws ApplicationException;
 
