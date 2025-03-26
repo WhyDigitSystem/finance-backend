@@ -112,6 +112,9 @@ public class PaymentVO {
     @Column(name = "currencyamt", precision = 10, scale = 2)
     private BigDecimal currencyAmt;
     
+    @Column(name = "netamount", precision = 10, scale = 2)
+    private BigDecimal netAmount;
+    
     @Column(name = "branch", length = 25)
     private String branch;
 
@@ -148,6 +151,10 @@ public class PaymentVO {
 	@OneToMany(mappedBy = "paymentVO", cascade = CascadeType.ALL)
 	@JsonManagedReference
 	private List<PaymentInvDtlsVO> paymentInvDtlsVO;
+	
+	@OneToMany(mappedBy = "paymentVO", cascade = CascadeType.ALL)
+	@JsonManagedReference
+	List<TdsPaymentVO> tdsPaymentVO;
 	
 
 	@Embedded

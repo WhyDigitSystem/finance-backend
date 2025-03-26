@@ -889,7 +889,8 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 			map.put("dbAmount", ch[12] != null ? new BigDecimal(ch[12].toString()) : BigDecimal.ZERO);
 			map.put("crAmount", ch[13] != null ? new BigDecimal(ch[13].toString()) : BigDecimal.ZERO);
 			map.put("billDbAmount", ch[14] != null ? new BigDecimal(ch[14].toString()) : BigDecimal.ZERO);
-			map.put("billCrAmount", ch[15] != null ? new BigDecimal(ch[15].toString()) : BigDecimal.ZERO); // Handle as string, empty if nul
+			map.put("billCrAmount", ch[15] != null ? new BigDecimal(ch[15].toString()) : BigDecimal.ZERO);
+			map.put("clBal", ch[16] != null ? new BigDecimal(ch[16].toString()) : BigDecimal.ZERO);
 			List1.add(map);
 		}
 		return List1;
@@ -917,6 +918,7 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 			map.put("crAmount", ch[9] != null ? new BigDecimal(ch[9].toString()) : BigDecimal.ZERO);
 			map.put("ndAmount", ch[10] != null ? new BigDecimal(ch[10].toString()) : BigDecimal.ZERO);
 			map.put("ncAmount", ch[11] != null ? new BigDecimal(ch[11].toString()) : BigDecimal.ZERO);
+			map.put("clBal", ch[12] != null ? new BigDecimal(ch[12].toString()) : BigDecimal.ZERO);
 			List1.add(map);
 		}
 		return List1;

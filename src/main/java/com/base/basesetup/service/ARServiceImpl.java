@@ -19,11 +19,13 @@ import com.base.basesetup.dto.ArBillBalanceDTO;
 import com.base.basesetup.dto.ReceiptDTO;
 import com.base.basesetup.dto.ReceiptInvDetailsDTO;
 import com.base.basesetup.entity.ArBillBalanceVO;
+import com.base.basesetup.entity.ArapAdjustmentsVO;
 import com.base.basesetup.entity.DocumentTypeMappingDetailsVO;
 import com.base.basesetup.entity.ReceiptInvDetailsVO;
 import com.base.basesetup.entity.ReceiptVO;
 import com.base.basesetup.exception.ApplicationException;
 import com.base.basesetup.repo.ArBillBalanceRepo;
+import com.base.basesetup.repo.ArapAdjustmentsRepo;
 import com.base.basesetup.repo.DocumentTypeMappingDetailsRepo;
 import com.base.basesetup.repo.ReceiptInvDetailsRepo;
 import com.base.basesetup.repo.ReceiptRepo;
@@ -44,6 +46,10 @@ public class ARServiceImpl implements ARService {
 
 	@Autowired
 	DocumentTypeMappingDetailsRepo documentTypeMappingDetailsRepo;
+	
+	@Autowired
+	ArapAdjustmentsRepo arapAdjustmentsRepo;
+	
 
 	// Receipt
 	@Override
@@ -96,7 +102,43 @@ public class ARServiceImpl implements ARService {
 			message = "Receipt Created Successfully";
 		}
 
-		receiptRepo.save(receiptVO);
+	    ReceiptVO savedReceiptVO =receiptRepo.save(receiptVO);
+		
+		List<ReceiptInvDetailsVO> savedReceiptInvDetailsVO = savedReceiptVO.getReceiptInvDetailsVO();
+		if (savedReceiptInvDetailsVO != null && !savedReceiptInvDetailsVO.isEmpty()) {
+				for (ReceiptInvDetailsVO savedReceiptInvDetails : savedReceiptInvDetailsVO) {
+					ArapAdjustmentsVO arapadjustments = new ArapAdjustmentsVO();
+					arapadjustments.setBranch(savedReceiptVO.getBranch());
+					arapadjustments.setFinYear(savedReceiptVO.getFinYear());
+					arapadjustments.setSourceId(savedReceiptVO.getId());
+					arapadjustments.setDocId(savedReceiptVO.getDocId());
+					arapadjustments.setRefNo(savedReceiptInvDetails.getInvNo());
+					arapadjustments.setRefDate(savedReceiptInvDetails.getInvDate());
+//					arapadjustments.setAccountName(savedReceiptVO.getS());
+					arapadjustments.setCurrency(savedReceiptVO.getCurrency());
+//					arapadjustments.setAccCurrency(savedReceiptVO.getAcpdatedBy());
+					arapadjustments.setBaseAmt(savedReceiptInvDetails.getSettled());
+					arapadjustments.setNativeAmt(savedReceiptInvDetails.getSettled());
+//					arapadjustments.setOffDocId(savedGrnVO.getSupplierName());
+					arapadjustments.setVoucherType(savedReceiptVO.getType());
+					arapadjustments.setSubLedgerCode(savedReceiptVO.getCustomerCode());
+					arapadjustments.setExRate(savedReceiptInvDetails.getExRate());
+//					arapadjustments.setCreditDays(savedGrnVO.getNetAmount());
+//					arapadjustments.setDueDate(detailsVO.getStatus());	
+					
+					arapadjustments.setOrgId(savedReceiptVO.getOrgId());
+					arapadjustments.setActive(savedReceiptVO.isActive());
+					arapadjustments.setCancel(savedReceiptVO.isCancel());
+					arapadjustments.setCreatedBy(savedReceiptVO.getCreatedBy());
+					arapadjustments.setUpdatedBy(savedReceiptVO.getUpdatedBy());
+					arapadjustments.setBranchCode(savedReceiptVO.getBranchCode());
+					arapadjustments.setSubLedgerName(savedReceiptVO.getCustomerName());
+					arapadjustments.setAmount(savedReceiptInvDetails.getSettled());
+					arapadjustments.setSubLedgerName(savedReceiptVO.getCustomerName());
+					arapAdjustmentsRepo.save(arapadjustments);
+				}
+			}
+	
 		Map<String, Object> response = new HashMap<>();
 		response.put("receiptVO", receiptVO);
 		response.put("message", message);

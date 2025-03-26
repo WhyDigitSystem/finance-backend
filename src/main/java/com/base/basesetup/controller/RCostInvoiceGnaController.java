@@ -400,11 +400,11 @@ public class RCostInvoiceGnaController extends BaseController{
 	}
 	
 	@GetMapping("/getRegisterCostInvoiceReport")
-	public ResponseEntity<ResponseDTO> getRegisterCosiInvoiceReport(@RequestParam(required = false) Long orgId,
-			@RequestParam(required = false) String branchCode,
+	public ResponseEntity<ResponseDTO> getRegisterCosiInvoiceReport(@RequestParam(required = true) Long orgId,
+			@RequestParam(required = true) String branchCode,
 			@RequestParam (required = false) String fromDate,
 			@RequestParam (required = false) String toDate,
-			@RequestParam (required = false) String partyCode) {
+			@RequestParam (required = true) String partyCode) {
 		String methodName = "getRegisterCostInvoiceReport()";
 		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
 		String errorMsg = null;

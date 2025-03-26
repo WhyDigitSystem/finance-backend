@@ -746,17 +746,18 @@ public class RCostInvoiceGnaServiceImpl implements RCostInvoiceGnaService {
 			map.put("branchCode", ch[0] != null ? ch[0].toString() : "");
 			map.put("vid", ch[1] != null ? ch[1].toString() : "");
 			map.put("vdate", ch[2] != null ? ch[2].toString() : "");
-			map.put("supplieType", ch[3] != null ? ch[3].toString() : "");
-			map.put("supplierName", ch[4] != null ? ch[4].toString() : "");
-			map.put("supplierBillNo", ch[5] != null ? ch[5].toString() : "");
-			map.put("supplierGstin", ch[6] != null ? ch[6].toString() : "");
-			map.put("gstType", ch[7] != null ? ch[7].toString() : "");
-			map.put("charges", ch[8] != null ? ch[8].toString() : "");
-			map.put("outputIgst", ch[9] != null ? ch[9].toString() : "");
-			map.put("outputCgst", ch[10] != null ? ch[10].toString() : "");
-			map.put("outputSgst", ch[11] != null ? ch[11].toString() : "");
-			map.put("gstPercent", ch[12] != null ? Double.valueOf(ch[12].toString()) : 0.0);
-
+			map.put("supplierName", ch[3] != null ? ch[3].toString() : "");
+			map.put("supplierGstin", ch[4] != null ? ch[4].toString() : "");
+			map.put("gstType", ch[5] != null ?  ch[5].toString() : "");
+			map.put("billAmount", ch[6] != null ?  new BigDecimal(ch[6].toString()) : BigDecimal.ZERO);
+			map.put("tax", ch[7] != null ? new BigDecimal(ch[7].toString()) : BigDecimal.ZERO);
+			map.put("totalAmount", ch[8] != null ? new BigDecimal(ch[8].toString()) : BigDecimal.ZERO);
+			map.put("tds", ch[9] != null ? new BigDecimal(ch[9].toString()) : BigDecimal.ZERO);
+			map.put("partyPayable", ch[10] != null ? new BigDecimal(ch[10].toString()) : BigDecimal.ZERO);
+			 map.put("outputIgst", ch[11] != null ? new BigDecimal(ch[11].toString()) : BigDecimal.ZERO);
+			 map.put("outputCgst", ch[12] != null ? new BigDecimal(ch[12].toString()) : BigDecimal.ZERO);
+			 map.put("outputSgst", ch[13] != null ? new BigDecimal(ch[13].toString()) : BigDecimal.ZERO);
+			 map.put("gstPercent", ch[14] != null ? new BigDecimal(ch[14].toString()) : BigDecimal.ZERO);
 			List1.add(map);
 		}
 		return List1;

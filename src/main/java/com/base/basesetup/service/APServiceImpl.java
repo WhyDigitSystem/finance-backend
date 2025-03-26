@@ -1,5 +1,6 @@
 package com.base.basesetup.service;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -17,16 +18,21 @@ import org.springframework.stereotype.Service;
 import com.base.basesetup.dto.ApBillBalanceDTO;
 import com.base.basesetup.dto.PaymentDTO;
 import com.base.basesetup.dto.PaymentInvDtlsDTO;
+import com.base.basesetup.dto.TaxInvoiceDTO;
+import com.base.basesetup.dto.TdsPaymentDTO;
 import com.base.basesetup.entity.ApBillBalanceVO;
 import com.base.basesetup.entity.DocumentTypeMappingDetailsVO;
 import com.base.basesetup.entity.PaymentInvDtlsVO;
 import com.base.basesetup.entity.PaymentVO;
+import com.base.basesetup.entity.TaxInvoiceVO;
+import com.base.basesetup.entity.TdsPaymentVO;
 import com.base.basesetup.exception.ApplicationException;
 import com.base.basesetup.repo.ApBillBalanceRepo;
 import com.base.basesetup.repo.DocumentTypeMappingDetailsRepo;
 import com.base.basesetup.repo.PartyMasterRepo;
 import com.base.basesetup.repo.PaymentInvDtlsRepo;
 import com.base.basesetup.repo.PaymentRepo;
+import com.base.basesetup.repo.TdsPaymentRepo;
 
 @Service
 public class APServiceImpl implements APService {
@@ -47,6 +53,9 @@ public class APServiceImpl implements APService {
 
 	@Autowired
 	DocumentTypeMappingDetailsRepo documentTypeMappingDetailsRepo;
+	
+	@Autowired
+	TdsPaymentRepo tdsPaymentRepo;
 
 	@Override
 	public List<PaymentVO> getAllPaymentByOrgId(Long orgId) {
@@ -69,19 +78,19 @@ public class APServiceImpl implements APService {
 	}
 
 	@Override
-	public PaymentVO updateCreatePayment(@Valid PaymentDTO paymentDTO) throws ApplicationException {
+	public Map<String, Object> updateCreatePayment(PaymentDTO paymentDTO) throws ApplicationException {
 		PaymentVO paymentVO = new PaymentVO();
-		boolean isUpdate = false;
 		String screenCode = "PT";
+		String message;
 		if (ObjectUtils.isNotEmpty(paymentDTO.getId())) {
-			isUpdate = true;
+
 			paymentVO = paymentRepo.findById(paymentDTO.getId())
 					.orElseThrow(() -> new ApplicationException("Invalid Payment details"));
 			paymentVO.setUpdatedBy(paymentDTO.getCreatedBy());
-
+			getPaymentVOFromPaymentDTO(paymentDTO, paymentVO);
+			message = "Payment Updated Successfully";
 		} else {
-			paymentVO.setUpdatedBy(paymentDTO.getCreatedBy());
-			paymentVO.setCreatedBy(paymentDTO.getCreatedBy());
+
 
 //			GETDOCID API
 			String docId = paymentRepo.getPaymentDocId(paymentDTO.getOrgId(), paymentDTO.getFinYear(),
@@ -95,47 +104,21 @@ public class APServiceImpl implements APService {
 							paymentDTO.getBranchCode(), screenCode);
 			documentTypeMappingDetailsVO.setLastno(documentTypeMappingDetailsVO.getLastno() + 1);
 			documentTypeMappingDetailsRepo.save(documentTypeMappingDetailsVO);
+			
+			getPaymentVOFromPaymentDTO(paymentDTO, paymentVO);
+			paymentVO.setUpdatedBy(paymentDTO.getCreatedBy());
+			paymentVO.setCreatedBy(paymentDTO.getCreatedBy());
+			message = "Payment Created Successfully";
 		}
 
-		if (ObjectUtils.isNotEmpty(paymentDTO.getId())) {
-			List<PaymentInvDtlsVO> paymentInvDtlsVOList = paymentInvDtlsRepo.findByPaymentVO(paymentVO);
-			paymentInvDtlsRepo.deleteAll(paymentInvDtlsVOList);
-		}
-		List<PaymentInvDtlsVO> paymentInvDtlsVOs = new ArrayList<>();
-		for (PaymentInvDtlsDTO paymentInvDtlsDTO : paymentDTO.getPaymentInvDtlsDTO()) {
-			PaymentInvDtlsVO paymentInvDtlsVO = new PaymentInvDtlsVO();
-			paymentInvDtlsVO.setInvNo(paymentInvDtlsDTO.getInvNo());
-			paymentInvDtlsVO.setInvDate(paymentInvDtlsDTO.getInvDate());
-			paymentInvDtlsVO.setRefNo(paymentInvDtlsDTO.getRefNo());
-			paymentInvDtlsVO.setRefDate(paymentInvDtlsDTO.getRefDate());
-			paymentInvDtlsVO.setSupplierRefNo(paymentInvDtlsDTO.getSupplierRefNo());
-			paymentInvDtlsVO.setSupplierRefDate(paymentInvDtlsDTO.getSupplierRefDate());
-			paymentInvDtlsVO.setCurrency(paymentInvDtlsDTO.getCurrency());
-			paymentInvDtlsVO.setExRate(paymentInvDtlsDTO.getExRate());
-			paymentInvDtlsVO.setAmount(paymentInvDtlsDTO.getAmount());
-			paymentInvDtlsVO.setChargeAmt(paymentInvDtlsDTO.getChargeAmt());
-			paymentInvDtlsVO.setOutstanding(paymentInvDtlsDTO.getOutstanding());
-			paymentInvDtlsVO.setSettled(paymentInvDtlsDTO.getSettled());
-			paymentInvDtlsVO.setPayExRate(paymentInvDtlsDTO.getPayExRate());
-			paymentInvDtlsVO.setTxnSettled(paymentInvDtlsDTO.getTxnSettled());
-			paymentInvDtlsVO.setGainOrLossAmt(paymentInvDtlsDTO.getGainOrLossAmt());
-			paymentInvDtlsVO.setRemarks(paymentInvDtlsDTO.getRemarks());
-			paymentInvDtlsVO.setFromDate(paymentInvDtlsDTO.getFromDate());
-			paymentInvDtlsVO.setToDate(paymentInvDtlsDTO.getToDate());
-
-			paymentInvDtlsVO.setPaymentVO(paymentVO);
-
-			paymentInvDtlsVOs.add(paymentInvDtlsVO);
-
-		}
-
-		getPaymentVOFromPaymentDTO(paymentDTO, paymentVO);
-		paymentVO.setPaymentInvDtlsVO(paymentInvDtlsVOs);
-
-		return paymentRepo.save(paymentVO);
+		paymentRepo.save(paymentVO);
+		Map<String, Object> response = new HashMap<>();
+		response.put("paymentVO", paymentVO);
+		response.put("message", message);
+		return response;
 	}
 
-	private void getPaymentVOFromPaymentDTO(@Valid PaymentDTO paymentDTO, PaymentVO paymentVO) {
+	private void getPaymentVOFromPaymentDTO(PaymentDTO paymentDTO, PaymentVO paymentVO) {
 
 		paymentVO.setPaymentType(paymentDTO.getPaymentType());
 		paymentVO.setBankChargeAcc(paymentDTO.getBankChargeAcc());
@@ -168,8 +151,73 @@ public class APServiceImpl implements APService {
 		paymentVO.setCancelRemarks(paymentDTO.getCancelRemarks());
 		paymentVO.setFinYear(paymentDTO.getFinYear());
 		paymentVO.setOrgId(paymentDTO.getOrgId());
+		
+		
+		if (ObjectUtils.isNotEmpty(paymentDTO.getId())) {
+			List<PaymentInvDtlsVO> paymentInvDtlsVOList = paymentInvDtlsRepo.findByPaymentVO(paymentVO);
+			paymentInvDtlsRepo.deleteAll(paymentInvDtlsVOList);
+			
+			List<TdsPaymentVO> tdsPaymentVO1 = tdsPaymentRepo.findByPaymentVO(paymentVO);
+			tdsPaymentRepo.deleteAll(tdsPaymentVO1);
+			
+		}
+		
+		BigDecimal netAmount = BigDecimal.ZERO;
+		
+		List<PaymentInvDtlsVO> paymentInvDtlsVOs = new ArrayList<>();
+		for (PaymentInvDtlsDTO paymentInvDtlsDTO : paymentDTO.getPaymentInvDtlsDTO()) {
+			PaymentInvDtlsVO paymentInvDtlsVO = new PaymentInvDtlsVO();
+			paymentInvDtlsVO.setInvNo(paymentInvDtlsDTO.getInvNo());
+			paymentInvDtlsVO.setInvDate(paymentInvDtlsDTO.getInvDate());
+			paymentInvDtlsVO.setRefNo(paymentInvDtlsDTO.getRefNo());
+			paymentInvDtlsVO.setRefDate(paymentInvDtlsDTO.getRefDate());
+			paymentInvDtlsVO.setSupplierRefNo(paymentInvDtlsDTO.getSupplierRefNo());
+			paymentInvDtlsVO.setSupplierRefDate(paymentInvDtlsDTO.getSupplierRefDate());
+			paymentInvDtlsVO.setCurrency(paymentInvDtlsDTO.getCurrency());
+			paymentInvDtlsVO.setExRate(paymentInvDtlsDTO.getExRate());
+			paymentInvDtlsVO.setAmount(paymentInvDtlsDTO.getAmount());
+			paymentInvDtlsVO.setChargeAmt(paymentInvDtlsDTO.getChargeAmt());
+			paymentInvDtlsVO.setOutstanding(paymentInvDtlsDTO.getOutstanding());
+			paymentInvDtlsVO.setSettled(paymentInvDtlsDTO.getSettled());
+			paymentInvDtlsVO.setPayExRate(paymentInvDtlsDTO.getPayExRate());
+			paymentInvDtlsVO.setTxnSettled(paymentInvDtlsDTO.getTxnSettled());
+			paymentInvDtlsVO.setGainOrLossAmt(paymentInvDtlsDTO.getGainOrLossAmt());
+			paymentInvDtlsVO.setRemarks(paymentInvDtlsDTO.getRemarks());
+			paymentInvDtlsVO.setFromDate(paymentInvDtlsDTO.getFromDate());
+			paymentInvDtlsVO.setToDate(paymentInvDtlsDTO.getToDate());
+			
+			netAmount=netAmount.add(paymentInvDtlsDTO.getAmount());
 
-	}
+			paymentInvDtlsVO.setPaymentVO(paymentVO);
+
+			paymentInvDtlsVOs.add(paymentInvDtlsVO);
+
+		}
+		paymentVO.setPaymentInvDtlsVO(paymentInvDtlsVOs);
+
+		List<TdsPaymentVO> tdsPaymentVOs = new ArrayList<>();
+		for (TdsPaymentDTO tdsPaymentDTO : paymentDTO.getTdsPaymentDTO()) {
+			TdsPaymentVO tdsPaymentVO = new TdsPaymentVO();
+
+			tdsPaymentVO.setTdsWithHolding(tdsPaymentDTO.getTdsWithHolding());
+			tdsPaymentVO.setTdsWithHoldingPer(tdsPaymentDTO.getTdsWithHoldingPer());
+			tdsPaymentVO.setSection(tdsPaymentDTO.getSection());
+
+			BigDecimal totTdsWhAmt = BigDecimal.ZERO;
+			BigDecimal tdsWhPercent = tdsPaymentDTO.getTdsWithHoldingPer();
+			System.out.println("TOTAL LC AMOUNT IS :" + netAmount);
+			totTdsWhAmt = netAmount.multiply(tdsWhPercent.divide(BigDecimal.valueOf(100)));
+			tdsPaymentVO.setTotTdsWhAmnt(totTdsWhAmt);
+
+			tdsPaymentVO.setPaymentVO(paymentVO);
+			tdsPaymentVOs.add(tdsPaymentVO);
+		}
+		paymentVO.setNetAmount(netAmount);
+		
+		paymentVO.setTdsPaymentVO(tdsPaymentVOs);
+		
+		
+		}
 
 	@Override
 	public String getPaymentDocId(Long orgId, String finYear, String branch, String branchCode) {

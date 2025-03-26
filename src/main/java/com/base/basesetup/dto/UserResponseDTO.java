@@ -27,6 +27,7 @@ public class UserResponseDTO {
 	private String warehouse;
 	private String branch;
 	private String client;
+	private String finYear;
 	private boolean loginStatus;
 	private boolean active;
 	private boolean allIndiaAcces;

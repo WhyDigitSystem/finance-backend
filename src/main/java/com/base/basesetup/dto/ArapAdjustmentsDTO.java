@@ -16,12 +16,12 @@ public class ArapAdjustmentsDTO {
 	private Long id;
 	private String branch;
 	private String finYear;
-	private String source;
+	private Long sourceId;
 	private String refNo;
 	private String accountName;
 	private String currency;
 	private String accCurrency;
-	private BigDecimal baseAmnt;
+	private BigDecimal baseAmt;
 	private BigDecimal nativeAmt;
 	private String offDocId;
 	private String voucherType;
@@ -40,5 +40,6 @@ public class ArapAdjustmentsDTO {
 	private BigDecimal tdsAmt;
 	private String subLedgerName;
 	private boolean gstFlag;
+	private boolean active;
 	private BigDecimal amount;
 }

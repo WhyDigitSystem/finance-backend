@@ -49,5 +49,7 @@ public class PaymentDTO {
 	
 
 	private List<PaymentInvDtlsDTO> paymentInvDtlsDTO;
+	
+	private List<TdsPaymentDTO> tdsPaymentDTO;
 
 }
