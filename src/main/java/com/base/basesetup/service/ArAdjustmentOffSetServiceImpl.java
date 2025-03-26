@@ -175,7 +175,7 @@ public class ArAdjustmentOffSetServiceImpl implements ArAdjustmentOffSetService 
 	        arOffSetInvoiceDetailsVOs.add(arOffSetInvoiceDetailsVO);
 
 	        if (arOffSetInvoiceDetailsDTO.getSettled() != null) {
-	            totalSettledAmount = totalSettledAmount.subtract(arOffSetInvoiceDetailsDTO.getSettled());
+	            totalSettledAmount = totalSettledAmount.add(arOffSetInvoiceDetailsDTO.getSettled());
 	        }
 	        if (arOffSetInvoiceDetailsDTO.getGainOrLoss() != null) {
 	            totalForexGainOrLoss = totalForexGainOrLoss.add(arOffSetInvoiceDetailsDTO.getGainOrLoss());
@@ -361,7 +361,7 @@ public class ArAdjustmentOffSetServiceImpl implements ArAdjustmentOffSetService 
 	    }
 
 	    BigDecimal roundedTotalSettled = totalSettledAmount.setScale(2, RoundingMode.HALF_UP);
-	    BigDecimal roundOffAmount = totalSettledAmount.subtract(roundedTotalSettled).setScale(2, RoundingMode.HALF_UP);
+	    BigDecimal roundOffAmount = totalSettledAmount.add(roundedTotalSettled).setScale(2, RoundingMode.HALF_UP);
 
 	    apAdjustmentOffSetVO.setTotalSettled(roundedTotalSettled);
 	    apAdjustmentOffSetVO.setRoundOffAmount(roundOffAmount);
