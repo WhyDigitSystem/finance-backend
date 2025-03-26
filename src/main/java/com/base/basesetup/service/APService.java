@@ -22,7 +22,7 @@ public interface APService {
 
 	List<PaymentVO> getPaymentById(Long id);
 
-	PaymentVO updateCreatePayment(@Valid PaymentDTO paymentDTO) throws ApplicationException;
+	Map<String, Object> updateCreatePayment(PaymentDTO paymentDTO) throws ApplicationException;
 
 	List<Map<String, Object>> getPartyNameAndCodeForPayment(Long orgId,String partyName, String branch, String finYear);
 

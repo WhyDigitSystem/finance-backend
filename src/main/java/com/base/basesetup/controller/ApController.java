@@ -94,34 +94,22 @@ public class ApController extends BaseController {
 	}
 
 	@PutMapping("/updateCreatePayment")
-	public ResponseEntity<ResponseDTO> updateCreatePayment(@Valid @RequestBody PaymentDTO paymentDTO) {
+	public ResponseEntity<ResponseDTO> updateCreatePayment( @RequestBody PaymentDTO paymentDTO) {
 		String methodName = "updateCreatePayment()";
-
 		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
 		String errorMsg = null;
 		Map<String, Object> responseObjectsMap = new HashMap<>();
 		ResponseDTO responseDTO = null;
 
 		try {
-			PaymentVO paymentVO = apService.updateCreatePayment(paymentDTO);
-			boolean isUpdate = paymentDTO.getId() != null;
-
-			if (paymentVO != null) {
-				responseObjectsMap.put(CommonConstant.STRING_MESSAGE,
-						isUpdate ? "Payment updated successfully" : "Payment created successfully");
-				responseObjectsMap.put("paymentVO", paymentVO);
-				responseDTO = createServiceResponse(responseObjectsMap);
-			} else {
-				errorMsg = isUpdate ? "Payment not found for ID: " + paymentDTO.getId() : "Payment creation failed";
-				responseDTO = createServiceResponseError(responseObjectsMap,
-						isUpdate ? "Payment update failed" : "Payment creation failed", errorMsg);
-			}
+			Map<String, Object> paymentVO = apService.updateCreatePayment(paymentDTO);
+			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, paymentVO.get("message"));
+			responseObjectsMap.put("paymentVO", paymentVO.get("paymentVO")); // Corrected key
+			responseDTO = createServiceResponse(responseObjectsMap);
 		} catch (Exception e) {
 			errorMsg = e.getMessage();
-			boolean isUpdate = paymentDTO.getId() != null;
 			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
-			responseDTO = createServiceResponseError(responseObjectsMap,
-					isUpdate ? "Payment update failed" : "Payment creation failed", errorMsg);
+			responseDTO = createServiceResponseError(responseObjectsMap, errorMsg, errorMsg);
 		}
 		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
 		return ResponseEntity.ok().body(responseDTO);

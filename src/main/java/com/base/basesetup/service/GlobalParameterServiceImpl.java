@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.base.basesetup.entity.GlobalParameterVO;
+import com.base.basesetup.entity.UserVO;
 import com.base.basesetup.repo.FinancialYearRepo;
 import com.base.basesetup.repo.GlobalParameterRepo;
 import com.base.basesetup.repo.UserBranchAccessRepo;
@@ -49,24 +50,34 @@ public class GlobalParameterServiceImpl implements GlobalParameterService {
 
 	// Change Global Parameter or update Parameters
 	@Override
-
 	public GlobalParameterVO updateGlobaParameter(GlobalParameterVO globalParameterVO) {
 
 		GlobalParameterVO existingRecord = globalParameterRepo.findGlobalParam(globalParameterVO.getOrgId(),
 				globalParameterVO.getUserid());
 
+		
+		
 		if (existingRecord != null) {
 			// If the record exists, it's a PUT operation
 			existingRecord.setBranch(globalParameterVO.getBranch());
 			existingRecord.setBranchcode(globalParameterVO.getBranchcode());
 			existingRecord.setFinYear(globalParameterVO.getFinYear());
 			existingRecord.setOrgId(globalParameterVO.getOrgId());
-
+			UserVO userVO= userRepo.findByOrgIdAndId(globalParameterVO.getOrgId(),
+					globalParameterVO.getUserid());
+			userVO.setFinYear(globalParameterVO.getFinYear());
+			userRepo.save(userVO);
 			return globalParameterRepo.save(existingRecord);
 		} else {
 			// If the record doesn't exist, it's a POST operation
+			UserVO userVO= userRepo.findByOrgIdAndId(globalParameterVO.getOrgId(),
+					globalParameterVO.getUserid());
+			userVO.setFinYear(globalParameterVO.getFinYear());
+			userRepo.save(userVO);
 			return globalParameterRepo.save(globalParameterVO);
 		}
+		
+		
 
 	}
 

@@ -450,6 +450,7 @@ public class AuthServiceImpl implements AuthService {
 		userDTO.setOrgId(userVO.getOrgId());
 		userDTO.setActive(userVO.isActive());
 		userDTO.setUserType(userVO.getUserType());
+		userDTO.setFinYear(userVO.getFinYear());
 		userDTO.setEmail(userVO.getEmail());
 		userDTO.setAllIndiaAcces(userVO.isActive());
 		userDTO.setUserName(userVO.getUserName());
