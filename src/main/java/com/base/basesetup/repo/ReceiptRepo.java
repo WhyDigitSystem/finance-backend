@@ -44,7 +44,7 @@ public interface ReceiptRepo extends JpaRepository<ReceiptVO, Long> {
 			+ "    a.CANCEL = 'F' and a.subledgercode=?2 and a.orgid=?1\r\n" + "ORDER BY a.docdate, a.docid")
 	Set<Object[]> findReciptFillGrid(Long orgId, String partyCode);
 
-	@Query(nativeQuery = true, value = "select * from receipt where orgid=?1 and branchcode=?2 ")
+	@Query(nativeQuery = true, value = "select * from receipt where orgid=?1 and branchcode=?2 and cancel=0")
 	List<ReceiptVO> getAllReceiptByOrgIdAndBranchCode(Long orgId, String branchCode);
 
 }
