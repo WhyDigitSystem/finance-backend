@@ -130,11 +130,11 @@ public class ReceiptVO {
 	@Column(name = "receiptType1", length = 20)
 	private String receiptType1;
 
-	@Column(name = "chequeutino", length = 10)
+	@Column(name = "chequeutino", length = 100)
 	private String chequeUtiNo;
 
 	@Column(name = "chequeutidt")
-	private LocalDate chequeUtiDt;
+	private LocalDate chequeUtiDate;
 
 	@Column(name = "receivedfrom", length = 100)
 	private String receivedFrom;
@@ -151,6 +151,9 @@ public class ReceiptVO {
 
 	@Column(name = "netamount", precision = 10, scale = 2)
 	private BigDecimal netAmount;
+	
+	@Column(name = "onaccount", precision = 10, scale = 2)
+	private BigDecimal onAccount;
 	
 	@JsonGetter("active")
 	public String getActive() {

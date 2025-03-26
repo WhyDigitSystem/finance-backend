@@ -592,6 +592,8 @@ public class TaxInvoiceServiceImpl implements TaxInvoiceService {
 			accountsVO.setCreatedon(taxInvoiceVO.getCommonDate().getModifiedon().toUpperCase());
 			accountsVO.setRefNo(taxInvoiceVO.getDocId());
 			accountsVO.setRefDate(taxInvoiceVO.getDocDate());
+			accountsVO.setVId(taxInvoiceVO.getVId());
+			accountsVO.setVDate(taxInvoiceVO.getVDate());
 			accountsVO.setCurrency(taxInvoiceVO.getBillCurr());
 			accountsVO.setExRate(taxInvoiceVO.getBillCurrRate());
 			accountsVO.setRemarks(taxInvoiceVO.getBillingRemarks());
@@ -795,9 +797,9 @@ public class TaxInvoiceServiceImpl implements TaxInvoiceService {
 	}
 
 	@Override
-	public List<Map<String, Object>> getReportDetailsForSalesRegister(String finyear, String fromDate,String toDate,
+	public List<Map<String, Object>> getReportDetailsForSalesRegister( String fromDate,String toDate,
 			Long orgId, String branchCode, String partyCode) {
-		Set<Object[]> chType = taxInvoiceRepo.getReportDetailsForSalesRegister(finyear, fromDate, toDate, orgId, branchCode,  partyCode);
+		Set<Object[]> chType = taxInvoiceRepo.getReportDetailsForSalesRegister( fromDate, toDate, orgId, branchCode,  partyCode);
 		return getReportDetailsForSalesRegister(chType);
 	}
 
@@ -807,8 +809,8 @@ public class TaxInvoiceServiceImpl implements TaxInvoiceService {
 	        Map<String, Object> map = new HashMap<>();
 	        
 	        map.put("branchCode", ch[1] != null ? ch[1].toString() : "");
-	        map.put("docId", ch[2] != null ? ch[2].toString() : "");
-	        map.put("docDate", ch[3] != null ? ch[3].toString() : "");
+	        map.put("vId", ch[2] != null ? ch[2].toString() : "");
+	        map.put("vDate", ch[3] != null ? ch[3].toString() : "");
 	        map.put("jobOrderNo", ch[4] != null ? ch[4].toString() : "");
 	        map.put("voucherNo", ch[5] != null ? ch[5].toString() : "");
 	        map.put("voucherDate", ch[6] != null ? ch[6].toString() : "");
@@ -834,5 +836,23 @@ public class TaxInvoiceServiceImpl implements TaxInvoiceService {
 	    return resultList;
 	}
 
+	@Override
+	public List<Map<String, Object>> getDsahboardRevenue(Long orgId, String billMonth, String finYear) {
+		
+		Set<Object[]> chType = taxInvoiceRepo.getDsahboardRevenue(orgId, billMonth,finYear);
+		return getDsahboard(chType);
+	}
 
+	private List<Map<String, Object>> getDsahboard(Set<Object[]> chType) {
+		List<Map<String, Object>> List1 = new ArrayList<>();
+		for (Object[] ch : chType) {
+			if(ch!=null) {
+			Map<String, Object> map = new HashMap<>();
+			map.put("amount", ch[0] != null ? ch[0].toString() : "0");
+			List1.add(map);
+		}
+		}
+		return List1;
+
+	}
 }

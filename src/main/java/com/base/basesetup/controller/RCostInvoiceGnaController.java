@@ -399,6 +399,37 @@ public class RCostInvoiceGnaController extends BaseController{
 		return ResponseEntity.ok().body(responseDTO);
 	}
 	
+	@GetMapping("/getRegisterCostInvoiceReport")
+	public ResponseEntity<ResponseDTO> getRegisterCosiInvoiceReport(@RequestParam(required = true) Long orgId,
+			@RequestParam(required = true) String branchCode,
+			@RequestParam (required = false) String fromDate,
+			@RequestParam (required = false) String toDate,
+			@RequestParam (required = true) String partyCode) {
+		String methodName = "getRegisterCostInvoiceReport()";
+		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+		String errorMsg = null;
+		Map<String, Object> responseObjectsMap = new HashMap<>();
+		ResponseDTO responseDTO = null;
+		List<Map<String, Object>> mapp = new ArrayList<>();
+
+		try {
+			mapp = rCostInvoiceGnaService.getRegisterCostInvoiceReport(orgId,branchCode,fromDate,toDate,partyCode);
+		} catch (Exception e) {
+			errorMsg = e.getMessage();
+			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+		}
+
+		if (StringUtils.isBlank(errorMsg)) {
+			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "Cost InvoiceReport  retrieved successfully");
+			responseObjectsMap.put("rCostinvoiceReport", mapp);
+			responseDTO = createServiceResponse(responseObjectsMap);
+		} else {
+			responseDTO = createServiceResponseError(responseObjectsMap, "Cost InvoiceReport Failed to retrieve ChargeLedger ", errorMsg);
+		}
+
+		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+		return ResponseEntity.ok().body(responseDTO);
+	}
   
 
 }

@@ -10,8 +10,8 @@ import com.base.basesetup.entity.IrnCreditNoteVO;
 
 public interface IrnCreditNoteRepo extends JpaRepository<IrnCreditNoteVO, Long> {
 
-	@Query(nativeQuery = true, value = "select * from irncreditnote where orgid=?1")
-	List<IrnCreditNoteVO> getAllIrnCreditByOrgId(Long orgId);
+	@Query(nativeQuery = true, value = "select * from irncreditnote where orgid=?1 and finyear=?2 and branchcode=?3")
+	List<IrnCreditNoteVO> getAllIrnCreditByOrgId(Long orgId,String finYear, String branchCode);
 
 	@Query(nativeQuery = true, value = "select * from irncreditnote where irncreditnoteid=?1")
 	List<IrnCreditNoteVO> getAllIrnCreditById(Long id);

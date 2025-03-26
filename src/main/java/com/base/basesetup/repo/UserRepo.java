@@ -14,7 +14,7 @@ public interface UserRepo extends JpaRepository<UserVO, Long> {
 
 	@Query("select a from UserVO a where a.userName=?1")
 	UserVO findByUserName(String userName);
-
+	
 	@Query(value = "select u from UserVO u where u.id =?1")
 	UserVO getUserById(Long usersId);
 
@@ -26,8 +26,10 @@ public interface UserRepo extends JpaRepository<UserVO, Long> {
 
 	boolean existsByUserNameOrEmailOrMobileNo(String userName, String email, String email2);
 
+//	@Query(nativeQuery =true,value ="select * from users u where u.username=?1")
+//	UserVO getUserName(String userName);
 
-//	UserVO findByUserNameAndUsersId(String userName, Long usersId);
+
 
 
 

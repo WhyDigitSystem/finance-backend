@@ -11,8 +11,8 @@ import com.base.basesetup.entity.PartyMasterVO;
 
 public interface CostInvoiceRepo extends JpaRepository<CostInvoiceVO, Long> {
 
-	@Query(nativeQuery = true, value = "select * from costinvoice where orgid=?1")
-	List<CostInvoiceVO> getAllCostInvoiceByOrgId(Long orgId);
+	@Query(nativeQuery = true, value = "select * from costinvoice where orgid=?1 and finyear=?2 and branchcode=?3")
+	List<CostInvoiceVO> getAllCostInvoiceByOrgId(Long orgId,String finYear, String branchCode);
 
 	@Query(nativeQuery = true, value = "select * from costinvoice where costinvoiceid=?1")
 	List<CostInvoiceVO> getAllCostInvoiceById(Long id);
@@ -89,5 +89,8 @@ public interface CostInvoiceRepo extends JpaRepository<CostInvoiceVO, Long> {
 	CostInvoiceVO findByOrgIdAndDocId(Long orgId, String orginBill);
 
 	boolean existsByvIdAndOrgId(String vId, Long orgId);
+
+	@Query(nativeQuery = true,value = "select sum(amount) as totalAmount from vw_cost where orgid=?1 and (billmonth=?2 or 'ALL'=?2) and finyear=?3")
+	Set<Object[]> getDsahboardCost(Long orgId, String billMonth, String finYear);
 
 }

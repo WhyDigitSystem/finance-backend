@@ -1008,16 +1008,16 @@ public class MasterController extends BaseController {
 		String errorMsg = null;
 		Map<String, Object> responseObjectsMap = new HashMap<>();
 		ResponseDTO responseDTO = null;
-		List<SacCodeVO> sacCodeVO = new ArrayList<>();
+		List<HSNSacCodeVO> hSNSacCodeVO = new ArrayList<>();
 		try {
-			sacCodeVO = masterService.getAllActiveSacCodeByOrgId(orgId);
+			hSNSacCodeVO = masterService.getAllActiveSacCodeByOrgId(orgId);
 		} catch (Exception e) {
 			errorMsg = e.getMessage();
 			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
 		}
 		if (StringUtils.isBlank(errorMsg)) {
 			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "SacCode information get successfully ByOrgId");
-			responseObjectsMap.put("sacCodeVO", sacCodeVO);
+			responseObjectsMap.put("hSNSacCodeVO", hSNSacCodeVO);
 			responseDTO = createServiceResponse(responseObjectsMap);
 		} else {
 			responseDTO = createServiceResponseError(responseObjectsMap, "SacCode information receive failedByOrgId",

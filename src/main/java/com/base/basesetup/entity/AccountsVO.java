@@ -111,6 +111,10 @@ public class AccountsVO {
 	private String rc;
 	@Column(name = "salestype",length = 30)
 	private String salesType;
+	@Column(name = "vid", length = 50)
+	private String vId;
+	@Column(name = "vdate")
+	private LocalDate vDate;
 	
 	@DateTimeFormat(pattern = "dd-MM-yyyy hh:mm:ss a")
 	@Column(name="createdon",length = 25)

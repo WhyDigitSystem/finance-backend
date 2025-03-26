@@ -40,7 +40,7 @@ public class SecurityConfig {
 						"/api/arreceivable/**", "/api/transaction/**", "/api/GlobalParam/**", "/api/payable/**",
 						"/api/documentType/**", "/api/taxInvoice/**", "/api/arapAdjustments/**",
 						"/api/costdebitnote/**", "/api/costInvoice/**","/api/irnCreditNote/**","/api/multipleDocIdGeneration/**","/api/sampleExcel/**"
-						,"/api/rCostInvoiceGna/**","/api/UrCostInvoiceGna/**")
+						,"/api/rCostInvoiceGna/**","/api/UrCostInvoiceGna/**","/api/offSetcontroller/**")
 
 
 

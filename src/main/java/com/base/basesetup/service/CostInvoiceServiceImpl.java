@@ -30,6 +30,7 @@ import com.base.basesetup.entity.DocumentTypeMappingDetailsVO;
 import com.base.basesetup.entity.GroupLedgerVO;
 import com.base.basesetup.entity.MultipleDocIdGenerationDetailsVO;
 import com.base.basesetup.entity.PartyMasterVO;
+import com.base.basesetup.entity.TaxInvoiceVO;
 import com.base.basesetup.entity.TdsCostInvoiceVO;
 import com.base.basesetup.exception.ApplicationException;
 import com.base.basesetup.repo.AccountsDetailsRepo;
@@ -80,15 +81,11 @@ public class CostInvoiceServiceImpl implements CostInvoiceService {
 	// costInvoice
 
 	@Override
-	public List<CostInvoiceVO> getAllCostInvoiceByOrgId(Long orgId) {
+	public List<CostInvoiceVO> getAllCostInvoiceByOrgId(Long orgId,String finYear, String branchCode) {
+		
 		List<CostInvoiceVO> costInvoiceVO = new ArrayList<>();
-		if (ObjectUtils.isNotEmpty(orgId)) {
-			LOGGER.info("Successfully Received  CostInvoice BY OrgId : {}", orgId);
-			costInvoiceVO = costInvoiceRepo.getAllCostInvoiceByOrgId(orgId);
-		} else {
-			LOGGER.info("Successfully Received  CostInvoice For All OrgId.");
-			costInvoiceVO = costInvoiceRepo.findAll();
-		}
+		costInvoiceVO = costInvoiceRepo.getAllCostInvoiceByOrgId(orgId, finYear, branchCode);
+
 		return costInvoiceVO;
 	}
 
@@ -728,6 +725,8 @@ public class CostInvoiceServiceImpl implements CostInvoiceService {
 			accountsVO.setAmountInWords(costInvoiceVO.getAmountInWords());
 			accountsVO.setRefNo(costInvoiceVO.getDocId());
 			accountsVO.setRefDate(costInvoiceVO.getDocDate());
+			accountsVO.setVId(costInvoiceVO.getVId());
+			accountsVO.setVDate(costInvoiceVO.getVDate());
 			accountsVO.setCurrency(costInvoiceVO.getCurrency());
 			accountsVO.setExRate(costInvoiceVO.getExRate());
 
@@ -902,4 +901,22 @@ public class CostInvoiceServiceImpl implements CostInvoiceService {
 		return costInvoiceVO;
 	}
 
+	@Override
+	public List<Map<String, Object>> getDsahboardCost(Long orgId, String billMonth, String finYear) {
+		Set<Object[]> chType = costInvoiceRepo.getDsahboardCost(orgId, billMonth,finYear);
+		return getDash(chType);
+	}
+
+	private List<Map<String, Object>> getDash(Set<Object[]> chType) {
+		List<Map<String, Object>> List1 = new ArrayList<>();
+		for (Object[] ch : chType) {
+			if(ch!=null) {
+			Map<String, Object> map = new HashMap<>();
+			map.put("amount", ch[0] != null ? ch[0].toString() : "0");
+			List1.add(map);
+		}
+		}
+		return List1;
+
+	}
 }

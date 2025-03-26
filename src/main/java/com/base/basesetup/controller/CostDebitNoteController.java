@@ -62,7 +62,7 @@ public class CostDebitNoteController extends BaseController {
 	}
 
 	@GetMapping("/getCostDebitNoteByOrgId")
-	public ResponseEntity<ResponseDTO> getCostDebitNoteByOrgId(@RequestParam(required = false) Long orgId) {
+	public ResponseEntity<ResponseDTO> getCostDebitNoteByOrgId(@RequestParam Long orgId,@RequestParam String finYear,@RequestParam String branchCode) {
 		String methodName = "getCostDebitNoteByOrgId()";
 		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
 		String errorMsg = null;
@@ -70,7 +70,7 @@ public class CostDebitNoteController extends BaseController {
 		ResponseDTO responseDTO = null;
 		List<CostDebitNoteVO> costDebitNoteVOs = new ArrayList<>();
 		try {
-			costDebitNoteVOs = costDebitNoteService.getCostDebitNoteByOrgId(orgId);
+			costDebitNoteVOs = costDebitNoteService.getCostDebitNoteByOrgId(orgId,finYear,branchCode);
 		} catch (Exception e) {
 			errorMsg = e.getMessage();
 			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);

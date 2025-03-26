@@ -40,4 +40,5 @@ public class ArapAdjustmentsDTO {
 	private BigDecimal tdsAmt;
 	private String subLedgerName;
 	private boolean gstFlag;
+	private BigDecimal amount;
 }

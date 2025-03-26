@@ -729,4 +729,38 @@ public class RCostInvoiceGnaServiceImpl implements RCostInvoiceGnaService {
 		return List1;
 
 	}
+
+	@Override
+	public List<Map<String, Object>> getRegisterCostInvoiceReport(Long orgId, String branchCode,
+			String fromDate, String toDate,String partyCode) {
+		Set<Object[]> chCode = rCostInvoiceGnaRepo.findRegisterCostInvoiceReport(orgId, branchCode,  fromDate,
+				toDate,partyCode);
+		return findRegisterCostInvoice(chCode);
+	}
+
+	private List<Map<String, Object>> findRegisterCostInvoice(Set<Object[]> chCode) {
+		List<Map<String, Object>> List1 = new ArrayList<>();
+		for (Object[] ch : chCode) {
+			Map<String, Object> map = new HashMap<>();
+
+			map.put("branchCode", ch[0] != null ? ch[0].toString() : "");
+			map.put("vid", ch[1] != null ? ch[1].toString() : "");
+			map.put("vdate", ch[2] != null ? ch[2].toString() : "");
+			map.put("supplierName", ch[3] != null ? ch[3].toString() : "");
+			map.put("supplierGstin", ch[4] != null ? ch[4].toString() : "");
+			map.put("gstType", ch[5] != null ?  ch[5].toString() : "");
+			map.put("billAmount", ch[6] != null ?  new BigDecimal(ch[6].toString()) : BigDecimal.ZERO);
+			map.put("tax", ch[7] != null ? new BigDecimal(ch[7].toString()) : BigDecimal.ZERO);
+			map.put("totalAmount", ch[8] != null ? new BigDecimal(ch[8].toString()) : BigDecimal.ZERO);
+			map.put("tds", ch[9] != null ? new BigDecimal(ch[9].toString()) : BigDecimal.ZERO);
+			map.put("partyPayable", ch[10] != null ? new BigDecimal(ch[10].toString()) : BigDecimal.ZERO);
+			 map.put("outputIgst", ch[11] != null ? new BigDecimal(ch[11].toString()) : BigDecimal.ZERO);
+			 map.put("outputCgst", ch[12] != null ? new BigDecimal(ch[12].toString()) : BigDecimal.ZERO);
+			 map.put("outputSgst", ch[13] != null ? new BigDecimal(ch[13].toString()) : BigDecimal.ZERO);
+			 map.put("gstPercent", ch[14] != null ? new BigDecimal(ch[14].toString()) : BigDecimal.ZERO);
+			List1.add(map);
+		}
+		return List1;
+
+	}
 }

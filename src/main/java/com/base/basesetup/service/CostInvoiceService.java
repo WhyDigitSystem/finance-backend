@@ -17,7 +17,7 @@ public interface CostInvoiceService {
 
 	// CostInvoice
 
-	List<CostInvoiceVO> getAllCostInvoiceByOrgId(Long orgId);
+	List<CostInvoiceVO> getAllCostInvoiceByOrgId(Long orgId,String finYear, String branchCode);
 
 	Map<String, Object> updateCreateCostInvoice(@Valid CostInvoiceDTO costInvoiceDTO) throws ApplicationException;
 
@@ -62,4 +62,6 @@ public interface CostInvoiceService {
 	List<Map<String, Object>> getCreditDaysFromVendor(Long orgId, String supplierCode);
 
 	CostInvoiceVO getCostInvoiceById(Long id);
+
+	List<Map<String, Object>> getDsahboardCost(Long orgId, String billMonth, String finYear);
 }
