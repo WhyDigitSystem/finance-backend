@@ -6,6 +6,7 @@ import java.util.Map;
 import javax.validation.Valid;
 
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.base.basesetup.dto.ApBillBalanceDTO;
 import com.base.basesetup.dto.PaymentDTO;
@@ -23,7 +24,7 @@ public interface APService {
 
 	PaymentVO updateCreatePayment(@Valid PaymentDTO paymentDTO) throws ApplicationException;
 
-	List<Map<String, Object>> getPartyNameAndCodeForPayment(Long orgId);
+	List<Map<String, Object>> getPartyNameAndCodeForPayment(Long orgId,String partyName, String branch, String finYear);
 
 	List<Map<String, Object>> getCurrencyAndTransCurrencyForPayment(Long orgId, String branch, String branchCode,
 			String finYear, String partyName);
@@ -47,6 +48,8 @@ public interface APService {
 
 // 	PaymentRegister
 	List<Map<String, Object>> getAllPaymentRegister(Long orgId, String fromDate, String toDate, String subLedgerName);
+
+	List<Map<String, Object>> getPartyNameAndPartyCode(Long orgId,String branch,String finYear);
 
 //	String getApBillBalanceDocId(Long orgId, String finYear, String branch, String branchCode);
 

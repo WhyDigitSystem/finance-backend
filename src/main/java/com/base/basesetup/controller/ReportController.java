@@ -21,8 +21,10 @@ import org.springframework.web.bind.annotation.RestController;
 import com.base.basesetup.common.CommonConstant;
 import com.base.basesetup.common.UserConstants;
 import com.base.basesetup.dto.InvoiceDTO;
+import com.base.basesetup.dto.IssueManifestProviderDTO;
 import com.base.basesetup.dto.ResponseDTO;
 import com.base.basesetup.entity.InvoiceVO;
+import com.base.basesetup.entity.IssueManifestProviderVO;
 import com.base.basesetup.service.ReportService;
 
 @CrossOrigin
@@ -108,5 +110,107 @@ public class ReportController extends BaseController{
 		return ResponseEntity.ok().body(responseDTO);
 	}
 	
+	@PutMapping("/createUpdateIssuemanifest")
+	public ResponseEntity<ResponseDTO> createUpdateIssuemanifest(@RequestBody IssueManifestProviderDTO issueManifestProviderDTO) {
+	    String methodName = "createUpdateIssuemanifest()";
+	    LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+	    Map<String, Object> responseObjectsMap = new HashMap<>();
+	    ResponseDTO responseDTO = null;
+	    try {
+	        Map<String, Object> issueManifestProviderVO = reportService.createUpdateIssuemanifest(issueManifestProviderDTO);
+	        responseObjectsMap.put(CommonConstant.STRING_MESSAGE, issueManifestProviderVO.get("message"));
+	        responseObjectsMap.put("issueManifestProviderVO", issueManifestProviderVO.get("issueManifestProviderVO"));
+	        responseDTO = createServiceResponse(responseObjectsMap);
+	    } catch (Exception e) {
+	    	String errorMsg =  e.getMessage(); 
+	        LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+	        responseDTO = createServiceResponseError(responseObjectsMap, errorMsg, errorMsg);
+	    }
+	    LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+	    return ResponseEntity.ok().body(responseDTO);
+	}
+
+
+	@GetMapping("/getAllIssueManifestProvider")
+	public ResponseEntity<ResponseDTO> getAllIssueManifestProvider() {
+		String methodName = "getAllIssueManifestProvider()";
+		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+		String errorMsg = null;
+		Map<String, Object> responseObjectsMap = new HashMap<>();
+		ResponseDTO responseDTO = null;
+		List<IssueManifestProviderVO> IssueManifestProviderVO =new ArrayList<IssueManifestProviderVO>();
+		try {
+			IssueManifestProviderVO = reportService.getAllIssueManifestProvider();
+		} catch (Exception e) {
+			errorMsg = e.getMessage();
+			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+		}
+		if (StringUtils.isBlank(errorMsg)) {
+			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "IssueManifestProvider information get successfully");
+			responseObjectsMap.put("IssueManifestProviderVO", IssueManifestProviderVO);
+			responseDTO = createServiceResponse(responseObjectsMap);
+		} else {
+			responseDTO = createServiceResponseError(responseObjectsMap, "IssueManifestProvider information receive failed",
+					errorMsg);
+		}
+		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+		return ResponseEntity.ok().body(responseDTO);
+
+	}
+	
+	@GetMapping("/getAllIssueManifestProviderForPendingIR")
+	public ResponseEntity<ResponseDTO> getAllIssueManifestProviderForPendingIR(@RequestParam Long orgId) {
+		String methodName = "getAllIssueManifestProviderForPendingIR()";
+		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+		String errorMsg = null;
+		Map<String, Object> responseObjectsMap = new HashMap<>();
+		ResponseDTO responseDTO = null;
+		List<IssueManifestProviderVO> IssueManifestProviderVO =new ArrayList<IssueManifestProviderVO>();
+		try {
+			IssueManifestProviderVO = reportService.getAllIssueManifestProviderForPendingIssueRequest(orgId);
+		} catch (Exception e) {
+			errorMsg = e.getMessage();
+			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+		}
+		if (StringUtils.isBlank(errorMsg)) {
+			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "IssueManifestProvider information get successfully");
+			responseObjectsMap.put("IssueManifestProviderVO", IssueManifestProviderVO);
+			responseDTO = createServiceResponse(responseObjectsMap);
+		} else {
+			responseDTO = createServiceResponseError(responseObjectsMap, "IssueManifestProvider information receive failed",
+					errorMsg);
+		}
+		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+		return ResponseEntity.ok().body(responseDTO);
+
+	}
+
+
+	@GetMapping("/getAllIssueManifestProviderById")
+	public ResponseEntity<ResponseDTO> getAllIssueManifestProviderById(Long id) {
+		String methodName = "getAllIssueManifestProvider()";
+		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+		String errorMsg = null;
+		Map<String, Object> responseObjectsMap = new HashMap<>();
+		ResponseDTO responseDTO = null;
+		IssueManifestProviderVO IssueManifestProviderVO =null;
+		try {
+			IssueManifestProviderVO = reportService.getAllIssueManifestProviderById(id).orElse(null);
+		} catch (Exception e) {
+			errorMsg = e.getMessage();
+			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+		}
+		if (StringUtils.isBlank(errorMsg)) {
+			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "IssueManifestProvider information get successfully");
+			responseObjectsMap.put("IssueManifestProviderVO", IssueManifestProviderVO);
+			responseDTO = createServiceResponse(responseObjectsMap);
+		} else {
+			responseDTO = createServiceResponseError(responseObjectsMap, "IssueManifestProvider information receive failed",
+					errorMsg);
+		}
+		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+		return ResponseEntity.ok().body(responseDTO);
+
+	}
 	
 }

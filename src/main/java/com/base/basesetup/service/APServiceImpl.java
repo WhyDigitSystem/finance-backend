@@ -327,9 +327,9 @@ public class APServiceImpl implements APService {
 	}
 
 	@Override
-	public List<Map<String, Object>> getPartyNameAndCodeForPayment(Long orgId) {
-		Set<Object[]> partyName = paymentRepo.findPartyNameAndCodeForPayment(orgId);
-		return getPartyName(partyName);
+	public List<Map<String, Object>> getPartyNameAndCodeForPayment(Long orgId,String partyName,String branch,String finYear) {
+		Set<Object[]> partyName1 = paymentRepo.findPartyNameAndCodeForPayment(orgId,partyName,branch,finYear);
+		return getPartyName(partyName1);
 	}
 
 	private List<Map<String, Object>> getPartyName(Set<Object[]> customer) {
@@ -338,6 +338,11 @@ public class APServiceImpl implements APService {
 			Map<String, Object> doctype = new HashMap<>();
 			doctype.put("partyName", sup[0] != null ? sup[0].toString() : "");
 			doctype.put("partyCode", sup[1] != null ? sup[1].toString() : "");
+			doctype.put("currency", sup[2] != null ? sup[2].toString() : "");
+			doctype.put("stateCode", sup[3] != null ? sup[3].toString() : "");
+			doctype.put("gstin", sup[4] != null ? sup[4].toString() : "");
+			
+			
 			doctypeMappingDetails.add(doctype);
 		}
 
@@ -403,11 +408,23 @@ public class APServiceImpl implements APService {
 
 		return payment;
 	}
-	
-//	@Override
-//	public String getApBillBalanceDocId(Long orgId, String finYear, String branch, String branchCode) {
-//		String ScreenCode = "APB";
-//		String result = apBillBalanceRepo.getApBillBalanceDocId(orgId, finYear, branchCode, ScreenCode);
-//		return result;
-//
+
+	@Override
+	public List<Map<String, Object>> getPartyNameAndPartyCode(Long orgId,String branch,String finYear) {
+		Set<Object[]> group = paymentRepo.findPartyNameAndPartyCode(orgId,branch,finYear);
+		return getPartyName1(group);
+	}
+
+	private List<Map<String, Object>> getPartyName1(Set<Object[]> customer) {
+		List<Map<String, Object>> payment = new ArrayList<>();
+		for (Object[] sup : customer) {
+			Map<String, Object> accountgroupname = new HashMap<>();
+			accountgroupname.put("partyName", sup[0] != null ? sup[0].toString() : "");
+			accountgroupname.put("partyCode", sup[1] != null ? sup[1].toString() : "");
+			payment.add(accountgroupname);
+		}
+
+		return payment;
+	}
+
 }
