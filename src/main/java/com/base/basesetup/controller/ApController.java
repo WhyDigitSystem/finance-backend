@@ -301,7 +301,7 @@ public class ApController extends BaseController {
 	}
 
 	@GetMapping("/getPartyNameAndCodeForPayment")
-	public ResponseEntity<ResponseDTO> getPartyNameAndCodeForPayment(@RequestParam Long orgId) {
+	public ResponseEntity<ResponseDTO> getPartyNameAndCodeForPayment(@RequestParam Long orgId,@RequestParam String partyName,@RequestParam String branch,@RequestParam String finYear) {
 		String methodName = "getPartyNameAndCodeForPayment()";
 		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
 		String errorMsg = null;
@@ -309,7 +309,7 @@ public class ApController extends BaseController {
 		ResponseDTO responseDTO = null;
 		List<Map<String, Object>> party = new ArrayList<>();
 		try {
-			party = apService.getPartyNameAndCodeForPayment(orgId);
+			party = apService.getPartyNameAndCodeForPayment(orgId,partyName,branch,finYear);
 		} catch (Exception e) {
 			errorMsg = e.getMessage();
 			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
@@ -469,5 +469,32 @@ public class ApController extends BaseController {
 //		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
 //		return ResponseEntity.ok().body(responseDTO);
 //	}
+	
+	@GetMapping("/getPartyNameAndPartyCode")
+	public ResponseEntity<ResponseDTO> getPartyNameAndPartyCode(@RequestParam Long orgId,@RequestParam String branch,@RequestParam String finYear) {
+		String methodName = "getPartyNameAndPartyCode()";
+		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+		String errorMsg = null;
+		Map<String, Object> responseObjectsMap = new HashMap<>();
+		ResponseDTO responseDTO = null;
+		List<Map<String, Object>> party = new ArrayList<>();
+		try {
+			party = apService.getPartyNameAndPartyCode(orgId,branch,finYear);
+		} catch (Exception e) {
+			errorMsg = e.getMessage();
+			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+		}
+		if (StringUtils.isBlank(errorMsg)) {
+			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "Party name and code information get successfully");
+			responseObjectsMap.put("PartyMasterVO", party);
+			responseDTO = createServiceResponse(responseObjectsMap);
+		} else {
+			responseDTO = createServiceResponseError(responseObjectsMap,
+					"Party name and code information receive failed", errorMsg);
+		}
+		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+		return ResponseEntity.ok().body(responseDTO);
+	}
+
 
 }

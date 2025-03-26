@@ -141,6 +141,9 @@ public class PaymentVO {
 
     @Column(name = "screenname", length = 25)
     private String screenName = "PAYMENT";
+    
+    @Column(name="onaccount")
+    private BigDecimal onAccount;
 	
 	@OneToMany(mappedBy = "paymentVO", cascade = CascadeType.ALL)
 	@JsonManagedReference
