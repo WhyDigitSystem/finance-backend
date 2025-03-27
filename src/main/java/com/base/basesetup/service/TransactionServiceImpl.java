@@ -2524,6 +2524,7 @@ public class TransactionServiceImpl implements TransactionService {
 		tmsJobCardVO.setSource(tmsJobCardDTO.getSource());
 		tmsJobCardVO.setRefNo(tmsJobCardDTO.getRefNo());
 		tmsJobCardVO.setRefDate(tmsJobCardDTO.getRefDate());
+		tmsJobCardVO.setService(tmsJobCardDTO.getService());
 
 
 

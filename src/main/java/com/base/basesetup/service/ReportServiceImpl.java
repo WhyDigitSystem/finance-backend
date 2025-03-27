@@ -460,7 +460,7 @@ public class ReportServiceImpl implements ReportService{
 				doctype.put("chargableAmt", sup[20] != null ? sup[20].toString() : "");
 				doctype.put("arApOutstanding", sup[21] != null ? sup[21].toString() : "");
 				doctype.put("arapSettled", sup[22] != null ? sup[22].toString() : "");
-				doctype.put("finYear", sup[23] != null ? sup[23].toString() : "");
+//				doctype.put("finYear", sup[23] != null ? sup[23].toString() : "");
 				
 				
 				doctypeMappingDetails.add(doctype);
