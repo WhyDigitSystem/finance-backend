@@ -24,7 +24,7 @@ public interface APService {
 
 	Map<String, Object> updateCreatePayment(PaymentDTO paymentDTO) throws ApplicationException;
 
-	List<Map<String, Object>> getPartyNameAndCodeForPayment(Long orgId,String partyName, String branch, String finYear);
+	List<Map<String, Object>> getPartyNameAndCodeForPayment(Long orgId,String partyName);
 
 	List<Map<String, Object>> getCurrencyAndTransCurrencyForPayment(Long orgId, String branch, String branchCode,
 			String finYear, String partyName);
@@ -49,7 +49,7 @@ public interface APService {
 // 	PaymentRegister
 	List<Map<String, Object>> getAllPaymentRegister(Long orgId, String fromDate, String toDate, String subLedgerName);
 
-	List<Map<String, Object>> getPartyNameAndPartyCode(Long orgId,String branch,String finYear);
+	List<Map<String, Object>> getPartyNameAndPartyCode(Long orgId);
 
 //	String getApBillBalanceDocId(Long orgId, String finYear, String branch, String branchCode);
 

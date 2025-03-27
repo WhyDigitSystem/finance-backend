@@ -36,25 +36,25 @@ public class PaymentInvDtlsVO {
 	@Column(name = "paymentinvdtlsid")
 	private Long id;
 
-	@Column(name = "invno", length = 30)
+	@Column(name = "invno", length = 100)
 	private String invNo;
 
 	@Column(name = "invdate")
 	private LocalDate invDate;
 
-	@Column(name = "refno", length = 30)
+	@Column(name = "refno", length = 100)
 	private String refNo;
 
 	@Column(name = "refdate")
 	private LocalDate refDate;
 
-	@Column(name = "supplierrefno", length = 30)
+	@Column(name = "supplierrefno", length = 100)
 	private String supplierRefNo;
 
 	@Column(name = "supplierrefdate")
 	private LocalDate supplierRefDate;
 
-	@Column(name = "currency", length = 5)
+	@Column(name = "currency", length = 10)
 	private String currency;
 
 	@Column(name = "exrate", precision = 10, scale = 5)
@@ -81,14 +81,7 @@ public class PaymentInvDtlsVO {
 	@Column(name = "gainorlossamt", precision = 10, scale = 2)
 	private BigDecimal gainOrLossAmt;
 
-	@Column(name = "remarks", length = 150)
-	private String remarks;
 
-	@Column(name = "fromdate")
-	private LocalDate fromDate;
-
-	@Column(name = "todate")
-	private LocalDate toDate;
 
 	@ManyToOne
 	@JoinColumn(name = "paymentid")

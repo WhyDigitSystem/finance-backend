@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -23,11 +24,13 @@ import com.base.basesetup.common.CommonConstant;
 import com.base.basesetup.common.UserConstants;
 import com.base.basesetup.dto.InvoiceDTO;
 import com.base.basesetup.dto.IssueManifestProviderDTO;
+import com.base.basesetup.dto.QuotationDTO;
 import com.base.basesetup.dto.ResponseDTO;
 import com.base.basesetup.dto.RetrievalManifestProviderDTO;
 import com.base.basesetup.entity.DeclarationAndNotesVO;
 import com.base.basesetup.entity.InvoiceVO;
 import com.base.basesetup.entity.IssueManifestProviderVO;
+import com.base.basesetup.entity.QuotationVO;
 import com.base.basesetup.entity.RetrievalManifestProviderVO;
 import com.base.basesetup.service.ReportService;
 
@@ -348,6 +351,106 @@ public class ReportController extends BaseController{
 			return ResponseEntity.ok().body(responseDTO);
 
 		}
+//
+//		// Receipt Register
+//				@GetMapping("/getReceiptRegisterReport")
+//				public ResponseEntity<ResponseDTO> getReceiptRegisterReport(@RequestParam Long orgId, @RequestParam String partyName,@RequestParam String branchCode,
+//						@RequestParam String finYear,@RequestParam(required = false) String fromDate,@RequestParam(required = false) String toDate) {
+//					String methodName = "getReceiptRegisterReport()";
+//					LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+//					String errorMsg = null;
+//					Map<String, Object> responseObjectsMap = new HashMap<>();
+//					ResponseDTO responseDTO = null;
+//					List<Map<String, Object>> reciptReport = new ArrayList<>();
+//					try {
+//						reciptReport = reportService.getReceiptRegisterReport(orgId,partyName,branchCode,finYear,fromDate,toDate);
+//					} catch (Exception e) {
+//						errorMsg = e.getMessage();
+//						LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+//					}
+//					if (StringUtils.isBlank(errorMsg)) {
+//						responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "Receipt information get successfully");
+//						responseObjectsMap.put("reciptReport", reciptReport);
+//						responseDTO = createServiceResponse(responseObjectsMap);
+//					} else {
+//						responseDTO = createServiceResponseError(responseObjectsMap, "Receipt information receive failed",
+//								errorMsg);
+//					}
+//					LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+//					return ResponseEntity.ok().body(responseDTO);
+//				}
+				
+				@PutMapping("/createUpdateQuotatio")
+				public ResponseEntity<ResponseDTO> createUpdateQuotatio(@RequestBody QuotationDTO quotationDTO) {
+					String methodName = "createUpdateQuotatio()";
+					LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+					String errorMsg = null;
+					Map<String, Object> responseObjectsMap = new HashMap<>();
+					ResponseDTO responseDTO = null;
+					try {
+						Map<String, Object> quotationVO = reportService.createUpdateQuotatio(quotationDTO);
+						responseObjectsMap.put(CommonConstant.STRING_MESSAGE, quotationVO.get("message"));
+						responseObjectsMap.put("quotationVO", quotationVO.get("quotationVO")); // Corrected key
+						responseDTO = createServiceResponse(responseObjectsMap);
+					} catch (Exception e) {
+						errorMsg = e.getMessage();
+						LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+						responseDTO = createServiceResponseError(responseObjectsMap, errorMsg, errorMsg);
+					}
+					LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+					return ResponseEntity.ok().body(responseDTO);
+				}
 
-	
+				@GetMapping("/getQuotationByorgId")
+				public ResponseEntity<ResponseDTO> getQuotationByorgId(@RequestParam(required = false) Long orgId) {
+					String methodName = "getQuotationByorgId()";
+					LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+					String errorMsg = null;
+					Map<String, Object> responseObjectsMap = new HashMap<>();
+					ResponseDTO responseDTO = null;
+					List<Map<String, Object>> quotationVO = new ArrayList<>();
+					try {
+						quotationVO = reportService.getQuotationByorgId(orgId);
+					} catch (Exception e) {
+						errorMsg = e.getMessage();
+						LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+					}
+					if (StringUtils.isEmpty(errorMsg)) {
+						responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "quotation found by ID");
+						responseObjectsMap.put("quotationVO", quotationVO);
+						responseDTO = createServiceResponse(responseObjectsMap);
+					} else {
+						errorMsg = "quotation not found for ID: " + orgId;
+						responseDTO = createServiceResponseError(responseObjectsMap, "quotation not found", errorMsg);
+					}
+					LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+					return ResponseEntity.ok().body(responseDTO);
+				}
+
+				@GetMapping("/getQutationById")
+				public ResponseEntity<ResponseDTO> getQutationById(@RequestParam Long id) {
+					String methodName = "getQutationById()";
+					LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+					String errorMsg = null;
+					Map<String, Object> responseObjectsMap = new HashMap<>();
+					ResponseDTO responseDTO = null;
+					Optional<QuotationVO> quotationVO = null;
+					try {
+						quotationVO = reportService.getQutationById(id);
+					} catch (Exception e) {
+						errorMsg = e.getMessage();
+						LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+					}
+					if (StringUtils.isBlank(errorMsg)) {
+						responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "Qutation information get successfully");
+						responseObjectsMap.put("quotationVO", quotationVO);
+						responseDTO = createServiceResponse(responseObjectsMap);
+					} else {
+						responseDTO = createServiceResponseError(responseObjectsMap, "Qutation information receive failed",
+								errorMsg);
+					}
+					LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+					return ResponseEntity.ok().body(responseDTO);
+				}
+				
 }

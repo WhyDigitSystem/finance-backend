@@ -21,6 +21,7 @@ import com.base.basesetup.dto.PaymentInvDtlsDTO;
 import com.base.basesetup.dto.TaxInvoiceDTO;
 import com.base.basesetup.dto.TdsPaymentDTO;
 import com.base.basesetup.entity.ApBillBalanceVO;
+import com.base.basesetup.entity.ArapAdjustmentsVO;
 import com.base.basesetup.entity.DocumentTypeMappingDetailsVO;
 import com.base.basesetup.entity.PaymentInvDtlsVO;
 import com.base.basesetup.entity.PaymentVO;
@@ -28,6 +29,7 @@ import com.base.basesetup.entity.TaxInvoiceVO;
 import com.base.basesetup.entity.TdsPaymentVO;
 import com.base.basesetup.exception.ApplicationException;
 import com.base.basesetup.repo.ApBillBalanceRepo;
+import com.base.basesetup.repo.ArapAdjustmentsRepo;
 import com.base.basesetup.repo.DocumentTypeMappingDetailsRepo;
 import com.base.basesetup.repo.PartyMasterRepo;
 import com.base.basesetup.repo.PaymentInvDtlsRepo;
@@ -46,6 +48,9 @@ public class APServiceImpl implements APService {
 	PaymentInvDtlsRepo paymentInvDtlsRepo;
 
 	@Autowired
+	ArapAdjustmentsRepo arapAdjustmentsRepo;
+
+	@Autowired
 	ApBillBalanceRepo apBillBalanceRepo;
 
 	@Autowired
@@ -53,7 +58,7 @@ public class APServiceImpl implements APService {
 
 	@Autowired
 	DocumentTypeMappingDetailsRepo documentTypeMappingDetailsRepo;
-	
+
 	@Autowired
 	TdsPaymentRepo tdsPaymentRepo;
 
@@ -91,7 +96,6 @@ public class APServiceImpl implements APService {
 			message = "Payment Updated Successfully";
 		} else {
 
-
 //			GETDOCID API
 			String docId = paymentRepo.getPaymentDocId(paymentDTO.getOrgId(), paymentDTO.getFinYear(),
 					paymentDTO.getBranchCode(), screenCode);
@@ -104,21 +108,47 @@ public class APServiceImpl implements APService {
 							paymentDTO.getBranchCode(), screenCode);
 			documentTypeMappingDetailsVO.setLastno(documentTypeMappingDetailsVO.getLastno() + 1);
 			documentTypeMappingDetailsRepo.save(documentTypeMappingDetailsVO);
-			
+
 			getPaymentVOFromPaymentDTO(paymentDTO, paymentVO);
 			paymentVO.setUpdatedBy(paymentDTO.getCreatedBy());
 			paymentVO.setCreatedBy(paymentDTO.getCreatedBy());
 			message = "Payment Created Successfully";
 		}
 
-		paymentRepo.save(paymentVO);
+		paymentVO = paymentRepo.save(paymentVO);
+		List<PaymentInvDtlsVO> paymentInvDtlsVOs = paymentInvDtlsRepo.findByPaymentVO(paymentVO);
+		for (PaymentInvDtlsVO dtlsVO : paymentInvDtlsVOs) {
+			ArapAdjustmentsVO adjustmentsVO = new ArapAdjustmentsVO();
+			adjustmentsVO.setCancel(false);
+			adjustmentsVO.setActive(true);
+			adjustmentsVO.setCreatedBy(paymentVO.getCreatedBy());
+			adjustmentsVO.setUpdatedBy(paymentVO.getUpdatedBy());
+			adjustmentsVO.setFinYear(paymentVO.getFinYear());
+			adjustmentsVO.setDocId(paymentVO.getDocId());
+			adjustmentsVO.setDocDate(paymentVO.getDocDate());
+			adjustmentsVO.setRefNo(dtlsVO.getInvNo());
+			adjustmentsVO.setRefDate(dtlsVO.getInvDate());
+			adjustmentsVO.setSubLedgerCode(paymentVO.getPartyCode());
+			adjustmentsVO.setSubLedgerName(paymentVO.getPartyName());
+			adjustmentsVO.setCurrency(dtlsVO.getCurrency());
+			adjustmentsVO.setExRate(dtlsVO.getExRate());
+			adjustmentsVO.setAmount(dtlsVO.getSettled());
+			adjustmentsVO.setBaseAmt(dtlsVO.getSettled());
+			adjustmentsVO.setNativeAmt(dtlsVO.getSettled());
+			adjustmentsVO.setOrgId(paymentVO.getOrgId());
+			adjustmentsVO.setAccCurrency(dtlsVO.getCurrency());
+			adjustmentsVO.setAccountName(paymentVO.getPartyName());
+			adjustmentsVO.setBranch(paymentVO.getBranch());
+			adjustmentsVO.setSourceId(dtlsVO.getId());
+			arapAdjustmentsRepo.save(adjustmentsVO);
+		}
 		Map<String, Object> response = new HashMap<>();
 		response.put("paymentVO", paymentVO);
 		response.put("message", message);
 		return response;
 	}
 
-	private void getPaymentVOFromPaymentDTO(PaymentDTO paymentDTO, PaymentVO paymentVO) {
+	private void getPaymentVOFromPaymentDTO(PaymentDTO paymentDTO, PaymentVO paymentVO) throws ApplicationException {
 
 		paymentVO.setPaymentType(paymentDTO.getPaymentType());
 		paymentVO.setBankChargeAcc(paymentDTO.getBankChargeAcc());
@@ -142,82 +172,71 @@ public class APServiceImpl implements APService {
 		paymentVO.setTdsAmt(paymentDTO.getTdsAmt());
 		paymentVO.setCurrency(paymentDTO.getCurrency());
 		paymentVO.setCurrencyAmt(paymentDTO.getCurrencyAmt());
-		paymentVO.setReceiptAmt(paymentDTO.getReceiptAmt());
-
+		paymentVO.setActive(true);
 		paymentVO.setBranch(paymentDTO.getBranch());
 		paymentVO.setBranchCode(paymentDTO.getBranchCode());
-		paymentVO.setActive(paymentDTO.isActive());
-		paymentVO.setCancel(paymentDTO.isCancel());
-		paymentVO.setCancelRemarks(paymentDTO.getCancelRemarks());
 		paymentVO.setFinYear(paymentDTO.getFinYear());
 		paymentVO.setOrgId(paymentDTO.getOrgId());
-		
-		
+
 		if (ObjectUtils.isNotEmpty(paymentDTO.getId())) {
 			List<PaymentInvDtlsVO> paymentInvDtlsVOList = paymentInvDtlsRepo.findByPaymentVO(paymentVO);
 			paymentInvDtlsRepo.deleteAll(paymentInvDtlsVOList);
-			
-			List<TdsPaymentVO> tdsPaymentVO1 = tdsPaymentRepo.findByPaymentVO(paymentVO);
-			tdsPaymentRepo.deleteAll(tdsPaymentVO1);
-			
 		}
-		
+
 		BigDecimal netAmount = BigDecimal.ZERO;
-		
+		BigDecimal onAccount = BigDecimal.ZERO;
+
 		List<PaymentInvDtlsVO> paymentInvDtlsVOs = new ArrayList<>();
-		for (PaymentInvDtlsDTO paymentInvDtlsDTO : paymentDTO.getPaymentInvDtlsDTO()) {
-			PaymentInvDtlsVO paymentInvDtlsVO = new PaymentInvDtlsVO();
-			paymentInvDtlsVO.setInvNo(paymentInvDtlsDTO.getInvNo());
-			paymentInvDtlsVO.setInvDate(paymentInvDtlsDTO.getInvDate());
-			paymentInvDtlsVO.setRefNo(paymentInvDtlsDTO.getRefNo());
-			paymentInvDtlsVO.setRefDate(paymentInvDtlsDTO.getRefDate());
-			paymentInvDtlsVO.setSupplierRefNo(paymentInvDtlsDTO.getSupplierRefNo());
-			paymentInvDtlsVO.setSupplierRefDate(paymentInvDtlsDTO.getSupplierRefDate());
-			paymentInvDtlsVO.setCurrency(paymentInvDtlsDTO.getCurrency());
-			paymentInvDtlsVO.setExRate(paymentInvDtlsDTO.getExRate());
-			paymentInvDtlsVO.setAmount(paymentInvDtlsDTO.getAmount());
-			paymentInvDtlsVO.setChargeAmt(paymentInvDtlsDTO.getChargeAmt());
-			paymentInvDtlsVO.setOutstanding(paymentInvDtlsDTO.getOutstanding());
-			paymentInvDtlsVO.setSettled(paymentInvDtlsDTO.getSettled());
-			paymentInvDtlsVO.setPayExRate(paymentInvDtlsDTO.getPayExRate());
-			paymentInvDtlsVO.setTxnSettled(paymentInvDtlsDTO.getTxnSettled());
-			paymentInvDtlsVO.setGainOrLossAmt(paymentInvDtlsDTO.getGainOrLossAmt());
-			paymentInvDtlsVO.setRemarks(paymentInvDtlsDTO.getRemarks());
-			paymentInvDtlsVO.setFromDate(paymentInvDtlsDTO.getFromDate());
-			paymentInvDtlsVO.setToDate(paymentInvDtlsDTO.getToDate());
-			
-			netAmount=netAmount.add(paymentInvDtlsDTO.getAmount());
+		BigDecimal totalSettled = BigDecimal.ZERO;
 
-			paymentInvDtlsVO.setPaymentVO(paymentVO);
+		if (paymentDTO.getPaymentInvDtlsDTO() != null || !paymentDTO.getPaymentInvDtlsDTO().isEmpty()) {
+			for (PaymentInvDtlsDTO paymentInvDtlsDTO : paymentDTO.getPaymentInvDtlsDTO()) {
+				PaymentInvDtlsVO paymentInvDtlsVO = new PaymentInvDtlsVO();
+				paymentInvDtlsVO.setInvNo(paymentInvDtlsDTO.getInvNo());
+				paymentInvDtlsVO.setInvDate(paymentInvDtlsDTO.getInvDate());
+				paymentInvDtlsVO.setRefNo(paymentInvDtlsDTO.getRefNo());
+				paymentInvDtlsVO.setRefDate(paymentInvDtlsDTO.getRefDate());
+				paymentInvDtlsVO.setSupplierRefNo(paymentInvDtlsDTO.getSupplierRefNo());
+				paymentInvDtlsVO.setSupplierRefDate(paymentInvDtlsDTO.getSupplierRefDate());
+				paymentInvDtlsVO.setCurrency(paymentInvDtlsDTO.getCurrency());
+				paymentInvDtlsVO.setExRate(paymentInvDtlsDTO.getExRate());
 
-			paymentInvDtlsVOs.add(paymentInvDtlsVO);
+				BigDecimal paymentAmt = paymentDTO.getPaymentAmt();
 
+				// Check if settled amount does not exceed the paymentAmt
+				if (paymentAmt.compareTo(paymentInvDtlsDTO.getAmount()) < 0) {
+					throw new ApplicationException("Amount in child table exceeds the payment amount");
+				}
+
+				paymentInvDtlsVO.setAmount(paymentInvDtlsDTO.getAmount());
+
+				// Calculate netAmount (sum of settled amounts)
+				netAmount = paymentDTO.getPaymentInvDtlsDTO().stream().map(PaymentInvDtlsDTO::getSettled)
+						.reduce(BigDecimal.ZERO, BigDecimal::add);
+				totalSettled = totalSettled.add(paymentInvDtlsDTO.getSettled());
+
+				// Calculate onAccount (the difference between paymentAmt and settled amounts)
+				onAccount = paymentAmt.subtract(totalSettled);
+
+				paymentInvDtlsVO.setOutstanding(paymentInvDtlsDTO.getOutstanding());
+				paymentInvDtlsVO.setSettled(paymentInvDtlsDTO.getSettled());
+
+				paymentInvDtlsVO.setPaymentVO(paymentVO);
+				paymentInvDtlsVOs.add(paymentInvDtlsVO);
+			}
+			paymentVO.setPaymentInvDtlsVO(paymentInvDtlsVOs);
+			if (netAmount.compareTo(paymentDTO.getPaymentAmt()) > 0) {
+				throw new ApplicationException("Total Settled Amount should not be greater than Payment Amount");
+			}
+
+			onAccount = paymentDTO.getPaymentAmt().subtract(netAmount);
+			paymentVO.setNetAmount(netAmount);
+			paymentVO.setOnAccount(onAccount);
+		} else {
+			paymentVO.setOnAccount(paymentDTO.getPaymentAmt());
 		}
-		paymentVO.setPaymentInvDtlsVO(paymentInvDtlsVOs);
 
-		List<TdsPaymentVO> tdsPaymentVOs = new ArrayList<>();
-		for (TdsPaymentDTO tdsPaymentDTO : paymentDTO.getTdsPaymentDTO()) {
-			TdsPaymentVO tdsPaymentVO = new TdsPaymentVO();
-
-			tdsPaymentVO.setTdsWithHolding(tdsPaymentDTO.getTdsWithHolding());
-			tdsPaymentVO.setTdsWithHoldingPer(tdsPaymentDTO.getTdsWithHoldingPer());
-			tdsPaymentVO.setSection(tdsPaymentDTO.getSection());
-
-			BigDecimal totTdsWhAmt = BigDecimal.ZERO;
-			BigDecimal tdsWhPercent = tdsPaymentDTO.getTdsWithHoldingPer();
-			System.out.println("TOTAL LC AMOUNT IS :" + netAmount);
-			totTdsWhAmt = netAmount.multiply(tdsWhPercent.divide(BigDecimal.valueOf(100)));
-			tdsPaymentVO.setTotTdsWhAmnt(totTdsWhAmt);
-
-			tdsPaymentVO.setPaymentVO(paymentVO);
-			tdsPaymentVOs.add(tdsPaymentVO);
-		}
-		paymentVO.setNetAmount(netAmount);
-		
-		paymentVO.setTdsPaymentVO(tdsPaymentVOs);
-		
-		
-		}
+	}
 
 	@Override
 	public String getPaymentDocId(Long orgId, String finYear, String branch, String branchCode) {
@@ -233,7 +252,7 @@ public class APServiceImpl implements APService {
 		if (ObjectUtils.isNotEmpty(orgId)) {
 			LOGGER.info("Successfully Received ApBillBalance BY OrgId : {}", orgId);
 			apBillBalanceVO = apBillBalanceRepo.getAllApBillBalanceByOrgId(orgId);
-		} 
+		}
 		return apBillBalanceVO;
 	}
 
@@ -243,23 +262,23 @@ public class APServiceImpl implements APService {
 		if (ObjectUtils.isNotEmpty(id)) {
 			LOGGER.info("Successfully Received ApBillBalance BY Id : {}", id);
 			apBillBalanceVO = apBillBalanceRepo.getAllApBillBalanceById(id);
-		} 
+		}
 		return apBillBalanceVO;
 	}
 
-		@Override
-		public Map<String, Object> updateCreateApBillBalance(
-				@Valid ApBillBalanceDTO apBillBalanceDTO) throws ApplicationException {
-			String screenCode = "APB";
-			ApBillBalanceVO apBillBalanceVO = new ApBillBalanceVO();
-			String message;
-			if (ObjectUtils.isNotEmpty(apBillBalanceDTO.getId())) {
-				apBillBalanceVO = apBillBalanceRepo.findById(apBillBalanceDTO.getId())
-						.orElseThrow(() -> new ApplicationException("Invalid ApBillBalance details"));
-				createUpdateApBillBalanceVOByApBillBalanceDTO(apBillBalanceDTO, apBillBalanceVO);
-				message = "AR Bill Balance Updated Successfully";
-				apBillBalanceVO.setUpdatedBy(apBillBalanceDTO.getCreatedBy());
-			} else {
+	@Override
+	public Map<String, Object> updateCreateApBillBalance(@Valid ApBillBalanceDTO apBillBalanceDTO)
+			throws ApplicationException {
+		String screenCode = "APB";
+		ApBillBalanceVO apBillBalanceVO = new ApBillBalanceVO();
+		String message;
+		if (ObjectUtils.isNotEmpty(apBillBalanceDTO.getId())) {
+			apBillBalanceVO = apBillBalanceRepo.findById(apBillBalanceDTO.getId())
+					.orElseThrow(() -> new ApplicationException("Invalid ApBillBalance details"));
+			createUpdateApBillBalanceVOByApBillBalanceDTO(apBillBalanceDTO, apBillBalanceVO);
+			message = "AR Bill Balance Updated Successfully";
+			apBillBalanceVO.setUpdatedBy(apBillBalanceDTO.getCreatedBy());
+		} else {
 //				// GETDOCID API
 //				String docId = apBillBalanceRepo.getArBillBalanceDocId(apBillBalanceDTO.getOrgId(),
 //						apBillBalanceDTO.getFinYear(), apBillBalanceDTO.getBranchCode(), screenCode);
@@ -271,18 +290,19 @@ public class APServiceImpl implements APService {
 //								apBillBalanceDTO.getFinYear(), apBillBalanceDTO.getBranchCode(), screenCode);
 //				documentTypeMappingDetailsVO.setLastno(documentTypeMappingDetailsVO.getLastno() + 1);
 //				documentTypeMappingDetailsRepo.save(documentTypeMappingDetailsVO);
-				apBillBalanceVO.setUpdatedBy(apBillBalanceDTO.getCreatedBy());
-				apBillBalanceVO.setCreatedBy(apBillBalanceDTO.getCreatedBy());
-				createUpdateApBillBalanceVOByApBillBalanceDTO(apBillBalanceDTO, apBillBalanceVO);
-				message = "AP Bill Balance Created Successfully";
-			}
+			apBillBalanceVO.setUpdatedBy(apBillBalanceDTO.getCreatedBy());
+			apBillBalanceVO.setCreatedBy(apBillBalanceDTO.getCreatedBy());
+			createUpdateApBillBalanceVOByApBillBalanceDTO(apBillBalanceDTO, apBillBalanceVO);
+			message = "AP Bill Balance Created Successfully";
+		}
 
-			apBillBalanceRepo.save(apBillBalanceVO);
-			Map<String, Object> response = new HashMap<>();
-			response.put("apBillBalanceVO", apBillBalanceVO);
-			response.put("message", message);
-			return response;
-    }
+		apBillBalanceRepo.save(apBillBalanceVO);
+		Map<String, Object> response = new HashMap<>();
+		response.put("apBillBalanceVO", apBillBalanceVO);
+		response.put("message", message);
+		return response;
+	}
+
 	private void createUpdateApBillBalanceVOByApBillBalanceDTO(@Valid ApBillBalanceDTO apBillBalanceDTO,
 			ApBillBalanceVO apBillBalanceVO) {
 		apBillBalanceVO.setAccName(apBillBalanceDTO.getAccName());
@@ -336,13 +356,11 @@ public class APServiceImpl implements APService {
 		return doctypeMappingDetails;
 	}
 
-	
 	// Payment Service
 	@Override
 	public List<Map<String, Object>> getAllPaymentRegister(Long orgId, String fromDate, String toDate,
 			String subLedgerName) {
-		Set<Object[]> payment = paymentRepo.findAllPaymentRegister(orgId, fromDate, toDate,
-				subLedgerName);
+		Set<Object[]> payment = paymentRepo.findAllPaymentRegister(orgId, fromDate, toDate, subLedgerName);
 		return getPayment(payment);
 	}
 
@@ -375,8 +393,8 @@ public class APServiceImpl implements APService {
 	}
 
 	@Override
-	public List<Map<String, Object>> getPartyNameAndCodeForPayment(Long orgId,String partyName,String branch,String finYear) {
-		Set<Object[]> partyName1 = paymentRepo.findPartyNameAndCodeForPayment(orgId,partyName,branch,finYear);
+	public List<Map<String, Object>> getPartyNameAndCodeForPayment(Long orgId, String partyName) {
+		Set<Object[]> partyName1 = paymentRepo.findPartyNameAndCodeForPayment(orgId, partyName);
 		return getPartyName(partyName1);
 	}
 
@@ -389,8 +407,7 @@ public class APServiceImpl implements APService {
 			doctype.put("currency", sup[2] != null ? sup[2].toString() : "");
 			doctype.put("stateCode", sup[3] != null ? sup[3].toString() : "");
 			doctype.put("gstin", sup[4] != null ? sup[4].toString() : "");
-			
-			
+
 			doctypeMappingDetails.add(doctype);
 		}
 
@@ -458,8 +475,8 @@ public class APServiceImpl implements APService {
 	}
 
 	@Override
-	public List<Map<String, Object>> getPartyNameAndPartyCode(Long orgId,String branch,String finYear) {
-		Set<Object[]> group = paymentRepo.findPartyNameAndPartyCode(orgId,branch,finYear);
+	public List<Map<String, Object>> getPartyNameAndPartyCode(Long orgId) {
+		Set<Object[]> group = paymentRepo.findPartyNameAndPartyCode(orgId);
 		return getPartyName1(group);
 	}
 

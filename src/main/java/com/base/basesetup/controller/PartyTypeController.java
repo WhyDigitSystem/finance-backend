@@ -443,7 +443,7 @@ public class PartyTypeController extends BaseController {
 	}
 	
 	
-	@GetMapping("/getAllLedgerReport")
+	@GetMapping("/ 	")
 	public ResponseEntity<ResponseDTO> getAllLedgerReport(@RequestParam(required = true) Long orgId,@RequestParam(required = true) String accountName,
 			@RequestParam(required = true) String branchCode,@RequestParam(required = true) String fromDate,@RequestParam(required = true) String toDate) {
 		String methodName = "getAllLedgerReport()";
