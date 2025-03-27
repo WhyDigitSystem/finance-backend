@@ -38,7 +38,7 @@ public class SecurityConfig {
 						"/api/auth/getRefreshToken", "/api/auth/**", "/api/commonmaster/**", "/api/master/**",
 						"/api/user/**", "/images/**", "/api/transaction/**", "/api/GlobalParam/**",
 						"/api/arreceivable/**", "/api/transaction/**", "/api/GlobalParam/**", "/api/payable/**",
-						"/api/documentType/**", "/api/taxInvoice/**", "/api/arapAdjustments/**",
+						"/api/documentType/**", "/api/taxInvoice/**", "/api/arapAdjustments/**","/api/reportController/**",
 						"/api/costdebitnote/**", "/api/costInvoice/**","/api/irnCreditNote/**","/api/multipleDocIdGeneration/**","/api/sampleExcel/**"
 						,"/api/rCostInvoiceGna/**","/api/UrCostInvoiceGna/**","/api/offSetcontroller/**","/api/aradjustmentoffset/**")
 

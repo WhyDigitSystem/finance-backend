@@ -20,6 +20,7 @@ import com.base.basesetup.dto.IrnCreditNoteDTO;
 import com.base.basesetup.dto.IrnCreditNoteDetailsDTO;
 import com.base.basesetup.entity.AccountsDetailsVO;
 import com.base.basesetup.entity.AccountsVO;
+import com.base.basesetup.entity.ArapDetailsVO;
 import com.base.basesetup.entity.DocumentTypeMappingDetailsVO;
 import com.base.basesetup.entity.GroupLedgerVO;
 import com.base.basesetup.entity.IrnCreditNoteAnnexureVO;
@@ -31,7 +32,9 @@ import com.base.basesetup.entity.PartyMasterVO;
 import com.base.basesetup.entity.TaxInvoiceAnnexureVO;
 import com.base.basesetup.entity.TaxInvoiceVO;
 import com.base.basesetup.exception.ApplicationException;
+import com.base.basesetup.repo.AccountsDetailsRepo;
 import com.base.basesetup.repo.AccountsRepo;
+import com.base.basesetup.repo.ArapDetailsRepo;
 import com.base.basesetup.repo.DocumentTypeMappingDetailsRepo;
 import com.base.basesetup.repo.GroupLedgerRepo;
 import com.base.basesetup.repo.IrnCreditNoteAnnexureRepo;
@@ -56,6 +59,12 @@ public class IrnCreditNoteServiceImpl implements IrnCreditNoteService {
 	
 	@Autowired
 	AccountsRepo accountsRepo;
+	
+	@Autowired
+	AccountsDetailsRepo accountsDetailsRepo;
+	
+	@Autowired
+	ArapDetailsRepo arapDetailsRepo;
 	
 	@Autowired
 	GroupLedgerRepo groupLedgerRepo;
@@ -549,6 +558,35 @@ public class IrnCreditNoteServiceImpl implements IrnCreditNoteService {
 
 //	        // Save AccountsVO and update TaxInvoiceVO
 	        AccountsVO savedAccountsVO = accountsRepo.save(accountsVO);
+			int gstflag = 1;
+			AccountsDetailsVO accountsDetailsVOs2 = accountsDetailsRepo.findByAccountsVOAndGstflag(savedAccountsVO,
+					gstflag);
+			ArapDetailsVO arapDetailsVO = new ArapDetailsVO();
+			arapDetailsVO.setSourceTransid(accountsDetailsVOs2.getId());
+			arapDetailsVO.setCreatedBy(savedAccountsVO.getCreatedBy());
+			arapDetailsVO.setUpdatedBy(savedAccountsVO.getModifiedBy());
+			arapDetailsVO.setBranch(savedAccountsVO.getBranch());
+			arapDetailsVO.setBranchCode(savedAccountsVO.getBranchCode());
+			arapDetailsVO.setFinYear(savedAccountsVO.getFinYear());
+			arapDetailsVO.setRefNo(savedAccountsVO.getRefNo());
+			arapDetailsVO.setRefDate(savedAccountsVO.getRefDate());
+			arapDetailsVO.setSubLedgerCode(accountsDetailsVOs2.getSubLedgerCode());
+			arapDetailsVO.setCurrency(accountsDetailsVOs2.getACurrency());
+			arapDetailsVO.setExRate(accountsDetailsVOs2.getAExRate());
+			arapDetailsVO.setAmount(accountsDetailsVOs2.getArapAmount().multiply(new BigDecimal(-1)));
+			arapDetailsVO.setBaseAmt(accountsDetailsVOs2.getArapAmount().multiply(new BigDecimal(-1)));
+			arapDetailsVO.setDueDate(savedAccountsVO.getDueDate());
+			arapDetailsVO.setCreditDays(savedAccountsVO.getCreditDays());
+			arapDetailsVO.setDocId(savedAccountsVO.getDocId());
+			arapDetailsVO.setDocDate(savedAccountsVO.getDocDate());
+			arapDetailsVO.setAccCurrency(savedAccountsVO.getCurrency());
+			arapDetailsVO.setExRate(savedAccountsVO.getExRate());
+			arapDetailsVO.setAccName(accountsDetailsVOs2.getAccountName());
+			arapDetailsVO.setGstFlag(accountsDetailsVOs2.getGstflag());
+			arapDetailsVO.setSubLedgerName(accountsDetailsVOs2.getAccountName());
+			arapDetailsVO.setSalesType(savedAccountsVO.getSalesType());
+			arapDetailsVO.setNativeAmt(accountsDetailsVOs2.getArapAmount().multiply(new BigDecimal(-1)));
+			arapDetailsRepo.save(arapDetailsVO);
 	        irnCreditNoteVO.setVoucherNo(savedAccountsVO.getDocId());
 	        irnCreditNoteVO.setVoucherDate(savedAccountsVO.getDocDate());
 	        irnCreditNoteVO.setApproveStatus(action);

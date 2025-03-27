@@ -154,11 +154,6 @@ public class ReceiptVO {
 	
 	@Column(name = "onaccount", precision = 10, scale = 2)
 	private BigDecimal onAccount;
-	
-	@JsonGetter("active")
-	public String getActive() {
-		return active ? "Active" : "In-Active";
-	}
 
 	@OneToMany(mappedBy = "receiptVO", cascade = CascadeType.ALL)
 	@JsonManagedReference
