@@ -46,7 +46,7 @@ public interface ReceiptRepo extends JpaRepository<ReceiptVO, Long> {
 
 	@Query(nativeQuery = true, value = "select * from receipt where orgid=?1 and branchcode=?2 and cancel=0")
 	List<ReceiptVO> getAllReceiptByOrgIdAndBranchCode(Long orgId, String branchCode);
-
+  
 	@Query(nativeQuery =true,value ="SELECT r.orgid, r.branchcode, r.finyear, \r\n"
 			+ "    r.createdby, \r\n"
 			+ "    r.createdon, \r\n"
@@ -113,5 +113,5 @@ public interface ReceiptRepo extends JpaRepository<ReceiptVO, Long> {
 			+ "")
 	Set<Object[]> getReceiptRegisterReport(Long orgId, String partyName, String branchCode, String finYear,
 			String fromDate, String toDate);
-	
+
 }
