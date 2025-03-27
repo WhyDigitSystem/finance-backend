@@ -40,8 +40,8 @@ public class TdsPaymentVO {
 	@Column(name = "totaltds",precision =10,scale = 2)
 	private BigDecimal totTdsWhAmnt;
 	
-	@ManyToOne
-	@JsonBackReference
-	@JoinColumn(name = "paymentid")
-	private PaymentVO paymentVO;
+//	@ManyToOne
+//	@JsonBackReference
+//	@JoinColumn(name = "paymentid")
+//	private PaymentVO paymentVO;
 }
