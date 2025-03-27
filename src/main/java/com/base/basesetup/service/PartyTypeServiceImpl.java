@@ -940,4 +940,41 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 		return List1;
 
 }
+
+	@Override
+	public List<Map<String, Object>> getMonthlyAndYearWiseData(Long orgId, String month,String year) {
+		Set<Object[]> chType = partyMasterRepo.getMonthlyAndYearWiseData(orgId,month,year);
+		return getMonthlyAndYear(chType);
+	}
+
+	private List<Map<String, Object>> getMonthlyAndYear(Set<Object[]> chType) {
+		List<Map<String, Object>> List1 = new ArrayList<>();
+		for (Object[] ch : chType) {
+			Map<String, Object> map = new HashMap<>();
+			map.put("partyName", ch[0].toString());
+			map.put("amt", ch[1].toString());
+			List1.add(map);
+		}
+		return List1;
+
+}
+
+	@Override
+	public List<Map<String, Object>> getSalesDistributionData(Long orgId, String month, String year) {
+		Set<Object[]> chType = partyMasterRepo.getSalesDistributionData(orgId,month,year);
+		return getSalesDistribution(chType);
+	}
+
+	private List<Map<String, Object>> getSalesDistribution(Set<Object[]> chType) {
+		List<Map<String, Object>> List1 = new ArrayList<>();
+		for (Object[] ch : chType) {
+			Map<String, Object> map = new HashMap<>();
+			map.put("product", ch[0].toString());
+			map.put("amt", ch[1].toString());
+			List1.add(map);
+		}
+		return List1;
+
+}
+
 }
