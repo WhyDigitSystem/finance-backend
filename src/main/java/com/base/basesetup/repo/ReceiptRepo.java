@@ -46,11 +46,10 @@ public interface ReceiptRepo extends JpaRepository<ReceiptVO, Long> {
 
 	@Query(nativeQuery = true, value = "select * from receipt where orgid=?1 and branchcode=?2 and cancel=0")
 	List<ReceiptVO> getAllReceiptByOrgIdAndBranchCode(Long orgId, String branchCode);
-  
-	@Query(nativeQuery =true,value ="SELECT \r\n"
-			+ "    r.orgid, \r\n"
-			+ "    r.branchcode, \r\n"
-			+ "    r.finyear, \r\n"
+
+	@Query(nativeQuery =true,value ="SELECT r.orgid, r.branchcode, r.finyear, \r\n"
+
+
 			+ "    r.createdby, \r\n"
 			+ "    r.createdon, \r\n"
 			+ "    r.docid, \r\n"
@@ -63,8 +62,9 @@ public interface ReceiptRepo extends JpaRepository<ReceiptVO, Long> {
 			+ "    r.receiptamt AS receiptamount, \r\n"
 			+ "    r.bankcharges AS bankchargesamt, \r\n"
 			+ "    CASE \r\n"
-			+ "        WHEN tds_rank = 1 THEN r.tdsamt \r\n"
-			+ "        ELSE 0 \r\n"
+
+			+ "        WHEN tds_rank = 1 THEN r.tdsamt ELSE 0 \r\n"
+
 			+ "    END AS tdsamount, \r\n"
 			+ "    rd.invno AS invoiceno, \r\n"
 			+ "    rd.invdate AS invoicedate, \r\n"
@@ -73,10 +73,14 @@ public interface ReceiptRepo extends JpaRepository<ReceiptVO, Long> {
 			+ "    adj.amount AS arapamount, \r\n"
 			+ "    adj.chargeableamt, \r\n"
 			+ "    rd.outstanding AS arapoutstanding, \r\n"
-			+ "    rd.settled AS arapsettled\r\n"
+
+			+ "    rd.settled AS arapsettled, \r\n"
+			+ "    ?4 AS fyr, \r\n"
+			+ "    ?5 AS stdt, \r\n"
+			+ "    ?6 AS eddt \r\n"
 			+ "FROM (\r\n"
-			+ "    SELECT \r\n"
-			+ "        r.receiptid,\r\n"
+			+ "    SELECT r.receiptid,\r\n"
+
 			+ "        r.orgid, \r\n"
 			+ "        r.branchcode, \r\n"
 			+ "        r.finyear, \r\n"
@@ -95,28 +99,28 @@ public interface ReceiptRepo extends JpaRepository<ReceiptVO, Long> {
 			+ "        ROW_NUMBER() OVER (PARTITION BY r.docid ORDER BY r.docid) AS tds_rank \r\n"
 			+ "    FROM receipt r \r\n"
 			+ "    WHERE \r\n"
-			+ "        r.cancel = 0  \r\n"
-			+ "        AND (r.customername = ?2 OR ?2 = 'ALL') \r\n"
-			+ "        AND (r.docdate BETWEEN DATE(?5) AND DATE(?6) \r\n"
-			+ "             OR (?5 IS NULL AND ?6 IS NULL))\r\n"
-			+ "        AND (r.branchcode = ?3 OR ?3 = 'ALL')\r\n"
-			+ ") r \r\n"
+
+			+ "        COALESCE(r.cancel, 0) = 1  \r\n"
+			+ "        AND (LOWER(COALESCE(r.customername, '')) = LOWER(?2) OR 'ALL' = ?2) \r\n"
+			+ "        AND (r.docdate BETWEEN date(?5) AND date(?6) OR ( 'NULL'=?5 AND 'NULL'=?6))\r\n"
+			+ "        AND (LOWER(COALESCE(r.branchcode, '')) = LOWER(?3) OR 'ALL' = ?3)\r\n"
+			+ ") r\r\n"
 			+ "LEFT JOIN receiptinvdetails rd ON r.receiptid = rd.receiptid\r\n"
 			+ "LEFT JOIN arapadjustments adj ON adj.docid = r.docid \r\n"
-			+ "WHERE \r\n"
-			+ "    r.orgid = ?1\r\n"
-			+ "    AND (r.finyear = ?4 OR ?4 = 'ALL') \r\n"
-			+ "ORDER BY \r\n"
-			+ "    r.orgid, \r\n"
-			+ "    r.branchcode, \r\n"
-			+ "    r.finyear, \r\n"
+			+ "WHERE r.orgid = ?1\r\n"
+			+ "AND (r.finyear = ?4 OR 'ALL' = ?4) \r\n"
+			+ "ORDER BY r.orgid, r.branchcode, r.finyear, \r\n"
+
 			+ "    r.createdon, \r\n"
 			+ "    r.createdby, \r\n"
 			+ "    r.docdate, \r\n"
 			+ "    r.docid, \r\n"
 			+ "    r.chequebank, \r\n"
 			+ "    r.chequeutino, \r\n"
-			+ "    r.customername")
+
+			+ "    r.customername\r\n"
+			+ "")
+
 	Set<Object[]> getReceiptRegisterReport(Long orgId, String partyName, String branchCode, String finYear,
 			String fromDate, String toDate);
 

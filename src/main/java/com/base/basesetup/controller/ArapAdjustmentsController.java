@@ -204,4 +204,30 @@ public class ArapAdjustmentsController extends BaseController {
 		return ResponseEntity.ok().body(responseDTO);
 	}
 
+	@GetMapping("/GetArapAgeing")
+	public ResponseEntity<ResponseDTO> GetArapAgeing(@RequestParam  String asondate ,@RequestParam (required=false) String pdate,@RequestParam (required=false)String partyname,@RequestParam (required=false)Long Orgid) {
+		String methodName = "GetArapAgeing()";
+		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+		String errorMsg = null;
+		Map<String, Object> responseObjectsMap = new HashMap<>();
+		ResponseDTO responseDTO = null;
+		List<Map<String, Object>> mapp = new ArrayList<>();
+		try {
+			mapp = arapAdjustmentsService.GetArapAgeing(asondate,pdate,partyname,Orgid);
+		} catch (Exception e) {
+			errorMsg = e.getMessage();
+			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+		}
+		if (StringUtils.isBlank(errorMsg)) {
+			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "Arap Ageing Details get successfully For Assigned by  and  OrgId");
+			responseObjectsMap.put("mapp", mapp);
+			responseDTO = createServiceResponse(responseObjectsMap);
+		} else {
+			responseDTO = createServiceResponseError(responseObjectsMap,
+					"Arap Ageing Details  failed for Assigned by  and  OrgId", errorMsg);
+		}
+		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+		return ResponseEntity.ok().body(responseDTO);
+
+	}
 }

@@ -1,5 +1,6 @@
 package com.base.basesetup.service;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -449,18 +450,20 @@ public class ReportServiceImpl implements ReportService{
 				doctype.put("chQnNumber", sup[9] != null ? sup[9].toString() : "");
 				doctype.put("subLedgerCode", sup[10] != null ? sup[10].toString() : "");
 				doctype.put("subLedgerName", sup[11] != null ? sup[11].toString() : "");
-				doctype.put("receiptAmount", sup[12] != null ? sup[12].toString() : "");
-				doctype.put("bankChargesAmt", sup[13] != null ? sup[13].toString() : "");
-				doctype.put("tdsAmt", sup[14] != null ? sup[14].toString() : "");
+				doctype.put("receiptAmount", sup[12] != null ? new BigDecimal(sup[12].toString()) : BigDecimal.ZERO);
+				doctype.put("bankChargesAmt", sup[13] != null ? new BigDecimal(sup[13].toString()) : BigDecimal.ZERO);
+				doctype.put("tdsAmt", sup[14] != null ? new BigDecimal(sup[14].toString()) : BigDecimal.ZERO);
 				doctype.put("invoiceNo", sup[15] != null ? sup[15].toString() : "");
 				doctype.put("invoiceDate", sup[16] != null ? sup[16].toString() : "");
 				doctype.put("refNo", sup[17] != null ? sup[17].toString() : "");
 				doctype.put("refDate", sup[18] != null ? sup[18].toString() : "");
-				doctype.put("arapAmt", sup[19] != null ? sup[19].toString() : "");
-				doctype.put("chargableAmt", sup[20] != null ? sup[20].toString() : "");
+				doctype.put("arapAmt", sup[19] != null ? new BigDecimal(sup[19].toString()) : BigDecimal.ZERO);
+				doctype.put("chargableAmt", sup[20] != null ? new BigDecimal(sup[20].toString()) : BigDecimal.ZERO);
 				doctype.put("arApOutstanding", sup[21] != null ? sup[21].toString() : "");
-				doctype.put("arapSettled", sup[22] != null ? sup[22].toString() : "");
-//				doctype.put("finYear", sup[23] != null ? sup[23].toString() : "");
+
+				doctype.put("arapSettled", sup[22] != null ? new BigDecimal(sup[22].toString()) : BigDecimal.ZERO);
+
+			
 				
 				
 				doctypeMappingDetails.add(doctype);
