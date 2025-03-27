@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 import org.apache.commons.lang3.ObjectUtils;
 import org.slf4j.Logger;
@@ -16,6 +17,8 @@ import com.base.basesetup.dto.InvoiceDTO;
 import com.base.basesetup.dto.InvoiceProductLinesDTO;
 import com.base.basesetup.dto.IssueManifestProviderDTO;
 import com.base.basesetup.dto.IssueManifestProviderDetailsDTO;
+import com.base.basesetup.dto.QuotationDTO;
+import com.base.basesetup.dto.QuotationDetailsDTO;
 import com.base.basesetup.dto.RetrievalManifestProviderDTO;
 import com.base.basesetup.dto.RetrievalManifestProviderDetailsDTO;
 import com.base.basesetup.entity.DeclarationAndNotesVO;
@@ -23,6 +26,8 @@ import com.base.basesetup.entity.InvoiceProductLinesVO;
 import com.base.basesetup.entity.InvoiceVO;
 import com.base.basesetup.entity.IssueManifestProviderDetailsVO;
 import com.base.basesetup.entity.IssueManifestProviderVO;
+import com.base.basesetup.entity.QuotationDetailsVO;
+import com.base.basesetup.entity.QuotationVO;
 import com.base.basesetup.entity.RetrievalManifestProviderDetailsVO;
 import com.base.basesetup.entity.RetrievalManifestProviderVO;
 import com.base.basesetup.exception.ApplicationException;
@@ -30,6 +35,9 @@ import com.base.basesetup.repo.InvoiceProductLinesRepo;
 import com.base.basesetup.repo.InvoiceRepo;
 import com.base.basesetup.repo.IssueManifestProviderDetailsRepo;
 import com.base.basesetup.repo.IssueManifestProviderRepo;
+import com.base.basesetup.repo.QuotationDetailsRepo;
+import com.base.basesetup.repo.QuotationRepo;
+import com.base.basesetup.repo.ReceiptRepo;
 import com.base.basesetup.repo.RetrievalManifestProviderDetailsRepo;
 import com.base.basesetup.repo.RetrievalManifestProviderRepo;
 
@@ -58,6 +66,15 @@ public class ReportServiceImpl implements ReportService{
 	
 	@Autowired
 	declarationAndNotesRepo declarationAndNotesRepo;
+	
+	@Autowired
+	ReceiptRepo receiptRepo;
+	
+	@Autowired
+	QuotationRepo quotationRepo;
+
+	@Autowired
+	QuotationDetailsRepo quotationDetailsRepo;
 	
 	// Invoice
 		@Override
@@ -407,6 +424,129 @@ public class ReportServiceImpl implements ReportService{
 		public List<DeclarationAndNotesVO> getAllDeclarationAndNotes() {
 			
 			return declarationAndNotesRepo.findAll();
+		}
+
+		@Override
+		public List<Map<String, Object>> getReceiptRegisterReport(Long orgId, String partyName, String branchCode,
+				String finYear, String fromDate, String toDate) {
+			Set<Object[]> register = receiptRepo.getReceiptRegisterReport(orgId, partyName,branchCode,finYear,fromDate,toDate);
+			return getReceiptRegister(register);
+		}
+
+		private List<Map<String, Object>> getReceiptRegister(Set<Object[]> getRegister) {
+			List<Map<String, Object>> doctypeMappingDetails = new ArrayList<>();
+			for (Object[] sup : getRegister) {
+				Map<String, Object> doctype = new HashMap<>();
+				doctype.put("arapDetailsId", sup[0] != null ? sup[0].toString() : "");
+				doctype.put("branch", sup[1] != null ? sup[1].toString() : "");
+				doctype.put("subLedgerCode", sup[2] != null ? sup[2].toString() : "");
+				doctype.put("vId", sup[3] != null ? sup[3].toString() : "");
+				doctype.put("vDatae", sup[4] != null ? sup[4].toString() : "");
+				doctype.put("refNo", sup[5] != null ? sup[5].toString() : "");
+				doctype.put("refDate", sup[6] != null ? sup[6].toString() : "");
+				doctype.put("supprefNo", sup[7] != null ? sup[7].toString() : "");
+				doctype.put("supprefDate", sup[8] != null ? sup[8].toString() : "");
+				doctype.put("acccurrency", sup[9] != null ? sup[9].toString() : "");
+				doctype.put("amount", sup[10] != null ? sup[10].toString() : "");
+				doctype.put("arapSettled", sup[11] != null ? sup[11].toString() : "");
+				doctype.put("chargableAmt", sup[12] != null ? sup[12].toString() : "");
+				doctype.put("tdsAmt", sup[13] != null ? sup[13].toString() : "");
+
+				doctypeMappingDetails.add(doctype);
+			}
+
+			return doctypeMappingDetails;
+		}
+		
+		
+
+		@Override
+		public Map<String, Object> createUpdateQuotatio(QuotationDTO quotationDTO) throws ApplicationException {
+
+		    QuotationVO quotationVO;
+		    String message = null;
+
+		    // Check if quotationDTO has an id
+		    if (ObjectUtils.isEmpty(quotationDTO.getId())) {
+		        // If no id, create a new quotation
+		        quotationVO = new QuotationVO();
+		        quotationVO.setCreatedBy(quotationDTO.getCreatedBy());
+		        quotationVO.setUpdatedBy(quotationDTO.getCreatedBy());
+		        message = "Quotation Created Successfully";
+		    } else {
+		        // If id exists, update the existing quotation
+		        quotationVO = quotationRepo.findById(quotationDTO.getId()).orElseThrow(
+		                () -> new ApplicationException("Quotation Not Found with id: " + quotationDTO.getId()));
+		        quotationVO.setUpdatedBy(quotationDTO.getCreatedBy());
+		        message = "Quotation Updation Successfully";
+		    }
+
+		    // Convert DTO to entity and set additional fields
+		    quotationVO = getQuotationVOFromQuotationDTO(quotationVO, quotationDTO);
+
+		    // Save or update the quotation in the database
+		    quotationRepo.save(quotationVO);
+
+		    // Prepare response
+		    Map<String, Object> response = new HashMap<>();
+		    response.put("message", message);
+		    response.put("quotationVO", quotationVO);
+		    return response;
+		}
+
+		private QuotationVO getQuotationVOFromQuotationDTO(QuotationVO quotationVO, QuotationDTO quotationDTO) {
+
+		    // Set the basic details
+		    quotationVO.setQuotationTo(quotationDTO.getQuotationTo());
+		    quotationVO.setShippingAddress(quotationDTO.getShippingAddress());
+		    quotationVO.setCustomerAddress(quotationDTO.getCustomerAddress());
+//		    quotationVO.setFinYear(quotationDTO.getFinYear());
+		    quotationVO.setOrgId(quotationDTO.getOrgId());
+		    quotationVO.setCode(quotationDTO.getCode());
+
+		    // Build the code using the prefix, financial year, date, and constant
+//		    String code = quotationVO.getPrefix() + quotationDTO.getFinYear() + LocalDate.now().format(DateTimeFormatter.ofPattern("ddMM")) + "-1";
+//		    quotationVO.setCode(code);
+		    
+		    
+		    if (quotationDTO.getId() != null) {
+				// Clear previous items from the database
+				List<QuotationDetailsVO> quotationDetailsVOs = quotationDetailsRepo.findByQuotationVO(quotationVO);
+				quotationDetailsRepo.deleteAll(quotationDetailsVOs);
+
+			}
+
+		    // Set the list of quotation details
+		    List<QuotationDetailsVO> quotationDetailsVOs = new ArrayList<>();
+		    for (QuotationDetailsDTO quotationDetailsDTO : quotationDTO.getQuotationDetailsDTO()) {
+
+		        QuotationDetailsVO quotationDetailsVO = new QuotationDetailsVO();
+
+		        // Map the details to the entity
+		        quotationDetailsVO.setDescription(quotationDetailsDTO.getDescription());
+		        quotationDetailsVO.setPricre(quotationDetailsDTO.getPricre());
+		        quotationDetailsVO.setUnit(quotationDetailsDTO.getUnit());
+		        quotationDetailsVO.setTotal(quotationDetailsDTO.getTotal());
+
+		        // Link back to the main quotation
+		        quotationDetailsVO.setQuotationVO(quotationVO);
+		        quotationDetailsVOs.add(quotationDetailsVO);
+		    }
+
+		    // Set the quotation details list in the main quotation entity
+		    quotationVO.setQuotationDetailsVO(quotationDetailsVOs);
+
+		    return quotationVO;
+		}
+
+		@Override
+		public List<Map<String, Object>> getQuotationByorgId(Long orgId) {
+			return quotationRepo.findQutationByOrgId(orgId);
+		}
+
+		@Override
+		public Optional<QuotationVO> getQutationById(Long id) {
+			return quotationRepo.findById(id);
 		}
 		
 }
