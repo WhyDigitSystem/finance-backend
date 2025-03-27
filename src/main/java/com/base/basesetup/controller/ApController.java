@@ -289,7 +289,7 @@ public class ApController extends BaseController {
 	}
 
 	@GetMapping("/getPartyNameAndCodeForPayment")
-	public ResponseEntity<ResponseDTO> getPartyNameAndCodeForPayment(@RequestParam Long orgId,@RequestParam String partyName,@RequestParam String branch,@RequestParam String finYear) {
+	public ResponseEntity<ResponseDTO> getPartyNameAndCodeForPayment(@RequestParam Long orgId,@RequestParam String partyName) {
 		String methodName = "getPartyNameAndCodeForPayment()";
 		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
 		String errorMsg = null;
@@ -297,7 +297,7 @@ public class ApController extends BaseController {
 		ResponseDTO responseDTO = null;
 		List<Map<String, Object>> party = new ArrayList<>();
 		try {
-			party = apService.getPartyNameAndCodeForPayment(orgId,partyName,branch,finYear);
+			party = apService.getPartyNameAndCodeForPayment(orgId,partyName);
 		} catch (Exception e) {
 			errorMsg = e.getMessage();
 			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
@@ -459,7 +459,7 @@ public class ApController extends BaseController {
 //	}
 	
 	@GetMapping("/getPartyNameAndPartyCode")
-	public ResponseEntity<ResponseDTO> getPartyNameAndPartyCode(@RequestParam Long orgId,@RequestParam String branch,@RequestParam String finYear) {
+	public ResponseEntity<ResponseDTO> getPartyNameAndPartyCode(@RequestParam Long orgId) {
 		String methodName = "getPartyNameAndPartyCode()";
 		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
 		String errorMsg = null;
@@ -467,7 +467,7 @@ public class ApController extends BaseController {
 		ResponseDTO responseDTO = null;
 		List<Map<String, Object>> party = new ArrayList<>();
 		try {
-			party = apService.getPartyNameAndPartyCode(orgId,branch,finYear);
+			party = apService.getPartyNameAndPartyCode(orgId);
 		} catch (Exception e) {
 			errorMsg = e.getMessage();
 			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
