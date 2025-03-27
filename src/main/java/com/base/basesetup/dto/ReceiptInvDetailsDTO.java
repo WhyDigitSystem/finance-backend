@@ -29,4 +29,5 @@ public class ReceiptInvDetailsDTO {
 	private BigDecimal recExRate;
 	private BigDecimal txnSettled;
 	private BigDecimal gainAmt;
+	
 }

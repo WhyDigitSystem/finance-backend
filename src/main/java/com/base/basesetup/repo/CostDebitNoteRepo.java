@@ -13,8 +13,8 @@ import com.base.basesetup.entity.CostDebitNoteVO;
 @Repository
 public interface CostDebitNoteRepo extends JpaRepository<CostDebitNoteVO, Long> {
 
-	@Query(value = "SELECT * FROM costdebitnote where orgid=?1", nativeQuery = true)
-	List<CostDebitNoteVO> getByCostDebitNoteByOrgId(Long orgId);
+	@Query(value = "SELECT * FROM costdebitnote where orgid=?1 and finyear=?2 and branchcode=?3", nativeQuery = true)
+	List<CostDebitNoteVO> getByCostDebitNoteByOrgId(Long orgId,String finYear, String branchCode);
 
 	@Query(value = "SELECT * FROM costdebitnote where costdebitnoteid=?1", nativeQuery = true)
 	List<CostDebitNoteVO> getByCostDebitNoteById(Long id);
@@ -56,10 +56,16 @@ public interface CostDebitNoteRepo extends JpaRepository<CostDebitNoteVO, Long> 
 
 	CostDebitNoteVO findByOrgIdAndIdAndDocId(Long orgId, Long id, String docId);
 
-	@Query(nativeQuery = true, value = "select accountgroupname,gstpercentage,currency from groupledger where orgid=?1 and gsttaxflag!='NA' and category='TAX' and gsttaxflag='INPUT TAX' and gsttype=?2 and gstpercentage IN(?3) order by gstpercentage desc")
-	Set<Object[]> findInterAndIntraDetailsForCostInvoicePosting(Long orgId, String gstType, String gstPercent);
-
+//	@Query(nativeQuery = true, value = "select accountgroupname,gstpercentage,currency from groupledger where orgid=?1 and gsttaxflag!='NA' and category='TAX' and gsttaxflag='INPUT TAX' and gsttype=?2 and gstpercentage IN(?3) order by gstpercentage desc")
+//	Set<Object[]> findInterAndIntraDetailsForCostInvoicePosting(Long orgId, String gstType, String gstPercent);
+//
 	@Query(nativeQuery = true, value = "select accountgroupname,gstpercentage,currency from groupledger where orgid=?1 and gsttaxflag!='NA' and category='TAX' and gsttaxflag='INPUT TAX' and gsttype=?2 and gstpercentage IN(?3) order by gstpercentage desc")
 	Set<Object[]> findInterAndIntraDetailsForCostInvoice(Long orgId, String gstType, List<String> gstPercent);
 
+	@Query(nativeQuery = true, value = "select  accountgroupname,gstpercentage,currency from groupledger where orgid=?1 and gsttaxflag!='NA' and category='TAX' and gsttaxflag='INPUT TAX' and gsttype=?2 and gstpercentage IN(?3) group by  accountgroupname,gstpercentage,currency order by gstpercentage desc")
+	Set<Object[]> findInterDetailsForCostDebitNotePosting(Long orgId, String gtsType, Double gstPercent);
+
+	@Query(nativeQuery = true, value = "select accountgroupname,gstpercentage,currency from groupledger where orgid=?1 and gsttaxflag!='NA' and category='TAX' and gsttaxflag='INPUT TAX' and gsttype=?2 and gstpercentage IN(?3) group by  accountgroupname,gstpercentage,currency order by gstpercentage desc")
+	Set<Object[]> findIntraDetailsForCostDebitNotePosting(Long orgId, String gtsType, Double intraPercent);
+	
 }

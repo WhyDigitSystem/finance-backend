@@ -255,9 +255,9 @@ public interface TransactionService {
 
 	String getJobCardDocId(Long orgId, String finYear, String branch, String branchCode);
 	
-	List<Map<String, Object>> getIncomeByTaxInvoice(Long orgId, String partyName);
+	List<Map<String, Object>> getIncomeByTaxInvoice(Long orgId, String customerName);
 	
-	List<Map<String, Object>> getExponesByCostInvoice(Long orgId);
+	List<Map<String, Object>> getExponesByCostInvoice(Long orgId,String customerName);
 	
 	// AdjustmentJournal
 

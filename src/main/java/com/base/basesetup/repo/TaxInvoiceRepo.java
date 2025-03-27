@@ -66,8 +66,118 @@ public interface TaxInvoiceRepo extends JpaRepository<TaxInvoiceVO, Long> {
 	@Query(nativeQuery = true,value = "select a.jobno from jobcard a where a.orgid=?1 and a.closed=0 and a.active=1 ")
 	Set<Object[]> getAllJobNoByActice(Long orgId);
 
+	@Query(nativeQuery = true,value = "select * from taxinvoice a where a.orgid=?1 and docid=?2 ")
+	TaxInvoiceVO findByOrgIdAndDocId(Long orgId, String originBillNo);
+
+	@Query(nativeQuery = true,value = "select a.jobno from jobcard a where a.orgid=?1 and a.customercode=?2 and active=1 ")
+	Set<Object[]> getJobCardForTaxInvoice(Long orgId, String partyCode);
+
+	boolean existsByvIdAndOrgId(String vId, Long orgId);
+
+	@Query(nativeQuery = true,value = "SELECT \r\n"
+			+ "    a.orgid,\r\n"
+			+ "    a.branchcode,\r\n"
+			+ "    a.vid,\r\n"
+			+ "    a.vdate,\r\n"
+			+ "    a.joborderno,\r\n"
+			+ "    c.docid AS voucherno,\r\n"
+			+ "    c.docdate AS voucherdate,\r\n"
+			+ "    e.partyname AS billtoparty,\r\n"
+			+ "    e.controllingoff,\r\n"
+			+ "    a.billcurr,\r\n"
+			+ "    a.billcurrrate,\r\n"
+			+ "    a.totalinvamountbc,\r\n"
+			+ "    a.totalinvamountlc,\r\n"
+			+ "    a.totaltaxableamountlc,\r\n"
+			+ "    a.gsttype,\r\n"
+			+ "    a.totaltaxamountlc,\r\n"
+			+ "    a.totaltaxamountbc,\r\n"
+			+ "    a.roundoffamountlc,\r\n"
+			+ "    SUM(b.fcamount) AS fcamt,\r\n"
+			+ "    SUM(b.lcamount) AS lcamt,\r\n"
+			+ "    SUM(b.rate) AS rate,\r\n"
+			+ "    SUM(b.billamount) AS billamount,\r\n"
+			+ "    a.partytype\r\n"
+			+ "FROM\r\n"
+			+ "    taxinvoice a\r\n"
+			+ "JOIN\r\n"
+			+ "    taxinvoicedetails b ON a.taxinvoiceid = b.taxinvoiceid\r\n"
+			+ "JOIN\r\n"
+			+ "    accounts c ON a.docid = c.refno\r\n"
+			+ "JOIN\r\n"
+			+ "    partymaster e ON a.partycode = e.partycode\r\n"
+			+ "WHERE\r\n"
+			+ "   (\r\n"
+			+ "        (?1 IS NULL OR ?1 = '' OR ?2 IS NULL OR ?2 = '') \r\n"
+			+ "        OR c.vdate BETWEEN STR_TO_DATE(?1, '%Y-%m-%d') AND STR_TO_DATE(?2, '%Y-%m-%d')\r\n"
+			+ "    )\r\n"
+			+ "    AND a.orgid = ?3\r\n"
+			+ "    AND (a.branchcode = ?4 OR ?4 = 'ALL')\r\n"
+			+ "    AND (e.partycode = ?5 OR ?5 = 'ALL')\r\n"
+			+ "GROUP BY\r\n"
+			+ "    a.orgid, a.branchcode, a.vid, a.vdate, a.joborderno, c.docid, c.docdate, \r\n"
+			+ "    e.partyname, e.controllingoff, a.billcurr, a.billcurrrate, a.totalinvamountbc, \r\n"
+			+ "    a.totalinvamountlc, a.totaltaxableamountlc, a.gsttype, a.totaltaxamountlc, \r\n"
+			+ "    a.totaltaxamountbc, a.roundoffamountlc, a.partytype\r\n"
+			+ "\r\n"
+			+ "UNION\r\n"
+			+ "\r\n"
+			+ "SELECT\r\n"
+			+ "    a.orgid,\r\n"
+			+ "    a.branchcode,\r\n"
+			+ "    a.vid,\r\n"
+			+ "    a.vdate,\r\n"
+			+ "    a.jobno AS joborderno,\r\n"
+			+ "    c.docid AS voucherno,\r\n"
+			+ "    c.docdate AS voucherdate,\r\n"
+			+ "    e.partyname AS billtoparty,\r\n"
+			+ "    e.controllingoff,\r\n"
+			+ "    a.billcurr,\r\n"
+			+ "    a.billcurrrate,\r\n"
+			+ "    a.totalinvamountbc,\r\n"
+			+ "    a.totalinvamountlc,\r\n"
+			+ "    a.totaltaxableamountlc,\r\n"
+			+ "    a.gsttype,\r\n"
+			+ "    a.totaltaxamountlc,\r\n"
+			+ "    0 AS totaltaxamountbc,\r\n"
+			+ "    a.roundoffamountlc,\r\n"
+			+ "    SUM(b.fcamount) AS fcamt,\r\n"
+			+ "    SUM(b.lcamount) AS lcamt,\r\n"
+			+ "    SUM(b.rate) AS rate,\r\n"
+			+ "    SUM(b.billamount) AS billamount,\r\n"
+			+ "    a.partytype\r\n"
+			+ "FROM\r\n"
+			+ "    irncreditnote a\r\n"
+			+ "JOIN\r\n"
+			+ "    irncreditnotedetails b ON a.irncreditnoteid = b.irncreditnoteid\r\n"
+			+ "JOIN\r\n"
+			+ "    accounts c ON a.docid = c.refno\r\n"
+			+ "JOIN\r\n"
+			+ "    partymaster e ON a.partycode = e.partycode\r\n"
+			+ "WHERE\r\n"
+			+ "   (\r\n"
+			+ "        (?1 IS NULL OR ?1 = '' OR ?2 IS NULL OR ?2 = '') \r\n"
+			+ "        OR c.vdate BETWEEN STR_TO_DATE(?1, '%Y-%m-%d') AND STR_TO_DATE(?2, '%Y-%m-%d')\r\n"
+			+ "    )\r\n"
+			+ "    AND a.orgid = ?3\r\n"
+			+ "    AND (a.branchcode = ?4 OR ?4 = 'ALL')\r\n"
+			+ "    AND (e.partycode = ?5 OR ?5 = 'ALL')\r\n"
+			+ "GROUP BY\r\n"
+			+ "    a.orgid, a.branchcode, a.vid, a.vdate, a.jobno, e.partyname, e.controllingoff, \r\n"
+			+ "    a.billcurr, a.billcurrrate, a.totalinvamountbc, a.totalinvamountlc, \r\n"
+			+ "    a.totaltaxableamountlc, a.gsttype, a.totaltaxamountlc, a.roundoffamountlc, \r\n"
+			+ "    c.docid, c.docdate, a.partytype\r\n"
+			+ "\r\n"
+			+ "ORDER BY\r\n"
+			+ "    vid, vdate")
+	Set<Object[]> getReportDetailsForSalesRegister( String fromDate, String toDate, Long orgId,
+			String branchCode, String partyCode);
+
+	@Query(nativeQuery = true,value = "select sum(amount) as totalAmount from vw_revenue where orgid=?1 and (billmonth=?2 or 'ALL'=?2) and finyear=?3")
+	Set<Object[]> getDsahboardRevenue(Long orgId, String billMonth, String finYear);
+
+
 
 
 	
-
 }

@@ -1,6 +1,7 @@
 package com.base.basesetup.dto;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 import lombok.AllArgsConstructor;
@@ -27,13 +28,13 @@ public class CustomersDTO {
 	private String bussinessCategory;
 	private String accountsType;
 	private String currency;
-	private String customerCode;
+//	private String customerCode;
 	private boolean approved;
 	
-	private List<CustomersStateDTO> customersStateDTO;
-	private List<CustomersAddressDTO> customersAddressDTO;
-	private List<CustomerSalesPersonDTO> customerSalesPersonDTO;
-	private List<CustomerCurrencyMappingDTO> customerCurrencyMappingDTO;
+	private List<CustomersStateDTO> customersStateDTO = new ArrayList<>();
+	private List<CustomersAddressDTO> customersAddressDTO = new ArrayList<>();
+	private List<CustomerSalesPersonDTO> customerSalesPersonDTO = new ArrayList<>();
+	private List<CustomerCurrencyMappingDTO> customerCurrencyMappingDTO = new ArrayList<>();
 	
 	
 

@@ -116,12 +116,12 @@ public class ArapAdjustmentsServiceImpl implements ArapAdjustmentsService{
 		
 		arapAdjustmentsVO.setBranch(arapAdjustmentsDTO.getBranch());
 	    arapAdjustmentsVO.setFinYear(arapAdjustmentsDTO.getFinYear());
-	    arapAdjustmentsVO.setSource(arapAdjustmentsDTO.getSource());
+	    arapAdjustmentsVO.setSourceId(arapAdjustmentsDTO.getSourceId());
 	    arapAdjustmentsVO.setRefNo(arapAdjustmentsDTO.getRefNo());
 	    arapAdjustmentsVO.setAccountName(arapAdjustmentsDTO.getAccountName());
 	    arapAdjustmentsVO.setCurrency(arapAdjustmentsDTO.getCurrency());
 	    arapAdjustmentsVO.setAccCurrency(arapAdjustmentsDTO.getAccCurrency());
-	    arapAdjustmentsVO.setBaseAmnt(arapAdjustmentsDTO.getBaseAmnt());
+	    arapAdjustmentsVO.setBaseAmt(arapAdjustmentsDTO.getBaseAmt());
 	    arapAdjustmentsVO.setNativeAmt(arapAdjustmentsDTO.getNativeAmt());
 	    arapAdjustmentsVO.setOffDocId(arapAdjustmentsDTO.getOffDocId());
 	    arapAdjustmentsVO.setVoucherType(arapAdjustmentsDTO.getVoucherType());
@@ -132,6 +132,7 @@ public class ArapAdjustmentsServiceImpl implements ArapAdjustmentsService{
 	    arapAdjustmentsVO.setDueDate(arapAdjustmentsDTO.getDueDate());
 	    arapAdjustmentsVO.setOrgId(arapAdjustmentsDTO.getOrgId());
 	    arapAdjustmentsVO.setCreatedBy(arapAdjustmentsDTO.getCreatedBy());
+	    arapAdjustmentsVO.setActive(arapAdjustmentsDTO.isActive());
 	    arapAdjustmentsVO.setBranchCode(arapAdjustmentsDTO.getBranchCode());
 	    arapAdjustmentsVO.setIpNo(arapAdjustmentsDTO.getIpNo());
 	    arapAdjustmentsVO.setLatitude(arapAdjustmentsDTO.getLatitude());
@@ -140,6 +141,7 @@ public class ArapAdjustmentsServiceImpl implements ArapAdjustmentsService{
 	    arapAdjustmentsVO.setTdsAmt(arapAdjustmentsDTO.getTdsAmt());
 	    arapAdjustmentsVO.setSubLedgerName(arapAdjustmentsDTO.getSubLedgerName());
 	    arapAdjustmentsVO.setGstFlag(arapAdjustmentsDTO.isGstFlag());
+	    arapAdjustmentsVO.setAmount(arapAdjustmentsDTO.getAmount());
 		
 	    
         return arapAdjustmentsVO;

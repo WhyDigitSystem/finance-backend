@@ -48,6 +48,9 @@ public class IrnCreditNoteDetailsVO {
 	private String taxable;
 	@Column(name = "qty")
 	private int qty;
+	@Column(name = "description")
+	private String description;
+	
 	
 	@Column(name = "rate", precision = 10, scale = 2)
 	private BigDecimal rate;

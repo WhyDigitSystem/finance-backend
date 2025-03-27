@@ -39,14 +39,14 @@ public class PaymentInvDtlsDTO {
 
 	private BigDecimal payExRate;
 
-	private BigDecimal txnSettled;
-
-	private BigDecimal gainOrLossAmt;
-
-	private String remarks;
-	
-	private LocalDate fromDate;
-
-	private LocalDate toDate;
+//	private BigDecimal txnSettled;
+//
+//	private BigDecimal gainOrLossAmt;
+//
+//	private String remarks;
+//	
+//	private LocalDate fromDate;
+//
+//	private LocalDate toDate;
 
 }

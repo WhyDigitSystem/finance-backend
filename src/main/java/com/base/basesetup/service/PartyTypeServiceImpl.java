@@ -1,5 +1,6 @@
 package com.base.basesetup.service;
 
+import java.io.InputStream;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -33,6 +34,7 @@ import com.base.basesetup.dto.CustomersAddressDTO;
 import com.base.basesetup.dto.CustomersDTO;
 import com.base.basesetup.dto.CustomersStateDTO;
 import com.base.basesetup.dto.PartyTypeDTO;
+import com.base.basesetup.dto.VendorCurrencyMappingDTO;
 import com.base.basesetup.entity.PartyAddressVO;
 import com.base.basesetup.entity.PartyCurrencyMappingVO;
 import com.base.basesetup.entity.PartyMasterVO;
@@ -53,8 +55,6 @@ import com.base.basesetup.repo.PartySpecialTDSRepo;
 import com.base.basesetup.repo.PartyStateRepo;
 import com.base.basesetup.repo.PartyTypeRepo;
 
-import io.jsonwebtoken.io.IOException;
-
 @Service
 public class PartyTypeServiceImpl implements PartyTypeService {
 	public static final Logger LOGGER = LoggerFactory.getLogger(MasterServiceImpl.class);
@@ -70,7 +70,7 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 
 	@Autowired
 	PartyStateRepo partyStateRepo;
-	
+
 	@Autowired
 	PartySpecialTDSRepo partySpecialTDSRepo;
 
@@ -182,249 +182,161 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 	}
 
 	@Override
-	// Method to upload customer data from Excel file
-	public void uploadCustomerData(MultipartFile files, Long orgId, String createdBy) throws Exception {
-
+	@Transactional
+	public void uploadCustomerData(MultipartFile file, Long orgId, String createdBy) throws Exception {
 		List<CustomersDTO> customersDTOList = new ArrayList<>();
-		try (Workbook workbook = WorkbookFactory.create(files.getInputStream())) {
-			// Reading the customer sheet (CustomersDTO)
-			Sheet customerSheet = workbook.getSheetAt(0); // Assuming customer sheet is the first one
 
-			// Loop through the customer sheet and create CustomersDTO entries
-			for (Row row : customerSheet) {
-				if (row.getRowNum() == 0) { // Skipping header
-					continue;
-				}
+		try (InputStream inputStream = file.getInputStream(); Workbook workbook = WorkbookFactory.create(inputStream)) {
+			processCustomerSheet(workbook.getSheetAt(0), customersDTOList, orgId, createdBy);
+			processStateSheet(workbook.getSheetAt(1), customersDTOList);
+			processAddressSheet(workbook.getSheetAt(2), customersDTOList);
+			processSalesPersonSheet(workbook.getSheetAt(3), customersDTOList);
+			processCurrencySheet(workbook.getSheetAt(4), customersDTOList);
 
-				String creditdays = getStringCellValue(row.getCell(3));
-				Long creditDays = null;
-				if (!creditdays.isEmpty()) {
-					creditDays = Long.parseLong(creditdays); // Only parse if staeno is not empty
-				}
-
-				// Mapping Excel row data to CustomersDTO
-				CustomersDTO customersDTO = new CustomersDTO();
-				customersDTO.setCustomerName(getStringCellValue(row.getCell(0))); // Customer Name
-				customersDTO.setGstIn(getStringCellValue(row.getCell(1))); // GSTIN
-				customersDTO.setPanNo(getStringCellValue(row.getCell(2))); // Pan No
-				customersDTO.setCreditLimit(getBigDecimalValue(row.getCell(4)));
-				customersDTO.setCreditTerms(getStringCellValue(row.getCell(5)));
-				customersDTO.setTaxRegistered(getStringCellValue(row.getCell(6)));
-				customersDTO.setCreditDays(creditDays);
-				customersDTO.setTaxRegistered(createdBy);
-				customersDTO.setCreatedBy(createdBy); // Created
-				customersDTO.setOrgId(orgId);
-				customersDTO.setActive(true); // Assuming it's active
-
-				// Initialize CustomersAddressDTO list if null
-				if (customersDTO.getCustomersAddressDTO() == null) {
-					customersDTO.setCustomersAddressDTO(new ArrayList<>());
-				}
-
-				// Add CustomersDTO to the list
-				customersDTOList.add(customersDTO);
-			}
-
-			// Reading the state sheet (CustomersStateDTO)
-			Sheet stateSheet = workbook.getSheetAt(1); // Assuming state sheet is the second one
-			List<CustomersStateDTO> partyStateDTOList = new ArrayList<>();
-
-			// Loop through the state sheet and create CustomersStateDTO entries
-			for (Row row : stateSheet) {
-				if (row.getRowNum() == 0) { // Skipping header
-					continue;
-				}
-
-				String customerName = getStringCellValue(row.getCell(7)); // Safe cell value retrieval
-				if (customerName.isEmpty()) {
-					// Handle case where customer name is missing or invalid
-					continue;
-				}
-
-				CustomersDTO customersDTO = customersDTOList.stream()
-						.filter(c -> c.getCustomerName().equals(customerName)).findFirst().orElseThrow(
-								() -> new RuntimeException("No customer found for Customer name: " + customerName));
-
-				String staeno = getStringCellValue(row.getCell(2)); // Ensure staeno is retrieved safely
-				Long stateNo = null;
-				if (!staeno.isEmpty()) {
-					stateNo = Long.parseLong(staeno); // Only parse if staeno is not empty
-				}
-
-				// Mapping Excel row data to CustomersStateDTO
-				CustomersStateDTO customersStateDTO = new CustomersStateDTO();
-				customersStateDTO.setState(getStringCellValue(row.getCell(0))); // State
-				customersStateDTO.setStateCode(getStringCellValue(row.getCell(1))); // State Code
-				customersStateDTO.setStateNo(stateNo); // State No
-				customersStateDTO.setGstIn(getStringCellValue(row.getCell(3))); // GSTIN
-				customersStateDTO.setContactPerson(getStringCellValue(row.getCell(4))); // Contact Person
-				customersStateDTO.setPhoneNo(getStringCellValue(row.getCell(5))); // Contact Phone No
-				customersStateDTO.setEMail(getStringCellValue(row.getCell(6))); // Contact Email
-				customersStateDTO.setCustomerName(customerName); // Customer Name
-				partyStateDTOList.add(customersStateDTO);
-				customersDTO.setCustomersStateDTO(partyStateDTOList);
-			}
-
-			// Reading the address sheet (CustomersAddressDTO)
-			Sheet addressSheet = workbook.getSheetAt(2); // Assuming address sheet is the third one
-			List<CustomersAddressDTO> partyAddressDTOList = new ArrayList<>();
-
-			// Loop through the address sheet and create CustomersAddressDTO entries
-			for (Row row : addressSheet) {
-				if (row.getRowNum() == 0) { // Skipping header
-					continue;
-				}
-
-				String customerName = getStringCellValue(row.getCell(10)); // Safely get customer name
-				if (customerName.isEmpty()) {
-					// Handle case where customer name is missing or invalid
-					throw new ApplicationException("No customer found for Customer name: " + customerName);
-				}
-
-				CustomersDTO customersDTO = customersDTOList.stream()
-						.filter(c -> c.getCustomerName().equals(customerName)).findFirst().orElseThrow(
-								() -> new RuntimeException("No customer found for Customer name: " + customerName));
-
-				// Mapping Excel row data to CustomersAddressDTO
-				CustomersAddressDTO partyAddressDTO = new CustomersAddressDTO();
-				partyAddressDTO.setState(getStringCellValue(row.getCell(0))); // State
-				partyAddressDTO.setCity(getStringCellValue(row.getCell(1))); // City
-				partyAddressDTO.setBussinesPlace(getStringCellValue(row.getCell(2))); // Business Place
-				partyAddressDTO.setGstnIn(getStringCellValue(row.getCell(3))); // GST IN
-				partyAddressDTO.setAddressType(getStringCellValue(row.getCell(4))); // Address Type
-				partyAddressDTO.setAddressLane1(getStringCellValue(row.getCell(5))); // Address Line 1
-				partyAddressDTO.setAddressLane2(getStringCellValue(row.getCell(6))); // Address Line 2
-				partyAddressDTO.setAddressLane3(getStringCellValue(row.getCell(7))); // Address Line 3
-				partyAddressDTO.setPinCode(getLongCellValue(row.getCell(8))); // PinCode (long)
-				partyAddressDTO.setContact(getStringCellValue(row.getCell(9)));
-//				partyAddressDTO.setContactPerson(getStringCellValue(row.getCell(9))); 
-//				partyAddressDTO.setContactNo(getLongCellValue(row.getCell(10))); 
-				partyAddressDTO.setCustomerName(customerName); // Customer Name
-
-				partyAddressDTOList.add(partyAddressDTO);
-				customersDTO.setCustomersAddressDTO(partyAddressDTOList); // Add to list
-
-			}
-
-			// Reading the sales person tagging sheet (CustomersSalesPersonDTO)
-			Sheet salesPersonSheet = workbook.getSheetAt(3); // Assuming sales person tagging sheet is the fourth one
-			List<CustomerSalesPersonDTO> partySalesPersonTaggingDTOList = new ArrayList<>();
-
-			// Loop through the sales person sheet and create CustomersSalesPersonDTO
-			// entries
-			for (Row row : salesPersonSheet) {
-				if (row.getRowNum() == 0) { // Skipping header
-					continue;
-				}
-
-				String customerName = getStringCellValue(row.getCell(5)); // Customer name cell
-				if (customerName.isEmpty()) {
-					// Handle case where customer name is missing or invalid
-					continue;
-				}
-
-				CustomersDTO customersDTO = customersDTOList.stream()
-						.filter(c -> c.getCustomerName().equals(customerName)).findFirst().orElseThrow(
-								() -> new RuntimeException("No customer found for Customer name: " + customerName));
-
-				// Mapping Excel row data to CustomersSalesPersonDTO
-				CustomerSalesPersonDTO partySalesPersonTaggingDTO = new CustomerSalesPersonDTO();
-				partySalesPersonTaggingDTO.setSalesPerson(getStringCellValue(row.getCell(0))); // Sales Person
-				partySalesPersonTaggingDTO.setEmpCode(getStringCellValue(row.getCell(1))); // Emp Code
-				partySalesPersonTaggingDTO.setSalesBranch(getStringCellValue(row.getCell(2))); // Branch
-				partySalesPersonTaggingDTO.setEffectiveFrom(getLocalDateCellValue(row.getCell(3))); // Effective From
-				partySalesPersonTaggingDTO.setEffectiveTill(getLocalDateCellValue(row.getCell(4))); // Effective Till
-				partySalesPersonTaggingDTO.setCustomerName(customerName); // Customer Name
-
-				partySalesPersonTaggingDTOList.add(partySalesPersonTaggingDTO);
-				customersDTO.setCustomerSalesPersonDTO(partySalesPersonTaggingDTOList);
-			}
-
-			// Save each customer DTO once
 			for (CustomersDTO customer : customersDTOList) {
 				createUpdateCustomer(customer);
 			}
 		}
 	}
 
-	// Helper method to get string value from a cell, ensuring the cell isn't null
-	private String getStringCellValue(Cell cell) {
-		if (cell == null) {
-			return ""; // Return empty string if cell is null
+	private void processCustomerSheet(Sheet sheet, List<CustomersDTO> customersDTOList, Long orgId, String createdBy) {
+		for (Row row : sheet) {
+			if (row.getRowNum() == 0)
+				continue;
+			CustomersDTO customer = new CustomersDTO();
+			customer.setCustomerName(getStringCellValue(row.getCell(0)));
+//			customer.setCustomerCode(getStringCellValue(row.getCell(1)));
+			customer.setGstIn(getStringCellValue(row.getCell(1)));
+			customer.setPanNo(getStringCellValue(row.getCell(2)));
+			customer.setCreditLimit(getBigDecimalValue(row.getCell(3)));
+			Long creditDays = getLongCellValue(row.getCell(4));
+			customer.setCreditDays(creditDays != null ? creditDays : 0);
+			customer.setCreditTerms(getStringCellValue(row.getCell(5)));
+			customer.setTaxRegistered(getStringCellValue(row.getCell(6)));
+			customer.setBussinessType(getStringCellValue(row.getCell(7)));
+			customer.setBussinessCategory(getStringCellValue(row.getCell(8)));
+			customer.setAccountsType(getStringCellValue(row.getCell(9)));
+			customer.setCurrency(getStringCellValue(row.getCell(10)));
+			customer.setCreatedBy(createdBy);
+			customer.setOrgId(orgId);
+			customer.setActive(true);
+			customersDTOList.add(customer);
 		}
+	}
+
+	private void processStateSheet(Sheet sheet, List<CustomersDTO> customersDTOList) {
+		for (Row row : sheet) {
+			if (row.getRowNum() == 0)
+				continue;
+			String customerName = getStringCellValue(row.getCell(7));
+			customersDTOList.stream().filter(c -> c.getCustomerName().equals(customerName)).findFirst()
+					.ifPresent(customer -> {
+						CustomersStateDTO state = new CustomersStateDTO();
+						state.setState(getStringCellValue(row.getCell(0)));
+						state.setStateCode(getStringCellValue(row.getCell(1)));
+						state.setStateNo(getLongCellValue(row.getCell(2)));
+						state.setGstIn(getStringCellValue(row.getCell(3)));
+						state.setContactPerson(getStringCellValue(row.getCell(4)));
+						state.setPhoneNo(getStringCellValue(row.getCell(5)));
+						state.setEMail(getStringCellValue(row.getCell(6)));
+						customer.getCustomersStateDTO().add(state);
+					});
+		}
+	}
+
+	private void processAddressSheet(Sheet sheet, List<CustomersDTO> customersDTOList) {
+		for (Row row : sheet) {
+			if (row.getRowNum() == 0)
+				continue;
+			String customerName = getStringCellValue(row.getCell(10));
+			customersDTOList.stream().filter(c -> c.getCustomerName().equals(customerName)).findFirst()
+					.ifPresent(customer -> {
+						CustomersAddressDTO address = new CustomersAddressDTO();
+						address.setState(getStringCellValue(row.getCell(0)));
+						address.setCity(getStringCellValue(row.getCell(1)));
+						address.setBussinesPlace(getStringCellValue(row.getCell(3)));
+						address.setGstnIn(getStringCellValue(row.getCell(2)));
+						address.setAddressType(getStringCellValue(row.getCell(4)));
+						address.setAddressLane1(getStringCellValue(row.getCell(5)));
+						address.setAddressLane2(getStringCellValue(row.getCell(6)));
+						address.setAddressLane3(getStringCellValue(row.getCell(7)));
+						address.setPinCode(getLongCellValue(row.getCell(8)));
+						String no = getStringCellValue(row.getCell(9));
+						System.out.println(no);
+						address.setContact(getStringCellValue(row.getCell(9)));
+						customer.getCustomersAddressDTO().add(address);
+					});
+		}
+	}
+
+	private void processSalesPersonSheet(Sheet sheet, List<CustomersDTO> customersDTOList) {
+		for (Row row : sheet) {
+			if (row.getRowNum() == 0)
+				continue;
+			String customerName = getStringCellValue(row.getCell(5));
+			customersDTOList.stream().filter(c -> c.getCustomerName().equals(customerName)).findFirst()
+					.ifPresent(customer -> {
+						CustomerSalesPersonDTO salesPerson = new CustomerSalesPersonDTO();
+						salesPerson.setSalesPerson(getStringCellValue(row.getCell(0)));
+						salesPerson.setEmpCode(getStringCellValue(row.getCell(1)));
+						salesPerson.setSalesBranch(getStringCellValue(row.getCell(2)));
+						salesPerson.setEffectiveFrom(getLocalDateCellValue(row.getCell(3)));
+						salesPerson.setEffectiveTill(getLocalDateCellValue(row.getCell(4)));
+						customer.getCustomerSalesPersonDTO().add(salesPerson);
+					});
+		}
+	}
+
+	private void processCurrencySheet(Sheet sheet, List<CustomersDTO> customersDTOList) {
+		for (Row row : sheet) {
+			if (row.getRowNum() == 0)
+				continue;
+			String customerName = getStringCellValue(row.getCell(1));
+			customersDTOList.stream().filter(c -> c.getCustomerName().equals(customerName)).findFirst()
+					.ifPresent(customer -> {
+						CustomerCurrencyMappingDTO currency = new CustomerCurrencyMappingDTO();
+						currency.setTransCurrency(getStringCellValue(row.getCell(0)));
+						customer.getCustomerCurrencyMappingDTO().add(currency);
+					});
+		}
+	}
+
+//	private String getStringCellValue(Cell cell) {
+//		return (cell == null) ? "" : cell.toString().trim();
+//	}
+
+	private String getStringCellValue(Cell cell) {
+		if (cell == null)
+			return "";
+
 		switch (cell.getCellType()) {
 		case STRING:
-			return cell.getStringCellValue();
+			return cell.getStringCellValue().trim();
 		case NUMERIC:
-			return String.valueOf(cell.getNumericCellValue());
-		case BOOLEAN:
-			return String.valueOf(cell.getBooleanCellValue());
+			double numericValue = cell.getNumericCellValue();
+			if (numericValue == Math.floor(numericValue)) {
+				// If it's a whole number, convert without decimal point
+				return String.valueOf((long) numericValue);
+			}
+			return String.valueOf(numericValue);
 		default:
-			return ""; // Return empty string for unsupported cell types or unknown cases
+			return "";
 		}
 	}
 
 	private Long getLongCellValue(Cell cell) {
-		if (cell == null) {
-			return null; // Return null if cell is empty
-		}
-
-		// If the cell type is numeric, check if it has a decimal point
-		if (cell.getCellType() == CellType.NUMERIC) {
-			// If it's a double value (numeric with decimal), cast to Long
-			if (DateUtil.isCellDateFormatted(cell)) {
-				// Handle date type if needed (not for pinCode, but for completeness)
-				return null;
-			} else {
-				return (long) cell.getNumericCellValue(); // Convert numeric to long
-			}
-		}
-
-		// If the cell type is String, try parsing it
-		if (cell.getCellType() == CellType.STRING) {
-			try {
-				return Long.parseLong(cell.getStringCellValue()); // Parse string to Long
-			} catch (NumberFormatException e) {
-				// Handle invalid number format
-				return null; // or throw exception depending on your needs
-			}
-		}
-
-		// Return null if it's neither numeric nor string
-		return null;
-	}
-
-	// Helper method to get LocalDate value from a cell (date)
-	private LocalDate getLocalDateCellValue(Cell cell) {
-		if (cell == null) {
-			return null;
-		}
-		if (cell.getCellType() == CellType.NUMERIC) {
-			if (DateUtil.isCellDateFormatted(cell)) {
-				// Excel stores dates as serial numbers, convert that to LocalDate
-				return cell.getDateCellValue().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-			}
-		}
-		return null; // Return null if it's not a date or is an invalid cell type
+		return (cell == null || cell.getCellType() != CellType.NUMERIC) ? null : (long) cell.getNumericCellValue();
 	}
 
 	private BigDecimal getBigDecimalValue(Cell cell) {
-		if (cell == null || cell.getCellType() == CellType.BLANK) {
-			return BigDecimal.ZERO; // Default value for blank or null cells
-		}
+		return (cell == null || cell.getCellType() == CellType.BLANK) ? BigDecimal.ZERO
+				: (cell.getCellType() == CellType.NUMERIC) ? BigDecimal.valueOf(cell.getNumericCellValue())
+						: new BigDecimal(cell.getStringCellValue().trim());
+	}
 
-		switch (cell.getCellType()) {
-		case NUMERIC:
-			return BigDecimal.valueOf(cell.getNumericCellValue()); // Convert numeric value to BigDecimal
-		case STRING:
-			try {
-				return new BigDecimal(cell.getStringCellValue().trim()); // Parse string to BigDecimal
-			} catch (NumberFormatException e) {
-				throw new IllegalArgumentException("Invalid numeric value in cell: " + cell.getStringCellValue(), e);
-			}
-		default:
-			throw new IllegalArgumentException("Unsupported cell type: " + cell.getCellType());
-		}
+	private LocalDate getLocalDateCellValue(Cell cell) {
+		return (cell == null || !DateUtil.isCellDateFormatted(cell)) ? null
+				: cell.getDateCellValue().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 	}
 
 	@Override
@@ -434,14 +346,14 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 		String message = null;
 
 		if (ObjectUtils.isEmpty(customersDTO.getId())) {
-
-			if (partyMasterRepo.existsByPartyNameAndOrgId(customersDTO.getCustomerName(), customersDTO.getOrgId())) {
+			String partyType = "CUSTOMER";
+			if (partyMasterRepo.existsByPartyNameAndOrgIdAndPartyType(customersDTO.getCustomerName(),
+					customersDTO.getOrgId(), partyType)) {
 				String errorMessage = String.format("This CustomerName: %s Already Exists in This Organization",
 						customersDTO.getCustomerName());
 				throw new ApplicationException(errorMessage);
 			}
 
-			String partyType = "CUSTOMER";
 			// PARTCODE DOCID API
 			String partyTypeDocId = partyTypeRepo.getPartyTypeDocId(customersDTO.getOrgId(), partyType);
 			partyMasterVO.setPartyCode(partyTypeDocId);
@@ -462,9 +374,9 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 			partyMasterVO.setUpdatedBy(customersDTO.getCreatedBy());
 
 			if (!partyMasterVO.getPartyName().equalsIgnoreCase(customersDTO.getCustomerName())) {
-
-				if (partyMasterRepo.existsByPartyNameAndOrgId(customersDTO.getCustomerName(),
-						customersDTO.getOrgId())) {
+				String partyType = "CUSTOMER";
+				if (partyMasterRepo.existsByPartyNameAndOrgIdAndPartyType(customersDTO.getCustomerName(),
+						customersDTO.getOrgId(), partyType)) {
 					String errorMessage = String.format("This CustomerName: %s Already Exists in This Organization",
 							customersDTO.getCustomerName());
 					throw new ApplicationException(errorMessage);
@@ -567,24 +479,26 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 
 	private void getPartyMasterVOFromCustomersDTO(@Valid CustomersDTO customerDTO, PartyMasterVO partyMasterVO) {
 		partyMasterVO.setPartyType("CUSTOMER");
-		partyMasterVO.setPartyName(customerDTO.getCustomerName());
+		partyMasterVO.setPartyName(customerDTO.getCustomerName().toUpperCase());
 		partyMasterVO.setGstPartyName(customerDTO.getCustomerName());
 		partyMasterVO.setGstIn(customerDTO.getGstIn());
 		partyMasterVO.setPanNo(customerDTO.getPanNo());
 		partyMasterVO.setPanName(customerDTO.getCustomerName());
 		partyMasterVO.setActive(customerDTO.isActive());
 		partyMasterVO.setOrgId(customerDTO.getOrgId());
-		partyMasterVO.setCreditDays(customerDTO.getCreditDays());
+		Long creditDays = customerDTO.getCreditDays();
+		partyMasterVO.setCreditDays(creditDays != null ? creditDays : 0);
+//		partyMasterVO.setCreditDays(customerDTO.getCreditDays());
 		partyMasterVO.setCreditLimit(customerDTO.getCreditLimit());
 		partyMasterVO.setCreditTerms(customerDTO.getCreditTerms());
 		partyMasterVO.setGstRegistered(customerDTO.getTaxRegistered());
 		partyMasterVO.setBussinessType(customerDTO.getBussinessType());
 		partyMasterVO.setBussinessCate(customerDTO.getBussinessCategory());
 		partyMasterVO.setAccountType(customerDTO.getAccountsType());
-		partyMasterVO.setPartyCode(customerDTO.getCustomerCode());
+//		partyMasterVO.setPartyCode(customerDTO.getCustomerCode());
 		partyMasterVO.setCurrency(customerDTO.getCurrency());
 
-		if(customerDTO.isApproved()) {
+		if (customerDTO.isApproved()) {
 			partyMasterVO.setActive(true);
 		}
 
@@ -606,14 +520,14 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 		String message = null;
 
 		if (ObjectUtils.isEmpty(vendorDTO.getId())) {
-
-			if (partyMasterRepo.existsByPartyNameAndOrgId(vendorDTO.getVendorName(), vendorDTO.getOrgId())) {
-				String errorMessage = String.format("This CustomerName: %s Already Exists in This Organization",
+			String partyType = "VENDOR";
+			if (partyMasterRepo.existsByPartyNameAndOrgIdAndPartyType(vendorDTO.getVendorName(), vendorDTO.getOrgId(),
+					partyType)) {
+				String errorMessage = String.format("This Vendor Name: %s Already Exists in This Organization",
 						vendorDTO.getVendorName());
 				throw new ApplicationException(errorMessage);
 			}
 
-			String partyType = "VENDOR";
 			// PARTCODE DOCID API
 			String partyTypeDocId = partyTypeRepo.getPartyTypeVendorDocId(vendorDTO.getOrgId(), partyType);
 			partyMasterVO.setPartyCode(partyTypeDocId);
@@ -632,9 +546,10 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 					() -> new ApplicationException("vendor Order Not Found with id: " + vendorDTO.getId()));
 
 			if (!partyMasterVO.getPartyName().equalsIgnoreCase(vendorDTO.getVendorName())) {
-
-				if (partyMasterRepo.existsByPartyNameAndOrgId(vendorDTO.getVendorName(), vendorDTO.getOrgId())) {
-					String errorMessage = String.format("This VendorName: %s Already Exists in This Organization",
+				String partyType = "VENDOR";
+				if (partyMasterRepo.existsByPartyNameAndOrgIdAndPartyType(vendorDTO.getVendorName(),
+						vendorDTO.getOrgId(), partyType)) {
+					String errorMessage = String.format("This Vendor Name: %s Already Exists in This Organization",
 							vendorDTO.getVendorName());
 					throw new ApplicationException(errorMessage);
 				}
@@ -657,21 +572,22 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 
 	private PartyMasterVO getpartyMasterVOFromVendorDTO(PartyMasterVO partyMasterVO, @Valid VendorDTO vendorDTO) {
 
-		partyMasterVO.setPartyName(vendorDTO.getVendorName());
+		partyMasterVO.setPartyName(vendorDTO.getVendorName().toUpperCase());
 		partyMasterVO.setGstIn(vendorDTO.getGstIn());
 		partyMasterVO.setPanNo(vendorDTO.getPanNo());
 		partyMasterVO.setOrgId(vendorDTO.getOrgId());
 		partyMasterVO.setPartyType("VENDOR");
-
-		partyMasterVO.setCreditDays(vendorDTO.getCreditDays());
+		Long creditDays = vendorDTO.getCreditDays();
+		partyMasterVO.setCreditDays(creditDays != null ? creditDays : 0);
 		partyMasterVO.setCreditLimit(vendorDTO.getCreditLimit());
 		partyMasterVO.setCreditTerms(vendorDTO.getCreditTerms());
 		partyMasterVO.setGstRegistered(vendorDTO.getTaxRegistered());
 		partyMasterVO.setBussinessType(vendorDTO.getBussinessType());
 		partyMasterVO.setBussinessCate(vendorDTO.getBussinessCategory());
 		partyMasterVO.setAccountType(vendorDTO.getAccountsType());
-		
-		if(vendorDTO.isApproved()) {
+		partyMasterVO.setActive(vendorDTO.isActive());
+
+		if (vendorDTO.isApproved()) {
 			partyMasterVO.setActive(true);
 		}
 
@@ -683,9 +599,12 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 			List<PartyAddressVO> partyAddressVOs = partyAddressRepo.findByPartyMasterVO(partyMasterVO);
 			partyAddressRepo.deleteAll(partyAddressVOs);
 
-			List<PartySpecialTDSVO> partySpecialTDSVO1 = partySpecialTDSRepo
-					.findByPartyMasterVO(partyMasterVO);
+			List<PartySpecialTDSVO> partySpecialTDSVO1 = partySpecialTDSRepo.findByPartyMasterVO(partyMasterVO);
 			partySpecialTDSRepo.deleteAll(partySpecialTDSVO1);
+
+			List<PartyCurrencyMappingVO> partyCurrencyMappingVO1 = partyCurrencyMappingRepo
+					.findByPartyMasterVO(partyMasterVO);
+			partyCurrencyMappingRepo.deleteAll(partyCurrencyMappingVO1);
 
 		}
 
@@ -755,6 +674,16 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 			partyMasterVO.setPartySpecialTDSVO(specialTDSVOs);
 		}
 
+		List<PartyCurrencyMappingVO> partyCurrencyMappingVOs = new ArrayList<>();
+		for (VendorCurrencyMappingDTO vendorCurrencyMappingDTO : vendorDTO.getVendorCurrencyMappingDTO()) {
+			PartyCurrencyMappingVO partyCurrencyMappingVO = new PartyCurrencyMappingVO();
+			partyCurrencyMappingVO.setTransCurrency(vendorCurrencyMappingDTO.getTransCurrency());
+			partyCurrencyMappingVO.setPartyMasterVO(partyMasterVO);
+			partyCurrencyMappingVOs.add(partyCurrencyMappingVO);
+
+			partyMasterVO.setPartyCurrencyMappingVO(partyCurrencyMappingVOs);
+		}
+
 		return partyMasterVO;
 	}
 
@@ -770,202 +699,245 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 	}
 
 	@Override
-	// Method to upload customer data from Excel file
+	public List<Map<String, Object>> getSectionNameFromTds(Long orgId, String section) {
+		Set<Object[]> chType = partyTypeRepo.getSectionNameFromTds(orgId, section);
+		return getSectionName(chType);
+	}
+
+	public List<Map<String, Object>> getSectionName(Set<Object[]> chType) {
+		List<Map<String, Object>> list1 = new ArrayList<>();
+		for (Object[] ch : chType) {
+			Map<String, Object> map = new HashMap<>();
+			map.put("sectionName", ch[0] != null ? ch[0].toString() : "");
+			list1.add(map);
+		}
+		return list1;
+	}
+
+//Vendor file upload
+	@Override
+	@Transactional
 	public void vendorUpload(MultipartFile files, Long orgId, String createdBy) throws Exception {
-
 		List<VendorDTO> vendorDTOList = new ArrayList<>();
-		try (Workbook workbook = WorkbookFactory.create(files.getInputStream())) {
-			// Reading the customer sheet (CustomersDTO)
-			Sheet customerSheet = workbook.getSheetAt(0); // Assuming customer sheet is the first one
 
-			// Loop through the customer sheet and create CustomersDTO entries
-			for (Row row : customerSheet) {
-				if (row.getRowNum() == 0) { // Skipping header
-					continue;
-				}
+		try (InputStream inputStream = files.getInputStream();
+				Workbook workbook = WorkbookFactory.create(inputStream)) {
 
-				// Mapping Excel row data to CustomersDTO
-				VendorDTO vendorDTO = new VendorDTO();
-				vendorDTO.setVendorName(getStringCellValue(row.getCell(0))); // Customer Name
-				vendorDTO.setGstIn(getStringCellValue(row.getCell(1))); // GSTIN
-				vendorDTO.setPanNo(getStringCellValue(row.getCell(2))); // Pan No
-				vendorDTO.setCreatedBy(createdBy); // Created By
-				vendorDTO.setOrgId(orgId);
-				vendorDTO.setActive(true); // Assuming it's active
+			processVendorSheet(workbook.getSheetAt(0), vendorDTOList, orgId, createdBy);
+			processStateSheets(workbook.getSheetAt(1), vendorDTOList);
+			processAddressSheets(workbook.getSheetAt(2), vendorDTOList);
+			processSpecialTds(workbook.getSheetAt(3), vendorDTOList);
+			processCurrencyMapping(workbook.getSheetAt(4), vendorDTOList);
 
-				// Initialize CustomersAddressDTO list if null
-				if (vendorDTO.getVendorAddressDTO() == null) {
-					vendorDTO.setVendorAddressDTO((new ArrayList<>()));
-				}
-
-				// Initialize SpecialTdsDTO list if null
-				if (vendorDTO.getSpecialTdsDTO() == null) {
-					vendorDTO.setSpecialTdsDTO(new ArrayList<>());
-				}
-
-				// Add CustomersDTO to the list
-				vendorDTOList.add(vendorDTO);
-			}
-
-			// Reading the state sheet (CustomersStateDTO)
-			Sheet stateSheet = workbook.getSheetAt(1); // Assuming state sheet is the second one
-			List<VendorsStateDTO> partyStateDTOList = new ArrayList<>();
-
-			// Loop through the state sheet and create CustomersStateDTO entries
-			for (Row row : stateSheet) {
-				if (row.getRowNum() == 0) { // Skipping header
-					continue;
-				}
-
-				String vendorName = getStringCellValue(row.getCell(7)); // Safe cell value retrieval
-				if (vendorName.isEmpty()) {
-					// Handle case where customer name is missing or invalid
-					continue;
-				}
-
-				VendorDTO vendorDTO = vendorDTOList.stream().filter(c -> c.getVendorName().equals(vendorName))
-						.findFirst()
-						.orElseThrow(() -> new RuntimeException("No Vendor found for vendorName : " + vendorName));
-
-				String staeno = getStringCellValue(row.getCell(2)); // Ensure staeno is retrieved safely
-				Long stateNo = null;
-				if (!staeno.isEmpty()) {
-					stateNo = Long.parseLong(staeno); // Only parse if staeno is not empty
-				}
-
-				// Mapping Excel row data to CustomersStateDTO
-				VendorsStateDTO vendorsStateDTO = new VendorsStateDTO();
-				vendorsStateDTO.setState(getStringCellValue(row.getCell(0))); // State
-				vendorsStateDTO.setStateCode(getStringCellValue(row.getCell(1))); // State Code
-				vendorsStateDTO.setStateNo(stateNo); // State No
-				vendorsStateDTO.setGstIn(getStringCellValue(row.getCell(3))); // GSTIN
-				vendorsStateDTO.setContactPerson(getStringCellValue(row.getCell(4))); // Contact Person
-				vendorsStateDTO.setPhoneNo(getStringCellValue(row.getCell(5))); // Contact Phone No
-				vendorsStateDTO.setEMail(getStringCellValue(row.getCell(6))); // Contact Email
-				partyStateDTOList.add(vendorsStateDTO);
-				vendorDTO.setVendorStateDTO(partyStateDTOList);
-			}
-
-			// Reading the address sheet (CustomersAddressDTO)
-			Sheet addressSheet = workbook.getSheetAt(2); // Assuming address sheet is the third one
-			List<VendorsAddressDTO> partyAddressDTOList = new ArrayList<>();
-
-			// Loop through the address sheet and create CustomersAddressDTO entries
-			for (Row row : addressSheet) {
-				if (row.getRowNum() == 0) { // Skipping header
-					continue;
-				}
-
-				String vendorName = getStringCellValue(row.getCell(10)); // Safely get customer name
-				if (vendorName.isEmpty()) {
-					// Handle case where customer name is missing or invalid
-					throw new ApplicationException("No vendor found for vendorName : " + vendorName);
-				}
-
-				VendorDTO vendorDTO = vendorDTOList.stream().filter(c -> c.getVendorName().equals(vendorName))
-						.findFirst()
-						.orElseThrow(() -> new RuntimeException("No Vendor found for vendorName : " + vendorName));
-
-				// Mapping Excel row data to CustomersAddressDTO
-				VendorsAddressDTO partyAddressDTO = new VendorsAddressDTO();
-				partyAddressDTO.setState(getStringCellValue(row.getCell(0))); // State
-				partyAddressDTO.setCity(getStringCellValue(row.getCell(1))); // City
-				partyAddressDTO.setBussinesPlace(getStringCellValue(row.getCell(2))); // Business Place
-				partyAddressDTO.setGstnIn(getStringCellValue(row.getCell(3))); // GST IN
-				partyAddressDTO.setAddressType(getStringCellValue(row.getCell(4))); // Address Type
-				partyAddressDTO.setAddressLane1(getStringCellValue(row.getCell(5))); // Address Line 1
-				partyAddressDTO.setAddressLane2(getStringCellValue(row.getCell(6))); // Address Line 2
-				partyAddressDTO.setAddressLane3(getStringCellValue(row.getCell(7))); // Address Line 3
-				partyAddressDTO.setPinCode(getLongCellValue(row.getCell(8))); // PinCode (long)
-				partyAddressDTO.setContact(getStringCellValue(row.getCell(9))); // Contact
-				partyAddressDTO.setVendorName(vendorName); // Customer Name
-
-				partyAddressDTOList.add(partyAddressDTO);
-				vendorDTO.setVendorAddressDTO(partyAddressDTOList); // Add to list
-
-			}
-
-			// Save each customer DTO once
 			for (VendorDTO vendor : vendorDTOList) {
 				createUpdateVendor(vendor);
 			}
 		}
 	}
 
-	// Helper method to get string value from a cell, ensuring the cell isn't null
-	private String getStringCellValue1(Cell cell) {
-		if (cell == null) {
-			return ""; // Return empty string if cell is null
-		}
-		switch (cell.getCellType()) {
-		case STRING:
-			return cell.getStringCellValue();
-		case NUMERIC:
-			return String.valueOf(cell.getNumericCellValue());
-		case BOOLEAN:
-			return String.valueOf(cell.getBooleanCellValue());
-		default:
-			return ""; // Return empty string for unsupported cell types or unknown cases
+	private void processVendorSheet(Sheet sheet, List<VendorDTO> vendorDTOList, Long orgId, String createdBy) {
+		for (Row row : sheet) {
+			if (row.getRowNum() == 0)
+				continue;
+			VendorDTO vendor = new VendorDTO();
+
+			vendor.setVendorName(getStringCellValue(row.getCell(0)));
+			vendor.setGstIn(getStringCellValue(row.getCell(1)));
+			vendor.setPanNo(getStringCellValue(row.getCell(2)));
+			vendor.setCreditLimit(getBigDecimalValue(row.getCell(3)));
+			Long creditDays = getLongCellValue(row.getCell(4));
+			vendor.setCreditDays(creditDays != null ? creditDays : 0);
+			vendor.setCreditTerms(getStringCellValue(row.getCell(5)));
+			vendor.setTaxRegistered(getStringCellValue(row.getCell(6)));
+			vendor.setBussinessType(getStringCellValue(row.getCell(7)));
+			vendor.setBussinessCategory(getStringCellValue(row.getCell(8)));
+			vendor.setAccountsType(getStringCellValue(row.getCell(9)));
+			vendor.setCreatedBy(createdBy);
+			vendor.setOrgId(orgId);
+			vendor.setActive(true);
+
+			// Initialize lists to prevent null pointer issues
+			vendor.setVendorStateDTO(new ArrayList<>());
+			vendor.setVendorAddressDTO(new ArrayList<>());
+			vendor.setSpecialTdsDTO(new ArrayList<>());
+			vendor.setVendorCurrencyMappingDTO(new ArrayList<>());
+
+			vendorDTOList.add(vendor);
 		}
 	}
 
-	private Long getLongCellValue1(Cell cell) {
-		if (cell == null) {
-			return null; // Return null if cell is empty
-		}
+	private void processStateSheets(Sheet sheet, List<VendorDTO> vendorDTOList) {
+		for (Row row : sheet) {
+			if (row.getRowNum() == 0)
+				continue;
+			String vendorName = getStringCellValue(row.getCell(7));
 
-		// If the cell type is numeric, check if it has a decimal point
-		if (cell.getCellType() == CellType.NUMERIC) {
-			// If it's a double value (numeric with decimal), cast to Long
-			if (DateUtil.isCellDateFormatted(cell)) {
-				// Handle date type if needed (not for pinCode, but for completeness)
-				return null;
-			} else {
-				return (long) cell.getNumericCellValue(); // Convert numeric to long
-			}
-		}
+			vendorDTOList.stream().filter(v -> v.getVendorName().equals(vendorName)).findFirst().ifPresent(vendor -> {
+				VendorsStateDTO state = new VendorsStateDTO();
+				state.setState(getStringCellValue(row.getCell(0)));
+				state.setStateCode(getStringCellValue(row.getCell(1)));
+				state.setStateNo(getLongCellValue(row.getCell(2)));
+				state.setGstIn(getStringCellValue(row.getCell(3)));
+				state.setContactPerson(getStringCellValue(row.getCell(4)));
+				state.setPhoneNo(getStringCellValue(row.getCell(5)));
+				state.setEMail(getStringCellValue(row.getCell(6)));
 
-		// If the cell type is String, try parsing it
-		if (cell.getCellType() == CellType.STRING) {
-			try {
-			} catch (NumberFormatException e) {
-				// Handle invalid number format
-				return null; // or throw exception depending on your needs
-			}
+				vendor.getVendorStateDTO().add(state);
+			});
 		}
-
-		// Return null if it's neither numeric nor string
-		return null;
 	}
 
-	// Helper method to get LocalDate value from a cell (date)
-	private LocalDate getLocalDateCellValue1(Cell cell) {
-		if (cell == null) {
-			return null;
+	private void processAddressSheets(Sheet sheet, List<VendorDTO> vendorDTOList) {
+		for (Row row : sheet) {
+			if (row.getRowNum() == 0)
+				continue;
+			String vendorName = getStringCellValue(row.getCell(10));
+
+			vendorDTOList.stream().filter(v -> v.getVendorName().equals(vendorName)).findFirst().ifPresent(vendor -> {
+				VendorsAddressDTO address = new VendorsAddressDTO();
+				address.setState(getStringCellValue(row.getCell(0)));
+				address.setCity(getStringCellValue(row.getCell(1)));
+				address.setBussinesPlace(getStringCellValue(row.getCell(3)));
+				address.setGstnIn(getStringCellValue(row.getCell(2)));
+				address.setAddressType(getStringCellValue(row.getCell(4)));
+				address.setAddressLane1(getStringCellValue(row.getCell(5)));
+				address.setAddressLane2(getStringCellValue(row.getCell(6)));
+				address.setAddressLane3(getStringCellValue(row.getCell(7)));
+				address.setPinCode(getLongCellValue(row.getCell(8)));
+				address.setContact(getStringCellValue(row.getCell(9)));
+
+				vendor.getVendorAddressDTO().add(address);
+			});
 		}
+	}
+
+	private void processSpecialTds(Sheet sheet, List<VendorDTO> vendorDTOList) {
+		for (Row row : sheet) {
+			if (row.getRowNum() == 0)
+				continue;
+			String vendorName = getStringCellValue(row.getCell(8));
+
+			vendorDTOList.stream().filter(v -> v.getVendorName().equals(vendorName)).findFirst().ifPresent(vendor -> {
+				SpecialTdsDTO tds = new SpecialTdsDTO();
+				tds.setSection(getStringCellValue(row.getCell(0)));
+				tds.setWhSection(getStringCellValue(row.getCell(1)));
+				tds.setRateFrom(getLongCellValue(row.getCell(3)));
+				tds.setRateTo(getLongCellValue(row.getCell(2)));
+				tds.setWhPercentage(getBigDecimalCellValues(row.getCell(4)));
+				tds.setSurPercentage(getBigDecimalCellValues(row.getCell(5)));
+				tds.setEdPercentage(getBigDecimalCellValues(row.getCell(6)));
+				tds.setTdsCertificateNo(getStringCellValue(row.getCell(7)));
+
+				vendor.getSpecialTdsDTO().add(tds);
+			});
+		}
+	}
+
+	private void processCurrencyMapping(Sheet sheet, List<VendorDTO> vendorDTOList) {
+		for (Row row : sheet) {
+			if (row.getRowNum() == 0)
+				continue;
+			String vendorName = getStringCellValue(row.getCell(1));
+
+			vendorDTOList.stream().filter(v -> v.getVendorName().equals(vendorName)).findFirst().ifPresent(vendor -> {
+				VendorCurrencyMappingDTO cm = new VendorCurrencyMappingDTO();
+				cm.setTransCurrency(getStringCellValue(row.getCell(0)));
+
+				vendor.getVendorCurrencyMappingDTO().add(cm);
+			});
+		}
+	}
+
+	private BigDecimal getBigDecimalCellValues(Cell cell) {
+		if (cell == null || cell.getCellType() == CellType.BLANK) {
+			return BigDecimal.ZERO;
+		}
+
 		if (cell.getCellType() == CellType.NUMERIC) {
-			if (DateUtil.isCellDateFormatted(cell)) {
-				// Excel stores dates as serial numbers, convert that to LocalDate
-				return cell.getDateCellValue().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-			}
+			return BigDecimal.valueOf(cell.getNumericCellValue());
 		}
-		return null; // Return null if it's not a date or is an invalid cell type
+
+		try {
+			return new BigDecimal(cell.getStringCellValue().trim());
+		} catch (NumberFormatException e) {
+			return BigDecimal.ZERO; // Return zero if the value cannot be converted
+		}
 	}
 
 	@Override
-	public List<Map<String, Object>> getSectionNameFromTds(Long orgId, String section) {
-          Set<Object[]> chType = partyTypeRepo.getSectionNameFromTds(orgId, section);
-          return getSectionName(chType);
+	public List<Map<String, Object>> getAllPartyLedgerReport(Long orgId,String partyName,String partyType,String branch,String fromDate,String toDate) {
+		Set<Object[]> chType = partyMasterRepo.getAllPartyLedgerReport(orgId, partyName,partyType, branch, fromDate, toDate);
+		return getAllPartyLedger(chType);
 	}
-	
-	public List<Map<String,Object>> getSectionName(Set<Object[]> chType){
-		  List<Map<String,Object>> list1 =new ArrayList<>();
-		  for(Object [] ch : chType) {
-			  Map<String,Object> map = new HashMap<>();
-			  map.put("sectionName", ch[0]!=null ? ch[0].toString():"");
-			  list1.add(map);
-		  }
-		return list1;
+
+	private List<Map<String, Object>> getAllPartyLedger(Set<Object[]> chType) {
+		List<Map<String, Object>> List1 = new ArrayList<>();
+		for (Object[] ch : chType) {
+			Map<String, Object> map = new HashMap<>();
+			map.put("sno", ch[0].toString());
+			map.put("recoredid", ch[1] != null ? ch[1].toString() : "");
+			map.put("vId", ch[2] != null ? ch[2].toString() : "");
+			map.put("vDate", ch[3] != null ? ch[3].toString() : "");
+			map.put("refNo", ch[4] != null ? ch[4].toString() : "");
+			map.put("refDate", ch[5] != null ? ch[5].toString() : "");
+			map.put("supplierrefNo", ch[6] != null ? ch[6].toString() : "");
+			map.put("supplierrefDate", ch[7] != null ? ch[7].toString() : ""); // Handle as string, empty if null
+			map.put("partyCode", ch[8] != null ? ch[8].toString() : "");
+			map.put("partyName", ch[9] != null ? ch[9].toString() : "");
+			map.put("currency", ch[10] != null ? ch[10].toString() : "");
+			map.put("opbal", ch[11] != null ? new BigDecimal(ch[11].toString()) : BigDecimal.ZERO);
+			map.put("dbAmount", ch[12] != null ? new BigDecimal(ch[12].toString()) : BigDecimal.ZERO);
+			map.put("crAmount", ch[13] != null ? new BigDecimal(ch[13].toString()) : BigDecimal.ZERO);
+			map.put("billDbAmount", ch[14] != null ? new BigDecimal(ch[14].toString()) : BigDecimal.ZERO);
+			map.put("billCrAmount", ch[15] != null ? new BigDecimal(ch[15].toString()) : BigDecimal.ZERO);
+			map.put("clBal", ch[16] != null ? new BigDecimal(ch[16].toString()) : BigDecimal.ZERO);
+			List1.add(map);
+		}
+		return List1;
 	}
-	
+
+	@Override
+	public List<Map<String, Object>> getAllLedgerReport(Long orgId,String accountName, String branchCode, String fromDate, String toDate) {
+		Set<Object[]> chType = partyMasterRepo.getAllLedgerReport(orgId,accountName, branchCode, fromDate, toDate);
+		return getAllLedger(chType);
+	}
+
+	private List<Map<String, Object>> getAllLedger(Set<Object[]> chType) {
+		List<Map<String, Object>> List1 = new ArrayList<>();
+		for (Object[] ch : chType) {
+			Map<String, Object> map = new HashMap<>();
+			map.put("ids", ch[0].toString());
+			map.put("recordId", ch[1] != null ? ch[1].toString() : "");
+			map.put("branchName", ch[2] != null ? ch[2].toString() : "");
+			map.put("vDate", ch[3] != null ? ch[3].toString() : "");
+			map.put("vId", ch[4] != null ? ch[4].toString() : "");
+			map.put("partyName", ch[5] != null ? ch[5].toString() : "");
+			map.put("opbal", ch[6] != null ? new BigDecimal(ch[6].toString()) : BigDecimal.ZERO);
+			map.put("currency", ch[7] != null ? ch[7].toString() : ""); // Handle as string, empty if null
+			map.put("dbAmount", ch[8] != null ? new BigDecimal(ch[8].toString()) : BigDecimal.ZERO);
+			map.put("crAmount", ch[9] != null ? new BigDecimal(ch[9].toString()) : BigDecimal.ZERO);
+			map.put("ndAmount", ch[10] != null ? new BigDecimal(ch[10].toString()) : BigDecimal.ZERO);
+			map.put("ncAmount", ch[11] != null ? new BigDecimal(ch[11].toString()) : BigDecimal.ZERO);
+			map.put("clBal", ch[12] != null ? new BigDecimal(ch[12].toString()) : BigDecimal.ZERO);
+			List1.add(map);
+		}
+		return List1;
+	}
+
+	@Override
+	public List<Map<String, Object>> getAccountNameFromGroup(Long orgId) {
+		Set<Object[]> chType = partyMasterRepo.getAccountNameFromGroup(orgId);
+		return getAccountName(chType);
+	}
+
+	private List<Map<String, Object>> getAccountName(Set<Object[]> chType) {
+		List<Map<String, Object>> List1 = new ArrayList<>();
+		for (Object[] ch : chType) {
+			Map<String, Object> map = new HashMap<>();
+			map.put("accountName", ch[0].toString());
+			List1.add(map);
+		}
+		return List1;
+
+}
 }

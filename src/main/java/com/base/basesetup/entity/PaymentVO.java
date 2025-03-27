@@ -16,6 +16,7 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 import com.base.basesetup.dto.CreatedUpdatedDate;
+import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import lombok.AllArgsConstructor;
@@ -112,6 +113,9 @@ public class PaymentVO {
     @Column(name = "currencyamt", precision = 10, scale = 2)
     private BigDecimal currencyAmt;
     
+    @Column(name = "netamount", precision = 10, scale = 2)
+    private BigDecimal netAmount;
+    
     @Column(name = "branch", length = 25)
     private String branch;
 
@@ -141,11 +145,29 @@ public class PaymentVO {
 
     @Column(name = "screenname", length = 25)
     private String screenName = "PAYMENT";
+    
+    @Column(name="onaccount")
+    private BigDecimal onAccount;
 	
 	@OneToMany(mappedBy = "paymentVO", cascade = CascadeType.ALL)
 	@JsonManagedReference
 	private List<PaymentInvDtlsVO> paymentInvDtlsVO;
 	
+	@JsonGetter("active")
+	public String getActive() {
+		return active ? "Active" : "In-Active";
+	}
+
+	// Optionally, if you want to control serialization for 'cancel' field similarly
+	@JsonGetter("cancel")
+	public String getCancel() {
+		return cancel ? "T" : "F";
+	}
+	
+//	@OneToMany(mappedBy = "paymentVO", cascade = CascadeType.ALL)
+//	@JsonManagedReference
+//	List<TdsPaymentVO> tdsPaymentVO;
+//	
 
 	@Embedded
 	@Builder.Default

@@ -7,16 +7,18 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import com.base.basesetup.entity.CostInvoiceVO;
-import com.base.basesetup.entity.GroupLedgerVO;
 import com.base.basesetup.entity.PartyMasterVO;
 
 public interface CostInvoiceRepo extends JpaRepository<CostInvoiceVO, Long> {
 
-	@Query(nativeQuery = true, value = "select * from costinvoice where orgid=?1")
-	List<CostInvoiceVO> getAllCostInvoiceByOrgId(Long orgId);
+	@Query(nativeQuery = true, value = "select * from costinvoice where orgid=?1 and finyear=?2 and branchcode=?3")
+	List<CostInvoiceVO> getAllCostInvoiceByOrgId(Long orgId,String finYear, String branchCode);
 
 	@Query(nativeQuery = true, value = "select * from costinvoice where costinvoiceid=?1")
 	List<CostInvoiceVO> getAllCostInvoiceById(Long id);
+	
+	@Query(value = "select a from CostInvoiceVO a where a.id=?1")
+	CostInvoiceVO getCostInvoiceById(Long id);
 
 	@Query(nativeQuery = true, value = "select * from costinvoice where active = 1")
 	List<CostInvoiceVO> findCostInvoiceByActive();
@@ -60,7 +62,7 @@ public interface CostInvoiceRepo extends JpaRepository<CostInvoiceVO, Long> {
 			+ "group by businessplace")
 	Set<Object[]> getPlaceOfSupplyDetails(Long orgId, Long id, String stateCode);
 
-	@Query(nativeQuery = true, value = "SELECT jobno FROM jobcard WHERE orgid=?1 AND closed = 0 AND active=1")
+	@Query(nativeQuery = true, value = "SELECT j.jobno,j.customer FROM jobcard j WHERE orgid=?1 AND closed = 0 AND active=1 group by j.jobno,j.customer")
 	Set<Object[]> getJobNoFromTmsJobCard(Long orgId);
 
 	@Query(nativeQuery = true, value = "SELECT a.tdswithsec,a.tdswithper FROM partyspecialtds a, partymaster b WHERE a.partymasterid = b.partymasterid AND b.orgid=?1 AND b.partycode=?2")
@@ -82,5 +84,13 @@ public interface CostInvoiceRepo extends JpaRepository<CostInvoiceVO, Long> {
 
 	@Query(nativeQuery = true, value = "select accountgroupname,gstpercentage,currency from groupledger where orgid=?1 and gsttaxflag!='NA' and category='TAX' and gsttaxflag='INPUT TAX' and gsttype=?2 and gstpercentage IN(?3) order by gstpercentage desc")
 	Set<Object[]> findInterAndIntraDetailsForCostInvoice(Long orgId, String gstType, List<String> gstPercent);
+
+	@Query(nativeQuery = true, value = "select * from costinvoice where orgid=?1 and docid=?2")
+	CostInvoiceVO findByOrgIdAndDocId(Long orgId, String orginBill);
+
+	boolean existsByvIdAndOrgId(String vId, Long orgId);
+
+	@Query(nativeQuery = true,value = "select sum(amount) as totalAmount from vw_cost where orgid=?1 and (billmonth=?2 or 'ALL'=?2) and finyear=?3")
+	Set<Object[]> getDsahboardCost(Long orgId, String billMonth, String finYear);
 
 }

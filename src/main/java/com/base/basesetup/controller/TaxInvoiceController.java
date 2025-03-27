@@ -3,6 +3,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -465,6 +466,94 @@ public class TaxInvoiceController extends BaseController {
 		return ResponseEntity.ok().body(responseDTO);
 	}
 
+	@GetMapping("/getJobCardForTaxInvoice")
+	public ResponseEntity<ResponseDTO> getJobCardForTaxInvoice(@RequestParam Long orgId,@RequestParam String partyCode) {
+		String methodName = "getJobCardForTaxInvoice()";
+		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+		String errorMsg = null;
+		Map<String, Object> responseObjectsMap = new HashMap<>();
+		ResponseDTO responseDTO = null;
+		List<Map<String, Object>> mapp = new ArrayList<>();
+
+		try {
+			mapp = taxInvoiceService.getJobCardForTaxInvoice(orgId,partyCode);
+		} catch (Exception e) {
+			errorMsg = e.getMessage();
+			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+		}
+
+		if (StringUtils.isBlank(errorMsg)) {
+			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "JobCard retrieved successfully");
+			responseObjectsMap.put("taxInvoiceVO", mapp);
+			responseDTO = createServiceResponse(responseObjectsMap);
+		} else {
+			responseDTO = createServiceResponseError(responseObjectsMap, "Failed to retrieve JobCard", errorMsg);
+		}
+
+		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+		return ResponseEntity.ok().body(responseDTO);
+	}
+
 	
+	//ReportSalesRegister
+	
+	@GetMapping("/getReportDetailsForSalesRegister")
+	public ResponseEntity<ResponseDTO> getReportDetailsForSalesRegister(@RequestParam(required = false) String fromDate,
+	        @RequestParam(required = false) String toDate ,@RequestParam(required =false) Long orgId,@RequestParam(required =false) String branchCode,@RequestParam(required =false) String partyCode) {
+		String methodName = "getReportDetailsForSalesRegister()";
+		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+		String errorMsg = null;
+		Map<String, Object> responseObjectsMap = new HashMap<>();
+		ResponseDTO responseDTO = null;
+		List<Map<String, Object>> mapp = new ArrayList<>();
+
+		try {
+			mapp = taxInvoiceService.getReportDetailsForSalesRegister(fromDate,toDate,orgId,branchCode,partyCode);
+		} catch (Exception e) {
+			errorMsg = e.getMessage();
+			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+		}
+
+		if (StringUtils.isBlank(errorMsg)) {
+			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "SalesRegisterReport retrieved successfully");
+			responseObjectsMap.put("taxInvoiceVO", mapp);
+			responseDTO = createServiceResponse(responseObjectsMap);
+		} else {
+			responseDTO = createServiceResponseError(responseObjectsMap, "Failed to retrieve SalesRegisterReport", errorMsg);
+		}
+
+		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+		return ResponseEntity.ok().body(responseDTO);
+	}
+
+	@GetMapping("/getDsahboardRevenue")
+	public ResponseEntity<ResponseDTO> getDsahboardRevenue(@RequestParam(required =false) Long orgId,@RequestParam (required =false) String billMonth,
+			@RequestParam (required =false) String finYear) {
+		String methodName = "getDsahboardRevenue()";
+		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+		String errorMsg = null;
+		Map<String, Object> responseObjectsMap = new HashMap<>();
+		ResponseDTO responseDTO = null;
+		List<Map<String, Object>> mapp = new ArrayList<>();
+
+		try {
+			mapp = taxInvoiceService.getDsahboardRevenue(orgId,billMonth,finYear);
+		} catch (Exception e) {
+			errorMsg = e.getMessage();
+			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+		}
+
+		if (StringUtils.isBlank(errorMsg)) {
+			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "Revenue retrieved successfully");
+			responseObjectsMap.put("taxInvoiceVO", mapp);
+			responseDTO = createServiceResponse(responseObjectsMap);
+		} else {
+			responseDTO = createServiceResponseError(responseObjectsMap, "Revenue to retrieve JobCard", errorMsg);
+		}
+
+		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+		return ResponseEntity.ok().body(responseDTO);
+	}
+
 
 }

@@ -52,6 +52,8 @@ public class UserVO {
 	private String nickName;
 	@Column(name = "email")
 	private String email;
+	@Column(name = "finyear")
+	private String finYear;
 	@Column(name = "orgid")
 	private Long orgId;
 	@Column(name = "mobileno")

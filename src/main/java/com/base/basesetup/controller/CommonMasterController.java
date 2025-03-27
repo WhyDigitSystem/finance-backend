@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.base.basesetup.common.CommonConstant;
 import com.base.basesetup.common.UserConstants;
@@ -37,6 +38,7 @@ import com.base.basesetup.dto.RegionDTO;
 import com.base.basesetup.dto.ResponseDTO;
 import com.base.basesetup.dto.ScreenNamesDTO;
 import com.base.basesetup.dto.StateDTO;
+import com.base.basesetup.entity.BankDetailsVO;
 import com.base.basesetup.entity.CityVO;
 import com.base.basesetup.entity.CompanyVO;
 import com.base.basesetup.entity.CountryVO;
@@ -643,6 +645,32 @@ public class CommonMasterController extends BaseController {
 		return ResponseEntity.ok().body(responseDTO);
 	}
 
+	@PostMapping("/uploadCompanyLogoInBloob")
+	public ResponseEntity<ResponseDTO> uploadCompanyLogoInBloob(@RequestParam("file") MultipartFile file,
+			@RequestParam Long id) {
+		String methodName = "uploadCompanyLogoInBloob()";
+		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+		String errorMsg = null;
+		Map<String, Object> responseObjectsMap = new HashMap<>();
+		ResponseDTO responseDTO = null;
+		CompanyVO companyVO = null;
+		try {
+			companyVO = commonMasterService.uploadCompanyLogoInBloob(file, id);
+		} catch (Exception e) {
+			errorMsg = e.getMessage();
+			LOGGER.error("Unable To Upload PartImage", methodName, errorMsg);
+		}
+		if (StringUtils.isBlank(errorMsg)) {
+			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "Company Logo Successfully Upload");
+			responseObjectsMap.put("companyVO", companyVO);
+			responseDTO = createServiceResponse(responseObjectsMap);
+		} else {
+			responseDTO = createServiceResponseError(responseObjectsMap, "Company Logo Upload Failed", errorMsg);
+		}
+		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+		return ResponseEntity.ok().body(responseDTO);
+	}
+	
 	// FINANCIAL YEAR
 
 	@PutMapping("/createUpdateFinYear")
@@ -1055,5 +1083,30 @@ public class CommonMasterController extends BaseController {
 		return ResponseEntity.ok().body(responseDTO);
 	}
 	
-
+	@GetMapping("getBankDetailsByOrgId")
+	public ResponseEntity<ResponseDTO> getCompanyByOrgId(@RequestParam Long orgId) {
+		String methodName = "getCompanyByOrgId()";
+		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+		String errorMsg = null;
+		Map<String, Object> responseObjectsMap = new HashMap<>();
+		ResponseDTO responseDTO = null;
+		List<Map<String, Object>> bankDetailsVO = new ArrayList<>();
+		try {
+			bankDetailsVO = commonMasterService.getCompanyByOrgId(orgId);
+		} catch (Exception e) {
+			errorMsg = e.getMessage();
+			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+		}
+		if (StringUtils.isEmpty(errorMsg)) {
+			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "Bank Details found by ID");
+			responseObjectsMap.put("bankDetailsVO", bankDetailsVO);
+			responseDTO = createServiceResponse(responseObjectsMap);
+		} else {
+			errorMsg = "Bank Details not found for ID: " + orgId;
+			responseDTO = createServiceResponseError(responseObjectsMap, "Bank Details not found", errorMsg);
+		}
+		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+		return ResponseEntity.ok().body(responseDTO);
+	}
+	
 }

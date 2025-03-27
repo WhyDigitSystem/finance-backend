@@ -4,7 +4,8 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
-import javax.persistence.Column;
+import com.base.basesetup.entity.ChargerCostDebitNoteVO;
+import com.base.basesetup.entity.TdsCostDebitNoteVO;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -47,11 +48,15 @@ public class CostDebitNoteDTO {
 	private String payment;
 	private String accuralid;
 	private String utrRef;
-	private String costType;
+//	private String costType;
 	private boolean approved;
+	private String vId;
+	private LocalDate vDate;
 
 	private String orginBill;
 	private LocalDate originBillDate;
+	private String purVoucherNo;
+	private LocalDate purVoucherDate;
 //	private String subType;
 //	private String partyType;
 //	private String suppRefNo;
@@ -65,8 +70,8 @@ public class CostDebitNoteDTO {
 //	private BigDecimal currentDateValue;
 //	private String partyAddType;
 
-	private List<ChargerCostDebitNoteDTO> costDebitChargesDTO;
+	List<ChargerCostDebitNoteDTO> chargerCostDebitNoteDTO;
 
-	private List<TdsCostDebitNoteDTO> costDebitNoteTaxPrtculDTO;
+	List<TdsCostDebitNoteDTO> tdsCostDebitNoteDTO;
 
 }
