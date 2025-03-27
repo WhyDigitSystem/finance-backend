@@ -81,14 +81,7 @@ public class PaymentInvDtlsVO {
 	@Column(name = "gainorlossamt", precision = 10, scale = 2)
 	private BigDecimal gainOrLossAmt;
 
-	@Column(name = "remarks", length = 150)
-	private String remarks;
 
-	@Column(name = "fromdate")
-	private LocalDate fromDate;
-
-	@Column(name = "todate")
-	private LocalDate toDate;
 
 	@ManyToOne
 	@JoinColumn(name = "paymentid")

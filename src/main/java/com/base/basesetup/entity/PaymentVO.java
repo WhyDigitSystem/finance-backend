@@ -100,9 +100,6 @@ public class PaymentVO {
 
     @Column(name = "tdsacc", length = 50)
     private String tdsAcc;
-
-    @Column(name = "receiptamt", precision = 10, scale = 2)
-    private BigDecimal receiptAmt;
     
     @Column(name = "tdsamt", precision = 10, scale = 2)
     private BigDecimal tdsAmt;
