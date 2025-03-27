@@ -460,7 +460,10 @@ public class ReportServiceImpl implements ReportService{
 				doctype.put("arapAmt", sup[19] != null ? new BigDecimal(sup[19].toString()) : BigDecimal.ZERO);
 				doctype.put("chargableAmt", sup[20] != null ? new BigDecimal(sup[20].toString()) : BigDecimal.ZERO);
 				doctype.put("arApOutstanding", sup[21] != null ? sup[21].toString() : "");
+
 				doctype.put("arapSettled", sup[22] != null ? new BigDecimal(sup[22].toString()) : BigDecimal.ZERO);
+
+			
 				
 				
 				doctypeMappingDetails.add(doctype);

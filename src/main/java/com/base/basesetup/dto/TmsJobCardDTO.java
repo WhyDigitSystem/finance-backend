@@ -33,6 +33,7 @@ public class TmsJobCardDTO {
 	private String details;
 	private String refNo;
 	private String refDate;
+	private String service;
 
 	private Long orgId;
 	private String branch;
