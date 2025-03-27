@@ -44,7 +44,7 @@ public class PaymentVO {
     @Column(name = "paymenttype", length = 20)
     private String paymentType;
 
-    @Column(name = "bankchargeacc", length = 50)
+    @Column(name = "bankchargeacc", length = 100)
     private String bankChargeAcc;
 
     @Column(name = "docid", length = 50)
@@ -83,7 +83,7 @@ public class PaymentVO {
     @Column(name = "gstin", length = 50)
     private String gstIn;
 
-    @Column(name = "chequeno", length = 20)
+    @Column(name = "chequeno", length = 250)
     private String chequeNo;
 
     @Column(name = "chequedate")

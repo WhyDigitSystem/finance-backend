@@ -393,9 +393,8 @@ public class APServiceImpl implements APService {
 	}
 
 	@Override
-	public List<Map<String, Object>> getPartyNameAndCodeForPayment(Long orgId, String partyName, String branch,
-			String finYear) {
-		Set<Object[]> partyName1 = paymentRepo.findPartyNameAndCodeForPayment(orgId, partyName, branch, finYear);
+	public List<Map<String, Object>> getPartyNameAndCodeForPayment(Long orgId, String partyName) {
+		Set<Object[]> partyName1 = paymentRepo.findPartyNameAndCodeForPayment(orgId, partyName);
 		return getPartyName(partyName1);
 	}
 
@@ -408,7 +407,6 @@ public class APServiceImpl implements APService {
 			doctype.put("currency", sup[2] != null ? sup[2].toString() : "");
 			doctype.put("stateCode", sup[3] != null ? sup[3].toString() : "");
 			doctype.put("gstin", sup[4] != null ? sup[4].toString() : "");
-			doctype.put("rate", sup[5] != null ? sup[5].toString() : "");
 
 			doctypeMappingDetails.add(doctype);
 		}
@@ -477,8 +475,8 @@ public class APServiceImpl implements APService {
 	}
 
 	@Override
-	public List<Map<String, Object>> getPartyNameAndPartyCode(Long orgId, String branch, String finYear) {
-		Set<Object[]> group = paymentRepo.findPartyNameAndPartyCode(orgId, branch, finYear);
+	public List<Map<String, Object>> getPartyNameAndPartyCode(Long orgId) {
+		Set<Object[]> group = paymentRepo.findPartyNameAndPartyCode(orgId);
 		return getPartyName1(group);
 	}
 

@@ -426,38 +426,38 @@ public class ReportServiceImpl implements ReportService{
 			return declarationAndNotesRepo.findAll();
 		}
 
-		@Override
-		public List<Map<String, Object>> getReceiptRegisterReport(Long orgId, String partyName, String branchCode,
-				String finYear, String fromDate, String toDate) {
-			Set<Object[]> register = receiptRepo.getReceiptRegisterReport(orgId, partyName,branchCode,finYear,fromDate,toDate);
-			return getReceiptRegister(register);
-		}
-
-		private List<Map<String, Object>> getReceiptRegister(Set<Object[]> getRegister) {
-			List<Map<String, Object>> doctypeMappingDetails = new ArrayList<>();
-			for (Object[] sup : getRegister) {
-				Map<String, Object> doctype = new HashMap<>();
-				doctype.put("arapDetailsId", sup[0] != null ? sup[0].toString() : "");
-				doctype.put("branch", sup[1] != null ? sup[1].toString() : "");
-				doctype.put("subLedgerCode", sup[2] != null ? sup[2].toString() : "");
-				doctype.put("vId", sup[3] != null ? sup[3].toString() : "");
-				doctype.put("vDatae", sup[4] != null ? sup[4].toString() : "");
-				doctype.put("refNo", sup[5] != null ? sup[5].toString() : "");
-				doctype.put("refDate", sup[6] != null ? sup[6].toString() : "");
-				doctype.put("supprefNo", sup[7] != null ? sup[7].toString() : "");
-				doctype.put("supprefDate", sup[8] != null ? sup[8].toString() : "");
-				doctype.put("acccurrency", sup[9] != null ? sup[9].toString() : "");
-				doctype.put("amount", sup[10] != null ? sup[10].toString() : "");
-				doctype.put("arapSettled", sup[11] != null ? sup[11].toString() : "");
-				doctype.put("chargableAmt", sup[12] != null ? sup[12].toString() : "");
-				doctype.put("tdsAmt", sup[13] != null ? sup[13].toString() : "");
-
-				doctypeMappingDetails.add(doctype);
-			}
-
-			return doctypeMappingDetails;
-		}
-		
+//		@Override
+//		public List<Map<String, Object>> getReceiptRegisterReport(Long orgId, String partyName, String branchCode,
+//				String finYear, String fromDate, String toDate) {
+//			Set<Object[]> register = receiptRepo.getReceiptRegisterReport(orgId, partyName,branchCode,finYear,fromDate,toDate);
+//			return getReceiptRegister(register);
+//		}
+//
+//		private List<Map<String, Object>> getReceiptRegister(Set<Object[]> getRegister) {
+//			List<Map<String, Object>> doctypeMappingDetails = new ArrayList<>();
+//			for (Object[] sup : getRegister) {
+//				Map<String, Object> doctype = new HashMap<>();
+//				doctype.put("arapDetailsId", sup[0] != null ? sup[0].toString() : "");
+//				doctype.put("branch", sup[1] != null ? sup[1].toString() : "");
+//				doctype.put("subLedgerCode", sup[2] != null ? sup[2].toString() : "");
+//				doctype.put("vId", sup[3] != null ? sup[3].toString() : "");
+//				doctype.put("vDatae", sup[4] != null ? sup[4].toString() : "");
+//				doctype.put("refNo", sup[5] != null ? sup[5].toString() : "");
+//				doctype.put("refDate", sup[6] != null ? sup[6].toString() : "");
+//				doctype.put("supprefNo", sup[7] != null ? sup[7].toString() : "");
+//				doctype.put("supprefDate", sup[8] != null ? sup[8].toString() : "");
+//				doctype.put("acccurrency", sup[9] != null ? sup[9].toString() : "");
+//				doctype.put("amount", sup[10] != null ? sup[10].toString() : "");
+//				doctype.put("arapSettled", sup[11] != null ? sup[11].toString() : "");
+//				doctype.put("chargableAmt", sup[12] != null ? sup[12].toString() : "");
+//				doctype.put("tdsAmt", sup[13] != null ? sup[13].toString() : "");
+//
+//				doctypeMappingDetails.add(doctype);
+//			}
+//
+//			return doctypeMappingDetails;
+//		}
+//		
 		
 
 		@Override
