@@ -101,6 +101,14 @@ public class ARServiceImpl implements ARService {
 			createUpdateReceiptVOByReceiptDTO(receiptDTO, receiptVO);
 			message = "Receipt Created Successfully";
 		}
+		
+		// Validate receipt amount and settled amount
+	    BigDecimal receiptAmt = receiptVO.getReceiptAmt();
+	    BigDecimal settledAmt = receiptVO.getNetAmount();
+
+	    if (settledAmt.compareTo(receiptAmt) > 0) {
+	        throw new ApplicationException("Settled amount cannot be greater than Receipt amount!");
+	    }
 
 	    ReceiptVO savedReceiptVO =receiptRepo.save(receiptVO);
 		
@@ -112,6 +120,7 @@ public class ARServiceImpl implements ARService {
 					arapadjustments.setFinYear(savedReceiptVO.getFinYear());
 					arapadjustments.setSourceId(savedReceiptVO.getId());
 					arapadjustments.setDocId(savedReceiptVO.getDocId());
+					arapadjustments.setTdsAmt(savedReceiptVO.getTdsAmt());
 					arapadjustments.setRefNo(savedReceiptInvDetails.getInvNo());
 					arapadjustments.setRefDate(savedReceiptInvDetails.getInvDate());
 //					arapadjustments.setAccountName(savedReceiptVO.getS());
@@ -205,7 +214,7 @@ public class ARServiceImpl implements ARService {
 				receiptInvDetailsVO.setChargeAmt(receiptInvDetailsDTO.getChargeAmt());
 				receiptInvDetailsVO.setOutstanding(receiptInvDetailsDTO.getOutstanding());
 
-				BigDecimal settledAmount = receiptInvDetailsDTO.getAmount() != null ? receiptInvDetailsDTO.getAmount()
+				BigDecimal settledAmount = receiptInvDetailsDTO.getSettled() != null ? receiptInvDetailsDTO.getSettled()
 						: BigDecimal.ZERO;
 
 				receiptInvDetailsVO.setSettled(settledAmount);
