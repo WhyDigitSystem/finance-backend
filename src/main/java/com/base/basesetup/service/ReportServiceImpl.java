@@ -437,21 +437,32 @@ public class ReportServiceImpl implements ReportService{
 			List<Map<String, Object>> doctypeMappingDetails = new ArrayList<>();
 			for (Object[] sup : getRegister) {
 				Map<String, Object> doctype = new HashMap<>();
-				doctype.put("arapDetailsId", sup[0] != null ? sup[0].toString() : "");
-				doctype.put("branch", sup[1] != null ? sup[1].toString() : "");
-				doctype.put("subLedgerCode", sup[2] != null ? sup[2].toString() : "");
-				doctype.put("vId", sup[3] != null ? sup[3].toString() : "");
-				doctype.put("vDatae", sup[4] != null ? sup[4].toString() : "");
-				doctype.put("refNo", sup[5] != null ? sup[5].toString() : "");
-				doctype.put("refDate", sup[6] != null ? sup[6].toString() : "");
-				doctype.put("supprefNo", sup[7] != null ? sup[7].toString() : "");
-				doctype.put("supprefDate", sup[8] != null ? sup[8].toString() : "");
-				doctype.put("acccurrency", sup[9] != null ? sup[9].toString() : "");
-				doctype.put("amount", sup[10] != null ? sup[10].toString() : "");
-				doctype.put("arapSettled", sup[11] != null ? sup[11].toString() : "");
-				doctype.put("chargableAmt", sup[12] != null ? sup[12].toString() : "");
-				doctype.put("tdsAmt", sup[13] != null ? sup[13].toString() : "");
-
+				doctype.put("orgId", sup[0] != null ? sup[0].toString() : "");
+				doctype.put("branchCode", sup[1] != null ? sup[1].toString() : "");
+				doctype.put("finYear", sup[2] != null ? sup[2].toString() : "");
+				doctype.put("createdBy", sup[3] != null ? sup[3].toString() : "");
+				doctype.put("createdOn", sup[4] != null ? sup[4].toString() : "");
+				doctype.put("docId", sup[5] != null ? sup[5].toString() : "");
+				doctype.put("docDate", sup[6] != null ? sup[6].toString() : "");
+				doctype.put("subTypeCode", sup[7] != null ? sup[7].toString() : "");
+				doctype.put("chequeBank", sup[8] != null ? sup[8].toString() : "");
+				doctype.put("chQnNumber", sup[9] != null ? sup[9].toString() : "");
+				doctype.put("subLedgerCode", sup[10] != null ? sup[10].toString() : "");
+				doctype.put("subLedgerName", sup[11] != null ? sup[11].toString() : "");
+				doctype.put("receiptAmount", sup[12] != null ? sup[12].toString() : "");
+				doctype.put("bankChargesAmt", sup[13] != null ? sup[13].toString() : "");
+				doctype.put("tdsAmt", sup[14] != null ? sup[14].toString() : "");
+				doctype.put("invoiceNo", sup[15] != null ? sup[15].toString() : "");
+				doctype.put("invoiceDate", sup[16] != null ? sup[16].toString() : "");
+				doctype.put("refNo", sup[17] != null ? sup[17].toString() : "");
+				doctype.put("refDate", sup[18] != null ? sup[18].toString() : "");
+				doctype.put("arapAmt", sup[19] != null ? sup[19].toString() : "");
+				doctype.put("chargableAmt", sup[20] != null ? sup[20].toString() : "");
+				doctype.put("arApOutstanding", sup[21] != null ? sup[21].toString() : "");
+				doctype.put("arapSettled", sup[22] != null ? sup[22].toString() : "");
+				doctype.put("finYear", sup[23] != null ? sup[23].toString() : "");
+				
+				
 				doctypeMappingDetails.add(doctype);
 			}
 
