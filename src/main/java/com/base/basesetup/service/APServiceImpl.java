@@ -389,6 +389,7 @@ public class APServiceImpl implements APService {
 			doctype.put("currency", sup[2] != null ? sup[2].toString() : "");
 			doctype.put("stateCode", sup[3] != null ? sup[3].toString() : "");
 			doctype.put("gstin", sup[4] != null ? sup[4].toString() : "");
+			doctype.put("gstin", sup[4] != null ? sup[4].toString() : "");
 			
 			
 			doctypeMappingDetails.add(doctype);
