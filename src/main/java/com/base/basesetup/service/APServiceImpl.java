@@ -183,7 +183,7 @@ public class APServiceImpl implements APService {
 			paymentInvDtlsRepo.deleteAll(paymentInvDtlsVOList);
 		}
 
-		BigDecimal netAmount = BigDecimal.ZERO;
+		BigDecimal netAmount = BigDecimal.ZERO; 
 		BigDecimal onAccount = BigDecimal.ZERO;
 
 		List<PaymentInvDtlsVO> paymentInvDtlsVOs = new ArrayList<>();
@@ -202,6 +202,7 @@ public class APServiceImpl implements APService {
 				paymentInvDtlsVO.setExRate(paymentInvDtlsDTO.getExRate());
 
 				BigDecimal paymentAmt = paymentDTO.getPaymentAmt();
+
 
 
 				paymentInvDtlsVO.setAmount(paymentInvDtlsDTO.getAmount());
