@@ -72,6 +72,8 @@ public class JobCardVO {
 	private String refNo;
 	@Column(name = "refdate", length = 50)
 	private String refDate;
+	@Column(name = "service")
+	private String service;
 
 
 	// default fields
