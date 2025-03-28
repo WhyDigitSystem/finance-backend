@@ -183,7 +183,7 @@ public class APServiceImpl implements APService {
 			paymentInvDtlsRepo.deleteAll(paymentInvDtlsVOList);
 		}
 
-		BigDecimal netAmount = BigDecimal.ZERO;
+		BigDecimal netAmount = BigDecimal.ZERO; 
 		BigDecimal onAccount = BigDecimal.ZERO;
 
 		List<PaymentInvDtlsVO> paymentInvDtlsVOs = new ArrayList<>();
@@ -203,10 +203,10 @@ public class APServiceImpl implements APService {
 
 				BigDecimal paymentAmt = paymentDTO.getPaymentAmt();
 
-				// Check if settled amount does not exceed the paymentAmt
-				if (paymentAmt.compareTo(paymentInvDtlsDTO.getAmount()) < 0) {
-					throw new ApplicationException("Amount in child table exceeds the payment amount");
-				}
+//				// Check if settled amount does not exceed the paymentAmt
+//				if (paymentAmt.compareTo(paymentInvDtlsDTO.getAmount()) < 0) {
+//					throw new ApplicationException("Amount in child table exceeds the payment amount");
+//				}
 
 				paymentInvDtlsVO.setAmount(paymentInvDtlsDTO.getAmount());
 

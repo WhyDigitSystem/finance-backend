@@ -351,34 +351,34 @@ public class ReportController extends BaseController{
 			return ResponseEntity.ok().body(responseDTO);
 
 		}
-//
-//		// Receipt Register
-//				@GetMapping("/getReceiptRegisterReport")
-//				public ResponseEntity<ResponseDTO> getReceiptRegisterReport(@RequestParam Long orgId, @RequestParam String partyName,@RequestParam String branchCode,
-//						@RequestParam String finYear,@RequestParam(required = false) String fromDate,@RequestParam(required = false) String toDate) {
-//					String methodName = "getReceiptRegisterReport()";
-//					LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
-//					String errorMsg = null;
-//					Map<String, Object> responseObjectsMap = new HashMap<>();
-//					ResponseDTO responseDTO = null;
-//					List<Map<String, Object>> reciptReport = new ArrayList<>();
-//					try {
-//						reciptReport = reportService.getReceiptRegisterReport(orgId,partyName,branchCode,finYear,fromDate,toDate);
-//					} catch (Exception e) {
-//						errorMsg = e.getMessage();
-//						LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
-//					}
-//					if (StringUtils.isBlank(errorMsg)) {
-//						responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "Receipt information get successfully");
-//						responseObjectsMap.put("reciptReport", reciptReport);
-//						responseDTO = createServiceResponse(responseObjectsMap);
-//					} else {
-//						responseDTO = createServiceResponseError(responseObjectsMap, "Receipt information receive failed",
-//								errorMsg);
-//					}
-//					LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
-//					return ResponseEntity.ok().body(responseDTO);
-//				}
+
+		// Receipt Register
+				@GetMapping("/getReceiptRegisterReport")
+				public ResponseEntity<ResponseDTO> getReceiptRegisterReport(@RequestParam Long orgId, @RequestParam String partyName,@RequestParam String branchCode,
+						@RequestParam String finYear,@RequestParam(required = false) String fromDate,@RequestParam(required = false) String toDate) {
+					String methodName = "getReceiptRegisterReport()";
+					LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+					String errorMsg = null;
+					Map<String, Object> responseObjectsMap = new HashMap<>();
+					ResponseDTO responseDTO = null;
+					List<Map<String, Object>> reciptReport = new ArrayList<>();
+					try {
+						reciptReport = reportService.getReceiptRegisterReport(orgId,partyName,branchCode,finYear,fromDate,toDate);
+					} catch (Exception e) {
+						errorMsg = e.getMessage();
+						LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+					}
+					if (StringUtils.isBlank(errorMsg)) {
+						responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "Receipt information get successfully");
+						responseObjectsMap.put("reciptReport", reciptReport);
+						responseDTO = createServiceResponse(responseObjectsMap);
+					} else {
+						responseDTO = createServiceResponseError(responseObjectsMap, "Receipt information receive failed",
+								errorMsg);
+					}
+					LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+					return ResponseEntity.ok().body(responseDTO);
+				}
 				
 				@PutMapping("/createUpdateQuotatio")
 				public ResponseEntity<ResponseDTO> createUpdateQuotatio(@RequestBody QuotationDTO quotationDTO) {

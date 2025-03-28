@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.base.basesetup.dto.ArBillBalanceDTO;
+import com.base.basesetup.dto.PaymentInvDtlsDTO;
 import com.base.basesetup.dto.ReceiptDTO;
 import com.base.basesetup.dto.ReceiptInvDetailsDTO;
 import com.base.basesetup.entity.ArBillBalanceVO;
@@ -46,10 +47,9 @@ public class ARServiceImpl implements ARService {
 
 	@Autowired
 	DocumentTypeMappingDetailsRepo documentTypeMappingDetailsRepo;
-	
+
 	@Autowired
 	ArapAdjustmentsRepo arapAdjustmentsRepo;
-	
 
 	// Receipt
 	@Override
@@ -101,53 +101,54 @@ public class ARServiceImpl implements ARService {
 			createUpdateReceiptVOByReceiptDTO(receiptDTO, receiptVO);
 			message = "Receipt Created Successfully";
 		}
-		
-		// Validate receipt amount and settled amount
-	    BigDecimal receiptAmt = receiptVO.getReceiptAmt();
-	    BigDecimal settledAmt = receiptVO.getNetAmount();
 
-	    if (settledAmt.compareTo(receiptAmt) > 0) {
-	        throw new ApplicationException("Settled amount cannot be greater than Receipt amount!");
-	    }
+//		// Validate receipt amount and settled amount
+//		BigDecimal receiptAmt = receiptVO.getReceiptAmt();
+//		BigDecimal settledAmt = receiptVO.getNetAmount();
 
-	    ReceiptVO savedReceiptVO =receiptRepo.save(receiptVO);
-		
+		BigDecimal netAmount = BigDecimal.ZERO;
+		if (netAmount.compareTo(receiptVO.getReceiptAmt()) > 0) {
+			throw new ApplicationException("Total Settled Amount should not be greater than Payment Amount");
+		}
+
+		ReceiptVO savedReceiptVO = receiptRepo.save(receiptVO);
+
 		List<ReceiptInvDetailsVO> savedReceiptInvDetailsVO = savedReceiptVO.getReceiptInvDetailsVO();
 		if (savedReceiptInvDetailsVO != null && !savedReceiptInvDetailsVO.isEmpty()) {
-				for (ReceiptInvDetailsVO savedReceiptInvDetails : savedReceiptInvDetailsVO) {
-					ArapAdjustmentsVO arapadjustments = new ArapAdjustmentsVO();
-					arapadjustments.setBranch(savedReceiptVO.getBranch());
-					arapadjustments.setFinYear(savedReceiptVO.getFinYear());
-					arapadjustments.setSourceId(savedReceiptVO.getId());
-					arapadjustments.setDocId(savedReceiptVO.getDocId());
-					arapadjustments.setTdsAmt(savedReceiptVO.getTdsAmt());
-					arapadjustments.setRefNo(savedReceiptInvDetails.getInvNo());
-					arapadjustments.setRefDate(savedReceiptInvDetails.getInvDate());
+			for (ReceiptInvDetailsVO savedReceiptInvDetails : savedReceiptInvDetailsVO) {
+				ArapAdjustmentsVO arapadjustments = new ArapAdjustmentsVO();
+				arapadjustments.setBranch(savedReceiptVO.getBranch());
+				arapadjustments.setFinYear(savedReceiptVO.getFinYear());
+				arapadjustments.setSourceId(savedReceiptVO.getId());
+				arapadjustments.setDocId(savedReceiptVO.getDocId());
+				arapadjustments.setTdsAmt(savedReceiptVO.getTdsAmt());
+				arapadjustments.setRefNo(savedReceiptInvDetails.getInvNo());
+				arapadjustments.setRefDate(savedReceiptInvDetails.getInvDate());
 //					arapadjustments.setAccountName(savedReceiptVO.getS());
-					arapadjustments.setCurrency(savedReceiptVO.getCurrency());
+				arapadjustments.setCurrency(savedReceiptVO.getCurrency());
 //					arapadjustments.setAccCurrency(savedReceiptVO.getAcpdatedBy());
-					arapadjustments.setBaseAmt(savedReceiptInvDetails.getSettled());
-					arapadjustments.setNativeAmt(savedReceiptInvDetails.getSettled());
+				arapadjustments.setBaseAmt(savedReceiptInvDetails.getSettled());
+				arapadjustments.setNativeAmt(savedReceiptInvDetails.getSettled());
 //					arapadjustments.setOffDocId(savedGrnVO.getSupplierName());
-					arapadjustments.setVoucherType(savedReceiptVO.getType());
-					arapadjustments.setSubLedgerCode(savedReceiptVO.getCustomerCode());
-					arapadjustments.setExRate(savedReceiptInvDetails.getExRate());
+				arapadjustments.setVoucherType(savedReceiptVO.getType());
+				arapadjustments.setSubLedgerCode(savedReceiptVO.getCustomerCode());
+				arapadjustments.setExRate(savedReceiptInvDetails.getExRate());
 //					arapadjustments.setCreditDays(savedGrnVO.getNetAmount());
 //					arapadjustments.setDueDate(detailsVO.getStatus());	
-					
-					arapadjustments.setOrgId(savedReceiptVO.getOrgId());
-					arapadjustments.setActive(savedReceiptVO.isActive());
-					arapadjustments.setCancel(savedReceiptVO.isCancel());
-					arapadjustments.setCreatedBy(savedReceiptVO.getCreatedBy());
-					arapadjustments.setUpdatedBy(savedReceiptVO.getUpdatedBy());
-					arapadjustments.setBranchCode(savedReceiptVO.getBranchCode());
-					arapadjustments.setSubLedgerName(savedReceiptVO.getCustomerName());
-					arapadjustments.setAmount(savedReceiptInvDetails.getSettled());
-					arapadjustments.setSubLedgerName(savedReceiptVO.getCustomerName());
-					arapAdjustmentsRepo.save(arapadjustments);
-				}
+
+				arapadjustments.setOrgId(savedReceiptVO.getOrgId());
+				arapadjustments.setActive(savedReceiptVO.isActive());
+				arapadjustments.setCancel(savedReceiptVO.isCancel());
+				arapadjustments.setCreatedBy(savedReceiptVO.getCreatedBy());
+				arapadjustments.setUpdatedBy(savedReceiptVO.getUpdatedBy());
+				arapadjustments.setBranchCode(savedReceiptVO.getBranchCode());
+				arapadjustments.setSubLedgerName(savedReceiptVO.getCustomerName());
+				arapadjustments.setAmount(savedReceiptInvDetails.getSettled());
+				arapadjustments.setSubLedgerName(savedReceiptVO.getCustomerName());
+				arapAdjustmentsRepo.save(arapadjustments);
 			}
-	
+		}
+
 		Map<String, Object> response = new HashMap<>();
 		response.put("receiptVO", receiptVO);
 		response.put("message", message);
@@ -193,8 +194,12 @@ public class ARServiceImpl implements ARService {
 			receiptInvDetailsRepo.deleteAll(receiptInvDetailsVO1);
 		}
 
-		List<ReceiptInvDetailsVO> receiptInvDetailsVOs = new ArrayList<>();
 		BigDecimal onaccount = BigDecimal.ZERO; // Initialize onAccount
+		BigDecimal netAmount = BigDecimal.ZERO;
+
+		List<ReceiptInvDetailsVO> receiptInvDetailsVOs = new ArrayList<>();
+
+		BigDecimal totalSettled = BigDecimal.ZERO;
 		// BigDecimal onaccount1 = BigDecimal.ZERO; // Initialize onAccount
 		List<ReceiptInvDetailsDTO> receiptDetailsList = receiptDTO.getReceiptInvDetailaDTO();
 		BigDecimal receiptAmount = receiptDTO.getReceiptAmt(); // Assign receipt amount
@@ -214,10 +219,20 @@ public class ARServiceImpl implements ARService {
 				receiptInvDetailsVO.setChargeAmt(receiptInvDetailsDTO.getChargeAmt());
 				receiptInvDetailsVO.setOutstanding(receiptInvDetailsDTO.getOutstanding());
 
-				BigDecimal settledAmount = receiptInvDetailsDTO.getSettled() != null ? receiptInvDetailsDTO.getSettled()
-						: BigDecimal.ZERO;
+				BigDecimal receiptAmt = receiptDTO.getReceiptAmt();
 
-				receiptInvDetailsVO.setSettled(settledAmount);
+				receiptInvDetailsVO.setAmount(receiptInvDetailsDTO.getAmount());
+
+				netAmount = receiptDTO.getReceiptInvDetailaDTO().stream().map(ReceiptInvDetailsDTO::getSettled)
+						.reduce(BigDecimal.ZERO, BigDecimal::add);
+				totalSettled = totalSettled.add(receiptInvDetailsDTO.getSettled());
+
+				// BigDecimal totalSettled1 = receiptInvDetailsDTO.getSettled() != null ?
+				// receiptInvDetailsDTO.getSettled()
+				// : BigDecimal.ZERO;
+				onaccount = receiptAmt.subtract(totalSettled);
+				receiptInvDetailsVO.setSettled(totalSettled);
+				receiptInvDetailsVO.setSettled(receiptInvDetailsDTO.getSettled());
 				receiptInvDetailsVO.setRecExRate(receiptInvDetailsDTO.getRecExRate());
 				receiptInvDetailsVO.setTxnSettled(receiptInvDetailsDTO.getTxnSettled());
 				receiptInvDetailsVO.setGainAmt(receiptInvDetailsDTO.getGainAmt());
@@ -225,23 +240,16 @@ public class ARServiceImpl implements ARService {
 				receiptInvDetailsVO.setReceiptVO(receiptVO);
 				receiptInvDetailsVOs.add(receiptInvDetailsVO);
 
-				onaccount = onaccount.add(settledAmount);
-
 			}
 
-			System.out.println("AMount in total :"+onaccount);
-			receiptVO.setNetAmount(onaccount);
-			onaccount = receiptAmount.subtract(onaccount);
+			receiptVO.setNetAmount(netAmount);
+			onaccount = receiptDTO.getReceiptAmt().subtract(netAmount);
+			onaccount = receiptVO.getReceiptAmt();
 		} else {
 			// If no child entries, full receipt amount goes to onAccount
-			onaccount = receiptVO.getReceiptAmt();
+			receiptVO.setOnAccount(receiptDTO.getReceiptAmt());
 		}
 
-		
-		System.out.println("Net AMount :"+receiptVO.getNetAmount());
-
-		// Ensure onAccount is set properly
-		receiptVO.setOnAccount(onaccount);
 		receiptVO.setReceiptInvDetailsVO(receiptInvDetailsVOs);
 
 		return receiptVO;
