@@ -51,8 +51,6 @@ public interface ReportService {
 
 		List<DeclarationAndNotesVO>  getAllDeclarationAndNotes();
 
-		List<Map<String, Object>> getReceiptRegisterReport(Long orgId, String partyName, String branchCode,
-				String finYear, String fromDate, String toDate);
 		
 		//quation
 		
