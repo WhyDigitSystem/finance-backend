@@ -65,7 +65,8 @@ public interface ReportService {
 
 		Map<String, Object> createUpdateQuotatio(QuotationDTO quotationDTO) throws ApplicationException;
 
-		List<Map<String, Object>> getReceiptRegisterReport(Long orgId, String partyName, String branchCode,
+
+		public List<Map<String, Object>> getReceiptRegisterReport(Long orgId, String partyName, String branchCode,
 				String finYear, String fromDate, String toDate);
 
 		

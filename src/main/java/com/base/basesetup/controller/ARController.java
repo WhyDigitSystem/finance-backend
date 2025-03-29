@@ -188,7 +188,7 @@ public class ARController extends BaseController {
 	}
 
 	@GetMapping("/getReceiptDocId")
-	public ResponseEntity<ResponseDTO> getReceiptDocId(@RequestParam Long orgId, @RequestParam String finYear,
+	public ResponseEntity<ResponseDTO> x(@RequestParam Long orgId, @RequestParam String finYear,
 			@RequestParam String branch, @RequestParam String branchCode) {
 
 		String methodName = "getReceiptDocId()";
