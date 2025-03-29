@@ -77,7 +77,10 @@ public class ReceiptInvDetailsVO {
 
 	@Column(name = "gainamt", precision = 10, scale = 2)
 	private BigDecimal gainAmt;
-	
+	@Column(name = "tds", precision = 10, scale = 2)
+	private BigDecimal tds;
+	@Column(name = "gstamt", precision = 10, scale = 2)
+	private BigDecimal gstAmt;
 	
 	
 

@@ -219,6 +219,8 @@ public class ARServiceImpl implements ARService {
 				receiptInvDetailsVO.setExRate(receiptInvDetailsDTO.getExRate());
 				receiptInvDetailsVO.setChargeAmt(receiptInvDetailsDTO.getChargeAmt());
 				receiptInvDetailsVO.setOutstanding(receiptInvDetailsDTO.getOutstanding());
+				receiptInvDetailsVO.setTds(receiptInvDetailsDTO.getTds());
+				receiptInvDetailsVO.setGstAmt(receiptInvDetailsDTO.getGstAmt());
 				
 				
 				BigDecimal paymentAmt = receiptDTO.getReceiptAmt();
