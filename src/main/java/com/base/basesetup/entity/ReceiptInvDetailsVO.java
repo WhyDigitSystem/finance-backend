@@ -78,6 +78,8 @@ public class ReceiptInvDetailsVO {
 	@Column(name = "gainamt", precision = 10, scale = 2)
 	private BigDecimal gainAmt;
 	
+	
+	
 
 
 	@ManyToOne
