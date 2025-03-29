@@ -354,7 +354,7 @@ public class ReportController extends BaseController{
 
 		// Receipt Register
 				@GetMapping("/getReceiptRegisterReport")
-				public ResponseEntity<ResponseDTO> getReceiptRegisterReport(@RequestParam Long orgId, @RequestParam String partyName,@RequestParam String branchCode,
+				public ResponseEntity<ResponseDTO> getReceiptRegisterReport(@RequestParam Long orgId, @RequestParam String partyCode,@RequestParam String branchCode,
 						@RequestParam String finYear,@RequestParam(required = false) String fromDate,@RequestParam(required = false) String toDate) {
 					String methodName = "getReceiptRegisterReport()";
 					LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
@@ -363,7 +363,7 @@ public class ReportController extends BaseController{
 					ResponseDTO responseDTO = null;
 					List<Map<String, Object>> reciptReport = new ArrayList<>();
 					try {
-						reciptReport = reportService.getReceiptRegisterReport(orgId,partyName,branchCode,finYear,fromDate,toDate);
+						reciptReport = reportService.getReceiptRegisterReport(orgId,partyCode,branchCode,finYear,fromDate,toDate);
 					} catch (Exception e) {
 						errorMsg = e.getMessage();
 						LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
@@ -383,7 +383,7 @@ public class ReportController extends BaseController{
 				//PAYMENTREPORT
 				
 				@GetMapping("/getPaymentRegisterReport")
-				public ResponseEntity<ResponseDTO> getPaymentRegisterReport(@RequestParam Long orgId, @RequestParam String partyName,@RequestParam String branchCode,
+				public ResponseEntity<ResponseDTO> getPaymentRegisterReport(@RequestParam Long orgId, @RequestParam String partyCode,@RequestParam String branchCode,
 						@RequestParam String finYear,@RequestParam(required = false) String fromDate,@RequestParam(required = false) String toDate) {
 					String methodName = "getPaymentRegisterReport()";
 					LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
@@ -392,7 +392,7 @@ public class ReportController extends BaseController{
 					ResponseDTO responseDTO = null;
 					List<Map<String, Object>> paymentReport = new ArrayList<>();
 					try {
-						paymentReport = reportService.getPaymentRegisterReport(orgId,partyName,branchCode,finYear,fromDate,toDate);
+						paymentReport = reportService.getPaymentRegisterReport(orgId,partyCode,branchCode,finYear,fromDate,toDate);
 					} catch (Exception e) {
 						errorMsg = e.getMessage();
 						LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
