@@ -51,10 +51,7 @@ public interface ReportService {
 
 		List<DeclarationAndNotesVO>  getAllDeclarationAndNotes();
 
-		//REPORT FOR PAYMENT AND REGISTER
-		
-		List<Map<String, Object>> getReceiptRegisterReport(Long orgId, String partyName, String branchCode,
-				String finYear, String fromDate, String toDate);
+
 		
 		List<Map<String, Object>> getPaymentRegisterReport(Long orgId, String partyName, String branchCode,
 				String finYear, String fromDate, String toDate);

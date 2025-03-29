@@ -16,7 +16,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.base.basesetup.dto.ArBillBalanceDTO;
-import com.base.basesetup.dto.PaymentInvDtlsDTO;
 import com.base.basesetup.dto.ReceiptDTO;
 import com.base.basesetup.dto.ReceiptInvDetailsDTO;
 import com.base.basesetup.entity.ArBillBalanceVO;
@@ -155,7 +154,7 @@ public class ARServiceImpl implements ARService {
 		return response;
 	}
 
-	private ReceiptVO createUpdateReceiptVOByReceiptDTO(@Valid ReceiptDTO receiptDTO, ReceiptVO receiptVO) {
+	private ReceiptVO createUpdateReceiptVOByReceiptDTO(@Valid ReceiptDTO receiptDTO, ReceiptVO receiptVO) throws ApplicationException {
 		receiptVO.setBranch(receiptDTO.getBranch());
 		receiptVO.setBranchCode(receiptDTO.getBranchCode());
 		receiptVO.setCustomer(receiptDTO.getCustomer());
@@ -194,13 +193,15 @@ public class ARServiceImpl implements ARService {
 			receiptInvDetailsRepo.deleteAll(receiptInvDetailsVO1);
 		}
 
-		BigDecimal onaccount = BigDecimal.ZERO; // Initialize onAccount
-		BigDecimal netAmount = BigDecimal.ZERO;
+
+		
+		
+		BigDecimal netAmount = BigDecimal.ZERO; 
+		BigDecimal onAccount = BigDecimal.ZERO;
 
 		List<ReceiptInvDetailsVO> receiptInvDetailsVOs = new ArrayList<>();
-
 		BigDecimal totalSettled = BigDecimal.ZERO;
-		// BigDecimal onaccount1 = BigDecimal.ZERO; // Initialize onAccount
+
 		List<ReceiptInvDetailsDTO> receiptDetailsList = receiptDTO.getReceiptInvDetailaDTO();
 		BigDecimal receiptAmount = receiptDTO.getReceiptAmt(); // Assign receipt amount
 
@@ -218,20 +219,36 @@ public class ARServiceImpl implements ARService {
 				receiptInvDetailsVO.setExRate(receiptInvDetailsDTO.getExRate());
 				receiptInvDetailsVO.setChargeAmt(receiptInvDetailsDTO.getChargeAmt());
 				receiptInvDetailsVO.setOutstanding(receiptInvDetailsDTO.getOutstanding());
+				
+				
+				BigDecimal paymentAmt = receiptDTO.getReceiptAmt();
 
-				BigDecimal receiptAmt = receiptDTO.getReceiptAmt();
+
 
 				receiptInvDetailsVO.setAmount(receiptInvDetailsDTO.getAmount());
 
+				// Calculate netAmount (sum of settled amounts)
 				netAmount = receiptDTO.getReceiptInvDetailaDTO().stream().map(ReceiptInvDetailsDTO::getSettled)
 						.reduce(BigDecimal.ZERO, BigDecimal::add);
 				totalSettled = totalSettled.add(receiptInvDetailsDTO.getSettled());
 
+				// Calculate onAccount (the difference between paymentAmt and settled amounts)
+				onAccount = paymentAmt.subtract(totalSettled);
+				
+//
+//				BigDecimal receiptAmt = receiptDTO.getReceiptAmt();
+//
+//				receiptInvDetailsVO.setAmount(receiptInvDetailsDTO.getAmount());
+//
+//				netAmount = receiptDTO.getReceiptInvDetailaDTO().stream().map(ReceiptInvDetailsDTO::getSettled)
+//						.reduce(BigDecimal.ZERO, BigDecimal::add);
+//				totalSettled = totalSettled.add(receiptInvDetailsDTO.getSettled());
+
 				// BigDecimal totalSettled1 = receiptInvDetailsDTO.getSettled() != null ?
 				// receiptInvDetailsDTO.getSettled()
 				// : BigDecimal.ZERO;
-				onaccount = receiptAmt.subtract(totalSettled);
-				receiptInvDetailsVO.setSettled(totalSettled);
+				onAccount = paymentAmt.subtract(totalSettled);
+				
 				receiptInvDetailsVO.setSettled(receiptInvDetailsDTO.getSettled());
 				receiptInvDetailsVO.setRecExRate(receiptInvDetailsDTO.getRecExRate());
 				receiptInvDetailsVO.setTxnSettled(receiptInvDetailsDTO.getTxnSettled());
@@ -242,11 +259,17 @@ public class ARServiceImpl implements ARService {
 
 			}
 
+
+			receiptVO.setReceiptInvDetailsVO(receiptInvDetailsVOs);
+			
+			if (netAmount.compareTo(receiptDTO.getReceiptAmt()) > 0) {
+				throw new ApplicationException("Total Settled Amount should not be greater than Receipt Amount");
+			}
+
+			onAccount = receiptDTO.getReceiptAmt().subtract(netAmount);
 			receiptVO.setNetAmount(netAmount);
-			onaccount = receiptDTO.getReceiptAmt().subtract(netAmount);
-			onaccount = receiptVO.getReceiptAmt();
+			receiptVO.setOnAccount(onAccount);
 		} else {
-			// If no child entries, full receipt amount goes to onAccount
 			receiptVO.setOnAccount(receiptDTO.getReceiptAmt());
 		}
 
