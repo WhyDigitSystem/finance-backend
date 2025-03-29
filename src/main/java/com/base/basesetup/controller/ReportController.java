@@ -380,6 +380,38 @@ public class ReportController extends BaseController{
 					return ResponseEntity.ok().body(responseDTO);
 				}
 				
+				//PAYMENTREPORT
+				
+				@GetMapping("/getPaymentRegisterReport")
+				public ResponseEntity<ResponseDTO> getPaymentRegisterReport(@RequestParam Long orgId, @RequestParam String partyName,@RequestParam String branchCode,
+						@RequestParam String finYear,@RequestParam(required = false) String fromDate,@RequestParam(required = false) String toDate) {
+					String methodName = "getPaymentRegisterReport()";
+					LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+					String errorMsg = null;
+					Map<String, Object> responseObjectsMap = new HashMap<>();
+					ResponseDTO responseDTO = null;
+					List<Map<String, Object>> paymentReport = new ArrayList<>();
+					try {
+						paymentReport = reportService.getPaymentRegisterReport(orgId,partyName,branchCode,finYear,fromDate,toDate);
+					} catch (Exception e) {
+						errorMsg = e.getMessage();
+						LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+					}
+					if (StringUtils.isBlank(errorMsg)) {
+						responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "Payment information get successfully");
+						responseObjectsMap.put("paymentReport", paymentReport);
+						responseDTO = createServiceResponse(responseObjectsMap);
+					} else {
+						responseDTO = createServiceResponseError(responseObjectsMap, "Payment information receive failed",
+								errorMsg);
+					}
+					LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+					return ResponseEntity.ok().body(responseDTO);
+				}
+				
+				
+				//QUATATION
+				
 				@PutMapping("/createUpdateQuotatio")
 				public ResponseEntity<ResponseDTO> createUpdateQuotatio(@RequestBody QuotationDTO quotationDTO) {
 					String methodName = "createUpdateQuotatio()";
