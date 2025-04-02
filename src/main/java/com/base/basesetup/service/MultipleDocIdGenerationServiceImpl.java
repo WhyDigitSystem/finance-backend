@@ -15,9 +15,11 @@ import org.springframework.stereotype.Service;
 import com.base.basesetup.dto.MultipleDocIdGenerationDTO;
 import com.base.basesetup.dto.MultipleDocIdGenerationDetailsDTO;
 import com.base.basesetup.entity.DocumentTypeVO;
+import com.base.basesetup.entity.FinancialYearVO;
 import com.base.basesetup.entity.MultipleDocIdGenerationDetailsVO;
 import com.base.basesetup.entity.MultipleDocIdGenerationVO;
 import com.base.basesetup.exception.ApplicationException;
+import com.base.basesetup.repo.FinancialYearRepo;
 import com.base.basesetup.repo.MultipleDocIdGenerationRepo;
 
 @Service
@@ -27,6 +29,9 @@ public class MultipleDocIdGenerationServiceImpl implements MultipleDocIdGenerati
 
 	@Autowired
 	MultipleDocIdGenerationRepo multipleDocIdGenerationRepo;
+	
+	@Autowired
+	FinancialYearRepo financialYearRepo;
 	
 	@Override
 	public Map<String, Object> createUpdateMultipleDocIdGeneration(MultipleDocIdGenerationDTO multipleDocIdGenerationDTO)
@@ -100,8 +105,11 @@ public class MultipleDocIdGenerationServiceImpl implements MultipleDocIdGenerati
 	@Override
 	public List<Map<String, Object>> getPendingMultipleDocIdGeneration(Long orgId, String branch, String branchCode,
 			String finYear, String finYearIdentifier,String docCode) {
+		int finyear= Integer.parseInt(finYear.toString());
+		FinancialYearVO financialYearVO= financialYearRepo.findByOrgIdAndFinYear(orgId,finyear);
+		String finYearIden=financialYearVO.getFinYearIdentifier().toString();
 		Set<Object[]> pendingMultipleDocIdGenDetails = multipleDocIdGenerationRepo.getPendingMultipleDocIdGeneration(orgId, branch,
-				branchCode, finYear, finYearIdentifier,docCode);
+				branchCode, finYear, finYearIden,docCode);
 		return getPendingMultipleDocIdGeneration(pendingMultipleDocIdGenDetails);
 	}
 
