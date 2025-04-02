@@ -401,7 +401,7 @@ public interface PartyMasterRepo extends JpaRepository<PartyMasterVO, Long> {
 			+ "    t.cancel = 'F'\r\n"
 			+ "    AND t.finyear=?3\r\n"
 			+ "    AND t.orgid = ?1\r\n"
-			+ "GROUP BY j.product,t.orgid;\r\n"
+			+ "GROUP BY j.product,t.orgid\r\n"
 			+ "")
 	Set<Object[]> getSalesDistributionData(Long orgId, String month, String finYear);
 

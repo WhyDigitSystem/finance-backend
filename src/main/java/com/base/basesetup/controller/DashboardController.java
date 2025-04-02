@@ -117,4 +117,34 @@ public class DashboardController extends BaseController{
 		return ResponseEntity.ok().body(responseDTO);
 	}
 	
+	@GetMapping("/getPercentageDiffFromRevenue")
+	public ResponseEntity<ResponseDTO> getPercentageDiffFromRevenue(@RequestParam(required = true) Long orgId,
+			@RequestParam(required = false) String finYear,
+			@RequestParam(required = true) String choose
+			) {
+		String methodName = "getPercentageDiffFromRevenue()";
+		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+		String errorMsg = null;
+		Map<String, Object> responseObjectsMap = new HashMap<>();
+		ResponseDTO responseDTO = null;
+		List<Map<String, Object>> receiptAmont = new ArrayList<>();
+
+		try {
+			receiptAmont = dashboardService.getPercentageDiffFromRevenue(orgId,finYear,choose);
+		} catch (Exception e) {
+			errorMsg = e.getMessage();
+			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+		}
+
+		if (StringUtils.isBlank(errorMsg)) {
+			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "Revenue Information  retrieved successfully");
+			responseObjectsMap.put("Revenue", receiptAmont);
+			responseDTO = createServiceResponse(responseObjectsMap);
+		} else {
+			responseDTO = createServiceResponseError(responseObjectsMap, "Revenue Information Reterive Failed", errorMsg);
+		}
+
+		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+		return ResponseEntity.ok().body(responseDTO);
+	}
 }

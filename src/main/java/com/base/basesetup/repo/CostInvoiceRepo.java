@@ -118,4 +118,5 @@ public interface CostInvoiceRepo extends JpaRepository<CostInvoiceVO, Long> {
 			+ "GROUP BY suppliername")
 	Set<Object[]> getTdsSummary(Long orgId, String month, String finYear);
 
+
 }
