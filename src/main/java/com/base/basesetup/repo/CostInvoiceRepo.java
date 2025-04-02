@@ -93,4 +93,29 @@ public interface CostInvoiceRepo extends JpaRepository<CostInvoiceVO, Long> {
 	@Query(nativeQuery = true,value = "select sum(amount) as totalAmount from vw_cost where orgid=?1 and (billmonth=?2 or 'ALL'=?2) and finyear=?3")
 	Set<Object[]> getDsahboardCost(Long orgId, String billMonth, String finYear);
 
+	@Query(nativeQuery = true,value = "SELECT \r\n"
+			+ "    suppliername,\r\n"
+			+ "    SUM(sum_lc_amt) AS total_amount,\r\n"
+			+ "    SUM(CASE WHEN tdswithholdingper = 4 THEN totaltds ELSE 0 END) AS TDS_4,\r\n"
+			+ "    SUM(CASE WHEN tdswithholdingper = 9 THEN totaltds ELSE 0 END) AS TDS_9,\r\n"
+			+ "    -- SUM(CASE WHEN tdswithholdingper = 3 THEN totaltds ELSE 0 END) AS TDS_3,\r\n"
+			+ "    SUM(CASE WHEN tdswithholdingper = 10 THEN totaltds ELSE 0 END) AS TDS_10	\r\n"
+			+ "FROM costinvoice a\r\n"
+			+ "JOIN tdscostinvoice b ON a.costinvoiceid = b.costinvoiceid\r\n"
+			+ "where a.orgid=?1 and month(docdate)=month(curdate()) or ?2='MONTH' and finyear=?3\r\n"
+			+ "GROUP BY suppliername\r\n"
+			+ "union\r\n"
+			+ "SELECT \r\n"
+			+ "    suppliername,\r\n"
+			+ "    SUM(sum_lc_amt) AS total_amount,\r\n"
+			+ "    SUM(CASE WHEN tdswithholdingper = 4 THEN totaltds ELSE 0 END) AS TDS_4,\r\n"
+			+ "    SUM(CASE WHEN tdswithholdingper = 9 THEN totaltds ELSE 0 END) AS TDS_9,\r\n"
+			+ "    -- SUM(CASE WHEN tdswithholdingper = 3 THEN totaltds ELSE 0 END) AS TDS_3,\r\n"
+			+ "    SUM(CASE WHEN tdswithholdingper = 10 THEN totaltds ELSE 0 END) AS TDS_10	\r\n"
+			+ "FROM costinvoice a\r\n"
+			+ "JOIN tdscostinvoice b ON a.costinvoiceid = b.costinvoiceid\r\n"
+			+ "where a.orgid=?1  and finyear=?3\r\n"
+			+ "GROUP BY suppliername")
+	Set<Object[]> getTdsSummary(Long orgId, String month, String finYear);
+
 }
