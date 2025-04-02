@@ -12,4 +12,6 @@ public interface DashboardService {
 
 	List<Map<String, Object>> getPaymentAmont(Long orgId, String month, String year);
 
+	List<Map<String, Object>> getTdsSummary(Long orgId, String month, String finYear);
+
 }
