@@ -502,7 +502,7 @@ public class PartyTypeController extends BaseController {
 	}
 	
 	@GetMapping("/getMonthlyAndYearWiseData")
-	public ResponseEntity<ResponseDTO> getMonthlyAndYearWiseData(@RequestParam(required = true) Long orgId,@RequestParam(required = false) String month,@RequestParam(required = false) String year) {
+	public ResponseEntity<ResponseDTO> getMonthlyAndYearWiseData(@RequestParam(required = true) Long orgId,@RequestParam(required = false) String month,@RequestParam(required = true) String finYear) {
 		String methodName = "getMonthlyAndYearWiseData()";
 		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
 		String errorMsg = null;
@@ -511,7 +511,7 @@ public class PartyTypeController extends BaseController {
 		List<Map<String, Object>> mapp = new ArrayList<>();
 
 		try {
-			mapp = partyTypeService.getMonthlyAndYearWiseData(orgId,month,year);
+			mapp = partyTypeService.getMonthlyAndYearWiseData(orgId,month,finYear);
 		} catch (Exception e) {
 			errorMsg = e.getMessage();
 			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
@@ -530,7 +530,7 @@ public class PartyTypeController extends BaseController {
 	}
 	
 	@GetMapping("/getSalesDistributionData")
-	public ResponseEntity<ResponseDTO> getSalesDistributionData(@RequestParam(required = true) Long orgId,@RequestParam(required = false) String month,@RequestParam(required = false) String year) {
+	public ResponseEntity<ResponseDTO> getSalesDistributionData(@RequestParam(required = true) Long orgId,@RequestParam(required = false) String month,@RequestParam(required = true) String finYear) {
 		String methodName = "getSalesDistributionData()";
 		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
 		String errorMsg = null;
@@ -539,7 +539,7 @@ public class PartyTypeController extends BaseController {
 		List<Map<String, Object>> mapp = new ArrayList<>();
 
 		try {
-			mapp = partyTypeService.getSalesDistributionData(orgId,month,year);
+			mapp = partyTypeService.getSalesDistributionData(orgId,month,finYear);
 		} catch (Exception e) {
 			errorMsg = e.getMessage();
 			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
