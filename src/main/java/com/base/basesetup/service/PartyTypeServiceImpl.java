@@ -944,8 +944,8 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 }
 
 	@Override
-	public List<Map<String, Object>> getMonthlyAndYearWiseData(Long orgId, String month,String year) {
-		Set<Object[]> chType = partyMasterRepo.getMonthlyAndYearWiseData(orgId,month,year);
+	public List<Map<String, Object>> getMonthlyAndYearWiseData(Long orgId, String month,String finYear) {
+		Set<Object[]> chType = partyMasterRepo.getMonthlyAndYearWiseData(orgId,month,finYear);
 		return getMonthlyAndYear(chType);
 	}
 
@@ -964,8 +964,8 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 }
 
 	@Override
-	public List<Map<String, Object>> getSalesDistributionData(Long orgId, String month, String year) {
-		Set<Object[]> chType = partyMasterRepo.getSalesDistributionData(orgId,month,year);
+	public List<Map<String, Object>> getSalesDistributionData(Long orgId, String month, String finYear) {
+		Set<Object[]> chType = partyMasterRepo.getSalesDistributionData(orgId,month,finYear);
 		return getSalesDistribution(chType);
 	}
 
