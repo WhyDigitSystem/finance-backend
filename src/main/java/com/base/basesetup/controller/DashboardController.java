@@ -33,7 +33,7 @@ public class DashboardController extends BaseController{
 	
 	
 	@GetMapping("/getReceiptAmont")
-	public ResponseEntity<ResponseDTO> getReceiptAmont(@RequestParam(required = true) Long orgId,@RequestParam(required = false) String month,@RequestParam(required = false) String year) {
+	public ResponseEntity<ResponseDTO> getReceiptAmont(@RequestParam(required = true) Long orgId,@RequestParam(required = false) String month,@RequestParam String year) {
 		String methodName = "getReceiptAmont()";
 		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
 		String errorMsg = null;
