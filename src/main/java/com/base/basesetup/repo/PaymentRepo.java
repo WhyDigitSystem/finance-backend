@@ -49,14 +49,9 @@ public interface PaymentRepo extends JpaRepository<PaymentVO, Long> {
 	@Query(nativeQuery = true, value = "select * from payment where orgid=?1 and branchcode=?2 and cancel=0")
 	List<PaymentVO> getAllVendorPaymentByOrgIdAndBranchCode(Long orgId, String branchCode);
 
-	@Query(nativeQuery =true,value ="SELECT SUM(r.paymentamt) AS receiptAmnt\r\n"
+	@Query(nativeQuery =true,value ="SELECT SUM(r.paymentamt) AS paymentamt\r\n"
 			+ "FROM payment r\r\n"
-			+ "WHERE r.orgid = ?1\r\n"
-			+ "  AND (\r\n"
-			+ "    (MONTH(r.docdate) = MONTH(CURDATE()) AND 'MONTH'=?2) \r\n"
-			+ "    OR \r\n"
-			+ "    (YEAR(r.docdate) = YEAR(CURDATE()) AND 'YEAR'=?3)\r\n"
-			+ "  )")
+			+ "WHERE r.orgid = ?1 and r.finyear=?3 and ((month(docdate)=month(current_date()) and '?2'='Month')or ?2 is null )")
 	Set<Object[]> getPaymentAmont(Long orgId, String month, String year);
 
 
