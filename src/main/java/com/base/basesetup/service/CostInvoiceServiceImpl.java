@@ -800,41 +800,7 @@ public class CostInvoiceServiceImpl implements CostInvoiceService {
 			}
 
 
-//			// Group and process GST-related ledgers
-//			Map<String, BigDecimal> ledgerSumMap = new HashMap<>();
-//			for (ChargerCostInvoiceVO gstVO : costInvoiceVO.getChargerCostInvoiceVO()) {
-//				String ledger = gstVO.getLedger();
-//				BigDecimal lcAmount = gstVO.getLcAmt();
 //
-//				ledgerSumMap.put(ledger, ledgerSumMap.getOrDefault(ledger, BigDecimal.ZERO).add(lcAmount));
-//			}
-//
-//			// Add GST ledger entries
-//			for (Map.Entry<String, BigDecimal> entry : ledgerSumMap.entrySet()) {
-//				GroupLedgerVO groupLedgerVO = groupLedgerRepo.findByAccountGroupName(entry.getKey());
-//
-//				AccountsDetailsVO gstAccountDetailsVO = new AccountsDetailsVO();
-//				gstAccountDetailsVO.setACategory(groupLedgerVO.getCategory());
-//				gstAccountDetailsVO.setNDebitAmount(entry.getValue());
-//				gstAccountDetailsVO.setDebitAmount(entry.getValue());
-//				gstAccountDetailsVO.setNCreditAmount(BigDecimal.ZERO);
-//				gstAccountDetailsVO.setCreditAmount(BigDecimal.ZERO);
-//				gstAccountDetailsVO.setArapFlag(false);
-//				gstAccountDetailsVO.setArapAmount(BigDecimal.ZERO);
-//				gstAccountDetailsVO.setBDebitAmount(entry.getValue());
-//				gstAccountDetailsVO.setBCrAmount(BigDecimal.ZERO);
-//				gstAccountDetailsVO.setBArapAmount(BigDecimal.ZERO);
-//				gstAccountDetailsVO.setAccountName(groupLedgerVO.getAccountGroupName());
-//				gstAccountDetailsVO.setACurrency(costInvoiceVO.getCurrency());
-//				gstAccountDetailsVO.setAExRate(costInvoiceVO.getExRate());
-//				gstAccountDetailsVO.setSubledgerName("None");
-//				gstAccountDetailsVO.setSubLedgerCode("None");
-//				gstAccountDetailsVO.setNArapAmount(BigDecimal.ZERO);
-//				gstAccountDetailsVO.setGstflag(3);
-//				gstAccountDetailsVO.setAccountsVO(accountsVO);
-//				accountsDetailsVOs.add(gstAccountDetailsVO);
-//			}
-			accountsVO.setAccountsDetailsVO(accountsDetailsVOs);
 
 			// Save AccountsVO and update TaxInvoiceVO
 			AccountsVO savedAccountsVO = accountsRepo.save(accountsVO);
