@@ -953,8 +953,10 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 		List<Map<String, Object>> List1 = new ArrayList<>();
 		for (Object[] ch : chType) {
 			Map<String, Object> map = new HashMap<>();
-			map.put("partyName", ch[0].toString());
-			map.put("amt", ch[1].toString());
+			map.put("orgid", ch[0].toString());
+			map.put("amt", ch[1] != null ? ch[1].toString() : "");
+			map.put("diff", ch[2] != null ? ch[2].toString() : "");
+			//map.put("preMnthAmt", ch[3].toString());
 			List1.add(map);
 		}
 		return List1;

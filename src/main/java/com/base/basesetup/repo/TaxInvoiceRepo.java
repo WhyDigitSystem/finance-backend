@@ -173,7 +173,13 @@ public interface TaxInvoiceRepo extends JpaRepository<TaxInvoiceVO, Long> {
 	Set<Object[]> getReportDetailsForSalesRegister( String fromDate, String toDate, Long orgId,
 			String branchCode, String partyCode);
 
-	@Query(nativeQuery = true,value = "select sum(amount) as totalAmount from vw_revenue where orgid=?1 and (billmonth=?2 or 'ALL'=?2) and finyear=?3")
+//	@Query(nativeQuery = true,value = "select sum(amount) as totalAmount from vw_revenue where orgid=?1 and (billmonth=?2 or 'ALL'=?2) and finyear=?3")
+	@Query(nativeQuery = true,value = "select sum(curmth),((sum(curmth)-sum(premth))/sum(curmth))*100 as percentage  from\r\n"
+			+ "(select orgid,sum(amount) as curmth,0 as premth from  vw_revenue where month(docdate)=month(curdate()) or 'ALL'=?2 and finyear=?3  and orgid=?1\r\n"
+			+ "group by orgid\r\n"
+			+ "union \r\n"
+			+ "select orgid,0 as curmth,sum(amount) as premth  from  vw_revenue where month(docdate)=month(curdate())-1 or 'ALL'=?2 and finyear=?3 and orgid=?1\r\n"
+			+ "group by orgid) a")
 	Set<Object[]> getDsahboardRevenue(Long orgId, String billMonth, String finYear);
 
 
