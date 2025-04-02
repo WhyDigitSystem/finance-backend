@@ -33,7 +33,7 @@ public class ReceiptDTO {
 	private String chequeUtiNo;
 	private LocalDate chequeUtiDate;
 	private String receivedFrom;
-	private BigDecimal netAmount;
+//	private BigDecimal netAmount;
 	private String remarks;
 
 	// Common Fields

@@ -128,7 +128,7 @@ public interface PartyMasterRepo extends JpaRepository<PartyMasterVO, Long> {
 			+ "        AND (p.partytype =?3 OR ?3 = 'ALL' AND ?3 ='ALL' OR ?3 = 'ALL')\r\n"
 			+ "        AND t2.acategory IN ('PAYABLE A/C', 'RECEIVABLE A/C')\r\n"
 			+ "        AND t1.orgid =?1\r\n"
-			+ "        AND (?4 = 'BLR' OR t1.branch =?4)\r\n"
+			+ "        AND (?4 = 'ALL' OR t1.branch =?4)\r\n"
 			+ "    GROUP BY \r\n"
 			+ "        t1.accountsid, t1.vid, t1.vdate, t1.refno, t1.refdate, \r\n"
 			+ "        t1.supplierrefno, t1.supplierrefdate, p.partyname, p.partycode, t1.currency\r\n"
@@ -167,7 +167,7 @@ public interface PartyMasterRepo extends JpaRepository<PartyMasterVO, Long> {
 			+ "        AND (p.partytype =?3 OR ?3 = 'ALL' AND ?3 ='ALL' OR ?3 = 'ALL')\r\n"
 			+ "        AND t2.acategory IN ('PAYABLE A/C', 'RECEIVABLE A/C')\r\n"
 			+ "        AND t1.orgid =?1\r\n"
-			+ "        AND (?4 = 'BLR' OR t1.branch =?4)\r\n"
+			+ "        AND (?4 = 'ALL' OR t1.branch =?4)\r\n"
 			+ "    GROUP BY \r\n"
 			+ "        p.partycode, p.partyname\r\n"
 			+ ") A\r\n"
@@ -348,8 +348,46 @@ public interface PartyMasterRepo extends JpaRepository<PartyMasterVO, Long> {
 			+ "    b.branch, \r\n"
 			+ "    t2.subledgername")
 	Set<Object[]> getAllLedgerReport(Long orgId,String accountName, String branchCode,String fromDate,String toDate);
-	
+	 
 	@Query(nativeQuery = true, value = "select accountgroupname from groupledger where orgid=?1  and  category in('PAYABLE A/C','RECEIVABLE A/C')")
 	Set<Object[]> getAccountNameFromGroup(Long orgId);
+
+	@Query(nativeQuery =true,value ="SELECT t.partyname, SUM(t.totalchargeamountlc) AS amt,p.partyshortname \r\n"
+			+ "FROM taxinvoice t\r\n"
+			+ "JOIN partymaster p ON p.partyname = t.partyname\r\n"
+			+ "WHERE t.cancel = 'F'\r\n"
+			+ "  AND MONTH(t.docdate) = MONTH(CURDATE()) And 'MONTH'=?2 \r\n"
+			+ "  AND t.orgid =?1\r\n"
+			+ "GROUP BY t.partyname, p.partyshortname\r\n"
+			+ "UNION\r\n"
+			+ "SELECT t.partyname, SUM(t.totalchargeamountlc), p.partyshortname AS amt\r\n"
+			+ "FROM taxinvoice t\r\n"
+			+ "JOIN partymaster p ON p.partyname = t.partyname\r\n"
+			+ "WHERE t.cancel = 'F'\r\n"
+			+ "  AND YEAR(t.docdate) = YEAR(CURDATE())  AND 'YEAR'=?3\r\n"
+			+ " AND t.orgid =?1\r\n"
+			+ "GROUP BY t.partyname, p.partyshortname")
+	Set<Object[]> getMonthlyAndYearWiseData(Long orgId, String month,String year);
+
+	
+	
+	@Query(nativeQuery =true,value =" SELECT j.product, SUM(t.totalchargeamountlc) AS amt \r\n"
+			+ "FROM taxinvoice t \r\n"
+			+ "JOIN jobcard j ON j.jobno = t.joborderno\r\n"
+			+ "WHERE t.cancel = 'F'\r\n"
+			+ "AND MONTH(docdate) = MONTH(CURDATE())  \r\n"
+			+ "AND 'MONTH' = ?2\r\n"
+			+ "AND t.orgid =?1\r\n"
+			+ "GROUP BY j.product\r\n"
+			+ "UNION\r\n"
+			+ "SELECT j.product, SUM(t.totalchargeamountlc) AS amt \r\n"
+			+ "FROM taxinvoice t \r\n"
+			+ "JOIN jobcard j ON j.jobno = t.joborderno\r\n"
+			+ "WHERE t.cancel = 'F'\r\n"
+			+ "AND YEAR(docdate) = YEAR(CURDATE())  \r\n"
+			+ "AND 'YEAR' = ?3\r\n"
+			+ "AND t.orgid = ?1\r\n"
+			+ "GROUP BY j.product")
+	Set<Object[]> getSalesDistributionData(Long orgId, String month, String year);
 
 }

@@ -12,13 +12,15 @@ public interface GlobalParameterService {
 	// Global Parameter
 	Set<Object[]> getWarehouseNameByOrgIdAndBranchAndClient(Long orgid, String branch, String client);
 
-	Optional<GlobalParameterVO> getGlobalParamByOrgIdAndUserName(Long orgid, String userId);
+	//Optional<GlobalParameterVO> getGlobalParamByOrgIdAndUserName(Long orgid, String userId);
 
 	GlobalParameterVO updateGlobaParameter(GlobalParameterVO globalParameterVO);
 
 	// to getAcces Global Param Dteails
 
 	Set<Object[]> getGlobalParametersBranchAndBranchCodeByOrgIdAndUserName(Long orgid, String userName);
+
+	Optional<GlobalParameterVO> getGlobalParamByOrgIdAndUserName(Long orgid, Long userid);
 
 
 }

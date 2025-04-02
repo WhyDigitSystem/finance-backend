@@ -57,6 +57,7 @@ public class PartyMasterDTO {
 	private String cancelRemarks;
 	private String finYear;
 	private Long orgId;
+	 private String partyShortName;
 	
 	private String creditTerms;
     

@@ -1,7 +1,6 @@
 package com.base.basesetup.service;
 
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -30,13 +29,12 @@ import com.base.basesetup.dto.DepartmentDTO;
 import com.base.basesetup.dto.DesignationDTO;
 import com.base.basesetup.dto.FinScreenDTO;
 import com.base.basesetup.dto.FinancialYearDTO;
+import com.base.basesetup.dto.ProductServiceDTO;
 import com.base.basesetup.dto.RegionDTO;
 import com.base.basesetup.dto.Role;
 import com.base.basesetup.dto.ScreenNamesDTO;
 import com.base.basesetup.dto.StateDTO;
-import com.base.basesetup.dto.TdsUrCostInvoiceGnaDTO;
 import com.base.basesetup.entity.BankDetailsVO;
-import com.base.basesetup.entity.ChargesUrCostInvoiceGnaVO;
 import com.base.basesetup.entity.CityVO;
 import com.base.basesetup.entity.CompanyVO;
 import com.base.basesetup.entity.CountryVO;
@@ -45,10 +43,10 @@ import com.base.basesetup.entity.DepartmentVO;
 import com.base.basesetup.entity.DesignationVO;
 import com.base.basesetup.entity.EmployeeVO;
 import com.base.basesetup.entity.FinancialYearVO;
+import com.base.basesetup.entity.ProductServiceVO;
 import com.base.basesetup.entity.RegionVO;
 import com.base.basesetup.entity.ScreenNamesVO;
 import com.base.basesetup.entity.StateVO;
-import com.base.basesetup.entity.TdsUrCostInvoiceGnaVO;
 import com.base.basesetup.entity.UserVO;
 import com.base.basesetup.exception.ApplicationException;
 import com.base.basesetup.repo.BankDetailsRepo;
@@ -61,6 +59,7 @@ import com.base.basesetup.repo.DesignationRepo;
 import com.base.basesetup.repo.EmployeeRepo;
 import com.base.basesetup.repo.FinScreenRepo;
 import com.base.basesetup.repo.FinancialYearRepo;
+import com.base.basesetup.repo.ProductServiceRepo;
 import com.base.basesetup.repo.RegionRepo;
 import com.base.basesetup.repo.ResponsibilitiesRepo;
 import com.base.basesetup.repo.RoleRepo;
@@ -124,6 +123,9 @@ public class CommonMasterServiceImpl implements CommonMasterService {
 
 	@Autowired
 	BankDetailsRepo bankDetailsRepo;
+	
+	@Autowired
+	ProductServiceRepo productServiceRepo;
 
 	// Company
 
@@ -1333,6 +1335,102 @@ public class CommonMasterServiceImpl implements CommonMasterService {
 		CompanyVO companyVO = companyRepo.findById(id).get();
 		companyVO.setCompanyLogo(file.getBytes());
 		return companyRepo.save(companyVO);
+	}
+	
+	
+	//ProductAndService
+
+	@Override
+	public Map<String, Object> createUpdateProductService(ProductServiceDTO productServiceDTO)
+			throws ApplicationException {
+		
+		ProductServiceVO productServiceVO;
+		String message = null;
+
+		if (ObjectUtils.isEmpty(productServiceDTO.getId())) {
+			if (productServiceRepo.existsByCodeAndOrgId(productServiceDTO.getCode(), productServiceDTO.getOrgId())) {
+				String errorMessage = String.format("The Code: %s already exists in This Organization.",
+						productServiceDTO.getCode());
+				throw new ApplicationException(errorMessage);
+			}
+			if (productServiceRepo.existsByDescriptionAndOrgId(productServiceDTO.getDescription(), productServiceDTO.getOrgId())) {
+				String errorMessage = String.format("The Description: %s already exists in This Organization.",
+						productServiceDTO.getDescription());
+				throw new ApplicationException(errorMessage);
+			}
+
+			// Create new state
+			productServiceVO = new ProductServiceVO();
+			productServiceVO.setCreatedBy(productServiceDTO.getCreatedBy());
+			productServiceVO.setUpdatedBy(productServiceDTO.getCreatedBy());
+			message = "ProductService Creation Successfully";
+		} else {
+			// Update existing state
+			productServiceVO = productServiceRepo.findById(productServiceDTO.getId())
+					.orElseThrow(() -> new ApplicationException("ProductService not found with id: " + productServiceDTO.getId()));
+
+			productServiceVO.setUpdatedBy(productServiceDTO.getCreatedBy());
+
+			if (!productServiceVO.getCode().equalsIgnoreCase(productServiceDTO.getCode())) {
+				if (productServiceRepo.existsByCodeAndOrgId(productServiceDTO.getCode(), productServiceDTO.getOrgId())) {
+					String errorMessage = String.format("The Code: %s already exists in This Organization.",
+							productServiceDTO.getCode());
+					throw new ApplicationException(errorMessage);
+				}
+				productServiceVO.setCode(productServiceDTO.getCode());
+			}
+
+			if (!productServiceVO.getDescription().equalsIgnoreCase(productServiceDTO.getDescription())) {
+				if (productServiceRepo.existsByDescriptionAndOrgId(productServiceDTO.getDescription(), productServiceDTO.getOrgId())) {
+					String errorMessage = String.format("The Description: %s already exists in This Organization.",
+							productServiceDTO.getDescription());
+					throw new ApplicationException(errorMessage);
+				}
+				productServiceVO.setDescription(productServiceDTO.getDescription());
+			}
+
+			message = "ProductService Update Successfully";
+		}
+
+		// Map the remaining fields
+		getProductServiceVOFromProductServiceDTO(productServiceVO, productServiceDTO);
+
+		productServiceRepo.save(productServiceVO);
+
+		Map<String, Object> response = new HashMap<>();
+		response.put("message", message);
+		response.put("productServiceVO", productServiceVO);
+
+		return response;
+	}
+
+	private void getProductServiceVOFromProductServiceDTO(ProductServiceVO productServiceVO, ProductServiceDTO productServiceDTO) {
+		productServiceVO.setType(productServiceDTO.getType());
+		productServiceVO.setName(productServiceDTO.getName());
+		productServiceVO.setDimension(productServiceDTO.getDimension());
+		productServiceVO.setActive(productServiceDTO.isActive());
+		productServiceVO.setOrgId(productServiceDTO.getOrgId());
+		productServiceVO.setDescription(productServiceDTO.getDescription());
+		productServiceVO.setCode(productServiceDTO.getCode());
+
+	}
+
+	@Override
+	public List<ProductServiceVO> getProductServiceByOrgId(Long orgId) {
+		
+		return productServiceRepo.getProductServiceByOrgId(orgId);
+	}
+
+	@Override
+	public ProductServiceVO getProductServiceById(Long id) {
+		// TODO Auto-generated method stub
+		return productServiceRepo.getProductServiceById(id);
+	}
+	
+	public ProductServiceVO uploadImageProductServivceInBloob(MultipartFile file, Long id) throws IOException {
+		ProductServiceVO productServiceVO = productServiceRepo.findById(id).orElseThrow(() -> new RuntimeException("Circular not found"));
+		productServiceVO.setImage(file.getBytes()); 
+		return productServiceRepo.save(productServiceVO);
 	}
 	
 	

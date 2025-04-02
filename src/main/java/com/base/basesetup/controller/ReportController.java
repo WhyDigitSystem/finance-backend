@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -12,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,9 +24,14 @@ import com.base.basesetup.common.CommonConstant;
 import com.base.basesetup.common.UserConstants;
 import com.base.basesetup.dto.InvoiceDTO;
 import com.base.basesetup.dto.IssueManifestProviderDTO;
+import com.base.basesetup.dto.QuotationDTO;
 import com.base.basesetup.dto.ResponseDTO;
+import com.base.basesetup.dto.RetrievalManifestProviderDTO;
+import com.base.basesetup.entity.DeclarationAndNotesVO;
 import com.base.basesetup.entity.InvoiceVO;
 import com.base.basesetup.entity.IssueManifestProviderVO;
+import com.base.basesetup.entity.QuotationVO;
+import com.base.basesetup.entity.RetrievalManifestProviderVO;
 import com.base.basesetup.service.ReportService;
 
 @CrossOrigin
@@ -213,4 +220,269 @@ public class ReportController extends BaseController{
 
 	}
 	
+	
+	//RETRIEVALMANIFEST
+
+		@PutMapping("/createUpdateRetrievalManifest")
+		public ResponseEntity<ResponseDTO> createUpdateRetrievalManifest(@RequestBody RetrievalManifestProviderDTO retrievalManifestProviderDTO) {
+		    String methodName = "createUpdateRetrievalManifest()";
+		    LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+		    Map<String, Object> responseObjectsMap = new HashMap<>();
+		    ResponseDTO responseDTO = null;
+		    try {
+		        Map<String, Object> retrievalManifestProviderVO = reportService.createUpdateRetrievalManifest(retrievalManifestProviderDTO);
+		        responseObjectsMap.put(CommonConstant.STRING_MESSAGE, retrievalManifestProviderVO.get("message"));
+		        responseObjectsMap.put("issueManifestProviderVO", retrievalManifestProviderVO.get("retrievalManifestProviderVO"));
+		        responseDTO = createServiceResponse(responseObjectsMap);
+		    } catch (Exception e) {
+		    	String errorMsg =  e.getMessage();
+		        LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+		        responseDTO = createServiceResponseError(responseObjectsMap, errorMsg, errorMsg);
+		    }
+		    LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+		    return ResponseEntity.ok().body(responseDTO);
+		}
+
+		@GetMapping("/getAllRetrievalManifestProvider")
+		public ResponseEntity<ResponseDTO> getAllRetrievalManifestProvider() {
+			String methodName = "getAllRetrievalManifestProvider()";
+			LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+			String errorMsg = null;
+			Map<String, Object> responseObjectsMap = new HashMap<>();
+			ResponseDTO responseDTO = null;
+			List<RetrievalManifestProviderVO> retrievalManifestProviderVOs =new ArrayList<RetrievalManifestProviderVO>();
+			try {
+				retrievalManifestProviderVOs = reportService.getAllRetrievalManifestProvider();
+			} catch (Exception e) {
+				errorMsg = e.getMessage();
+				LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+			}
+			if (StringUtils.isBlank(errorMsg)) {
+				responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "RetrievalManifest information get successfully");
+				responseObjectsMap.put("retrievalManifestProviderVOs", retrievalManifestProviderVOs);
+				responseDTO = createServiceResponse(responseObjectsMap);
+			} else {
+				responseDTO = createServiceResponseError(responseObjectsMap, "RetrievalManifest information receive failed",
+						errorMsg);
+			}
+			LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+			return ResponseEntity.ok().body(responseDTO);
+
+		}
+
+
+		@GetMapping("/getRetrievalManifestProviderById")
+		public ResponseEntity<ResponseDTO> getRetrievalManifestProviderById(Long id) {
+			String methodName = "getRetrievalManifestProviderById()";
+			LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+			String errorMsg = null;
+			Map<String, Object> responseObjectsMap = new HashMap<>();
+			ResponseDTO responseDTO = null;
+			RetrievalManifestProviderVO retrievalManifestProviderVO =null;
+			try {
+				retrievalManifestProviderVO = reportService.getRetrievalManifestProviderById(id).orElse(null);
+			} catch (Exception e) {
+				errorMsg = e.getMessage();
+				LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+			}
+			if (StringUtils.isBlank(errorMsg)) {
+				responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "RetrievalManifest information get successfully By Id");
+				responseObjectsMap.put("retrievalManifestProviderVO", retrievalManifestProviderVO);
+				responseDTO = createServiceResponse(responseObjectsMap);
+			} else {
+				responseDTO = createServiceResponseError(responseObjectsMap, "RetrievalManifest information receive failed",
+						errorMsg);
+			}
+			LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+			return ResponseEntity.ok().body(responseDTO);
+
+		}
+		
+		//DECLARATION AND NOTES
+		
+		@PostMapping("/createDeclarationAndNotes")
+		public ResponseEntity<ResponseDTO> createDeclarationAndNotes(@RequestBody DeclarationAndNotesVO declarationAndNotesVO) {
+			String methodName = "createDeclarationAndNotes()";
+			LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+			String errorMsg = null;
+			Map<String, Object> responseObjectsMap = new HashMap<>();
+			ResponseDTO responseDTO = null;
+			DeclarationAndNotesVO declarationAndNotesVO1 = new DeclarationAndNotesVO();
+			try {
+				declarationAndNotesVO1 = reportService.createDeclarationAndNotes(declarationAndNotesVO);
+			} catch (Exception e) {
+				errorMsg = e.getMessage();
+				LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+			}
+			if (StringUtils.isBlank(errorMsg)) {
+				responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "DeclarationAndNotes Created Successfully");
+				responseObjectsMap.put("declarationAndNotesVO1", declarationAndNotesVO1);
+				responseDTO = createServiceResponse(responseObjectsMap);
+			} else {
+				responseDTO = createServiceResponseError(responseObjectsMap, "Oem Bin Inward Failed", errorMsg);
+			}
+			LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+			return ResponseEntity.ok().body(responseDTO);
+		}
+
+		@GetMapping("/getAllDeclarationAndNotes")
+		public ResponseEntity<ResponseDTO> getAllDeclarationAndNotes() {
+			String methodName = "getAllDeclarationAndNotesById()";
+			LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+			String errorMsg = null;
+			Map<String, Object> responseObjectsMap = new HashMap<>();
+			ResponseDTO responseDTO = null;
+			List<DeclarationAndNotesVO> declarationAndNotesVO =new ArrayList<DeclarationAndNotesVO>();
+			try {
+				declarationAndNotesVO = reportService.getAllDeclarationAndNotes();
+			} catch (Exception e) {
+				errorMsg = e.getMessage();
+				LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+			}
+			if (StringUtils.isBlank(errorMsg)) {
+				responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "DeclarationAndNotes information get successfully By Id");
+				responseObjectsMap.put("declarationAndNotesVO", declarationAndNotesVO);
+				responseDTO = createServiceResponse(responseObjectsMap);
+			} else {
+				responseDTO = createServiceResponseError(responseObjectsMap, "DeclarationAndNotes information receive failed",
+						errorMsg);
+			}
+			LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+			return ResponseEntity.ok().body(responseDTO);
+
+		}
+
+		// Receipt Register
+				@GetMapping("/getReceiptRegisterReport")
+				public ResponseEntity<ResponseDTO> getReceiptRegisterReport(@RequestParam Long orgId, @RequestParam String partyCode,@RequestParam String branchCode,
+						@RequestParam String finYear,@RequestParam(required = false) String fromDate,@RequestParam(required = false) String toDate) {
+					String methodName = "getReceiptRegisterReport()";
+					LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+					String errorMsg = null;
+					Map<String, Object> responseObjectsMap = new HashMap<>();
+					ResponseDTO responseDTO = null;
+					List<Map<String, Object>> reciptReport = new ArrayList<>();
+					try {
+						reciptReport = reportService.getReceiptRegisterReport(orgId,partyCode,branchCode,finYear,fromDate,toDate);
+					} catch (Exception e) {
+						errorMsg = e.getMessage();
+						LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+					}
+					if (StringUtils.isBlank(errorMsg)) {
+						responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "Receipt information get successfully");
+						responseObjectsMap.put("reciptReport", reciptReport);
+						responseDTO = createServiceResponse(responseObjectsMap);
+					} else {
+						responseDTO = createServiceResponseError(responseObjectsMap, "Receipt information receive failed",
+								errorMsg);
+					}
+					LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+					return ResponseEntity.ok().body(responseDTO);
+				}
+				
+				//PAYMENTREPORT
+				
+				@GetMapping("/getPaymentRegisterReport")
+				public ResponseEntity<ResponseDTO> getPaymentRegisterReport(@RequestParam Long orgId, @RequestParam String partyCode,@RequestParam String branchCode,
+						@RequestParam String finYear,@RequestParam(required = false) String fromDate,@RequestParam(required = false) String toDate) {
+					String methodName = "getPaymentRegisterReport()";
+					LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+					String errorMsg = null;
+					Map<String, Object> responseObjectsMap = new HashMap<>();
+					ResponseDTO responseDTO = null;
+					List<Map<String, Object>> paymentReport = new ArrayList<>();
+					try {
+						paymentReport = reportService.getPaymentRegisterReport(orgId,partyCode,branchCode,finYear,fromDate,toDate);
+					} catch (Exception e) {
+						errorMsg = e.getMessage();
+						LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+					}
+					if (StringUtils.isBlank(errorMsg)) {
+						responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "Payment information get successfully");
+						responseObjectsMap.put("paymentReport", paymentReport);
+						responseDTO = createServiceResponse(responseObjectsMap);
+					} else {
+						responseDTO = createServiceResponseError(responseObjectsMap, "Payment information receive failed",
+								errorMsg);
+					}
+					LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+					return ResponseEntity.ok().body(responseDTO);
+				}
+				
+				
+				//QUATATION
+				
+				@PutMapping("/createUpdateQuotatio")
+				public ResponseEntity<ResponseDTO> createUpdateQuotatio(@RequestBody QuotationDTO quotationDTO) {
+					String methodName = "createUpdateQuotatio()";
+					LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+					String errorMsg = null;
+					Map<String, Object> responseObjectsMap = new HashMap<>();
+					ResponseDTO responseDTO = null;
+					try {
+						Map<String, Object> quotationVO = reportService.createUpdateQuotatio(quotationDTO);
+						responseObjectsMap.put(CommonConstant.STRING_MESSAGE, quotationVO.get("message"));
+						responseObjectsMap.put("quotationVO", quotationVO.get("quotationVO")); // Corrected key
+						responseDTO = createServiceResponse(responseObjectsMap);
+					} catch (Exception e) {
+						errorMsg = e.getMessage();
+						LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+						responseDTO = createServiceResponseError(responseObjectsMap, errorMsg, errorMsg);
+					}
+					LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+					return ResponseEntity.ok().body(responseDTO);
+				}
+
+				@GetMapping("/getQuotationByorgId")
+				public ResponseEntity<ResponseDTO> getQuotationByorgId(@RequestParam(required = false) Long orgId) {
+					String methodName = "getQuotationByorgId()";
+					LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+					String errorMsg = null;
+					Map<String, Object> responseObjectsMap = new HashMap<>();
+					ResponseDTO responseDTO = null;
+					List<Map<String, Object>> quotationVO = new ArrayList<>();
+					try {
+						quotationVO = reportService.getQuotationByorgId(orgId);
+					} catch (Exception e) {
+						errorMsg = e.getMessage();
+						LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+					}
+					if (StringUtils.isEmpty(errorMsg)) {
+						responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "quotation found by ID");
+						responseObjectsMap.put("quotationVO", quotationVO);
+						responseDTO = createServiceResponse(responseObjectsMap);
+					} else {
+						errorMsg = "quotation not found for ID: " + orgId;
+						responseDTO = createServiceResponseError(responseObjectsMap, "quotation not found", errorMsg);
+					}
+					LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+					return ResponseEntity.ok().body(responseDTO);
+				}
+
+				@GetMapping("/getQutationById")
+				public ResponseEntity<ResponseDTO> getQutationById(@RequestParam Long id) {
+					String methodName = "getQutationById()";
+					LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+					String errorMsg = null;
+					Map<String, Object> responseObjectsMap = new HashMap<>();
+					ResponseDTO responseDTO = null;
+					Optional<QuotationVO> quotationVO = null;
+					try {
+						quotationVO = reportService.getQutationById(id);
+					} catch (Exception e) {
+						errorMsg = e.getMessage();
+						LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+					}
+					if (StringUtils.isBlank(errorMsg)) {
+						responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "Qutation information get successfully");
+						responseObjectsMap.put("quotationVO", quotationVO);
+						responseDTO = createServiceResponse(responseObjectsMap);
+					} else {
+						responseDTO = createServiceResponseError(responseObjectsMap, "Qutation information receive failed",
+								errorMsg);
+					}
+					LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+					return ResponseEntity.ok().body(responseDTO);
+				}
+				
 }

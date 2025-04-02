@@ -497,6 +497,7 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 		partyMasterVO.setAccountType(customerDTO.getAccountsType());
 //		partyMasterVO.setPartyCode(customerDTO.getCustomerCode());
 		partyMasterVO.setCurrency(customerDTO.getCurrency());
+		partyMasterVO.setPartyShortName(customerDTO.getShortName());
 
 		if (customerDTO.isApproved()) {
 			partyMasterVO.setActive(true);
@@ -585,6 +586,7 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 		partyMasterVO.setBussinessType(vendorDTO.getBussinessType());
 		partyMasterVO.setBussinessCate(vendorDTO.getBussinessCategory());
 		partyMasterVO.setAccountType(vendorDTO.getAccountsType());
+		partyMasterVO.setPartyShortName(partyMasterVO.getPartyShortName());
 		partyMasterVO.setActive(vendorDTO.isActive());
 
 		if (vendorDTO.isApproved()) {
@@ -940,4 +942,43 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 		return List1;
 
 }
+
+	@Override
+	public List<Map<String, Object>> getMonthlyAndYearWiseData(Long orgId, String month,String year) {
+		Set<Object[]> chType = partyMasterRepo.getMonthlyAndYearWiseData(orgId,month,year);
+		return getMonthlyAndYear(chType);
+	}
+
+	private List<Map<String, Object>> getMonthlyAndYear(Set<Object[]> chType) {
+		List<Map<String, Object>> List1 = new ArrayList<>();
+		for (Object[] ch : chType) {
+			Map<String, Object> map = new HashMap<>();
+			map.put("orgid", ch[0].toString());
+			map.put("amt", ch[1] != null ? ch[1].toString() : "");
+			map.put("diff", ch[2] != null ? ch[2].toString() : "");
+			//map.put("preMnthAmt", ch[3].toString());
+			List1.add(map);
+		}
+		return List1;
+
+}
+
+	@Override
+	public List<Map<String, Object>> getSalesDistributionData(Long orgId, String month, String year) {
+		Set<Object[]> chType = partyMasterRepo.getSalesDistributionData(orgId,month,year);
+		return getSalesDistribution(chType);
+	}
+
+	private List<Map<String, Object>> getSalesDistribution(Set<Object[]> chType) {
+		List<Map<String, Object>> List1 = new ArrayList<>();
+		for (Object[] ch : chType) {
+			Map<String, Object> map = new HashMap<>();
+			map.put("product", ch[0].toString());
+			map.put("amt", ch[1].toString());
+			List1.add(map);
+		}
+		return List1;
+
+}
+
 }
