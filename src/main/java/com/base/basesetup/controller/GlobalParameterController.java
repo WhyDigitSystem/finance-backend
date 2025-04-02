@@ -80,7 +80,7 @@ public class GlobalParameterController extends BaseController {
 
 	@GetMapping("/globalparam/username")
 	public ResponseEntity<ResponseDTO> getGlobalParamByOrgIdAndUserId(@RequestParam Long orgid,
-			@RequestParam String userId) {
+			@RequestParam Long userid) {
 		String methodName = "getCountryById()";
 		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
 		String errorMsg = null;
@@ -88,7 +88,7 @@ public class GlobalParameterController extends BaseController {
 		ResponseDTO responseDTO = null;
 		Optional<GlobalParameterVO> globalparam = null;
 		try {
-			globalparam = globalParameterService.getGlobalParamByOrgIdAndUserName(orgid, userId);
+			globalparam = globalParameterService.getGlobalParamByOrgIdAndUserName(orgid, userid);
 		} catch (Exception e) {
 			errorMsg = e.getMessage();
 			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
