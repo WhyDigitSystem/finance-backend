@@ -195,5 +195,15 @@ public interface ReceiptRepo extends JpaRepository<ReceiptVO, Long> {
 	Set<Object[]> getPaymentRegisterReport(Long orgId, String partyCode, String branchCode, String finYear,
 	                                        String fromDate, String toDate);
 
+	@Query(nativeQuery =true,value ="SELECT SUM(r.receiptamt) AS receiptAmnt\r\n"
+			+ "FROM receipt r\r\n"
+			+ "WHERE r.orgid = ?1\r\n"
+			+ "  AND (\r\n"
+			+ "    (MONTH(r.docdate) = MONTH(CURDATE()) AND 'MONTH'=?2) \r\n"
+			+ "    OR \r\n"
+			+ "    (YEAR(r.docdate) = YEAR(CURDATE()) AND 'YEAR'=?3)\r\n"
+			+ "  )")
+	Set<Object[]> getReceiptAmont(Long orgId, String month, String year);
+
 
 }

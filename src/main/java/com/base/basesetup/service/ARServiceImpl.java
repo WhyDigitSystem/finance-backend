@@ -21,12 +21,14 @@ import com.base.basesetup.dto.ReceiptInvDetailsDTO;
 import com.base.basesetup.entity.ArBillBalanceVO;
 import com.base.basesetup.entity.ArapAdjustmentsVO;
 import com.base.basesetup.entity.DocumentTypeMappingDetailsVO;
+import com.base.basesetup.entity.PartyMasterVO;
 import com.base.basesetup.entity.ReceiptInvDetailsVO;
 import com.base.basesetup.entity.ReceiptVO;
 import com.base.basesetup.exception.ApplicationException;
 import com.base.basesetup.repo.ArBillBalanceRepo;
 import com.base.basesetup.repo.ArapAdjustmentsRepo;
 import com.base.basesetup.repo.DocumentTypeMappingDetailsRepo;
+import com.base.basesetup.repo.PartyMasterRepo;
 import com.base.basesetup.repo.ReceiptInvDetailsRepo;
 import com.base.basesetup.repo.ReceiptRepo;
 
@@ -49,6 +51,9 @@ public class ARServiceImpl implements ARService {
 
 	@Autowired
 	ArapAdjustmentsRepo arapAdjustmentsRepo;
+	
+	@Autowired
+	PartyMasterRepo partyMasterRepo;
 
 	// Receipt
 	@Override
@@ -144,7 +149,41 @@ public class ARServiceImpl implements ARService {
 				arapadjustments.setSubLedgerName(savedReceiptVO.getCustomerName());
 				arapadjustments.setAmount(savedReceiptInvDetails.getSettled());
 				arapadjustments.setSubLedgerName(savedReceiptVO.getCustomerName());
+				
+				PartyMasterVO partyMaster = partyMasterRepo.findByPartyCode(savedReceiptVO.getCustomerCode());
+				
+				arapadjustments.setAccountName(partyMaster.getAccountType());
+				System.out.println("ACCOUNT TYPE : "+partyMaster.getAccountType());
 				arapAdjustmentsRepo.save(arapadjustments);
+				
+				
+				
+				
+				// Second posting with negative values
+		        ArapAdjustmentsVO negativeArapAdjustments = new ArapAdjustmentsVO();
+		        negativeArapAdjustments.setBranch(savedReceiptVO.getBranch());
+		        negativeArapAdjustments.setFinYear(savedReceiptVO.getFinYear());
+		        negativeArapAdjustments.setSourceId(savedReceiptVO.getId());
+		        negativeArapAdjustments.setDocId(savedReceiptInvDetails.getInvNo()); // Changed as per request
+		        negativeArapAdjustments.setTdsAmt(savedReceiptVO.getTdsAmt());
+		        negativeArapAdjustments.setRefNo(savedReceiptVO.getDocId()); // Changed as per request
+		        negativeArapAdjustments.setRefDate(savedReceiptInvDetails.getInvDate());
+		        negativeArapAdjustments.setCurrency(savedReceiptVO.getCurrency());
+		        negativeArapAdjustments.setBaseAmt(savedReceiptInvDetails.getSettled()); // Negative value
+		        negativeArapAdjustments.setNativeAmt(savedReceiptInvDetails.getSettled()); // Negative value
+		        negativeArapAdjustments.setVoucherType(savedReceiptVO.getType());
+		        negativeArapAdjustments.setSubLedgerCode(savedReceiptVO.getCustomerCode());
+		        negativeArapAdjustments.setExRate(savedReceiptInvDetails.getExRate());
+		        negativeArapAdjustments.setOrgId(savedReceiptVO.getOrgId());
+		        negativeArapAdjustments.setActive(savedReceiptVO.isActive());
+		        negativeArapAdjustments.setCancel(savedReceiptVO.isCancel());
+		        negativeArapAdjustments.setCreatedBy(savedReceiptVO.getCreatedBy());
+		        negativeArapAdjustments.setUpdatedBy(savedReceiptVO.getUpdatedBy());
+		        negativeArapAdjustments.setBranchCode(savedReceiptVO.getBranchCode());
+		        negativeArapAdjustments.setSubLedgerName(savedReceiptVO.getCustomerName());
+		        negativeArapAdjustments.setAmount(savedReceiptInvDetails.getSettled().negate()); // Negative value
+		        negativeArapAdjustments.setAccountName(partyMaster.getAccountType());
+		        arapAdjustmentsRepo.save(negativeArapAdjustments);
 			}
 		}
 

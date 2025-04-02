@@ -104,7 +104,7 @@ public class ArAdjustmentOffSetServiceImpl implements ArAdjustmentOffSetService 
 
 //						// GETDOCID LASTNO +1
 			DocumentTypeMappingDetailsVO documentTypeMappingDetailsVO = documentTypeMappingDetailsRepo
-					.findByOrgIdAndFinYearAndBranchCodeAndScreenCode(arAdjustmentOffSetDTO.getOrgId(),
+		  			.findByOrgIdAndFinYearAndBranchCodeAndScreenCode(arAdjustmentOffSetDTO.getOrgId(),
 							arAdjustmentOffSetDTO.getFinYear(), arAdjustmentOffSetDTO.getBranchCode(), screenCode);
 			documentTypeMappingDetailsVO.setLastno(documentTypeMappingDetailsVO.getLastno() + 1);
 			documentTypeMappingDetailsRepo.save(documentTypeMappingDetailsVO);
