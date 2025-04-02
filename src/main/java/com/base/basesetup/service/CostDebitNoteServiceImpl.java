@@ -581,7 +581,7 @@ public class CostDebitNoteServiceImpl implements CostDebitNoteService {
 
 			String accountsDocId = accountsRepo.getApproveDocId(costDebitNoteVO.getOrgId(),
 					costDebitNoteVO.getFinYear(), costDebitNoteVO.getBranchCode(), sourceScreenCode, screenCode);
-			costDebitNoteVO.setDocId(docId);
+//			costDebitNoteVO.setDocId(docId);
 
 			System.out.println(accountsDocId);
 			// GETDOCID LASTNO +1
@@ -665,7 +665,7 @@ public class CostDebitNoteServiceImpl implements CostDebitNoteService {
 				accountsDetailsVO1.setSubledgerName("None");
 				accountsDetailsVO1.setSubLedgerCode("None");
 				accountsDetailsVO1.setNArapAmount(BigDecimal.ZERO);
-				accountsDetailsVO1.setGstflag(6);
+				accountsDetailsVO1.setGstflag(3);
 				accountsDetailsVO1.setAccountsVO(accountsVO);
 				accountsDetailsVOs.add(accountsDetailsVO1);
 

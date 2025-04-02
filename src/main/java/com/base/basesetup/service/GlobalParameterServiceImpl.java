@@ -43,9 +43,9 @@ public class GlobalParameterServiceImpl implements GlobalParameterService {
 
 	
 	@Override
-	public Optional<GlobalParameterVO> getGlobalParamByOrgIdAndUserName(Long orgid, String username) {
+	public Optional<GlobalParameterVO> getGlobalParamByOrgIdAndUserName(Long orgid, Long userid) {
 
-		return globalParameterRepo.findGlobalParamByOrgIdAndUserName(orgid, username);
+		return globalParameterRepo.findGlobalParamByOrgIdAndUserName(orgid, userid);
 	}
 
 	// Change Global Parameter or update Parameters
