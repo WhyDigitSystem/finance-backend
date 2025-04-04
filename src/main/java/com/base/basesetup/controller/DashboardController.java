@@ -179,4 +179,68 @@ public class DashboardController extends BaseController{
 		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
 		return ResponseEntity.ok().body(responseDTO);
 	}
+	
+	@GetMapping("/getPercentageDiffFromCost")
+	public ResponseEntity<ResponseDTO> getPercentageDiffFromCost(@RequestParam(required = true) Long orgId,
+			@RequestParam(required = true) Long finYear,
+			@RequestParam(required = false) String month,
+			@RequestParam(required = false) String year
+			) {
+		String methodName = "getPercentageDiffFromCost()";
+		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+		String errorMsg = null;
+		Map<String, Object> responseObjectsMap = new HashMap<>();
+		ResponseDTO responseDTO = null;
+		List<Map<String, Object>> receiptAmont = new ArrayList<>();
+
+		try {
+			receiptAmont = dashboardService.getPercentageDiffFromCost(orgId,finYear,month,year);
+		} catch (Exception e) {
+			errorMsg = e.getMessage();
+			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+		}
+
+		if (StringUtils.isBlank(errorMsg)) {
+			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "Cost Information  retrieved successfully");
+			responseObjectsMap.put("cost", receiptAmont);
+			responseDTO = createServiceResponse(responseObjectsMap);
+		} else {
+			responseDTO = createServiceResponseError(responseObjectsMap, "Cost Information Reterive Failed", errorMsg);
+		}
+
+		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+		return ResponseEntity.ok().body(responseDTO);
+	}
+	
+	
+	@GetMapping("/getPercentageFromReceipt")
+	public ResponseEntity<ResponseDTO> getPercentageFromReceipt(@RequestParam(required = true) Long orgId,
+			@RequestParam(required = true) Long finYear,
+			@RequestParam(required = false) String month
+			) {
+		String methodName = "getPercentageFromReceipt()";
+		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+		String errorMsg = null;
+		Map<String, Object> responseObjectsMap = new HashMap<>();
+		ResponseDTO responseDTO = null;
+		List<Map<String, Object>> receiptAmont = new ArrayList<>();
+
+		try {
+			receiptAmont = dashboardService.getPercentageFromReceipt(orgId,finYear,month);
+		} catch (Exception e) {
+			errorMsg = e.getMessage();
+			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+		}
+
+		if (StringUtils.isBlank(errorMsg)) {
+			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "Receipt Information  retrieved successfully");
+			responseObjectsMap.put("receipt", receiptAmont);
+			responseDTO = createServiceResponse(responseObjectsMap);
+		} else {
+			responseDTO = createServiceResponseError(responseObjectsMap, "Receipt Information Reterive Failed", errorMsg);
+		}
+
+		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+		return ResponseEntity.ok().body(responseDTO);
+	}
 }

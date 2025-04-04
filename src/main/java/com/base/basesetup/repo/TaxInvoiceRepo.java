@@ -173,7 +173,31 @@ public interface TaxInvoiceRepo extends JpaRepository<TaxInvoiceVO, Long> {
 	Set<Object[]> getReportDetailsForSalesRegister( String fromDate, String toDate, Long orgId,
 			String branchCode, String partyCode);
 
-	@Query(nativeQuery = true,value = "select sum(amount) as totalAmount from vw_revenue where orgid=?1 and (billmonth=?2 or 'ALL'=?2) and finyear=?3")
+	@Query(nativeQuery = true,value = "SELECT SUM(a.amount) \r\n"
+			+ "FROM (\r\n"
+			+ "    -- Current Month Revenue (only if type = 'MONTH')\r\n"
+			+ "    SELECT SUM(v.amount) AS amount\r\n"
+			+ "    FROM vw_revenue v \r\n"
+			+ "    JOIN financialyear f ON v.finyear = f.finyear\r\n"
+			+ "    WHERE v.docdate BETWEEN f.startdate AND f.enddate \r\n"
+			+ "      AND MONTH(v.docdate) = MONTH(CURDATE()) \r\n"
+			+ "      AND ?2 = 'MONTH' \r\n"
+			+ "      AND CAST(v.finyear AS SIGNED) = ?3\r\n"
+			+ "      AND v.orgid = ?1\r\n"
+			+ "\r\n"
+			+ "    UNION ALL\r\n"
+			+ "\r\n"
+			+ "    -- Current Financial Year Revenue (only if type = 'YEAR')\r\n"
+			+ "    SELECT v.amount \r\n"
+			+ "    FROM vw_revenue v \r\n"
+			+ "    WHERE (\r\n"
+			+ "        (MONTH(v.docdate) >= 4 AND CAST(v.finyear AS SIGNED) = ?3) \r\n"
+			+ "        OR \r\n"
+			+ "        (MONTH(v.docdate) < 4 AND CAST(v.finyear AS SIGNED) = (?3 + 1))\r\n"
+			+ "    )\r\n"
+			+ "    AND v.orgid = ?1 \r\n"
+			+ "    AND ?2 = 'YEAR'\r\n"
+			+ ") a")
 	Set<Object[]> getDsahboardRevenue(Long orgId, String billMonth, String finYear);
 
 //	@Query(nativeQuery =true,value="SELECT \r\n"
@@ -323,7 +347,7 @@ public interface TaxInvoiceRepo extends JpaRepository<TaxInvoiceVO, Long> {
 			+ ") a")
 	Set<Object[]> getPercentageDiffFromYear(Long orgId, Long finYear);
 
-
+ 
 
 
 	
