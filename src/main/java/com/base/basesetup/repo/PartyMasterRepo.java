@@ -363,7 +363,7 @@ public interface PartyMasterRepo extends JpaRepository<PartyMasterVO, Long> {
 			+ "    AND (MONTH(t.docdate) = MONTH(CURDATE()) OR  ?2='MONTH') AND t.finyear=?3 \r\n"
 			+ "    AND t.orgid =?1\r\n"
 			+ "GROUP BY t.partyname, p.partyshortname\r\n"
-			+ "UNION ALL\r\n"
+			+ "UNION \r\n"
 			+ "SELECT \r\n"
 			+ "    t.partyname, \r\n"
 			+ "    SUM(t.totalchargeamountlc) AS amt, \r\n"
