@@ -90,7 +90,8 @@ public class DashboardController extends BaseController{
 	}
 	
 	@GetMapping("/getTdsSummary")
-	public ResponseEntity<ResponseDTO> getTdsSummary(@RequestParam(required = true) Long orgId,@RequestParam(required = false) String month,@RequestParam(required = true) String finYear) {
+	public ResponseEntity<ResponseDTO> getTdsSummary(@RequestParam(required = true) Long orgId,@RequestParam(required = false) String month,
+			@RequestParam(required = true) Long finYear) {
 		String methodName = "getTdsSummary()";
 		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
 		String errorMsg = null;
@@ -119,8 +120,9 @@ public class DashboardController extends BaseController{
 	
 	@GetMapping("/getPercentageDiffFromRevenue")
 	public ResponseEntity<ResponseDTO> getPercentageDiffFromRevenue(@RequestParam(required = true) Long orgId,
-			@RequestParam(required = false) String finYear,
-			@RequestParam(required = true) String choose
+			@RequestParam(required = true) Long finYear,
+			@RequestParam(required = false) String month,
+			@RequestParam(required = false) String year
 			) {
 		String methodName = "getPercentageDiffFromRevenue()";
 		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
@@ -130,7 +132,37 @@ public class DashboardController extends BaseController{
 		List<Map<String, Object>> receiptAmont = new ArrayList<>();
 
 		try {
-			receiptAmont = dashboardService.getPercentageDiffFromRevenue(orgId,finYear,choose);
+			receiptAmont = dashboardService.getPercentageDiffFromRevenue(orgId,finYear,month,year);
+		} catch (Exception e) {
+			errorMsg = e.getMessage();
+			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+		}
+
+		if (StringUtils.isBlank(errorMsg)) {
+			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "Revenue Information  retrieved successfully");
+			responseObjectsMap.put("Revenue", receiptAmont);
+			responseDTO = createServiceResponse(responseObjectsMap);
+		} else {
+			responseDTO = createServiceResponseError(responseObjectsMap, "Revenue Information Reterive Failed", errorMsg);
+		}
+
+		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+		return ResponseEntity.ok().body(responseDTO);
+	}
+	
+	@GetMapping("/getPercentageDiffFromYear")
+	public ResponseEntity<ResponseDTO> getPercentageDiffFromYear(@RequestParam(required = true) Long orgId,
+			@RequestParam(required = false) Long finYear
+			) {
+		String methodName = "getPercentageDiffFromYear()";
+		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+		String errorMsg = null;
+		Map<String, Object> responseObjectsMap = new HashMap<>();
+		ResponseDTO responseDTO = null;
+		List<Map<String, Object>> receiptAmont = new ArrayList<>();
+
+		try {
+			receiptAmont = dashboardService.getPercentageDiffFromYear(orgId,finYear);
 		} catch (Exception e) {
 			errorMsg = e.getMessage();
 			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
