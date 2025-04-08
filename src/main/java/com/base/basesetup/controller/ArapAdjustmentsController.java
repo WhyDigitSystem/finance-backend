@@ -205,7 +205,7 @@ public class ArapAdjustmentsController extends BaseController {
 	}
 
 	@GetMapping("/GetArapAgeing")
-	public ResponseEntity<ResponseDTO> GetArapAgeing(@RequestParam  String asondate ,@RequestParam (required=false) String pdate,@RequestParam (required=false)String partyname,@RequestParam (required=false)Long Orgid) {
+	public ResponseEntity<ResponseDTO> GetArapAgeing(@RequestParam  String asondate ,@RequestParam (required=false) String pdate,@RequestParam (required=false)String partyname,@RequestParam (required=false)Long orgId) {
 		String methodName = "GetArapAgeing()";
 		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
 		String errorMsg = null;
@@ -213,7 +213,7 @@ public class ArapAdjustmentsController extends BaseController {
 		ResponseDTO responseDTO = null;
 		List<Map<String, Object>> mapp = new ArrayList<>();
 		try {
-			mapp = arapAdjustmentsService.GetArapAgeing(asondate,pdate,partyname,Orgid);
+			mapp = arapAdjustmentsService.GetArapAgeing(asondate,pdate,partyname,orgId);
 		} catch (Exception e) {
 			errorMsg = e.getMessage();
 			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
@@ -230,4 +230,34 @@ public class ArapAdjustmentsController extends BaseController {
 		return ResponseEntity.ok().body(responseDTO);
 
 	}
+	
+	
+	@GetMapping("/GetArapAdjustments")
+	public ResponseEntity<ResponseDTO> GetArapAdjustments(@RequestParam (required=true) String asondt,@RequestParam (required=true)String partyName,@RequestParam (required=false) String branch,@RequestParam (required=true)Long orgId,@RequestParam (required=false)String pdate) {
+		String methodName = "GetArapAdjustments()"; 
+		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+		String errorMsg = null;
+		Map<String, Object> responseObjectsMap = new HashMap<>();
+		ResponseDTO responseDTO = null;
+		List<Map<String, Object>> mapp = new ArrayList<>();
+		try {
+			mapp = arapAdjustmentsService.GetArapAdjustments(asondt, partyName,branch ,orgId,pdate);
+		} catch (Exception e) {
+			errorMsg = e.getMessage();
+			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+		}
+		if (StringUtils.isBlank(errorMsg)) {
+			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "Arap Adjustments Details get successfully ");
+			responseObjectsMap.put("mapp", mapp);
+			responseDTO = createServiceResponse(responseObjectsMap);
+		} else {
+			responseDTO = createServiceResponseError(responseObjectsMap,
+					"Arap Adjustments Details  failed ", errorMsg);
+		}
+		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+		return ResponseEntity.ok().body(responseDTO);
+
+	}
+	
+	
 }
