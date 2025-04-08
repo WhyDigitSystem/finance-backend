@@ -28,5 +28,7 @@ public interface ArapAdjustmentsService {
 	String getArapAdjustmentsDocId(Long orgId, String finYear, String branch, String branchCode);
 	
 	
-	List<Map<String, Object>> GetArapAgeing(String asondate , String pdate,String partyname,Long Orgid);
+	List<Map<String, Object>> GetArapAgeing(String asondate , String pdate,String partyname,Long orgId);
+	
+	List<Map<String, Object>> GetArapAdjustments(String asondt,String partyname, String branch, Long orgId, String pdate);
 }

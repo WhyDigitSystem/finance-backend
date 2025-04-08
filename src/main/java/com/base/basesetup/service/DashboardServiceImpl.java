@@ -189,4 +189,27 @@ public class DashboardServiceImpl implements DashboardService {
 		return List1;
 
 	}
+
+	@Override
+	public List<Map<String, Object>> getPercentageFromPayment(Long orgId, Long finYear, String month) {
+		Set<Object[]> chType = taxInvoiceRepo.getPercentageFromPayment(orgId,finYear,month);
+		return getPercentagePayment(chType);
+	}
+
+	private List<Map<String, Object>> getPercentagePayment(Set<Object[]> chType) {
+		List<Map<String, Object>> List1 = new ArrayList<>();
+		for (Object[] ch : chType) {
+			Map<String, Object> map = new HashMap<>();
+			
+		      map.put("curYear", ch[0] != null ? new BigDecimal(ch[0].toString()) : BigDecimal.ZERO);
+		      map.put("preYear", ch[1] != null ? new BigDecimal(ch[1].toString()) : BigDecimal.ZERO);
+		      map.put("curMonth", ch[2] != null ? new BigDecimal(ch[2].toString()) : BigDecimal.ZERO);
+		      map.put("preMonth", ch[3] != null ? new BigDecimal(ch[3].toString()) : BigDecimal.ZERO);
+		     
+
+			List1.add(map);
+		}
+		return List1;
+
+	}
 }

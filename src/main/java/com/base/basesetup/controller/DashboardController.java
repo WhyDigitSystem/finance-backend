@@ -243,4 +243,35 @@ public class DashboardController extends BaseController{
 		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
 		return ResponseEntity.ok().body(responseDTO);
 	}
+	
+	@GetMapping("/getPercentageFromPayment")
+	public ResponseEntity<ResponseDTO> getPercentageFromPayment(@RequestParam(required = true) Long orgId,
+			@RequestParam(required = true) Long finYear,
+			@RequestParam(required = false) String month
+			) {
+		String methodName = "getPercentageFromPayment()";
+		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+		String errorMsg = null;
+		Map<String, Object> responseObjectsMap = new HashMap<>();
+		ResponseDTO responseDTO = null;
+		List<Map<String, Object>> receiptAmont = new ArrayList<>();
+
+		try {
+			receiptAmont = dashboardService.getPercentageFromPayment(orgId,finYear,month);
+		} catch (Exception e) {
+			errorMsg = e.getMessage();
+			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+		}
+
+		if (StringUtils.isBlank(errorMsg)) {
+			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "Payment Information  retrieved successfully");
+			responseObjectsMap.put("Payment", receiptAmont);
+			responseDTO = createServiceResponse(responseObjectsMap);
+		} else {
+			responseDTO = createServiceResponseError(responseObjectsMap, "Payment Information Reterive Failed", errorMsg);
+		}
+
+		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+		return ResponseEntity.ok().body(responseDTO);
+	}
 }
