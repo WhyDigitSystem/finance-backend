@@ -1975,7 +1975,9 @@ public class MasterServiceImpl implements MasterService {
 		partyMasterVO.setFinYear(partyMasterDTO.getFinYear());
 		partyMasterVO.setBranchCode(partyMasterDTO.getBranchCode());
 		partyMasterVO.setCreditTerms(partyMasterDTO.getCreditTerms());
-	}
+		partyMasterVO.setPartyShortName(partyMasterDTO.getPartyShortName());
+		
+		}
 
 	@Override
 	public String getPartyMasterDocId(Long orgId, String finYear, String branch, String branchCode) {

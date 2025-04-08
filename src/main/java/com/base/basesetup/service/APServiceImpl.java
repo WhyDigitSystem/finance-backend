@@ -23,6 +23,7 @@ import com.base.basesetup.dto.TdsPaymentDTO;
 import com.base.basesetup.entity.ApBillBalanceVO;
 import com.base.basesetup.entity.ArapAdjustmentsVO;
 import com.base.basesetup.entity.DocumentTypeMappingDetailsVO;
+import com.base.basesetup.entity.PartyMasterVO;
 import com.base.basesetup.entity.PaymentInvDtlsVO;
 import com.base.basesetup.entity.PaymentVO;
 import com.base.basesetup.entity.TaxInvoiceVO;
@@ -137,10 +138,39 @@ public class APServiceImpl implements APService {
 			adjustmentsVO.setNativeAmt(dtlsVO.getSettled());
 			adjustmentsVO.setOrgId(paymentVO.getOrgId());
 			adjustmentsVO.setAccCurrency(dtlsVO.getCurrency());
-			adjustmentsVO.setAccountName(paymentVO.getPartyName());
+		//	adjustmentsVO.setAccountName(paymentVO.getPartyName());
 			adjustmentsVO.setBranch(paymentVO.getBranch());
 			adjustmentsVO.setSourceId(dtlsVO.getId());
+			
+			PartyMasterVO masterVO=partyMasterRepo.findByPartyCode(paymentVO.getPartyCode());
+			adjustmentsVO.setAccountName(masterVO.getAccountType());
+			
 			arapAdjustmentsRepo.save(adjustmentsVO);
+			
+			
+			ArapAdjustmentsVO negativeAdjustmentsVO = new ArapAdjustmentsVO();
+			negativeAdjustmentsVO.setCancel(false);
+			negativeAdjustmentsVO.setActive(true);
+			negativeAdjustmentsVO.setCreatedBy(paymentVO.getCreatedBy());
+			negativeAdjustmentsVO.setUpdatedBy(paymentVO.getUpdatedBy());
+			negativeAdjustmentsVO.setFinYear(paymentVO.getFinYear());
+			negativeAdjustmentsVO.setDocId(paymentVO.getDocId());
+			negativeAdjustmentsVO.setDocDate(paymentVO.getDocDate());
+			negativeAdjustmentsVO.setRefNo(dtlsVO.getInvNo());
+			negativeAdjustmentsVO.setRefDate(dtlsVO.getInvDate());
+			negativeAdjustmentsVO.setSubLedgerCode(paymentVO.getPartyCode());
+			negativeAdjustmentsVO.setSubLedgerName(paymentVO.getPartyName());
+			negativeAdjustmentsVO.setCurrency(dtlsVO.getCurrency());
+			negativeAdjustmentsVO.setExRate(dtlsVO.getExRate());
+			negativeAdjustmentsVO.setAmount(dtlsVO.getSettled().negate());
+			negativeAdjustmentsVO.setBaseAmt(dtlsVO.getSettled());
+			negativeAdjustmentsVO.setNativeAmt(dtlsVO.getSettled());
+			negativeAdjustmentsVO.setOrgId(paymentVO.getOrgId());
+			negativeAdjustmentsVO.setAccCurrency(dtlsVO.getCurrency());
+			negativeAdjustmentsVO.setAccountName(masterVO.getAccountType());
+			negativeAdjustmentsVO.setBranch(paymentVO.getBranch());
+			negativeAdjustmentsVO.setSourceId(dtlsVO.getId());
+			arapAdjustmentsRepo.save(negativeAdjustmentsVO);
 		}
 		Map<String, Object> response = new HashMap<>();
 		response.put("paymentVO", paymentVO);
@@ -183,7 +213,7 @@ public class APServiceImpl implements APService {
 			paymentInvDtlsRepo.deleteAll(paymentInvDtlsVOList);
 		}
 
-		BigDecimal netAmount = BigDecimal.ZERO;
+		BigDecimal netAmount = BigDecimal.ZERO; 
 		BigDecimal onAccount = BigDecimal.ZERO;
 
 		List<PaymentInvDtlsVO> paymentInvDtlsVOs = new ArrayList<>();
@@ -203,10 +233,7 @@ public class APServiceImpl implements APService {
 
 				BigDecimal paymentAmt = paymentDTO.getPaymentAmt();
 
-				// Check if settled amount does not exceed the paymentAmt
-				if (paymentAmt.compareTo(paymentInvDtlsDTO.getAmount()) < 0) {
-					throw new ApplicationException("Amount in child table exceeds the payment amount");
-				}
+
 
 				paymentInvDtlsVO.setAmount(paymentInvDtlsDTO.getAmount());
 

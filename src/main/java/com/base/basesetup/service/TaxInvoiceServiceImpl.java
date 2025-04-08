@@ -849,6 +849,7 @@ public class TaxInvoiceServiceImpl implements TaxInvoiceService {
 			if(ch!=null) {
 			Map<String, Object> map = new HashMap<>();
 			map.put("amount", ch[0] != null ? ch[0].toString() : "0");
+			//map.put("differnce", ch[1] != null ? ch[1].toString() : "0");
 			List1.add(map);
 		}
 		}

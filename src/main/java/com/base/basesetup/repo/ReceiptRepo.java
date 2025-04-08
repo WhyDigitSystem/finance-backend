@@ -46,8 +46,10 @@ public interface ReceiptRepo extends JpaRepository<ReceiptVO, Long> {
 
 	@Query(nativeQuery = true, value = "select * from receipt where orgid=?1 and branchcode=?2 and cancel=0")
 	List<ReceiptVO> getAllReceiptByOrgIdAndBranchCode(Long orgId, String branchCode);
-  
+
 	@Query(nativeQuery =true,value ="SELECT r.orgid, r.branchcode, r.finyear, \r\n"
+
+
 			+ "    r.createdby, \r\n"
 			+ "    r.createdon, \r\n"
 			+ "    r.docid, \r\n"
@@ -60,7 +62,9 @@ public interface ReceiptRepo extends JpaRepository<ReceiptVO, Long> {
 			+ "    r.receiptamt AS receiptamount, \r\n"
 			+ "    r.bankcharges AS bankchargesamt, \r\n"
 			+ "    CASE \r\n"
+
 			+ "        WHEN tds_rank = 1 THEN r.tdsamt ELSE 0 \r\n"
+
 			+ "    END AS tdsamount, \r\n"
 			+ "    rd.invno AS invoiceno, \r\n"
 			+ "    rd.invdate AS invoicedate, \r\n"
@@ -75,6 +79,7 @@ public interface ReceiptRepo extends JpaRepository<ReceiptVO, Long> {
 			+ "    ?6 AS eddt \r\n"
 			+ "FROM (\r\n"
 			+ "    SELECT r.receiptid,\r\n"
+
 			+ "        r.orgid, \r\n"
 			+ "        r.branchcode, \r\n"
 			+ "        r.finyear, \r\n"
@@ -103,15 +108,97 @@ public interface ReceiptRepo extends JpaRepository<ReceiptVO, Long> {
 			+ "WHERE r.orgid = ?1\r\n"
 			+ "AND (r.finyear = ?4 OR 'ALL' = ?4) \r\n"
 			+ "ORDER BY r.orgid, r.branchcode, r.finyear, \r\n"
+
 			+ "    r.createdon, \r\n"
 			+ "    r.createdby, \r\n"
 			+ "    r.docdate, \r\n"
 			+ "    r.docid, \r\n"
 			+ "    r.chequebank, \r\n"
 			+ "    r.chequeutino, \r\n"
+
 			+ "    r.customername\r\n"
 			+ "")
+
 	Set<Object[]> getReceiptRegisterReport(Long orgId, String partyName, String branchCode, String finYear,
 			String fromDate, String toDate);
+
+	
+	@Query(nativeQuery = true, value = "SELECT \r\n"
+			+ "    a.createdby,\r\n"
+			+ "    a.createdon,\r\n"
+			+ "    a.docid,\r\n"
+			+ "    a.docdate,\r\n"
+			+ "    a.subtypecode,\r\n"
+			+ "    a.subtypename,\r\n"
+			+ "    a.chequebank,\r\n"
+			+ "    a.chequeno,\r\n"
+			+ "    a.subledgercode,\r\n"
+			+ "    a.subledgername,\r\n"
+			+ "    m.accountname,\r\n"
+			+ "    a.receiptamt AS receiptamount,\r\n"
+			+ "    a.bankcharges AS bankchargesamt,\r\n"
+			+ "    CASE WHEN rnk = 1 THEN a.tdsamt ELSE 0 END AS tdsamt,\r\n"
+			+ "    a.servicetaxamt AS staxamount,\r\n"
+			+ "    a.invno AS invoiceno,\r\n"
+			+ "    a.invdate AS invoicedate,\r\n"
+			+ "    a.refno,\r\n"
+			+ "    a.refdate,\r\n"
+			+ "    a.amount AS arapamount,\r\n"
+			+ "    a.outstanding AS arapoutstanding,\r\n"
+			+ "    a.settled AS arapsettled\r\n"
+			+ "FROM  \r\n"
+			+ "    (SELECT \r\n"
+			+ "        p.createdby,\r\n"
+			+ "        p.createdon,\r\n"
+			+ "        p.docid,\r\n"
+			+ "        p.docdate,\r\n"
+			+ "        p.paymenttype AS subtypecode,\r\n"
+			+ "        p.type AS subtypename,\r\n"
+			+ "        p.chequebank,\r\n"
+			+ "        p.chequeno,\r\n"
+			+ "        p.partycode AS subledgercode,\r\n"
+			+ "        p.partyname AS subledgername,\r\n"
+			+ "        p.receiptamt,\r\n"
+			+ "        p.bankcharges,\r\n"
+			+ "        p.tdsamt,\r\n"
+			+ "        p.servicetaxamt,\r\n"
+			+ "        pi.invno,\r\n"
+			+ "        pi.invdate,\r\n"
+			+ "        pi.refno,\r\n"
+			+ "        pi.refdate,\r\n"
+			+ "        pi.amount,\r\n"
+			+ "        pi.outstanding,\r\n"
+			+ "        pi.settled,\r\n"
+			+ "        ROW_NUMBER() OVER (PARTITION BY p.docid ORDER BY p.docid) AS rnk\r\n"
+			+ "    FROM payment p\r\n"
+			+ "    LEFT JOIN paymentinvdtls pi ON p.paymentid = pi.paymentid\r\n"
+			+ "    LEFT JOIN account m ON m.accountid = p.bankcashacc\r\n"
+			+ "    LEFT JOIN branch br ON p.branch = br.branch\r\n"
+			+ "    WHERE p.cancel = 0\r\n"
+			+ "      AND (p.partycode=?2 OR ?2 = 'ALL')\r\n"
+			+ "      AND (p.docdate BETWEEN date(?5) AND date(?6) OR (?5 is null AND ?6 is null))\r\n"
+			+ "      AND (br.branchcode =?3 OR ?3 = 'ALL')\r\n"
+			+ "      AND  p.orgid =?1\r\n"
+			+ "     AND (p.finyear =?4 OR ?4 = 'ALL')\r\n"
+			+ "    ) AS a \r\n"
+			+ "LEFT JOIN account m ON a.subledgercode = m.accountcode\r\n"
+			+ "ORDER BY \r\n"
+			+ "    a.createdon, \r\n"
+			+ "    a.createdby, \r\n"
+			+ "    a.docdate, \r\n"
+			+ "    a.docid, \r\n"
+			+ "    rnk, \r\n"
+			+ "    a.subtypename, \r\n"
+			+ "    a.chequebank, \r\n"
+			+ "    a.chequeno, \r\n"
+			+ "    a.subledgername")
+	Set<Object[]> getPaymentRegisterReport(Long orgId, String partyCode, String branchCode, String finYear,
+	                                        String fromDate, String toDate);
+
+	@Query(nativeQuery =true,value ="SELECT SUM(r.receiptamt) AS receiptAmnt\r\n"
+			+ "FROM receipt r\r\n"
+			+ "WHERE r.orgid = ?1 and r.finyear=?3 and ((month(docdate)=month(current_date()) and ?2='Month')or ?2 is null )")
+	Set<Object[]> getReceiptAmont(Long orgId, String month, String year);
+
 
 }

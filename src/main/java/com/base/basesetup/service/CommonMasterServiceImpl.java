@@ -1410,6 +1410,8 @@ public class CommonMasterServiceImpl implements CommonMasterService {
 		productServiceVO.setDimension(productServiceDTO.getDimension());
 		productServiceVO.setActive(productServiceDTO.isActive());
 		productServiceVO.setOrgId(productServiceDTO.getOrgId());
+		productServiceVO.setDescription(productServiceDTO.getDescription());
+		productServiceVO.setCode(productServiceDTO.getCode());
 
 	}
 

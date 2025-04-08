@@ -10,7 +10,7 @@ import com.base.basesetup.entity.GroupLedgerVO;
 
 public interface GroupLedgerRepo extends JpaRepository<GroupLedgerVO, Long>{
 	
-@Query(nativeQuery =true,value = "select * from groupledger where orgid=?1")
+@Query(nativeQuery =true,value = "select * from groupledger where orgid=?1 order by type,groupledgerid asc")
 	List<GroupLedgerVO> getAllGroupLedgerByOrgId(Long orgId);
 
 @Query(nativeQuery =true,value = "select * from groupledger where groupledgerid=?1")

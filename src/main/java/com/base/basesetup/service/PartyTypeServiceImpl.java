@@ -497,6 +497,7 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 		partyMasterVO.setAccountType(customerDTO.getAccountsType());
 //		partyMasterVO.setPartyCode(customerDTO.getCustomerCode());
 		partyMasterVO.setCurrency(customerDTO.getCurrency());
+		partyMasterVO.setPartyShortName(customerDTO.getShortName());
 
 		if (customerDTO.isApproved()) {
 			partyMasterVO.setActive(true);
@@ -585,6 +586,7 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 		partyMasterVO.setBussinessType(vendorDTO.getBussinessType());
 		partyMasterVO.setBussinessCate(vendorDTO.getBussinessCategory());
 		partyMasterVO.setAccountType(vendorDTO.getAccountsType());
+		partyMasterVO.setPartyShortName(partyMasterVO.getPartyShortName());
 		partyMasterVO.setActive(vendorDTO.isActive());
 
 		if (vendorDTO.isApproved()) {
@@ -942,8 +944,8 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 }
 
 	@Override
-	public List<Map<String, Object>> getMonthlyAndYearWiseData(Long orgId, String month,String year) {
-		Set<Object[]> chType = partyMasterRepo.getMonthlyAndYearWiseData(orgId,month,year);
+	public List<Map<String, Object>> getMonthlyAndYearWiseData(Long orgId, String month,String finYear) {
+		Set<Object[]> chType = partyMasterRepo.getMonthlyAndYearWiseData(orgId,month,finYear);
 		return getMonthlyAndYear(chType);
 	}
 
@@ -952,7 +954,9 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 		for (Object[] ch : chType) {
 			Map<String, Object> map = new HashMap<>();
 			map.put("partyName", ch[0].toString());
-			map.put("amt", ch[1].toString());
+			map.put("amt", ch[1] != null ? ch[1].toString() : "");
+			map.put("partyShortName", ch[2] != null ? ch[2].toString() : "");
+			//map.put("preMnthAmt", ch[3].toString());
 			List1.add(map);
 		}
 		return List1;
@@ -960,8 +964,8 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 }
 
 	@Override
-	public List<Map<String, Object>> getSalesDistributionData(Long orgId, String month, String year) {
-		Set<Object[]> chType = partyMasterRepo.getSalesDistributionData(orgId,month,year);
+	public List<Map<String, Object>> getSalesDistributionData(Long orgId, String month, String finYear) {
+		Set<Object[]> chType = partyMasterRepo.getSalesDistributionData(orgId,month,finYear);
 		return getSalesDistribution(chType);
 	}
 
@@ -969,8 +973,8 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 		List<Map<String, Object>> List1 = new ArrayList<>();
 		for (Object[] ch : chType) {
 			Map<String, Object> map = new HashMap<>();
-			map.put("product", ch[0].toString());
-			map.put("amt", ch[1].toString());
+			map.put("product", ch[0] != null ? ch[0].toString() : "");
+			map.put("amt", ch[1] != null ? ch[1].toString() : "");
 			List1.add(map);
 		}
 		return List1;
