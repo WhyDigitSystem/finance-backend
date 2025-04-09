@@ -24,6 +24,7 @@ public class CostInvoiceDTO {
 	private int creditDays;
 	private LocalDate dueDate;
 	private String supplierName;
+	private Long supplierId;
 	private String supplierPlace;
 	private String currency;
 	private BigDecimal exRate;

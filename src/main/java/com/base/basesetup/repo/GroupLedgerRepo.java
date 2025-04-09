@@ -21,6 +21,7 @@ List<GroupLedgerVO> findGroupLedgerByActive();
 
 boolean existsByAccountGroupNameAndOrgId(String accountGroupName, Long orgId);
 
+
 @Query(nativeQuery = true, value = "select accountgroupname from groupledger where orgid=?1 and type='GROUP' and active=1 group by accountgroupname")
 Set<Object[]> getGroupDetails(Long orgId);
 

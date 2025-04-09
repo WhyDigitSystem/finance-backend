@@ -603,6 +603,10 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 
 			List<PartySpecialTDSVO> partySpecialTDSVO1 = partySpecialTDSRepo.findByPartyMasterVO(partyMasterVO);
 			partySpecialTDSRepo.deleteAll(partySpecialTDSVO1);
+			
+			List<PartyCurrencyMappingVO> partyCurrencyMappingVO1 = partyCurrencyMappingRepo
+					.findByPartyMasterVO(partyMasterVO);
+			partyCurrencyMappingRepo.deleteAll(partyCurrencyMappingVO1);
 
 			List<PartyCurrencyMappingVO> partyCurrencyMappingVO1 = partyCurrencyMappingRepo
 					.findByPartyMasterVO(partyMasterVO);
@@ -675,6 +679,15 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 			// Add the SalesItemParticularsVO to the list
 			partyMasterVO.setPartySpecialTDSVO(specialTDSVOs);
 		}
+	
+		
+		List<PartyCurrencyMappingVO> partyCurrencyMappingVOs = new ArrayList<>();
+		for (VendorCurrencyMappingDTO vendorCurrencyMappingDTO : vendorDTO.getVendorCurrencyMappingDTO()) {
+			PartyCurrencyMappingVO partyCurrencyMappingVO = new PartyCurrencyMappingVO();
+			partyCurrencyMappingVO.setTransCurrency(vendorCurrencyMappingDTO.getTransCurrency());
+			partyCurrencyMappingVO.setPartyMasterVO(partyMasterVO);
+//			partyCurrencyMappingVOs.add(partyCurrencyMappingVO);
+			partyCurrencyMappingVOs.add(partyCurrencyMappingVO);
 
 		List<PartyCurrencyMappingVO> partyCurrencyMappingVOs = new ArrayList<>();
 		for (VendorCurrencyMappingDTO vendorCurrencyMappingDTO : vendorDTO.getVendorCurrencyMappingDTO()) {
@@ -685,6 +698,7 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 
 			partyMasterVO.setPartyCurrencyMappingVO(partyCurrencyMappingVOs);
 		}
+
 
 		return partyMasterVO;
 	}

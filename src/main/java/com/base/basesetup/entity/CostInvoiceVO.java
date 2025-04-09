@@ -59,6 +59,8 @@ public class CostInvoiceVO {
 	private LocalDate dueDate;
 	@Column(name = "suppliername", length = 150)
 	private String supplierName;
+	@Column(name = "supplierid", length = 15)
+	private Long supplierId;
 	@Column(name = "supplierplace", length = 15)
 	private String supplierPlace;
 	@Column(name = "currency", length = 10)
