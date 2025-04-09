@@ -311,17 +311,24 @@ public class UrCostInvoiceGnaServiceImpl implements UrCostInvoiceGnaService {
 		urCostInvoiceGnaVO.setTdsUrCostInvoiceGnaVO(tdsUrCostInvoiceGnaVOs);
 		totaltdsAmount = totaltdsAmount.add(tdsAmount);
 
-		BigDecimal netAmountLc = sumOfLcAmount.subtract(totaltdsAmount);
-		BigDecimal actBillAmtLc = sumOfLcAmount.subtract(totaltdsAmount);
+		BigDecimal netAmountLc = sumOfLcAmount.subtract(totaltdsAmount).add(taxAmount);
+		BigDecimal actBillAmtLc = sumOfLcAmount.subtract(totaltdsAmount).add(taxAmount);
 		BigDecimal roundedValue = netAmountLc.setScale(0, RoundingMode.HALF_UP);
 		BigDecimal roundOff = roundedValue.subtract(netAmountLc);
+		
+		BigDecimal totalTaxAmount = BigDecimal.ZERO;
+		
+		 totalTaxAmount=totalTaxAmount.add(taxAmount);
+		
 
 		urCostInvoiceGnaVO.setTotChargeAmtLc(sumOfLcAmount);
 		urCostInvoiceGnaVO.setActBillAmtLc(actBillAmtLc);
 		urCostInvoiceGnaVO.setRoundOff(roundOff);
 		urCostInvoiceGnaVO.setInput(taxAmount);
 		urCostInvoiceGnaVO.setOutput(taxAmount);
-		urCostInvoiceGnaVO.setNetamountBillCurr(roundedValue);
+		urCostInvoiceGnaVO.setNetamountBillCurr(netAmountLc);
+		urCostInvoiceGnaVO.setTotalGstAmount(totalTaxAmount);
+		
 
 	}
 
