@@ -3,6 +3,7 @@ package com.base.basesetup.service;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 import javax.validation.Valid;
 
@@ -52,4 +53,13 @@ public interface PartyTypeService {
 
 	List<Map<String, Object>> getSectionNameFromTds(Long orgId, String section);
 
+	List<Map<String, Object>> getAccountNameFromGroup(Long orgId);
+	
+	List<Map<String, Object>> getAllPartyLedgerReport(Long orgId,String partyName,String partyType,String branch,String fromDate,String toDate);
+	
+	List<Map<String, Object>> getAllLedgerReport(Long orgId,String accountName,String branchCode,String fromDate,String toDate);
+
+	List<Map<String, Object>> getMonthlyAndYearWiseData(Long orgId, String month,String finYear);
+
+	List<Map<String, Object>> getSalesDistributionData(Long orgId, String month, String finYear);
 }

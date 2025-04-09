@@ -136,7 +136,7 @@ public interface MasterService {
 
 	List<SacCodeVO> getAllSacCodeByOrgId(Long orgId);
 
-	List<SacCodeVO> getAllActiveSacCodeByOrgId(Long orgId);
+	List<HSNSacCodeVO> getAllActiveSacCodeByOrgId(Long orgId);
 
 	SacCodeVO updateCreateSacCode(@Valid SacCodeDTO sacCodeDTO) throws ApplicationException;
 

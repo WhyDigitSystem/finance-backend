@@ -24,5 +24,6 @@ public class TaxMasterDTO {
 	private boolean cancel;
 	private boolean active;
 
+
 	private List<TaxMasterDetailsDTO> taxMasterDetailsDTO;
 }

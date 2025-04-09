@@ -33,7 +33,7 @@ public class TdsCostDebitNoteVO {
 	private String tdsWithHolding;
 	@Column(name = "tdswithholdingper", precision = 10, scale = 2)
 	private BigDecimal tdsWithHoldingPer;
-	@Column(name = "section", length = 10)
+	@Column(name = "section")
 	private String section;
 	@Column(name = "totaltds", precision = 10, scale = 2)
 	private BigDecimal totTdsWhAmnt;

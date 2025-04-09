@@ -1,6 +1,8 @@
 
 package com.base.basesetup.dto;
 
+import java.util.List;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -24,6 +26,7 @@ public class CompanyDTO {
 	private String email;
 	private String webSite;
 	private String note;
+	private String cin;
 	//private String userId;
 	private String employeeName;
 	private String employeeCode;
@@ -35,5 +38,11 @@ public class CompanyDTO {
 	private String ceo;
 	private String panno;
 	private int role;
+	private String termsAndConditions;
+	private String panNo;
+	
+	private byte[] companyLogo;
+	
+	List<BankDetailsDTO>bankDetailsDTO;
 
 }

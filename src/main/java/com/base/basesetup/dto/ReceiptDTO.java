@@ -31,9 +31,9 @@ public class ReceiptDTO {
 	private String chequeBank;
 	private String receiptType;
 	private String chequeUtiNo;
-	private LocalDate chequeUtiDt;
+	private LocalDate chequeUtiDate;
 	private String receivedFrom;
-	private BigDecimal netAmount;
+//	private BigDecimal netAmount;
 	private String remarks;
 
 	// Common Fields

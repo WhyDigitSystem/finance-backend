@@ -4,6 +4,9 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
+import com.base.basesetup.entity.ChargerCostDebitNoteVO;
+import com.base.basesetup.entity.TdsCostDebitNoteVO;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -47,6 +50,8 @@ public class CostDebitNoteDTO {
 	private String utrRef;
 //	private String costType;
 	private boolean approved;
+	private String vId;
+	private LocalDate vDate;
 
 	private String orginBill;
 	private LocalDate originBillDate;
@@ -65,8 +70,8 @@ public class CostDebitNoteDTO {
 //	private BigDecimal currentDateValue;
 //	private String partyAddType;
 
-	private List<ChargerCostDebitNoteDTO> costDebitChargesDTO;
+	List<ChargerCostDebitNoteDTO> chargerCostDebitNoteDTO;
 
-	private List<TdsCostDebitNoteDTO> costDebitNoteTaxPrtculDTO;
+	List<TdsCostDebitNoteDTO> tdsCostDebitNoteDTO;
 
 }

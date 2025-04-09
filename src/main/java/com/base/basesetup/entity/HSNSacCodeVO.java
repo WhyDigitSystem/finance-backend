@@ -38,7 +38,7 @@ public class HSNSacCodeVO {
 	private String type;
 	@Column(name = "code", length = 10)
 	private String code;
-	@Column(name = "description", length = 50)
+	@Column(name = "description")
 	private String description;
 	@Column(name = "taxtype")
 	private String taxType;

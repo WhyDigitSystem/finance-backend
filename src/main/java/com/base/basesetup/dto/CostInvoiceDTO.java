@@ -48,6 +48,10 @@ public class CostInvoiceDTO {
 	private String utrRef;
 	private String costType;
 	private String jobOrderNo;
+	private Long supplierId;
+	
+	private String vId;
+	private LocalDate vDate;
 
 	List<ChargerCostInvoiceDTO> chargerCostInvoiceDTO;
 

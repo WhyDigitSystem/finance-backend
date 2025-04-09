@@ -22,6 +22,7 @@ public class ChargerDebitNoteDTO {
 	private BigDecimal exRate;
 	private BigDecimal rate;
 	private String exempted;
+	private String description;
 	private BigDecimal fcAmount;
 	private BigDecimal lcAmount;
 	private String taxablePercentage;

@@ -18,10 +18,12 @@ import com.base.basesetup.dto.DocumentTypeMappingDetailsDTO;
 import com.base.basesetup.entity.DocumentTypeMappingDetailsVO;
 import com.base.basesetup.entity.DocumentTypeMappingVO;
 import com.base.basesetup.entity.DocumentTypeVO;
+import com.base.basesetup.entity.FinancialYearVO;
 import com.base.basesetup.exception.ApplicationException;
 import com.base.basesetup.repo.DocumentTypeMappingDetailsRepo;
 import com.base.basesetup.repo.DocumentTypeMappingRepo;
 import com.base.basesetup.repo.DocumentTypeRepo;
+import com.base.basesetup.repo.FinancialYearRepo;
 
 
 @Service
@@ -37,6 +39,9 @@ public class DocumentTypeServiceImple  implements DocumentTypeService{
 	
 	@Autowired
 	DocumentTypeMappingDetailsRepo documentTypeMappingDetailsRepo;
+	
+	@Autowired
+	FinancialYearRepo financialYearRepo;
 	
 	// Document Type
 	@Override
@@ -161,8 +166,11 @@ public class DocumentTypeServiceImple  implements DocumentTypeService{
 	@Override
 	public List<Map<String, Object>> getPendingDocumentTypeMapping(Long orgId, String branch, String branchCode,
 			String finYear, String finYearIdentifier) {
+		int finyear= Integer.parseInt(finYear.toString());
+		FinancialYearVO financialYearVO= financialYearRepo.findByOrgIdAndFinYear(orgId,finyear);
+		String finYearIden=financialYearVO.getFinYearId().toString();
 		Set<Object[]> pendingDocTypeDetails = documentTypeMappingRepo.getPendingDoctypeMapping(orgId, branch,
-				branchCode, finYear, finYearIdentifier);
+				branchCode, finYear, finYearIden);
 		return getPendingDocType(pendingDocTypeDetails);
 	}
 
