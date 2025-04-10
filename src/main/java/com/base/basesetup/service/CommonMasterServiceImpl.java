@@ -244,7 +244,7 @@ public class CommonMasterServiceImpl implements CommonMasterService {
 		companyVO.setUpdatedBy(companyDTO.getCreatedBy());
 		companyVO.setActive(companyDTO.isActive());
 		companyVO.setCancel(companyDTO.isCancel());
-		companyVO.setPanNo(companyDTO.getPanno());
+		companyVO.setPanNo(companyDTO.getPanNo());
 		companyVO.setCeo(companyDTO.getCeo());
 		companyVO.setTermsAndConditions(companyDTO.getTermsAndConditions());
 		companyVO.setCin(companyDTO.getCin());
@@ -294,7 +294,7 @@ public class CommonMasterServiceImpl implements CommonMasterService {
 		companyVO.setRole(companyDTO.getRole());
 		companyVO.setCeo(companyDTO.getCeo());
 		companyVO.setTermsAndConditions(companyDTO.getTermsAndConditions());
-		companyVO.setPanNo(companyDTO.getPanno());
+		companyVO.setPanNo(companyDTO.getPanNo());
 		companyVO.setCin(companyDTO.getCin());
 
 		if (ObjectUtils.isNotEmpty(companyDTO.getId())) {

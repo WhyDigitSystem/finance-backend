@@ -171,7 +171,7 @@ public interface CostInvoiceRepo extends JpaRepository<CostInvoiceVO, Long> {
 			+ "        CAST(f.finyear AS SIGNED) = ?2\r\n"
 			+ "        AND MONTH(v.docdate) = MONTH(CURDATE()) \r\n"
 			+ "        AND v.orgid = ?1\r\n"
-			+ "       -- AND ?3 = 'MONTH'\r\n"
+			+ "        AND ?3 = 'MONTH'\r\n"
 			+ "    GROUP BY v.orgid\r\n"
 			+ "\r\n"
 			+ "    UNION\r\n"
@@ -188,14 +188,10 @@ public interface CostInvoiceRepo extends JpaRepository<CostInvoiceVO, Long> {
 			+ "        ON v.finyear = f.finyear \r\n"
 			+ "        AND v.docdate BETWEEN f.startdate AND f.enddate\r\n"
 			+ "    WHERE \r\n"
-			+ "        CAST(f.finyear AS SIGNED) = ?2\r\n"
-			+ "        AND MONTH(v.docdate) = \r\n"
-			+ "            CASE \r\n"
-			+ "                WHEN MONTH(CURDATE()) = 4 THEN 12\r\n"
-			+ "                ELSE MONTH(CURDATE()) - 1\r\n"
-			+ "            END\r\n"
-			+ "        AND v.orgid = ?1\r\n"
-			+ "        AND ?3 = 'MONTH'\r\n"
+			+ "        v.finyear=( case \r\n"
+			+ "      	when MONTH(CURDATE()) = 4 and year(curdate())=?2  then (?2-1) else ?2 end) \r\n"
+			+ "        	and month(v.docdate) = (case when MONTH(CURDATE()) = 4 and year(curdate())=?2  then 3 else (MONTH(CURDATE())-1) end )\r\n"
+			+ "  and ?3='MONTH'\r\n"
 			+ "    GROUP BY v.orgid\r\n"
 			+ "\r\n"
 			+ "    UNION\r\n"
@@ -339,10 +335,12 @@ public interface CostInvoiceRepo extends JpaRepository<CostInvoiceVO, Long> {
 			+ "union\r\n"
 			+ "SELECT 0 AS curyear,0 AS preyear,0 AS curmonth,SUM(r.receiptamt) AS premonth,r.orgid FROM receipt r \r\n"
 			+ "JOIN financialyear f ON f.finyear = r.finyear WHERE r.docdate BETWEEN f.startdate AND f.enddate AND r.orgid = ?1 AND ?3 = 'MONTH'\r\n"
-			+ "AND ((MONTH(CURDATE()) = 1 AND MONTH(r.docdate) = 12 AND CAST(r.finyear AS SIGNED) = (?2 - 1)) OR (MONTH(CURDATE()) != 1 \r\n"
-			+ "AND MONTH(r.docdate) = MONTH(CURDATE()) - 1 AND CAST(r.finyear AS SIGNED) = ?2))\r\n"
+			+ "AND v.finyear=( case \r\n"
+		    		+ "    	when MONTH(CURDATE()) = 4 and year(curdate())=?2  then (?2-1) else ?2 end) \r\n"
+		    		+ "    	and month(v.docdate) = (case when MONTH(CURDATE()) = 4 and year(curdate())=?2  then 3 else (MONTH(CURDATE())-1) end )\r\n"
 			+ "GROUP BY r.orgid) a")
 	Set<Object[]> getPercentageFromReceipt(Long orgId, Long finYear, String month);
+
 
 
 }
