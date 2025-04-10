@@ -22,7 +22,7 @@ public interface JobCardRepo extends JpaRepository<JobCardVO, Long> {
 			+ "	and a.orgid=?1  and a.partyname=?2 group by a1.salesperson")
 	Set<Object[]> findBySalesPreson(Long orgId, String partyName);
 
-	@Query(nativeQuery = true, value = "select partyname from partymaster where orgid=?1 and active=1 group by partyname")
+	@Query(nativeQuery = true, value = "select partyname , partycode from partymaster where orgid=?1 and active=1 and partytype='CUSTOMER' group by partyname,partycode")
 	Set<Object[]> findAllCustomers(Long orgId);
 
 	@Query(nativeQuery = true, value = "select a.totalinvamountlc from taxinvoice a where a.orgid=?1 and a.partyname=?2 and a.approvestatus='Approved'\r\n"
@@ -35,5 +35,7 @@ public interface JobCardRepo extends JpaRepository<JobCardVO, Long> {
 
 	@Query(nativeQuery = true, value = "select concat(prefixfield,lpad(lastno,5,0)) AS docid from documenttypemappingdetails where orgid=?1 and finyear=?2 and branchcode=?3 and screencode=?4")
 	String getJobCardDocId(Long orgId, String finYear, String branchCode, String screenCode);
+
+	boolean existsByrefNoAndOrgId(String refNo, Long orgId);
 
 }

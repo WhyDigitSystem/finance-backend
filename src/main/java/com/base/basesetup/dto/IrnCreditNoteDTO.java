@@ -47,8 +47,16 @@ public class IrnCreditNoteDTO {
 	private String shipperRefNo;
 	private String creditRemarks;
 	private String jobNo;
+	private LocalDate dueDate;
+	private String vid;
+	private LocalDate vdate;
+    private String billOfEntry;
+	private String billingRemarks;
+	private String partyId;
 
 
 	List<IrnCreditNoteDetailsDTO> irnCreditNoteDetailsDTO;
+	
+	List<IrnCreditNoteAnnexureDTO> irnCreditNoteAnnexureDTO;
 
 }

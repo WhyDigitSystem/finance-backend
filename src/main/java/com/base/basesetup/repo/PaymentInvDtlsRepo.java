@@ -13,4 +13,5 @@ public interface PaymentInvDtlsRepo extends JpaRepository<PaymentInvDtlsVO, Long
 
 	List<PaymentInvDtlsVO> findByPaymentVO(PaymentVO paymentVO);
 
+
 }

@@ -59,8 +59,6 @@ public class CostInvoiceVO {
 	private LocalDate dueDate;
 	@Column(name = "suppliername", length = 150)
 	private String supplierName;
-	@Column(name = "supplierid", length = 15)
-	private Long supplierId;
 	@Column(name = "supplierplace", length = 15)
 	private String supplierPlace;
 	@Column(name = "currency", length = 10)
@@ -69,7 +67,9 @@ public class CostInvoiceVO {
 	private BigDecimal exRate;
 	@Column(name = "suppliergstin", length = 150)
 	private String supplierGstIn;
-	@Column(name = "suppliergstincode", length = 15)
+	@Column(name = "supplierid")
+	private Long supplierId;
+	@Column(name = "suppliergstincode", length = 20)
 	private String supplierGstInCode;
 	@Column(name = "remarks", length = 150)
 	private String remarks;
@@ -141,6 +141,11 @@ public class CostInvoiceVO {
 	private BigDecimal gstInputLcAmt;
 	@Column(name = "joborderno",length = 50)
 	private String jobOrderNo;
+	
+	@Column(name = "vid", length = 50)
+	private String vId;
+	@Column(name = "vdate")
+	private LocalDate vDate;
 
 //	APPROVED
 	@Column(name = "approvestatus", length = 20)
@@ -150,6 +155,8 @@ public class CostInvoiceVO {
 	@DateTimeFormat(pattern = "dd-MM-yyyy hh:mm:ss a")
 	@Column(name = "approveon")
 	private String approveOn;
+	@Column(name="amountinwords")
+	private String amountInWords;
 
 	@OneToMany(mappedBy = "costInvoiceVO", cascade = CascadeType.ALL)
 	@JsonManagedReference

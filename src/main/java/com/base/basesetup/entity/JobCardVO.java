@@ -40,6 +40,8 @@ public class JobCardVO {
 	private String jobNo;
 	@Column(name = "customer", length = 50)
 	private String customer;
+	@Column(name = "customercode", length = 20)
+	private String customerCode;
 	@Column(name = "operationclosed")
 	private boolean operationClosed;
 	@Column(name = "date")
@@ -62,6 +64,16 @@ public class JobCardVO {
 	private BigDecimal profit;
 	@Column(name = "remarks", length = 150)
 	private String remarks;
+	@Column(name = "source", length = 50)
+	private String source;	
+	@Column(name = "details", length = 100)
+	private String details;	
+	@Column(name = "refno", length = 50)
+	private String refNo;
+	@Column(name = "refdate", length = 50)
+	private String refDate;
+	@Column(name = "service")
+	private String service;
 
 
 	// default fields
@@ -89,6 +101,10 @@ public class JobCardVO {
 	private String cancelRemarks;
 	@Column(name = "finyear", length = 5)
 	private String finYear;
+	@Column(name = "product", length = 50)
+	private String product;
+	@Column(name = "type", length = 50)
+	private String type;
 
 	@OneToMany(mappedBy = "jobCardVO", cascade = CascadeType.ALL)
 	@JsonManagedReference

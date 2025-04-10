@@ -1,5 +1,6 @@
 package com.base.basesetup.service;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -17,7 +18,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContextException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import com.base.basesetup.dto.BankDetailsDTO;
 import com.base.basesetup.dto.CityDTO;
 import com.base.basesetup.dto.CompanyDTO;
 import com.base.basesetup.dto.CountryDTO;
@@ -26,10 +29,12 @@ import com.base.basesetup.dto.DepartmentDTO;
 import com.base.basesetup.dto.DesignationDTO;
 import com.base.basesetup.dto.FinScreenDTO;
 import com.base.basesetup.dto.FinancialYearDTO;
+import com.base.basesetup.dto.ProductServiceDTO;
 import com.base.basesetup.dto.RegionDTO;
 import com.base.basesetup.dto.Role;
 import com.base.basesetup.dto.ScreenNamesDTO;
 import com.base.basesetup.dto.StateDTO;
+import com.base.basesetup.entity.BankDetailsVO;
 import com.base.basesetup.entity.CityVO;
 import com.base.basesetup.entity.CompanyVO;
 import com.base.basesetup.entity.CountryVO;
@@ -38,11 +43,13 @@ import com.base.basesetup.entity.DepartmentVO;
 import com.base.basesetup.entity.DesignationVO;
 import com.base.basesetup.entity.EmployeeVO;
 import com.base.basesetup.entity.FinancialYearVO;
+import com.base.basesetup.entity.ProductServiceVO;
 import com.base.basesetup.entity.RegionVO;
 import com.base.basesetup.entity.ScreenNamesVO;
 import com.base.basesetup.entity.StateVO;
 import com.base.basesetup.entity.UserVO;
 import com.base.basesetup.exception.ApplicationException;
+import com.base.basesetup.repo.BankDetailsRepo;
 import com.base.basesetup.repo.CityRepo;
 import com.base.basesetup.repo.CompanyRepo;
 import com.base.basesetup.repo.CountryRepo;
@@ -52,6 +59,7 @@ import com.base.basesetup.repo.DesignationRepo;
 import com.base.basesetup.repo.EmployeeRepo;
 import com.base.basesetup.repo.FinScreenRepo;
 import com.base.basesetup.repo.FinancialYearRepo;
+import com.base.basesetup.repo.ProductServiceRepo;
 import com.base.basesetup.repo.RegionRepo;
 import com.base.basesetup.repo.ResponsibilitiesRepo;
 import com.base.basesetup.repo.RoleRepo;
@@ -70,7 +78,7 @@ public class CommonMasterServiceImpl implements CommonMasterService {
 
 	@Autowired
 	DepartmentRepo departmentRepo;
-	
+
 	@Autowired
 	CurrencyRepo currencyRepo;
 
@@ -109,9 +117,15 @@ public class CommonMasterServiceImpl implements CommonMasterService {
 
 	@Autowired
 	ScreenNamesRepo screenNamesRepo;
-	
+
 	@Autowired
 	DesignationRepo designationRepo;
+
+	@Autowired
+	BankDetailsRepo bankDetailsRepo;
+	
+	@Autowired
+	ProductServiceRepo productServiceRepo;
 
 	// Company
 
@@ -230,8 +244,10 @@ public class CommonMasterServiceImpl implements CommonMasterService {
 		companyVO.setUpdatedBy(companyDTO.getCreatedBy());
 		companyVO.setActive(companyDTO.isActive());
 		companyVO.setCancel(companyDTO.isCancel());
-		companyVO.setPanno(companyDTO.getPanno());
+		companyVO.setPanNo(companyDTO.getPanno());
 		companyVO.setCeo(companyDTO.getCeo());
+		companyVO.setTermsAndConditions(companyDTO.getTermsAndConditions());
+		companyVO.setCin(companyDTO.getCin());
 
 		try {
 			companyVO.setPassword(encoder.encode(CryptoUtils.getDecrypt(companyDTO.getPassword())));
@@ -276,8 +292,35 @@ public class CommonMasterServiceImpl implements CommonMasterService {
 		companyVO.setActive(companyDTO.isActive());
 		companyVO.setCancel(companyDTO.isCancel());
 		companyVO.setRole(companyDTO.getRole());
-		companyVO.setPanno(companyDTO.getPanno());
 		companyVO.setCeo(companyDTO.getCeo());
+		companyVO.setTermsAndConditions(companyDTO.getTermsAndConditions());
+		companyVO.setPanNo(companyDTO.getPanno());
+		companyVO.setCin(companyDTO.getCin());
+
+		if (ObjectUtils.isNotEmpty(companyDTO.getId())) {
+			List<BankDetailsVO> bankDetailsVO1 = bankDetailsRepo.findByCompanyVO(companyVO);
+			bankDetailsRepo.deleteAll(bankDetailsVO1);
+		}
+
+		List<BankDetailsVO> bankDetailsVOs = new ArrayList<>();
+		for (BankDetailsDTO bankDetailsDTO : companyDTO.getBankDetailsDTO()) {
+			BankDetailsVO bankDetailsVO = new BankDetailsVO();
+
+			bankDetailsVO.setBankName(bankDetailsDTO.getBankName());
+			bankDetailsVO.setAccountCode(bankDetailsDTO.getAccountCode());
+			bankDetailsVO.setBeneficiaryName(bankDetailsDTO.getBeneficiaryName());
+			bankDetailsVO.setBranch(bankDetailsDTO.getBranch());
+
+			bankDetailsVO.setIfsc(bankDetailsDTO.getIfsc());
+			bankDetailsVO.setAccountNo(bankDetailsDTO.getAccountNo());
+			bankDetailsVO.setAccountType(bankDetailsDTO.getAccountType());
+			bankDetailsVO.setPrimaryAccount(bankDetailsDTO.isPrimaryAccount());
+
+			bankDetailsVO.setCompanyVO(companyVO);
+			bankDetailsVOs.add(bankDetailsVO);
+
+		}
+		companyVO.setBankDetailsVO(bankDetailsVOs);
 	}
 
 	@Override
@@ -1079,14 +1122,14 @@ public class CommonMasterServiceImpl implements CommonMasterService {
 		}
 		return currencyList;
 	}
-	
-	//Department
-	
+
+	// Department
+
 	@Override
 	public List<DepartmentVO> getDepartmentByOrgId(Long orgId) {
 		return departmentRepo.findDepartmentByOrgId(orgId);
 	}
-	
+
 	@Override
 	public Optional<DepartmentVO> getDepartmentById(Long id) {
 		return departmentRepo.findById(id);
@@ -1107,13 +1150,15 @@ public class CommonMasterServiceImpl implements CommonMasterService {
 				throw new ApplicationException(errorMessage);
 			}
 
-			if (departmentRepo.existsByDepartmentNameAndOrgId(departmentDTO.getDepartmentName(), departmentDTO.getOrgId())) {
+			if (departmentRepo.existsByDepartmentNameAndOrgId(departmentDTO.getDepartmentName(),
+					departmentDTO.getOrgId())) {
 				String errorMessage = String.format("The DepartmentName: %s already exists This Organization.",
 						departmentDTO.getDepartmentName());
 				throw new ApplicationException(errorMessage);
 			}
-			
-			if (departmentRepo.existsByDepartmentCodeAndOrgId(departmentDTO.getDepartmentCode(), departmentDTO.getOrgId())) {
+
+			if (departmentRepo.existsByDepartmentCodeAndOrgId(departmentDTO.getDepartmentCode(),
+					departmentDTO.getOrgId())) {
 				String errorMessage = String.format("The DepartmentCode: %s already exists This Organization.",
 						departmentDTO.getDepartmentCode());
 				throw new ApplicationException(errorMessage);
@@ -1125,11 +1170,12 @@ public class CommonMasterServiceImpl implements CommonMasterService {
 			message = "Department Creation SuccessFully";
 		} else {
 			// Update existing branch
-			departmentVO = departmentRepo.findById(departmentDTO.getId())
-					.orElseThrow(() -> new ApplicationException("Department not found with id: " + departmentDTO.getId()));
+			departmentVO = departmentRepo.findById(departmentDTO.getId()).orElseThrow(
+					() -> new ApplicationException("Department not found with id: " + departmentDTO.getId()));
 			departmentVO.setUpdatedBy(departmentDTO.getCreatedBy());
 			if (!departmentVO.getDepartmentName().equalsIgnoreCase(departmentDTO.getDepartmentName())) {
-				if (departmentRepo.existsByDepartmentNameAndOrgId(departmentDTO.getDepartmentName(), departmentDTO.getOrgId())) {
+				if (departmentRepo.existsByDepartmentNameAndOrgId(departmentDTO.getDepartmentName(),
+						departmentDTO.getOrgId())) {
 					String errorMessage = String.format("The DepartmentName: %s already exists This Organization.",
 							departmentDTO.getDepartmentName());
 					throw new ApplicationException(errorMessage);
@@ -1137,7 +1183,8 @@ public class CommonMasterServiceImpl implements CommonMasterService {
 				departmentVO.setDepartmentName(departmentDTO.getDepartmentName().toUpperCase());
 			}
 			if (!departmentVO.getDepartmentCode().equalsIgnoreCase(departmentDTO.getDepartmentCode())) {
-				if (departmentRepo.existsByDepartmentCodeAndOrgId(departmentDTO.getDepartmentCode(), departmentDTO.getOrgId())) {
+				if (departmentRepo.existsByDepartmentCodeAndOrgId(departmentDTO.getDepartmentCode(),
+						departmentDTO.getOrgId())) {
 					String errorMessage = String.format("The DepartmentCode: %s already exists This Organization.",
 							departmentDTO.getDepartmentCode());
 					throw new ApplicationException(errorMessage);
@@ -1171,7 +1218,7 @@ public class CommonMasterServiceImpl implements CommonMasterService {
 		String message = null;
 
 		if (ObjectUtils.isEmpty(designationDTO.getId())) {
-			
+
 			if (designationRepo.existsByDesignationNameAndDesignationCodeAndOrgId(designationDTO.getDesignationName(),
 					designationDTO.getDesignationCode(), designationDTO.getOrgId())) {
 				String errorMessage = String.format(
@@ -1180,13 +1227,15 @@ public class CommonMasterServiceImpl implements CommonMasterService {
 				throw new ApplicationException(errorMessage);
 			}
 
-			if (designationRepo.existsByDesignationNameAndOrgId(designationDTO.getDesignationName(), designationDTO.getOrgId())) {
+			if (designationRepo.existsByDesignationNameAndOrgId(designationDTO.getDesignationName(),
+					designationDTO.getOrgId())) {
 				String errorMessage = String.format("The DesignationName: %s already exists This Organization.",
 						designationDTO.getDesignationName());
 				throw new ApplicationException(errorMessage);
 			}
-			
-			if (designationRepo.existsByDesignationCodeAndOrgId(designationDTO.getDesignationCode(), designationDTO.getOrgId())) {
+
+			if (designationRepo.existsByDesignationCodeAndOrgId(designationDTO.getDesignationCode(),
+					designationDTO.getOrgId())) {
 				String errorMessage = String.format("The DesignationCode: %s already exists This Organization.",
 						designationDTO.getDesignationCode());
 				throw new ApplicationException(errorMessage);
@@ -1198,12 +1247,13 @@ public class CommonMasterServiceImpl implements CommonMasterService {
 			message = "Designation Creation SuccessFully";
 		} else {
 			// Update existing branch
-			designationVO = designationRepo.findById(designationDTO.getId())
-					.orElseThrow(() -> new ApplicationException("Designation not found with id: " + designationDTO.getId()));
+			designationVO = designationRepo.findById(designationDTO.getId()).orElseThrow(
+					() -> new ApplicationException("Designation not found with id: " + designationDTO.getId()));
 			designationVO.setUpdatedBy(designationDTO.getCreatedBy());
-			
+
 			if (!designationVO.getDesignationName().equalsIgnoreCase(designationDTO.getDesignationName())) {
-				if (departmentRepo.existsByDepartmentNameAndOrgId(designationDTO.getDesignationName(), designationDTO.getOrgId())) {
+				if (departmentRepo.existsByDepartmentNameAndOrgId(designationDTO.getDesignationName(),
+						designationDTO.getOrgId())) {
 					String errorMessage = String.format("The DesignationName: %s already exists This Organization.",
 							designationDTO.getDesignationName());
 					throw new ApplicationException(errorMessage);
@@ -1211,7 +1261,8 @@ public class CommonMasterServiceImpl implements CommonMasterService {
 				designationVO.setDesignationName(designationDTO.getDesignationName().toUpperCase());
 			}
 			if (!designationVO.getDesignationCode().equalsIgnoreCase(designationDTO.getDesignationCode())) {
-				if (departmentRepo.existsByDepartmentCodeAndOrgId(designationDTO.getDesignationCode(), designationDTO.getOrgId())) {
+				if (departmentRepo.existsByDepartmentCodeAndOrgId(designationDTO.getDesignationCode(),
+						designationDTO.getOrgId())) {
 					String errorMessage = String.format("The DesignationCode: %s already exists This Organization.",
 							designationDTO.getDesignationCode());
 					throw new ApplicationException(errorMessage);
@@ -1219,7 +1270,7 @@ public class CommonMasterServiceImpl implements CommonMasterService {
 				designationVO.setDesignationCode(designationDTO.getDesignationCode().toUpperCase());
 
 			}
-		
+
 			message = "Designation Update Successfully";
 		}
 
@@ -1238,10 +1289,10 @@ public class CommonMasterServiceImpl implements CommonMasterService {
 		designationVO.setActive(designationDTO.isActive());
 		designationVO.setOrgId(designationDTO.getOrgId());
 
-	}	
-
-	@Override
-	public Optional<DesignationVO>  getDesignationById(Long id) {
+	}
+ 
+	@Override     
+	public Optional<DesignationVO> getDesignationById(Long id) {
 		// TODO Auto-generated method stub
 		return designationRepo.findById(id);
 	}
@@ -1252,11 +1303,133 @@ public class CommonMasterServiceImpl implements CommonMasterService {
 		return designationRepo.findDesignationByOrgId(orgId);
 	}
 
+	@Override
+	public List<Map<String, Object>> getCompanyByOrgId(Long orgId) {
+		
+		Set<Object[]> getCompanyBankDetails = companyRepo.findCompanyBankDetails(orgId);
+		return getBank(getCompanyBankDetails); // Returning a list of Map<String, Object>
+	}
+
+	private List<Map<String, Object>> getBank(Set<Object[]> getCompanyBankDetails) {
+		List<Map<String, Object>> bankDetailsList = new ArrayList<>(); // Correct variable name
+
+		for (Object[] bank : getCompanyBankDetails) { // Iterating over getFullGridCurrency
+			Map<String, Object> bankMap = new HashMap<>();
+			bankMap.put("bankName", bank[0] != null ?  bank[0].toString() : "");
+			bankMap.put("accountCode", bank[1] != null ? bank[1].toString() : "");
+			bankMap.put("accountNo", bank[2] != null ? bank[2].toString() : "");
+			bankMap.put("ifsc", bank[3] != null ? bank[3].toString() : "");
+			bankMap.put("accountType", bank[4] != null ? bank[4].toString() : "");
+			bankMap.put("beneficiaryName", bank[5] != null ? bank[5].toString() : "");
+			bankMap.put("branch", bank[6] != null ? bank[6].toString() : "");
+
+			bankDetailsList.add(bankMap); // Add the Map to the list
+		}
+		return bankDetailsList;
+	}
+
+	@Override
+	public CompanyVO uploadCompanyLogoInBloob(MultipartFile file, Long id) throws IOException {
+		CompanyVO companyVO = companyRepo.findById(id).get();
+		companyVO.setCompanyLogo(file.getBytes());
+		return companyRepo.save(companyVO);
+	}
 	
-
 	
+	//ProductAndService
 
+	@Override
+	public Map<String, Object> createUpdateProductService(ProductServiceDTO productServiceDTO)
+			throws ApplicationException {
+		
+		ProductServiceVO productServiceVO;
+		String message = null;
+
+		if (ObjectUtils.isEmpty(productServiceDTO.getId())) {
+			if (productServiceRepo.existsByCodeAndOrgId(productServiceDTO.getCode(), productServiceDTO.getOrgId())) {
+				String errorMessage = String.format("The Code: %s already exists in This Organization.",
+						productServiceDTO.getCode());
+				throw new ApplicationException(errorMessage);
+			}
+			if (productServiceRepo.existsByDescriptionAndOrgId(productServiceDTO.getDescription(), productServiceDTO.getOrgId())) {
+				String errorMessage = String.format("The Description: %s already exists in This Organization.",
+						productServiceDTO.getDescription());
+				throw new ApplicationException(errorMessage);
+			}
+
+			// Create new state
+			productServiceVO = new ProductServiceVO();
+			productServiceVO.setCreatedBy(productServiceDTO.getCreatedBy());
+			productServiceVO.setUpdatedBy(productServiceDTO.getCreatedBy());
+			message = "ProductService Creation Successfully";
+		} else {
+			// Update existing state
+			productServiceVO = productServiceRepo.findById(productServiceDTO.getId())
+					.orElseThrow(() -> new ApplicationException("ProductService not found with id: " + productServiceDTO.getId()));
+
+			productServiceVO.setUpdatedBy(productServiceDTO.getCreatedBy());
+
+			if (!productServiceVO.getCode().equalsIgnoreCase(productServiceDTO.getCode())) {
+				if (productServiceRepo.existsByCodeAndOrgId(productServiceDTO.getCode(), productServiceDTO.getOrgId())) {
+					String errorMessage = String.format("The Code: %s already exists in This Organization.",
+							productServiceDTO.getCode());
+					throw new ApplicationException(errorMessage);
+				}
+				productServiceVO.setCode(productServiceDTO.getCode());
+			}
+
+			if (!productServiceVO.getDescription().equalsIgnoreCase(productServiceDTO.getDescription())) {
+				if (productServiceRepo.existsByDescriptionAndOrgId(productServiceDTO.getDescription(), productServiceDTO.getOrgId())) {
+					String errorMessage = String.format("The Description: %s already exists in This Organization.",
+							productServiceDTO.getDescription());
+					throw new ApplicationException(errorMessage);
+				}
+				productServiceVO.setDescription(productServiceDTO.getDescription());
+			}
+
+			message = "ProductService Update Successfully";
+		}
+
+		// Map the remaining fields
+		getProductServiceVOFromProductServiceDTO(productServiceVO, productServiceDTO);
+
+		productServiceRepo.save(productServiceVO);
+
+		Map<String, Object> response = new HashMap<>();
+		response.put("message", message);
+		response.put("productServiceVO", productServiceVO);
+
+		return response;
+	}
+
+	private void getProductServiceVOFromProductServiceDTO(ProductServiceVO productServiceVO, ProductServiceDTO productServiceDTO) {
+		productServiceVO.setType(productServiceDTO.getType());
+		productServiceVO.setName(productServiceDTO.getName());
+		productServiceVO.setDimension(productServiceDTO.getDimension());
+		productServiceVO.setActive(productServiceDTO.isActive());
+		productServiceVO.setOrgId(productServiceDTO.getOrgId());
+		productServiceVO.setDescription(productServiceDTO.getDescription());
+		productServiceVO.setCode(productServiceDTO.getCode());
+
+	}
+
+	@Override
+	public List<ProductServiceVO> getProductServiceByOrgId(Long orgId) {
+		
+		return productServiceRepo.getProductServiceByOrgId(orgId);
+	}
+
+	@Override
+	public ProductServiceVO getProductServiceById(Long id) {
+		// TODO Auto-generated method stub
+		return productServiceRepo.getProductServiceById(id);
+	}
 	
-
-
+	public ProductServiceVO uploadImageProductServivceInBloob(MultipartFile file, Long id) throws IOException {
+		ProductServiceVO productServiceVO = productServiceRepo.findById(id).orElseThrow(() -> new RuntimeException("Circular not found"));
+		productServiceVO.setImage(file.getBytes()); 
+		return productServiceRepo.save(productServiceVO);
+	}
+	
+	
 }
