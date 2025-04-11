@@ -15,8 +15,8 @@ public interface PaymentRepo extends JpaRepository<PaymentVO, Long> {
 	@Query(value = "Select * from payment where paymentid=?1", nativeQuery = true)
 	List<PaymentVO> getPaymentById(Long id);
 
-	@Query(value = "select * from payment  where orgid=?1 ", nativeQuery = true)
-	List<PaymentVO> getAllPaymentByOrgId(Long orgId);
+	@Query(value = "select * from payment  where orgid=?1  and finyear=?2 and branchcode=?3", nativeQuery = true)
+	List<PaymentVO> getAllPaymentByOrgId(Long orgId,String finYear, String branchCode);
 
 	@Query(nativeQuery = true, value = "select a.docid,a.docdate,a.partyname,a.bankcashacc,a.receiptamt,a.bankcharges,a.tdsamt,a.chequebank,a.chequeno,b.invno,b.invdate,b.refno,b.refdate,b.amount,b.outstanding,b.settled,a.createdon,a.createdby from payment a, paymentinvdtls b where a.paymentid=b.paymentid and a.orgid=?1 and a.docdate BETWEEN ?2 AND ?3 and a.partyname =?4")
 	Set<Object[]> findAllPaymentRegister(Long orgId, String fromDate, String toDate, String subLedgerName);
