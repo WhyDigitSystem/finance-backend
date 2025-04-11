@@ -101,7 +101,6 @@ public class CompanyVO {
 	@JsonManagedReference
 	List<BankDetailsVO> bankDetailsVO;
 
-	private String panno;
 
 
 	@JsonGetter("active")
