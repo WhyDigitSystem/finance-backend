@@ -876,23 +876,23 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 		List<Map<String, Object>> List1 = new ArrayList<>();
 		for (Object[] ch : chType) {
 			Map<String, Object> map = new HashMap<>();
-			map.put("sno", ch[0].toString());
-			map.put("recoredid", ch[1] != null ? ch[1].toString() : "");
-			map.put("vId", ch[2] != null ? ch[2].toString() : "");
-			map.put("vDate", ch[3] != null ? ch[3].toString() : "");
-			map.put("refNo", ch[4] != null ? ch[4].toString() : "");
-			map.put("refDate", ch[5] != null ? ch[5].toString() : "");
-			map.put("supplierrefNo", ch[6] != null ? ch[6].toString() : "");
-			map.put("supplierrefDate", ch[7] != null ? ch[7].toString() : ""); // Handle as string, empty if null
-			map.put("partyCode", ch[8] != null ? ch[8].toString() : "");
-			map.put("partyName", ch[9] != null ? ch[9].toString() : "");
-			map.put("currency", ch[10] != null ? ch[10].toString() : "");
-			map.put("opbal", ch[11] != null ? new BigDecimal(ch[11].toString()) : BigDecimal.ZERO);
-			map.put("dbAmount", ch[12] != null ? new BigDecimal(ch[12].toString()) : BigDecimal.ZERO);
-			map.put("crAmount", ch[13] != null ? new BigDecimal(ch[13].toString()) : BigDecimal.ZERO);
-			map.put("billDbAmount", ch[14] != null ? new BigDecimal(ch[14].toString()) : BigDecimal.ZERO);
-			map.put("billCrAmount", ch[15] != null ? new BigDecimal(ch[15].toString()) : BigDecimal.ZERO);
-			map.put("clBal", ch[16] != null ? new BigDecimal(ch[16].toString()) : BigDecimal.ZERO);
+			map.put("Sno", ch[0].toString());
+			map.put("RecoredId", ch[1] != null ? ch[1].toString() : "");
+			map.put("Vid", ch[2] != null ? ch[2].toString() : "");
+			map.put("Vdate", ch[3] != null ? ch[3].toString() : "");
+			map.put("RefNo", ch[4] != null ? ch[4].toString() : "");
+			map.put("RefDate", ch[5] != null ? ch[5].toString() : "");
+			map.put("SupplierRefNo", ch[6] != null ? ch[6].toString() : "");
+			map.put("SupplierRefDate", ch[7] != null ? ch[7].toString() : ""); // Handle as string, empty if null
+			map.put("PartyCode", ch[8] != null ? ch[8].toString() : "");
+			map.put("PartyName", ch[9] != null ? ch[9].toString() : "");
+			map.put("Currency", ch[10] != null ? ch[10].toString() : "");
+			map.put("OpBal", ch[11] != null ? new BigDecimal(ch[11].toString()) : BigDecimal.ZERO);
+			map.put("DbAmount", ch[12] != null ? new BigDecimal(ch[12].toString()) : BigDecimal.ZERO);
+			map.put("CrAmount", ch[13] != null ? new BigDecimal(ch[13].toString()) : BigDecimal.ZERO);
+			map.put("BillDbAmount", ch[14] != null ? new BigDecimal(ch[14].toString()) : BigDecimal.ZERO);
+			map.put("BillCrAmount", ch[15] != null ? new BigDecimal(ch[15].toString()) : BigDecimal.ZERO);
+			map.put("ClBal", ch[16] != null ? new BigDecimal(ch[16].toString()) : BigDecimal.ZERO);
 			List1.add(map);
 		}
 		return List1;
@@ -908,19 +908,19 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 		List<Map<String, Object>> List1 = new ArrayList<>();
 		for (Object[] ch : chType) {
 			Map<String, Object> map = new HashMap<>();
-			map.put("ids", ch[0].toString());
-			map.put("recordId", ch[1] != null ? ch[1].toString() : "");
-			map.put("branchName", ch[2] != null ? ch[2].toString() : "");
-			map.put("vDate", ch[3] != null ? ch[3].toString() : "");
-			map.put("vId", ch[4] != null ? ch[4].toString() : "");
-			map.put("partyName", ch[5] != null ? ch[5].toString() : "");
-			map.put("opbal", ch[6] != null ? new BigDecimal(ch[6].toString()) : BigDecimal.ZERO);
-			map.put("currency", ch[7] != null ? ch[7].toString() : ""); // Handle as string, empty if null
-			map.put("dbAmount", ch[8] != null ? new BigDecimal(ch[8].toString()) : BigDecimal.ZERO);
-			map.put("crAmount", ch[9] != null ? new BigDecimal(ch[9].toString()) : BigDecimal.ZERO);
-			map.put("ndAmount", ch[10] != null ? new BigDecimal(ch[10].toString()) : BigDecimal.ZERO);
-			map.put("ncAmount", ch[11] != null ? new BigDecimal(ch[11].toString()) : BigDecimal.ZERO);
-			map.put("clBal", ch[12] != null ? new BigDecimal(ch[12].toString()) : BigDecimal.ZERO);
+			map.put("Ids", ch[0].toString());
+			map.put("RecordId", ch[1] != null ? ch[1].toString() : "");
+			map.put("BranchName", ch[2] != null ? ch[2].toString() : "");
+			map.put("Vdate", ch[3] != null ? ch[3].toString() : "");
+			map.put("Vid", ch[4] != null ? ch[4].toString() : "");
+			map.put("PartyName", ch[5] != null ? ch[5].toString() : "");
+			map.put("OpBal", ch[6] != null ? new BigDecimal(ch[6].toString()) : BigDecimal.ZERO);
+			map.put("Currency", ch[7] != null ? ch[7].toString() : ""); // Handle as string, empty if null
+			map.put("DbAmount", ch[8] != null ? new BigDecimal(ch[8].toString()) : BigDecimal.ZERO);
+			map.put("CrAmount", ch[9] != null ? new BigDecimal(ch[9].toString()) : BigDecimal.ZERO);
+			map.put("NdAmount", ch[10] != null ? new BigDecimal(ch[10].toString()) : BigDecimal.ZERO);
+			map.put("NcAmount", ch[11] != null ? new BigDecimal(ch[11].toString()) : BigDecimal.ZERO);
+			map.put("ClBal", ch[12] != null ? new BigDecimal(ch[12].toString()) : BigDecimal.ZERO);
 			List1.add(map);
 		}
 		return List1;
