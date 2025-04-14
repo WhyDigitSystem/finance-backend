@@ -68,10 +68,10 @@ public interface CostDebitNoteRepo extends JpaRepository<CostDebitNoteVO, Long> 
 	@Query(nativeQuery = true, value = "select accountgroupname,gstpercentage,currency from groupledger where orgid=?1 and gsttaxflag!='NA' and category='TAX' and gsttaxflag='INPUT TAX' and gsttype=?2 and gstpercentage IN(?3) group by  accountgroupname,gstpercentage,currency order by gstpercentage desc")
 	Set<Object[]> findIntraDetailsForCostDebitNotePosting(Long orgId, String gtsType, Double intraPercent);
 	
-	@Query(nativeQuery = true, value = "select accountgroupname,category from groupledger where orgid=?1 and gsttaxflag='NA' and category='RECEIVABLE A/C' and type='ACCOUNT'  and groupname='TDS'")
-	Set<Object[]> getAccountNameFromTDSLedger(Long orgId);
-	
-//	@Query(nativeQuery = true, value = "select accountgroupname,category from groupledger where orgid=?1 and gsttaxflag='NA' and category='PAYABLE A/C' and type='ACCOUNT'  and groupname='TDS'")
+//	@Query(nativeQuery = true, value = "select accountgroupname,category from groupledger where orgid=?1 and gsttaxflag='NA' and category='RECEIVABLE A/C' and type='ACCOUNT'  and groupname='TDS'")
 //	Set<Object[]> getAccountNameFromTDSLedger(Long orgId);
+	
+	@Query(nativeQuery = true, value = "select accountgroupname,category from groupledger where orgid=?1 and gsttaxflag='NA' and category='PAYABLE A/C' and type='ACCOUNT'  and groupname='TDS'")
+	Set<Object[]> getAccountNameFromTDSLedger(Long orgId);
 	
 }
