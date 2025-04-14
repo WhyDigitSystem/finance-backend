@@ -110,6 +110,10 @@ public interface MasterService {
 	TdsMasterVO updateCreateTdsMaster(@Valid TdsMasterDTO tdsMasterDTO) throws ApplicationException;
 
 	List<TdsMasterVO> getTdsMasterByActive();
+	
+	List<Map<String, Object>> getTdsAccountNameFromReceivable(Long orgId);
+	
+	List<Map<String, Object>> getTdsAccountNameFromPayable(Long orgId);
 
 //	AccountVO
 	List<AccountVO> getAllAccountByOrgId(Long orgId);

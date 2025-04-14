@@ -712,6 +712,60 @@ public class MasterController extends BaseController {
 		return ResponseEntity.ok().body(responseDTO);
 
 	}
+	
+	
+	@GetMapping("/getTdsAccountNameFromPayable")
+	public ResponseEntity<ResponseDTO> getTdsAccountNameFromPayable(@RequestParam Long orgId) {
+		String methodName = "getTdsAccountNameFromPayable()";
+		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+		String errorMsg = null;
+		Map<String, Object> responseObjectsMap = new HashMap<>();
+		ResponseDTO responseDTO = null;
+		List<Map<String, Object>> tdsMasterVO = new ArrayList<>();
+		try {
+			tdsMasterVO = masterService.getTdsAccountNameFromPayable(orgId);
+		} catch (Exception e) {
+			errorMsg = e.getMessage();
+			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+		}
+		if (StringUtils.isBlank(errorMsg)) {
+			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "AccountName get successfully By OrgId");
+			responseObjectsMap.put("tdsMasterVO", tdsMasterVO);
+			responseDTO = createServiceResponse(responseObjectsMap);
+		} else {
+			responseDTO = createServiceResponseError(responseObjectsMap, "AccountName receive failed By OrgId",
+					errorMsg);
+		}
+		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+		return ResponseEntity.ok().body(responseDTO);
+	}
+	
+	
+	@GetMapping("/getTdsAccountNameFromReceivable")
+	public ResponseEntity<ResponseDTO> getTdsAccountNameFromReceivable(@RequestParam Long orgId) {
+		String methodName = "getTdsAccountNameFromReceivable()";
+		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+		String errorMsg = null;
+		Map<String, Object> responseObjectsMap = new HashMap<>();
+		ResponseDTO responseDTO = null;
+		List<Map<String, Object>> tdsMasterVO = new ArrayList<>();
+		try {
+			tdsMasterVO = masterService.getTdsAccountNameFromReceivable(orgId);
+		} catch (Exception e) {
+			errorMsg = e.getMessage();
+			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+		}
+		if (StringUtils.isBlank(errorMsg)) {
+			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "AccountName get successfully By OrgId");
+			responseObjectsMap.put("tdsMasterVO", tdsMasterVO);
+			responseDTO = createServiceResponse(responseObjectsMap);
+		} else {
+			responseDTO = createServiceResponseError(responseObjectsMap, "AccountName receive failed By OrgId",
+					errorMsg);
+		}
+		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+		return ResponseEntity.ok().body(responseDTO);
+	}
 
 	// Account
 

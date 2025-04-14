@@ -32,6 +32,7 @@ import com.base.basesetup.entity.GroupLedgerVO;
 import com.base.basesetup.entity.MultipleDocIdGenerationDetailsVO;
 import com.base.basesetup.entity.PartyMasterVO;
 import com.base.basesetup.entity.TdsCostInvoiceVO;
+import com.base.basesetup.entity.TdsUrCostInvoiceGnaVO;
 import com.base.basesetup.exception.ApplicationException;
 import com.base.basesetup.repo.AccountsDetailsRepo;
 import com.base.basesetup.repo.AccountsRepo;
@@ -54,9 +55,9 @@ public class CostInvoiceServiceImpl implements CostInvoiceService {
 
 	@Autowired
 	TdsCostInvoiceRepo tdsCostInvoiceRepo;
-	
+
 	@Autowired
-	ArapDetailsRepo arapDetailsRepo; 
+	ArapDetailsRepo arapDetailsRepo;
 
 	@Autowired
 	ChargerCostInvoiceRepo chargerCostInvoiceRepo;
@@ -85,8 +86,8 @@ public class CostInvoiceServiceImpl implements CostInvoiceService {
 	// costInvoice
 
 	@Override
-	public List<CostInvoiceVO> getAllCostInvoiceByOrgId(Long orgId,String finYear, String branchCode) {
-		
+	public List<CostInvoiceVO> getAllCostInvoiceByOrgId(Long orgId, String finYear, String branchCode) {
+
 		List<CostInvoiceVO> costInvoiceVO = new ArrayList<>();
 		costInvoiceVO = costInvoiceRepo.getAllCostInvoiceByOrgId(orgId, finYear, branchCode);
 
@@ -434,7 +435,7 @@ public class CostInvoiceServiceImpl implements CostInvoiceService {
 		BigDecimal netAmountBillCurr = sumBillAmount.subtract(tdsAmount).add(taxAmount);
 		BigDecimal netAmountLc = taxAmount.subtract(tdsAmount).add(sumLcAmount);
 		BigDecimal actBillAmtLc = sumLcAmount.subtract(tdsAmount).add(taxAmount);
-		BigDecimal actBillAmtBillCurr = sumBillAmount.add(taxAmount).add(tdsAmount);
+		BigDecimal actBillAmtBillCurr = sumBillAmount.add(taxAmount);
 		BigDecimal roundedValue = netAmountLc.setScale(0, RoundingMode.HALF_UP);
 		BigDecimal sumDebitAmount = sumLcAmount.add(taxAmount);
 		Long roundOff = netAmountLc.subtract(roundedValue).longValue();
@@ -707,7 +708,6 @@ public class CostInvoiceServiceImpl implements CostInvoiceService {
 
 			String accountsDocId = accountsRepo.getCostInvoiceDocId(costInvoiceVO.getOrgId(),
 					costInvoiceVO.getFinYear(), costInvoiceVO.getBranchCode(), sourceScreenCode, screenCode);
-			
 
 			// GETDOCID LASTNO +1
 			MultipleDocIdGenerationDetailsVO mulDocId = multipleDocIdGenerationDetailsRepo
@@ -763,31 +763,79 @@ public class CostInvoiceServiceImpl implements CostInvoiceService {
 			accountsDetailsVO.setArapFlag(true);
 			accountsDetailsVO.setArapAmount(costInvoiceVO.getNetBillCurrAmt());
 			accountsDetailsVO.setBDebitAmount(BigDecimal.ZERO);
-			accountsDetailsVO.setBCrAmount(BigDecimal.ZERO);
-			accountsDetailsVO.setBArapAmount(BigDecimal.ZERO);
+			accountsDetailsVO.setBCrAmount(costInvoiceVO.getNetBillCurrAmt());
+			accountsDetailsVO.setBArapAmount(costInvoiceVO.getNetBillCurrAmt());
 			accountsDetailsVO.setACurrency(costInvoiceVO.getCurrency());
 			accountsDetailsVO.setAExRate(costInvoiceVO.getExRate());
 			accountsDetailsVO.setSubledgerName(costInvoiceVO.getSupplierName());
 			accountsDetailsVO.setSubLedgerCode(costInvoiceVO.getSupplierCode());
-			accountsDetailsVO.setNArapAmount(BigDecimal.ZERO);
+			accountsDetailsVO.setNArapAmount(costInvoiceVO.getNetBillCurrAmt());
 			accountsDetailsVO.setGstflag(6);
 			accountsDetailsVO.setAccountsVO(accountsVO);
 			accountsDetailsVOs.add(accountsDetailsVO);
 
-			for (ChargerCostInvoiceVO tdsCostInvoiceVO:costInvoiceVO.getChargerCostInvoiceVO()) {
-				GroupLedgerVO groupLedgerVO = groupLedgerRepo.findByAccountGroupName(tdsCostInvoiceVO.getLedger());
+			for (TdsCostInvoiceVO tdsCostInvoiceVO : costInvoiceVO.getTdsCostInvoiceVO()) {
+
+				Set<Object[]> ch = costInvoiceRepo.getTdsLedgerFromAccount(costInvoiceVO.getOrgId());
+
+				for (Object[] ch1 : ch) {
+
+					AccountsDetailsVO accountsDetailsVO1 = new AccountsDetailsVO();
+					accountsDetailsVO1.setNDebitAmount(BigDecimal.ZERO);
+					accountsDetailsVO1.setACategory(ch1[1].toString());
+					accountsDetailsVO1.setAccountName(ch1[0].toString());
+					accountsDetailsVO1.setDebitAmount(BigDecimal.ZERO);
+					accountsDetailsVO1.setNCreditAmount(tdsCostInvoiceVO.getTotTdsWhAmnt());
+					accountsDetailsVO1.setCreditAmount(tdsCostInvoiceVO.getTotTdsWhAmnt());
+					accountsDetailsVO1.setArapFlag(false);
+					accountsDetailsVO1.setArapAmount(BigDecimal.ZERO);
+					accountsDetailsVO1.setBDebitAmount(BigDecimal.ZERO);
+					accountsDetailsVO1.setBCrAmount(tdsCostInvoiceVO.getTotTdsWhAmnt());
+					accountsDetailsVO1.setBArapAmount(BigDecimal.ZERO);
+					accountsDetailsVO1.setSubledgerName("None");
+					accountsDetailsVO1.setSubLedgerCode("None");
+					accountsDetailsVO1.setACurrency(costInvoiceVO.getCurrency());
+					accountsDetailsVO1.setAExRate(costInvoiceVO.getExRate());
+					accountsDetailsVO1.setNArapAmount(BigDecimal.ZERO);
+					accountsDetailsVO1.setGstflag(3);
+					accountsDetailsVO1.setAccountsVO(accountsVO);
+					accountsDetailsVOs.add(accountsDetailsVO1);
+
+				}
+
+			}
+
+//			for (ChargerCostInvoiceVO tdsCostInvoiceVO : costInvoiceVO.getChargerCostInvoiceVO()) {
+//				GroupLedgerVO groupLedgerVO = groupLedgerRepo.findByAccountGroupName(tdsCostInvoiceVO.getLedger());
+
+			// Group and process GST-related ledgers
+			Map<String, BigDecimal> ledgerSumMap = new HashMap<>();
+			for (ChargerCostInvoiceVO tdsCostInvoiceVO : costInvoiceVO.getChargerCostInvoiceVO()) {
+				String ledger = tdsCostInvoiceVO.getLedger();
+				BigDecimal lcAmount = tdsCostInvoiceVO.getLcAmt();
+
+				ledgerSumMap.put(ledger, ledgerSumMap.getOrDefault(ledger, BigDecimal.ZERO).add(lcAmount));
+			}
+
+			// Add GST ledger entries
+			for (Map.Entry<String, BigDecimal> entry : ledgerSumMap.entrySet()) {
+				GroupLedgerVO groupLedgerVO = groupLedgerRepo.findByAccountGroupName(entry.getKey());
+
 				AccountsDetailsVO accountsDetailsVO1 = new AccountsDetailsVO();
 				accountsDetailsVO1.setNDebitAmount(BigDecimal.ZERO);
 				accountsDetailsVO1.setACategory(groupLedgerVO.getCategory());
 				accountsDetailsVO1.setAccountName(groupLedgerVO.getAccountGroupName());
-				accountsDetailsVO1.setDebitAmount(tdsCostInvoiceVO.getBillAmt().add(tdsCostInvoiceVO.getGstAmount()));
+//				accountsDetailsVO1.setDebitAmount(tdsCostInvoiceVO.getBillAmt().add(tdsCostInvoiceVO.getGstAmount()));
+				accountsDetailsVO1.setDebitAmount(entry.getValue());
+				accountsDetailsVO1.setNDebitAmount(entry.getValue());
 				accountsDetailsVO1.setNCreditAmount(BigDecimal.ZERO);
 				accountsDetailsVO1.setCreditAmount(BigDecimal.ZERO);
-				accountsDetailsVO1.setACurrency(tdsCostInvoiceVO.getCurrency());
-				accountsDetailsVO1.setAExRate(tdsCostInvoiceVO.getExRate());
+				accountsDetailsVO1.setACurrency(costInvoiceVO.getCurrency());
+				accountsDetailsVO1.setAExRate(costInvoiceVO.getExRate());
 				accountsDetailsVO1.setArapFlag(false);
 				accountsDetailsVO1.setArapAmount(BigDecimal.ZERO);
-				accountsDetailsVO1.setBDebitAmount(tdsCostInvoiceVO.getBillAmt().add(tdsCostInvoiceVO.getGstAmount()));
+//				accountsDetailsVO1.setBDebitAmount(tdsCostInvoiceVO.getBillAmt().add(tdsCostInvoiceVO.getGstAmount()));
+				accountsDetailsVO1.setBDebitAmount(entry.getValue());
 				accountsDetailsVO1.setBCrAmount(BigDecimal.ZERO);
 				accountsDetailsVO1.setBArapAmount(BigDecimal.ZERO);
 				accountsDetailsVO1.setSubledgerName("None");
@@ -799,12 +847,12 @@ public class CostInvoiceServiceImpl implements CostInvoiceService {
 
 			}
 
-
 //
 
 			// Save AccountsVO and update TaxInvoiceVO
+			accountsVO.setAccountsDetailsVO(accountsDetailsVOs);
 			AccountsVO savedAccountsVO = accountsRepo.save(accountsVO);
-			
+
 			int gstflag = 6;
 			AccountsDetailsVO accountsDetailsVOs2 = accountsDetailsRepo.findByAccountsVOAndGstflag(savedAccountsVO,
 					gstflag);
@@ -830,7 +878,7 @@ public class CostInvoiceServiceImpl implements CostInvoiceService {
 			arapDetailsVO.setExRate(savedAccountsVO.getExRate());
 			arapDetailsVO.setAccName(accountsDetailsVOs2.getAccountName());
 			arapDetailsVO.setGstFlag(accountsDetailsVOs2.getGstflag());
-			arapDetailsVO.setSubLedgerName(accountsDetailsVOs2.getAccountName());
+			arapDetailsVO.setSubLedgerName(accountsDetailsVOs2.getSubledgerName());
 			arapDetailsVO.setSalesType(savedAccountsVO.getSalesType());
 			arapDetailsVO.setNativeAmt(accountsDetailsVOs2.getArapAmount());
 			arapDetailsRepo.save(arapDetailsVO);
@@ -888,18 +936,18 @@ public class CostInvoiceServiceImpl implements CostInvoiceService {
 
 	@Override
 	public List<Map<String, Object>> getDsahboardCost(Long orgId, String billMonth, String finYear) {
-		Set<Object[]> chType = costInvoiceRepo.getDsahboardCost(orgId, billMonth,finYear);
+		Set<Object[]> chType = costInvoiceRepo.getDsahboardCost(orgId, billMonth, finYear);
 		return getDash(chType);
 	}
 
 	private List<Map<String, Object>> getDash(Set<Object[]> chType) {
 		List<Map<String, Object>> List1 = new ArrayList<>();
 		for (Object[] ch : chType) {
-			if(ch!=null) {
-			Map<String, Object> map = new HashMap<>();
-			map.put("amount", ch[0] != null ? ch[0].toString() : "0");
-			List1.add(map);
-		}
+			if (ch != null) {
+				Map<String, Object> map = new HashMap<>();
+				map.put("amount", ch[0] != null ? ch[0].toString() : "0");
+				List1.add(map);
+			}
 		}
 		return List1;
 

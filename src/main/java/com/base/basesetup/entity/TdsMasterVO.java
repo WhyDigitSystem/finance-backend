@@ -40,6 +40,11 @@ public class TdsMasterVO {
 	@Column(name = "sectionname")
 	private String sectionName;
 	
+	@Column(name = "recievableaccount")
+	private String recievableAccount;
+	@Column(name = "payableaccount")
+	private String payableAccount;
+	
 	@Builder.Default
 	@Column(name = "screencode")
 	private String screenCode="TM";
