@@ -1100,6 +1100,7 @@ public class CostInvoiceServiceImpl implements CostInvoiceService {
 	    arapDetailsVO.setSubLedgerName(payableEntry.getSubledgerName());
 	    arapDetailsVO.setSalesType(savedAccountsVO.getSalesType());
 	    arapDetailsVO.setNativeAmt(payableEntry.getArapAmount());
+	    arapDetailsVO.setOrgId(savedAccountsVO.getOrgId());
 	    arapDetailsRepo.save(arapDetailsVO);
 
 	    // Final invoice updates
