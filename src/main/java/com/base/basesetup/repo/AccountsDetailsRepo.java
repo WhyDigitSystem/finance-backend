@@ -11,6 +11,7 @@ public interface AccountsDetailsRepo extends JpaRepository<AccountsDetailsVO, Lo
 
 	AccountsDetailsVO findByAccountsVOAndGstflag(AccountsVO savedAccountsVO, int gstflag);
 
+
 	List<AccountsDetailsVO> findByAccountsVO(AccountsVO existingAccount);
 
 }
