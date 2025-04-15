@@ -726,7 +726,7 @@ public class TaxInvoiceServiceImpl implements TaxInvoiceService {
 //			throw new ApplicationException("This Invoice Already Rejected");
 //		}
 //	}
-	
+//	
 	
 	@Override
 	public TaxInvoiceVO approveTaxInvoice(Long orgId, Long id, String docId, String action, String actionBy)
@@ -817,7 +817,7 @@ public class TaxInvoiceServiceImpl implements TaxInvoiceService {
 	        receivable.setAExRate(taxInvoiceVO.getBillCurrRate());
 	        receivable.setSubledgerName(taxInvoiceVO.getPartyName());
 	        receivable.setNArapAmount(taxInvoiceVO.getTotalInvAmountLc());
-	        receivable.setGstflag(6);
+	        receivable.setGstflag(1);
 	        receivable.setAccountsVO(accountsVO);
 	        accountsDetailsVOs.add(receivable);
 
@@ -870,7 +870,7 @@ public class TaxInvoiceServiceImpl implements TaxInvoiceService {
 	     }
 
 	     // AR/AP handling
-	     AccountsDetailsVO arDetail = accountsDetailsRepo.findByAccountsVOAndGstflag(savedAccountsVO, 6);
+	     AccountsDetailsVO arDetail = accountsDetailsRepo.findByAccountsVOAndGstflag(savedAccountsVO, 1);
 	     ArapDetailsVO arap = new ArapDetailsVO();
 	     arap.setSourceTransid(arDetail.getId());
 	     arap.setCreatedBy(savedAccountsVO.getCreatedBy());
