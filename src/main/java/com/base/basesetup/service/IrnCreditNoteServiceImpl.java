@@ -475,6 +475,8 @@ public class IrnCreditNoteServiceImpl implements IrnCreditNoteService {
 	        accountsVO.setModifiedon(irnCreditNoteVO.getCommonDate().getModifiedon().toUpperCase());
 	        accountsVO.setCreatedon(irnCreditNoteVO.getCommonDate().getModifiedon().toUpperCase());
 	        accountsVO.setRefNo(irnCreditNoteVO.getDocId());
+			accountsVO.setVId(irnCreditNoteVO.getVid());
+			accountsVO.setVDate(irnCreditNoteVO.getVdate());
 	        accountsVO.setRefDate(irnCreditNoteVO.getDocDate());
 	        accountsVO.setCurrency(irnCreditNoteVO.getBillCurr());
 	        accountsVO.setExRate(irnCreditNoteVO.getBillCurrRate());
