@@ -24,4 +24,6 @@ public interface DashboardService {
 
 	List<Map<String, Object>> getPercentageFromPayment(Long orgId, Long finYear, String month);
 
+	List<Map<String, Object>> getSalesMonthWiseData(Long orgId, Long finYear, String branchCode);
+
 }

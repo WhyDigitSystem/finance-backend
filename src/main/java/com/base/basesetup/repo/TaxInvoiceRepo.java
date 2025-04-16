@@ -318,6 +318,30 @@ public interface TaxInvoiceRepo extends JpaRepository<TaxInvoiceVO, Long> {
     		+ "GROUP BY r.orgid) a")
 	Set<Object[]> getPercentageFromPayment(Long orgId, Long finYear, String month);
 
+	
+	@Query(nativeQuery =true,value = "SELECT \r\n"
+			+ "    p.partyname,\r\n"
+			+ "    p.partyshortname,\r\n"
+			+ "    SUM(d.arapamount),\r\n"
+			+ "    MONTH(t.vdate)\r\n"
+			+ "FROM taxinvoice t\r\n"
+			+ "JOIN accounts a ON t.vid = a.vid\r\n"
+			+ "JOIN accountsdetails d ON d.accountsid = a.accountsid\r\n"
+			+ "JOIN partymaster p ON t.partycode = p.partycode\r\n"
+			+ "WHERE \r\n"
+			+ "    a.orgid = ?1\r \n"
+			+ "    AND a.finyear =?2 \r\n"
+			+ "    AND a.branchcode =?3 \r\n"
+			+ "    AND t.partytype='CUSTOMER'\r\n"
+			+ "GROUP BY \r\n"
+			+ "    p.partyname, \r\n"
+			+ "    MONTH(t.vdate), \r\n"
+			+ "    p.partyshortname\r\n"
+			+ "ORDER BY \r\n"
+			+ "    MONTH(t.vdate)\r\n"
+			+ "")
+	Set<Object[]> getSalesMonthWiseData(Long orgId, Long finYear, String branchCode);
+
  
 
 
