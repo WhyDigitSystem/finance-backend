@@ -71,6 +71,8 @@ import com.base.basesetup.dto.ReconcileCorpBankDTO;
 import com.base.basesetup.dto.TmsJobCardDTO;
 import com.base.basesetup.dto.WithdrawalParticularsDTO;
 import com.base.basesetup.entity.AccountParticularsVO;
+import com.base.basesetup.entity.AccountsDetailsVO;
+import com.base.basesetup.entity.AccountsVO;
 import com.base.basesetup.entity.AdjustmentJournalVO;
 import com.base.basesetup.entity.ArApAdjustmentOffSetVO;
 import com.base.basesetup.entity.ArApOffSetInvoiceDetailsVO;
@@ -111,10 +113,11 @@ import com.base.basesetup.entity.ReceiptReversalVO;
 import com.base.basesetup.entity.ReconcileBankVO;
 import com.base.basesetup.entity.ReconcileCashVO;
 import com.base.basesetup.entity.ReconcileCorpBankVO;
-import com.base.basesetup.entity.TaxInvoiceVO;
 import com.base.basesetup.entity.WithdrawalParticularsVO;
 import com.base.basesetup.exception.ApplicationException;
 import com.base.basesetup.repo.AccountParticularsRepo;
+import com.base.basesetup.repo.AccountsDetailsRepo;
+import com.base.basesetup.repo.AccountsRepo;
 import com.base.basesetup.repo.AdjustmentJournalRepo;
 import com.base.basesetup.repo.ArApAdjustmentOffSetRepo;
 import com.base.basesetup.repo.ArApOffSetInvoiceDetailsRepo;
@@ -180,6 +183,12 @@ public class TransactionServiceImpl implements TransactionService {
 
 	@Autowired
 	TaxInvoiceGstRepo gstTaxInvoiceRepo;
+
+	@Autowired
+	AccountsRepo accountsRepo;
+
+	@Autowired
+	AccountsDetailsRepo accountsDetailsRepo;
 
 	@Autowired
 	IrnCreditNoteRepo irnCreditRepo;
@@ -969,11 +978,61 @@ public class TransactionServiceImpl implements TransactionService {
 			message = "General Journal Created Successfully";
 		}
 
-		generalJournalRepo.save(generalJournalVO);
+		GeneralJournalVO generalJournalVO1 = generalJournalRepo.save(generalJournalVO);
+
+		List<ParticularsJournalVO> particularsJournalVOList = generalJournalVO1.getParticularsJournalVO();
+
+		if (particularsJournalVOList != null && !particularsJournalVOList.isEmpty()) {
+
+			AccountsVO accountsVO = new AccountsVO();
+
+			List<AccountsDetailsVO> accountsDetailsVo = new ArrayList<>();
+			accountsVO.setAccountsDetailsVO(accountsDetailsVo); // Set the initialized list
+
+			accountsVO.setOrgId(generalJournalVO1.getOrgId());
+			accountsVO.setBranch(generalJournalVO1.getBranch());
+			accountsVO.setBranchCode(generalJournalVO1.getBranchCode());
+			accountsVO.setFinYear(generalJournalVO1.getFinYear());
+			accountsVO.setVId(generalJournalVO1.getDocId());
+			accountsVO.setSourceId(generalJournalVO1.getId());
+			accountsVO.setSourceScreenCode(generalJournalVO1.getScreenCode());
+			accountsVO.setSourceScreen(generalJournalVO1.getScreenCode());
+			accountsVO.setModifiedon(generalJournalVO1.getCommonDate().getModifiedon().toUpperCase());
+			accountsVO.setCreatedBy(generalJournalVO1.getCreatedBy());
+			accountsVO.setCreatedon(generalJournalVO1.getCommonDate().getModifiedon().toUpperCase());
+			accountsVO.setCancelRemarks(generalJournalVO1.getCancelRemarks());
+			accountsVO.setTotalCreditAmount(generalJournalVO1.getTotalCreditAmount());
+			accountsVO.setTotalDebitAmount(generalJournalVO1.getTotalDebitAmount());
+			accountsVO.setCurrency(generalJournalVO1.getCurrency());
+			accountsVO.setExRate(generalJournalVO1.getExRate());
+			accountsVO.setRefNo(generalJournalVO1.getRefNo());
+			accountsVO.setRefDate(generalJournalVO1.getRefDate());
+			accountsVO.setRemarks(generalJournalVO1.getRemarks());
+
+			for (ParticularsJournalVO particularsJournalVO : particularsJournalVOList) {
+				AccountsDetailsVO accountsDetailsVO = new AccountsDetailsVO();
+				accountsDetailsVO.setAccountsVO(accountsVO);
+				accountsDetailsVO.setDebitAmount(particularsJournalVO.getDebitAmount());
+				accountsDetailsVO.setCreditAmount(particularsJournalVO.getCreditAmount());
+				accountsDetailsVO.setAccountName(particularsJournalVO.getAccountsName());
+				accountsDetailsVO.setSubledgerName(particularsJournalVO.getSubledgerName());
+				accountsDetailsVO.setSubLedgerCode(particularsJournalVO.getSubLedgerCode());
+
+				accountsDetailsVo.add(accountsDetailsVO);
+			}
+
+			accountsRepo.save(accountsVO);
+
+			for (AccountsDetailsVO detailsVO : accountsDetailsVo) {
+				accountsDetailsRepo.save(detailsVO);
+			}
+		}
+
 		Map<String, Object> response = new HashMap<>();
 		response.put("generalJournalVO", generalJournalVO);
 		response.put("message", message);
 		return response;
+
 	}
 
 	private void createUpdateJournalVOByGeneralJournalDTO(@Valid GeneralJournalDTO generalJournalDTO,
@@ -2448,17 +2507,16 @@ public class TransactionServiceImpl implements TransactionService {
 		if (ObjectUtils.isNotEmpty(tmsJobCardDTO.getId())) {
 			tmsJobCardVO = tmsJobCardRepo.findById(tmsJobCardDTO.getId())
 					.orElseThrow(() -> new ApplicationException("Invalid TmsJobCard details"));
-			
+
 			if (!tmsJobCardVO.getRefNo().equals(tmsJobCardDTO.getRefNo())) {
-				if (tmsJobCardRepo.existsByrefNoAndOrgId(tmsJobCardDTO.getRefNo(),
-						tmsJobCardDTO.getOrgId())) {
-			
+				if (tmsJobCardRepo.existsByrefNoAndOrgId(tmsJobCardDTO.getRefNo(), tmsJobCardDTO.getOrgId())) {
+
 					String errorMessage = String.format("This RefNo: %s already exists for this organization.",
 							tmsJobCardDTO.getRefNo());
 					throw new ApplicationException(errorMessage);
 				}
 				tmsJobCardVO.setRefNo(tmsJobCardDTO.getRefNo());
-				}
+			}
 			tmsJobCardVO.setUpdatedBy(tmsJobCardVO.getCreatedBy());
 			getJobCardVOFromJobCardDTO(tmsJobCardDTO, tmsJobCardVO);
 			message = "TmsJobCard Updated Successfully";
@@ -2475,10 +2533,9 @@ public class TransactionServiceImpl implements TransactionService {
 							tmsJobCardDTO.getFinYear(), tmsJobCardDTO.getBranchCode(), screenCode);
 			documentTypeMappingDetailsVO.setLastno(documentTypeMappingDetailsVO.getLastno() + 1);
 			documentTypeMappingDetailsRepo.save(documentTypeMappingDetailsVO);
-			
-			if (tmsJobCardRepo.existsByrefNoAndOrgId(tmsJobCardDTO.getRefNo(),
-					tmsJobCardDTO.getOrgId())) {
-		
+
+			if (tmsJobCardRepo.existsByrefNoAndOrgId(tmsJobCardDTO.getRefNo(), tmsJobCardDTO.getOrgId())) {
+
 				String errorMessage = String.format("This RefNo: %s already exists for this organization.",
 						tmsJobCardDTO.getRefNo());
 				throw new ApplicationException(errorMessage);
@@ -2504,7 +2561,7 @@ public class TransactionServiceImpl implements TransactionService {
 		tmsJobCardVO.setSalesCategory(tmsJobCardDTO.getSalesCategory());
 		tmsJobCardVO.setSalesPerson(tmsJobCardDTO.getSalesPerson());
 		tmsJobCardVO.setIncome(tmsJobCardDTO.getIncome());
-		tmsJobCardVO.setExpense(tmsJobCardDTO.getExpense().multiply(BigDecimal.valueOf(-1)));	
+		tmsJobCardVO.setExpense(tmsJobCardDTO.getExpense().multiply(BigDecimal.valueOf(-1)));
 		tmsJobCardVO.setProfit(tmsJobCardDTO.getIncome().subtract(tmsJobCardDTO.getExpense()));
 		tmsJobCardVO.setRemarks(tmsJobCardDTO.getRemarks());
 		tmsJobCardVO.setCreatedBy(tmsJobCardDTO.getCreatedBy());
@@ -2525,9 +2582,6 @@ public class TransactionServiceImpl implements TransactionService {
 		tmsJobCardVO.setRefNo(tmsJobCardDTO.getRefNo());
 		tmsJobCardVO.setRefDate(tmsJobCardDTO.getRefDate());
 		tmsJobCardVO.setService(tmsJobCardDTO.getService());
-
-
-
 
 		if (ObjectUtils.isNotEmpty(tmsJobCardDTO.getId())) {
 			List<CostCenterJobCardVO> costCenterTmsJobCardVO1 = costCenterTmsJobCardRepo.findByJobCardVO(tmsJobCardVO);
@@ -2570,8 +2624,8 @@ public class TransactionServiceImpl implements TransactionService {
 	}
 
 	@Override
-	public List<Map<String, Object>> getExponesByCostInvoice(Long orgId,String customerName) {
-		Set<Object[]> chType = tmsJobCardRepo.getExponesByCostInvoice(orgId ,customerName);
+	public List<Map<String, Object>> getExponesByCostInvoice(Long orgId, String customerName) {
+		Set<Object[]> chType = tmsJobCardRepo.getExponesByCostInvoice(orgId, customerName);
 		return getExponesByCost(chType);
 	}
 
