@@ -212,4 +212,27 @@ public class DashboardServiceImpl implements DashboardService {
 		return List1;
 
 	}
+
+	@Override
+	public List<Map<String, Object>> getSalesMonthWiseData(Long orgId, Long finYear, String branchCode) {
+		Set<Object[]> chType = taxInvoiceRepo.getSalesMonthWiseData(orgId,finYear,branchCode);
+		return getSalesMonthWise(chType);
+	}
+
+	private List<Map<String, Object>> getSalesMonthWise(Set<Object[]> chType) {
+		List<Map<String, Object>> List1 = new ArrayList<>();
+		for (Object[] ch : chType) {
+			Map<String, Object> map = new HashMap<>();
+			
+		      map.put("partyName", ch[0] != null ? ch[0].toString() : "");
+		      map.put("partyShortName", ch[1] != null ? ch[1].toString() : "");
+		      map.put("amount", ch[2] != null ? new BigDecimal(ch[2].toString()) : BigDecimal.ZERO);
+		      map.put("month", ch[3] != null ? ((Number) ch[3]).intValue() : 0);
+		     
+
+			List1.add(map);
+		}
+		return List1;
+
+	}
 }
