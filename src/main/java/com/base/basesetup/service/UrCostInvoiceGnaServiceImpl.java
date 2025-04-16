@@ -520,14 +520,15 @@ public class UrCostInvoiceGnaServiceImpl implements UrCostInvoiceGnaService {
 			List<AccountsDetailsVO> accountsDetailsVOs = new ArrayList<>();
 
 			AccountsDetailsVO accountsDetailsVO = new AccountsDetailsVO();
+			BigDecimal totalGstAmount = urCostInvoiceGnaVO.getTotalGstAmount();
 			accountsDetailsVO.setNDebitAmount(BigDecimal.ZERO);
 			accountsDetailsVO.setACategory("PAYABLE A/C");
 			accountsDetailsVO.setAccountName("PAYABLE A/C");
 			accountsDetailsVO.setDebitAmount(BigDecimal.ZERO);
-			accountsDetailsVO.setNCreditAmount(totalDebitAmount);
-			accountsDetailsVO.setCreditAmount(totalDebitAmount);
+			accountsDetailsVO.setNCreditAmount(totalDebitAmount.subtract(totalGstAmount));
+			accountsDetailsVO.setCreditAmount(totalDebitAmount.subtract(totalGstAmount));
 			accountsDetailsVO.setArapFlag(true);
-			accountsDetailsVO.setArapAmount(totalDebitAmount);
+			accountsDetailsVO.setArapAmount(totalDebitAmount.subtract(totalGstAmount));
 			accountsDetailsVO.setBDebitAmount(BigDecimal.ZERO);
 			accountsDetailsVO.setBCrAmount(BigDecimal.ZERO);
 			accountsDetailsVO.setBArapAmount(BigDecimal.ZERO);
