@@ -726,6 +726,201 @@ public class TaxInvoiceServiceImpl implements TaxInvoiceService {
 			throw new ApplicationException("This Invoice Already Rejected");
 		}
 	}
+	
+	
+//	@Override
+//	public TaxInvoiceVO approveTaxInvoice(Long orgId, Long id, String docId, String action, String actionBy)
+//	        throws ApplicationException {
+//
+//	    TaxInvoiceVO taxInvoiceVO = taxInvoiceRepo.findByOrgIdAndIdAndDocId(orgId, id, docId);
+//	    String screenCode = "AC";
+//	    String sourceScreenCode = taxInvoiceVO.getScreenCode();
+//
+//	    if (taxInvoiceVO.getApproveStatus() == null || (!taxInvoiceVO.getApproveStatus().equals("Approved")
+//	            && !taxInvoiceVO.getApproveStatus().equals("Rejected"))) {
+//
+//	        // Check if AccountsVO already exists
+//	        AccountsVO existingAccount = accountsRepo.findByRefNoAndVIdAndVDate(
+//	                taxInvoiceVO.getDocId(), taxInvoiceVO.getVId(), taxInvoiceVO.getVDate());
+//
+//	        AccountsVO accountsVO = (existingAccount != null) ? existingAccount : new AccountsVO();
+//	        
+//	        // 🧹 Delete existing accounts details if updating
+//	        if (existingAccount != null) {
+//	            List<AccountsDetailsVO> oldDetails = accountsDetailsRepo.findByAccountsVO(existingAccount);
+//	            if (!oldDetails.isEmpty()) {
+//	                accountsDetailsRepo.deleteAll(oldDetails);
+//	            }
+//	        }
+//
+//	        // Assign or regenerate docId if creating new
+//	        if (existingAccount == null) {
+//	            String newDocId = accountsRepo.getApproveDocId(taxInvoiceVO.getOrgId(), taxInvoiceVO.getFinYear(),
+//	                    taxInvoiceVO.getBranchCode(), sourceScreenCode, screenCode);
+//
+//	            MultipleDocIdGenerationDetailsVO docIdDetails = multipleDocIdGenerationDetailsRepo
+//	                    .findByOrgIdAndFinYearAndBranchCodeAndSourceScreenCodeAndScreenCode(
+//	                            taxInvoiceVO.getOrgId(), taxInvoiceVO.getFinYear(), taxInvoiceVO.getBranchCode(),
+//	                            sourceScreenCode, screenCode);
+//
+//	            docIdDetails.setLastno(docIdDetails.getLastno() + 1);
+//	            multipleDocIdGenerationDetailsRepo.save(docIdDetails);
+//
+//	            accountsVO.setDocId(newDocId);
+//	        }
+//
+//	        // Common AccountsVO setup (for both create/update)
+//	        accountsVO.setSourceScreen(taxInvoiceVO.getScreenName());
+//	        accountsVO.setSourceScreenCode(taxInvoiceVO.getScreenCode());
+//	        accountsVO.setSourceId(taxInvoiceVO.getId());
+//	        accountsVO.setCreatedBy(taxInvoiceVO.getCreatedBy());
+//	        accountsVO.setModifiedBy(taxInvoiceVO.getModifiedBy());
+//	        accountsVO.setOrgId(taxInvoiceVO.getOrgId());
+//	        accountsVO.setBranch(taxInvoiceVO.getBranch());
+//	        accountsVO.setBranchCode(taxInvoiceVO.getBranchCode());
+//	        accountsVO.setModifiedon(taxInvoiceVO.getCommonDate().getModifiedon().toUpperCase());
+//	        accountsVO.setCreatedon(taxInvoiceVO.getCommonDate().getModifiedon().toUpperCase());
+//	        accountsVO.setRefNo(taxInvoiceVO.getDocId());
+//	        accountsVO.setRefDate(taxInvoiceVO.getDocDate());
+//	        accountsVO.setVId(taxInvoiceVO.getVId());
+//	        accountsVO.setVDate(taxInvoiceVO.getVDate());
+//	        accountsVO.setCurrency(taxInvoiceVO.getBillCurr());
+//	        accountsVO.setExRate(taxInvoiceVO.getBillCurrRate());
+//	        accountsVO.setRemarks(taxInvoiceVO.getBillingRemarks());
+//	        accountsVO.setFinYear(taxInvoiceVO.getFinYear());
+//
+//	        BigDecimal totalDebitAmount = taxInvoiceVO.getTotalChargeAmountLc().add(taxInvoiceVO.getTotalTaxAmountLc());
+//	        accountsVO.setTotalDebitAmount(totalDebitAmount);
+//	        accountsVO.setTotalCreditAmount(totalDebitAmount);
+//	        accountsVO.setCreditDays(taxInvoiceVO.getCreditDays());
+//	        accountsVO.setAmountInWords(taxInvoiceVO.getAmountInWords());
+//	        accountsVO.setStTaxAmount(taxInvoiceVO.getTotalTaxableAmountLc());
+//	        accountsVO.setChargeableAmount(taxInvoiceVO.getTotalChargeAmountLc());
+//
+//	        List<AccountsDetailsVO> accountsDetailsVOs = new ArrayList<>();
+//
+//	        // Receivable A/C entry
+//	        AccountsDetailsVO receivable = new AccountsDetailsVO();
+//	        receivable.setNDebitAmount(taxInvoiceVO.getTotalInvAmountLc());
+//	        receivable.setACategory("RECEIVABLE A/C");
+//	        receivable.setAccountName("RECEIVABLE A/C");
+//	        receivable.setSubLedgerCode(taxInvoiceVO.getPartyCode());
+//	        receivable.setDebitAmount(taxInvoiceVO.getTotalInvAmountLc());
+//	        receivable.setNCreditAmount(BigDecimal.ZERO);
+//	        receivable.setCreditAmount(BigDecimal.ZERO);
+//	        receivable.setArapFlag(true);
+//	        receivable.setArapAmount(taxInvoiceVO.getTotalInvAmountLc());
+//	        receivable.setBDebitAmount(taxInvoiceVO.getTotalInvAmountLc());
+//	        receivable.setBCrAmount(BigDecimal.ZERO);
+//	        receivable.setBArapAmount(taxInvoiceVO.getTotalInvAmountLc());
+//	        receivable.setACurrency(taxInvoiceVO.getBillCurr());
+//	        receivable.setAExRate(taxInvoiceVO.getBillCurrRate());
+//	        receivable.setSubledgerName(taxInvoiceVO.getPartyName());
+//	        receivable.setNArapAmount(taxInvoiceVO.getTotalInvAmountLc());
+//	        receivable.setGstflag(1);
+//	        receivable.setAccountsVO(accountsVO);
+//	        accountsDetailsVOs.add(receivable);
+//
+//	        // GST entries
+//	        Map<String, BigDecimal> ledgerSumMap = new HashMap<>();
+//	        for (TaxInvoiceGstVO gstVO : taxInvoiceVO.getTaxInvoiceGstVO()) {
+//	            ledgerSumMap.merge(gstVO.getGstChargeAcc(), gstVO.getGstCrLcAmount(), BigDecimal::add);
+//	        }
+//
+//	        for (Map.Entry<String, BigDecimal> entry : ledgerSumMap.entrySet()) {
+//	            GroupLedgerVO groupLedger = groupLedgerRepo.findByAccountGroupName(entry.getKey());
+//
+//	            AccountsDetailsVO gstDetail = new AccountsDetailsVO();
+//	            gstDetail.setACategory(groupLedger.getCategory());
+//	            gstDetail.setSubLedgerCode("None");
+//	            gstDetail.setNDebitAmount(BigDecimal.ZERO);
+//	            gstDetail.setDebitAmount(BigDecimal.ZERO);
+//	            gstDetail.setNCreditAmount(entry.getValue());
+//	            gstDetail.setCreditAmount(entry.getValue());
+//	            gstDetail.setArapFlag(false);
+//	            gstDetail.setArapAmount(BigDecimal.ZERO);
+//	            gstDetail.setBDebitAmount(BigDecimal.ZERO);
+//	            gstDetail.setBCrAmount(entry.getValue());
+//	            gstDetail.setBArapAmount(BigDecimal.ZERO);
+//	            gstDetail.setAccountName(groupLedger.getAccountGroupName());
+//	            gstDetail.setACurrency(taxInvoiceVO.getBillCurr());
+//	            gstDetail.setAExRate(taxInvoiceVO.getBillCurrRate());
+//	            gstDetail.setSubledgerName("None");
+//	            gstDetail.setNArapAmount(BigDecimal.ZERO);
+//	            gstDetail.setGstflag(3);
+//	            gstDetail.setAccountsVO(accountsVO);
+//	            accountsDetailsVOs.add(gstDetail);
+//	        }
+//
+//	        accountsVO.setAccountsDetailsVO(accountsDetailsVOs);
+//
+//	        // Save (create or update)
+//	        AccountsVO savedAccountsVO = accountsRepo.save(accountsVO);
+//
+////	        // AR/AP handling
+////	        accountsVO.setAccountsDetailsVO(accountsDetailsVOs);
+////
+////	     // Save (create or update)
+////	     AccountsVO savedAccountsVO = accountsRepo.save(accountsVO);
+//
+//	     // 🧹 Delete previous AR/AP records (based on refNo)
+//	     List<ArapDetailsVO> existingAraps = arapDetailsRepo.findByRefNo(savedAccountsVO.getRefNo());
+//	     if (!existingAraps.isEmpty()) {
+//	         arapDetailsRepo.deleteAll(existingAraps);
+//	     }
+//
+//	     // AR/AP handling
+//	     AccountsDetailsVO arDetail = accountsDetailsRepo.findByAccountsVOAndGstflag(savedAccountsVO, 1);
+//	     ArapDetailsVO arap = new ArapDetailsVO();
+//	     arap.setSourceTransid(arDetail.getId());
+//	     arap.setCreatedBy(savedAccountsVO.getCreatedBy());
+//	     arap.setUpdatedBy(savedAccountsVO.getModifiedBy());
+//	     arap.setBranch(savedAccountsVO.getBranch());
+//	     arap.setBranchCode(savedAccountsVO.getBranchCode());
+//	     arap.setFinYear(savedAccountsVO.getFinYear());
+//	     arap.setRefNo(savedAccountsVO.getRefNo());
+//	     arap.setRefDate(savedAccountsVO.getRefDate());
+//	     arap.setSubLedgerCode(arDetail.getSubLedgerCode());
+//	     arap.setCurrency(arDetail.getACurrency());
+//	     arap.setExRate(arDetail.getAExRate());
+//	     arap.setAmount(arDetail.getArapAmount());
+//	     arap.setBaseAmt(arDetail.getArapAmount());
+//	     arap.setDueDate(savedAccountsVO.getDueDate());
+//	     arap.setCreditDays(savedAccountsVO.getCreditDays());
+//	     arap.setDocId(savedAccountsVO.getDocId());
+//	     arap.setDocDate(savedAccountsVO.getDocDate());
+//	     arap.setAccCurrency(savedAccountsVO.getCurrency());
+//	     arap.setExRate(savedAccountsVO.getExRate());
+//	     arap.setAccName(arDetail.getAccountName());
+//	     arap.setGstFlag(arDetail.getGstflag());
+//	     arap.setSubLedgerName(arDetail.getAccountName());
+//	     arap.setSalesType(savedAccountsVO.getSalesType());
+//	     arap.setNativeAmt(arDetail.getArapAmount());
+//	     arapDetailsRepo.save(arap);
+//
+//	     // Final updates to TaxInvoiceVO
+//	     taxInvoiceVO.setInvoiceNo(savedAccountsVO.getDocId());
+//	     taxInvoiceVO.setInvoiceDate(savedAccountsVO.getDocDate());
+//	     taxInvoiceVO.setApproveStatus(action);
+//	     taxInvoiceVO.setApproveBy(actionBy);
+//
+//	     LocalDate dueDate = taxInvoiceVO.getVDate().plusDays(taxInvoiceVO.getCreditDays());
+//	     savedAccountsVO.setDueDate(dueDate);
+//	     taxInvoiceVO.setDueDate(dueDate);
+//
+//	     taxInvoiceVO.setApproveOn(LocalDateTime.now()
+//	             .format(DateTimeFormatter.ofPattern("dd-MM-yyyy hh:mm:ss a")).toUpperCase());
+//
+//	     return taxInvoiceRepo.save(taxInvoiceVO);
+//
+//
+//	    } else if (taxInvoiceVO.getApproveStatus().equals("Approved")) {
+//	        throw new ApplicationException("This Invoice Already Approved,");
+//	    } else {
+//	        throw new ApplicationException("This Invoice Already Rejected");
+//	    }
+//	}
+
 
 	@Override
 	public List<Map<String, Object>> getCreditDaysFromCustomer(Long orgId, String customerCode) {

@@ -12,8 +12,8 @@ import com.base.basesetup.entity.ReceiptVO;
 @Repository
 public interface ReceiptRepo extends JpaRepository<ReceiptVO, Long> {
 
-	@Query(nativeQuery = true, value = "select * from receipt where orgid=?1")
-	List<ReceiptVO> getAllReceiptReceivableByOrgId(Long orgId);
+	@Query(nativeQuery = true, value = "select * from receipt where orgid=?1 and finyear=?2 and branchcode=?3")
+	List<ReceiptVO> getAllReceiptReceivableByOrgId(Long orgId,String finYear, String branchCode);
 
 	@Query(nativeQuery = true, value = "select * from receipt where receiptid=?1")
 	List<ReceiptVO> getAllReceiptReceivableById(Long id);

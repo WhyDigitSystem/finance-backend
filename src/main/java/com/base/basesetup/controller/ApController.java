@@ -40,7 +40,7 @@ public class ApController extends BaseController {
 	public static final Logger LOGGER = LoggerFactory.getLogger(ApController.class);
 
 	@GetMapping("/getAllPaymentByOrgId")
-	public ResponseEntity<ResponseDTO> getAllPaymentByOrgId(@RequestParam Long orgId) {
+	public ResponseEntity<ResponseDTO> getAllPaymentByOrgId(@RequestParam Long orgId,@RequestParam String finYear,@RequestParam String branchCode) {
 		String methodName = "getAllPaymentByOrgId()";
 		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
 		String errorMsg = null;
@@ -48,7 +48,7 @@ public class ApController extends BaseController {
 		ResponseDTO responseDTO = null;
 		List<PaymentVO> paymentVO = new ArrayList<>();
 		try {
-			paymentVO = apService.getAllPaymentByOrgId(orgId);
+			paymentVO = apService.getAllPaymentByOrgId(orgId,finYear,branchCode);
 		} catch (Exception e) {
 			errorMsg = e.getMessage();
 			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
