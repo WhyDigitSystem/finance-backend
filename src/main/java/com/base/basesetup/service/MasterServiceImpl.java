@@ -759,8 +759,7 @@ public class MasterServiceImpl implements MasterService {
 		if (isUpdate) {
 			TdsMasterVO tdsMaster = tdsMasterRepo.findById(tdsMasterDTO.getId()).orElse(null);
 			if (!tdsMaster.getSectionName().equals(tdsMasterDTO.getSectionName())) {
-				if (tdsMasterRepo.existsBySectionNameAndOrgId(tdsMasterDTO.getSectionName(),
-						tdsMasterDTO.getOrgId())) {
+				if (tdsMasterRepo.existsBySectionNameAndOrgId(tdsMasterDTO.getSectionName(), tdsMasterDTO.getOrgId())) {
 					throw new ApplicationException("The given Section name already exists.");
 				}
 			}
@@ -803,6 +802,8 @@ public class MasterServiceImpl implements MasterService {
 		tdsMasterVO.setOrgId(tdsMasterDTO.getOrgId());
 		tdsMasterVO.setSection(tdsMasterDTO.getSection());
 		tdsMasterVO.setSectionName(tdsMasterDTO.getSectionName());
+		tdsMasterVO.setRecievableAccount(tdsMasterDTO.getRecievableAccount());
+		tdsMasterVO.setPayableAccount(tdsMasterDTO.getPayableAccount());
 		tdsMasterVO.setActive(tdsMasterDTO.isActive());
 	}
 
@@ -810,6 +811,42 @@ public class MasterServiceImpl implements MasterService {
 	public List<TdsMasterVO> getTdsMasterByActive() {
 		return tdsMasterRepo.findTdsMasterByActive();
 
+	}
+
+	@Override
+	public List<Map<String, Object>> getTdsAccountNameFromReceivable(Long orgId) {
+		Set<Object[]> chType = tdsMasterRepo.getTdsAccountNameFromReceivable(orgId);
+		return getTdsAccountNameFromR(chType);
+	}
+
+	public List<Map<String, Object>> getTdsAccountNameFromR(Set<Object[]> chType) {
+
+		List<Map<String, Object>> List1 = new ArrayList<>();
+		for (Object ch[] : chType) {
+			Map<String, Object> map = new HashMap<>();
+			map.put("accountName", ch[0] != null ? ch[0].toString() : ""); // Empty string if null
+			List1.add(map);
+
+		}
+		return List1;
+	}
+
+	@Override
+	public List<Map<String, Object>> getTdsAccountNameFromPayable(Long orgId) {
+		Set<Object[]> chType = tdsMasterRepo.getTdsAccountNameFromPayable(orgId);
+		return getTdsAccountNameFromP(chType);
+	}
+
+	public List<Map<String, Object>> getTdsAccountNameFromP(Set<Object[]> chType) {
+
+		List<Map<String, Object>> List1 = new ArrayList<>();
+		for (Object ch[] : chType) {
+			Map<String, Object> map = new HashMap<>();
+			map.put("accountName", ch[0] != null ? ch[0].toString() : ""); // Empty string if null
+			List1.add(map);
+
+		}
+		return List1;
 	}
 
 	// AccountVO
@@ -1976,8 +2013,8 @@ public class MasterServiceImpl implements MasterService {
 		partyMasterVO.setBranchCode(partyMasterDTO.getBranchCode());
 		partyMasterVO.setCreditTerms(partyMasterDTO.getCreditTerms());
 		partyMasterVO.setPartyShortName(partyMasterDTO.getPartyShortName());
-		
-		}
+
+	}
 
 	@Override
 	public String getPartyMasterDocId(Long orgId, String finYear, String branch, String branchCode) {
@@ -2018,17 +2055,17 @@ public class MasterServiceImpl implements MasterService {
 						// Retrieve cell values based on the provided order
 						String type = getStringCellValue1(row.getCell(0));
 						String accountName = getStringCellValue1(row.getCell(1));
-						if (groupLedgerRepo.existsByAccountGroupNameAndOrgId(accountName,orgId)) {
-							String errorMessage = String.format("This Accountname: %s Already Exists in This Organization",
-								accountName);
+						if (groupLedgerRepo.existsByAccountGroupNameAndOrgId(accountName, orgId)) {
+							String errorMessage = String
+									.format("This Accountname: %s Already Exists in This Organization", accountName);
 							throw new ApplicationException("The given Account Group Name already exists.");
-					}
+						}
 						String accountCode = getStringCellValue1(row.getCell(2));
-						if (groupLedgerRepo.existsByAccountCodeAndOrgId(accountCode,orgId)) {
-							String errorMessage = String.format("This AccountCode: %s Already Exists in This Organization",
-								accountCode);
+						if (groupLedgerRepo.existsByAccountCodeAndOrgId(accountCode, orgId)) {
+							String errorMessage = String
+									.format("This AccountCode: %s Already Exists in This Organization", accountCode);
 							throw new ApplicationException("The given Account Code  already exists.");
-					}
+						}
 						String parentCode = getStringCellValue1(row.getCell(3));
 						String GSTTaxFlag = getStringCellValue1(row.getCell(5));
 						String pbFlag = getStringCellValue1(row.getCell(6));
@@ -2441,34 +2478,33 @@ public class MasterServiceImpl implements MasterService {
 		HSNSacCodeVO hsnSacCodeVO;
 		String message = null;
 
-		 if (ObjectUtils.isEmpty(hsnSacCodeDTO.getId())) {
-		        if (hsnSacCodeRepo.existsByCode(hsnSacCodeDTO.getCode())) {
-		            String errorMessage = String.format("This Code: %s Already Exists", hsnSacCodeDTO.getCode());
-		            throw new ApplicationException(errorMessage);
-		        }
+		if (ObjectUtils.isEmpty(hsnSacCodeDTO.getId())) {
+			if (hsnSacCodeRepo.existsByCode(hsnSacCodeDTO.getCode())) {
+				String errorMessage = String.format("This Code: %s Already Exists", hsnSacCodeDTO.getCode());
+				throw new ApplicationException(errorMessage);
+			}
 
-		        hsnSacCodeVO = new HSNSacCodeVO();
-		        hsnSacCodeVO.setCreatedBy(hsnSacCodeDTO.getCreatedBy());
-		        hsnSacCodeVO.setUpdatedBy(hsnSacCodeDTO.getCreatedBy());
-		        message = "HSNSacCode Created Successfully";
-		    } else {
-		        // Update existing code
-		        hsnSacCodeVO = hsnSacCodeRepo.findById(hsnSacCodeDTO.getId())
-		                .orElseThrow(() -> new ApplicationException("HSNSacCode not found with id: " + hsnSacCodeDTO.getId()));
+			hsnSacCodeVO = new HSNSacCodeVO();
+			hsnSacCodeVO.setCreatedBy(hsnSacCodeDTO.getCreatedBy());
+			hsnSacCodeVO.setUpdatedBy(hsnSacCodeDTO.getCreatedBy());
+			message = "HSNSacCode Created Successfully";
+		} else {
+			// Update existing code
+			hsnSacCodeVO = hsnSacCodeRepo.findById(hsnSacCodeDTO.getId()).orElseThrow(
+					() -> new ApplicationException("HSNSacCode not found with id: " + hsnSacCodeDTO.getId()));
 
-		        hsnSacCodeVO.setUpdatedBy(hsnSacCodeDTO.getCreatedBy());
+			hsnSacCodeVO.setUpdatedBy(hsnSacCodeDTO.getCreatedBy());
 
-		        if (!hsnSacCodeVO.getCode().equalsIgnoreCase(hsnSacCodeDTO.getCode())) {
-		            if (hsnSacCodeRepo.existsByCode(hsnSacCodeDTO.getCode())) {
-		                String errorMessage = String.format("This Code: %s Already Exists", hsnSacCodeDTO.getCode());
-		                throw new ApplicationException(errorMessage);
-		            }
-		            hsnSacCodeVO.setCode(hsnSacCodeDTO.getCode().toUpperCase());
-		        }
+			if (!hsnSacCodeVO.getCode().equalsIgnoreCase(hsnSacCodeDTO.getCode())) {
+				if (hsnSacCodeRepo.existsByCode(hsnSacCodeDTO.getCode())) {
+					String errorMessage = String.format("This Code: %s Already Exists", hsnSacCodeDTO.getCode());
+					throw new ApplicationException(errorMessage);
+				}
+				hsnSacCodeVO.setCode(hsnSacCodeDTO.getCode().toUpperCase());
+			}
 
-		        message = "HSNSacCode Updated Successfully";
-		    }
-
+			message = "HSNSacCode Updated Successfully";
+		}
 
 		getHSNSacCodeVOFromHSNSacCodeDTO(hsnSacCodeVO, hsnSacCodeDTO);
 		hsnSacCodeRepo.save(hsnSacCodeVO);

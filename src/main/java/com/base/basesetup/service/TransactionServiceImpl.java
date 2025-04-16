@@ -2750,7 +2750,7 @@ public class TransactionServiceImpl implements TransactionService {
 				accountParticularsVO.setDebitBase(BigDecimal.ZERO);
 			}
 
-			accountParticularsVO.setAdjustmentJournalVO(adjustmentJournalVO);
+			accountParticularsVO.setAdjustmentJournalVO(adjustmentJournalVO);  
 			accountParticularsVOs.add(accountParticularsVO);
 		}
 		if (totalCreditAmount.equals(totalDebitAmount)) {

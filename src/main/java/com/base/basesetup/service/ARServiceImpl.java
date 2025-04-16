@@ -57,13 +57,9 @@ public class ARServiceImpl implements ARService {
 
 	// Receipt
 	@Override
-	public List<ReceiptVO> getAllReceiptReceivableByOrgId(Long orgId) {
-		List<ReceiptVO> receiptReceivableVO = new ArrayList<>();
-		if (ObjectUtils.isNotEmpty(orgId)) {
-			LOGGER.info("Successfully Received ReceiptReceivable BY OrgId : {}", orgId);
-			receiptReceivableVO = receiptRepo.getAllReceiptReceivableByOrgId(orgId);
-		}
-		return receiptReceivableVO;
+	public List<ReceiptVO> getAllReceiptReceivableByOrgId(Long orgId, String finYear, String branchCode) {
+
+		return receiptRepo.getAllReceiptReceivableByOrgId(orgId,finYear, branchCode);
 	}
 
 	@Override

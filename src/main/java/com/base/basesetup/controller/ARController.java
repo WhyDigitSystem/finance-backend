@@ -42,7 +42,7 @@ public class ARController extends BaseController {
 	// Receipt
 
 	@GetMapping("/getAllReceiptByOrgId")
-	public ResponseEntity<ResponseDTO> getAllReceiptReceivableByOrgId(@RequestParam Long orgId) {
+	public ResponseEntity<ResponseDTO> getAllReceiptReceivableByOrgId(@RequestParam Long orgId,@RequestParam String finYear,@RequestParam String branchCode) {
 		String methodName = "getAllReceiptReceivableByOrgId()";
 		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
 		String errorMsg = null;
@@ -50,7 +50,7 @@ public class ARController extends BaseController {
 		ResponseDTO responseDTO = null;
 		List<ReceiptVO> receiptReceivableVO = new ArrayList<>();
 		try {
-			receiptReceivableVO = arReceivableService.getAllReceiptReceivableByOrgId(orgId);
+			receiptReceivableVO = arReceivableService.getAllReceiptReceivableByOrgId(orgId,finYear,branchCode);
 		} catch (Exception e) {
 			errorMsg = e.getMessage();
 			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);

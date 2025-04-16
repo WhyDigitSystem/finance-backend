@@ -60,13 +60,9 @@ public class APServiceImpl implements APService {
 	TdsPaymentRepo tdsPaymentRepo;
 
 	@Override
-	public List<PaymentVO> getAllPaymentByOrgId(Long orgId) {
-		List<PaymentVO> paymentVO = new ArrayList<>();
-		if (ObjectUtils.isNotEmpty(orgId)) {
-			LOGGER.info("Successfully Received  Payment BY OrgId: {}", orgId);
-			paymentVO = paymentRepo.getAllPaymentByOrgId(orgId);
-		}
-		return paymentVO;
+	public List<PaymentVO> getAllPaymentByOrgId(Long orgId, String finYear, String branchCode) {
+	
+		return paymentRepo.getAllPaymentByOrgId(orgId,finYear, branchCode);
 	}
 
 	@Override
