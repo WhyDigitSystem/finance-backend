@@ -1084,7 +1084,7 @@ public interface ArapAdjustmentsRepo extends JpaRepository<ArapAdjustmentsVO, Lo
 			+ "    THEN 0\r\n"
 			+ "    ELSE a.amount + IFNULL(SUM(IFNULL(r.nativeamt, 0)), 0)\r\n"
 			+ "END AS boutstanding,\r\n"
-			+ "(a.amount + IFNULL(SUM(IFNULL(r.nativeamt, 0)), 0)) AS btotaldue,\r\n"
+			+ "(a.amount + IFNULL(SUM(IFNULL(r.nativeamt, 0)), 0)) AS btotaldue,\r\n" 
 			+ "a.nativeamt AS namount,\r\n"
 			+ "CASE\r\n"
 			+ "    WHEN (a.doctypecode IN ('RC', 'PA')\r\n"
