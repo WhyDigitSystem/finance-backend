@@ -499,6 +499,7 @@ public class IrnCreditNoteServiceImpl implements IrnCreditNoteService {
 	        AccountsDetailsVO accountsDetailsVO = new AccountsDetailsVO();
 	        accountsDetailsVO.setNDebitAmount(BigDecimal.ZERO);
 	        accountsDetailsVO.setACategory("RECEIVABLE A/C");
+	        accountsDetailsVO.setAccountName("RECEIVABLE A/C");
 	        accountsDetailsVO.setSubLedgerCode(irnCreditNoteVO.getPartyCode());
 	        accountsDetailsVO.setDebitAmount(BigDecimal.ZERO);
 	        accountsDetailsVO.setNCreditAmount(irnCreditNoteVO.getTotalInvAmountLc());
@@ -581,6 +582,7 @@ public class IrnCreditNoteServiceImpl implements IrnCreditNoteService {
 			arapDetailsVO.setDocDate(savedAccountsVO.getDocDate());
 			arapDetailsVO.setAccCurrency(savedAccountsVO.getCurrency());
 			arapDetailsVO.setExRate(savedAccountsVO.getExRate());
+			arapDetailsVO.setOrgId(savedAccountsVO.getOrgId());
 			arapDetailsVO.setAccName(accountsDetailsVOs2.getAccountName());
 			arapDetailsVO.setGstFlag(accountsDetailsVOs2.getGstflag());
 			arapDetailsVO.setSubLedgerName(accountsDetailsVOs2.getAccountName());
