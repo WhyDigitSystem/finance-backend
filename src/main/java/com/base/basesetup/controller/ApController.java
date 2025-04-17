@@ -484,7 +484,64 @@ public class ApController extends BaseController {
 		return ResponseEntity.ok().body(responseDTO);
 	}	
 			
+	
+	
+	
+	@GetMapping("/getPaymentFillGrid")
+	public ResponseEntity<ResponseDTO> getPaymentFillGrid( Long orgId, String partyCode,String branchCode, String docDate) {
+		String methodName = "getPaymentFillGrid()";
+		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+		String errorMsg = null;
+		Map<String, Object> responseObjectsMap = new HashMap<>();
+		ResponseDTO responseDTO = null;
+		List<Map<String, Object>> paymentfillgrid = new ArrayList<>();
+		try {
+			paymentfillgrid = apService.getPaymentFillGrid(orgId,partyCode, branchCode, docDate);
+		} catch (Exception e) {
+			errorMsg = e.getMessage();
+			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+		}
+		if (StringUtils.isBlank(errorMsg)) {
+			responseObjectsMap.put(CommonConstant.STRING_MESSAGE,
+					" Payment fillgrid information get successfully");
+			responseObjectsMap.put("paymentfillgrid", paymentfillgrid);
+			responseDTO = createServiceResponse(responseObjectsMap);
+		} else {
+			responseDTO = createServiceResponseError(responseObjectsMap,
+					"Payment fillgrid  information receive failed", errorMsg);
+		}
+		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+		return ResponseEntity.ok().body(responseDTO);
+	}
 			
+	@GetMapping("/getarapoffsetadjustmentFillGrid")
+	public ResponseEntity<ResponseDTO> getarapoffsetadjustmentFillGrid(Long orgId, String partyCode,String branchCode, String docDate,String docId) {
+		String methodName = "getarapoffsetadjustmentFillGrid()";
+		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+		String errorMsg = null;
+		Map<String, Object> responseObjectsMap = new HashMap<>();
+		ResponseDTO responseDTO = null;
+		List<Map<String, Object>> arapoffsetadjustmentFillGrid = new ArrayList<>();
+		try {
+			arapoffsetadjustmentFillGrid = apService.getarapoffsetadjustmentFillGrid(orgId,partyCode, branchCode, docDate,docId);
+		} catch (Exception e) {
+			errorMsg = e.getMessage();
+			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+		}
+		if (StringUtils.isBlank(errorMsg)) {
+			responseObjectsMap.put(CommonConstant.STRING_MESSAGE,
+					" ARAP offset adjustment fillgrid information get successfully");
+			responseObjectsMap.put("arapoffsetadjustmentFillGrid", arapoffsetadjustmentFillGrid);
+			responseDTO = createServiceResponse(responseObjectsMap);
+		} else {
+			responseDTO = createServiceResponseError(responseObjectsMap,
+					"ARAP offset adjustment fillgrid  information receive failed", errorMsg);
+		}
+		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+		return ResponseEntity.ok().body(responseDTO);
+	}
+			
+	
 // ap ageing
 			
 			

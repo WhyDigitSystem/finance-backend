@@ -1277,7 +1277,7 @@ public interface ArapAdjustmentsRepo extends JpaRepository<ArapAdjustmentsVO, Lo
 			+ "    br.branch,\r\n"
 			+ "    p.partycode as subledgercode,p.partyshortname as name, \r\n"
 			+ "   	p.partyname as subledgername,\r\n"
-			+ "     'GST Party'  AS Partytax,\r\n"
+			+ "     'GST Party'  AS Partytype,\r\n"
 			+ "    a.subledgerdivision,\r\n"
 			+ "   'Base' AS currency,\r\n"
 			+ "    a.docid,\r\n"
@@ -1408,7 +1408,7 @@ public interface ArapAdjustmentsRepo extends JpaRepository<ArapAdjustmentsVO, Lo
 			+ "            ELSE a.amount + IFNULL(SUM(IFNULL(r.amount, 0)), 0)\r\n"
 			+ "        END\r\n"
 			+ "    ELSE 0\r\n"
-			+ "END AS mslab7,p.partytype\r\n"
+			+ "END AS mslab7\r\n"
 			+ "FROM \r\n"
 			+ "    arapdetails a\r\n"
 			+ "LEFT JOIN arapadjustments r ON a.subledgercode = r.subledgercode AND a.docid = r.docid\r\n"
@@ -1431,7 +1431,7 @@ public interface ArapAdjustmentsRepo extends JpaRepository<ArapAdjustmentsVO, Lo
 			+ "    br.branch,\r\n"
 			+ "   p.partycode,\r\n"
 			+ "   	p.partyname,p.partyshortname ,\r\n"
-			+ "     partytax,\r\n"
+			+ "     partytype,\r\n"
 			+ "    a.subledgerdivision,\r\n"
 			+ "    a.currency,\r\n"
 			+ "    a.docid,\r\n"
@@ -1672,5 +1672,21 @@ public interface ArapAdjustmentsRepo extends JpaRepository<ArapAdjustmentsVO, Lo
 			+ "subledgername\r\n"
 			+ "") 
 	Set<Object[]> findAPOutstanding(String Asondate, String partyname, String pdate, Long orgId);
+
+	
+	
+	@Query(nativeQuery = true, value = "select a.orgid, a.docid, a.docdate, a.refno, a.refdate, a.currency, a.exrate,\r\n"
+			+ "a.AMOUNT, (a.AMOUNT + a.ARAPSETTLED)  as outstanding,\r\n"
+			+ "(a.AMOUNT + a.ARAPSETTLED) as settled,A.arapdetailsID from\r\n"
+			+ "vw_gstarapoutstanding A\r\n"
+			+ "where a.SUBLEDGERcode = ?2 \r\n"
+			+ "and  (a.AMOUNT + a.ARAPSETTLED)  <> 0\r\n"
+			+ "and a.docdate <= ?4\r\n"
+			+ " and a.refno <> ?5\r\n"
+			+ "and a.branch = ?3 \r\n"
+			+ "and a.orgid =?1 \r\n"
+			+ "order by docdate, docid")
+	Set<Object[]> findarapoffsetadjustmentFillGrid(Long orgId, String partyCode, String branchCode, String docDate,
+			String docId);
 
 }

@@ -514,7 +514,7 @@ public class APServiceImpl implements APService {
 	@Override
 	public List<Map<String, Object>> getAPAgeing(String Asondate, String partyname, String pdate, Long orgId) {
 		Set<Object[]> group = arapAdjustmentsRepo.findAPAgenig(Asondate, partyname, pdate, orgId);
-		return getPartyName1(group);
+		return getAPAgeing(group);
 	}
 	private List<Map<String, Object>> getAPAgeing(Set<Object[]> customer) {
 		List<Map<String, Object>> apage = new ArrayList<>();
@@ -549,6 +549,8 @@ public class APServiceImpl implements APService {
 			apageing.put("mslab4",           sup[25] != null ? sup[25].toString() : "");
 			apageing.put("mslab5",           sup[26] != null ? sup[26].toString() : "");
 			apageing.put("name",           sup[27] != null ? sup[27].toString() : "");
+			
+			apage.add(apageing);
 		}
 		return apage;
 	}
@@ -556,7 +558,7 @@ public class APServiceImpl implements APService {
 	@Override
 	public List<Map<String, Object>> getAPOutstanding(String Asondate, String partyname, String pdate, Long orgId) {
 		Set<Object[]> group = arapAdjustmentsRepo.findAPOutstanding(Asondate, partyname, pdate, orgId);
-		return getPartyName1(group);
+		return getAPOutstanding(group);
 	}
 	private List<Map<String, Object>> getAPOutstanding(Set<Object[]> customer) {
 		List<Map<String, Object>> apage = new ArrayList<>();
@@ -578,8 +580,73 @@ public class APServiceImpl implements APService {
 		    apageing.put("mslab4", sup[13] != null ? sup[13].toString() : "");
 		    apageing.put("mslab5", sup[14] != null ? sup[14].toString() : "");
 		    apageing.put("name", sup[15] != null ? sup[15].toString() : "");
+		    
+		    apage.add(apageing);
 		}
 		return apage;
 	}
 
+	@Override
+	public List<Map<String, Object>> getPaymentFillGrid(Long orgId, String partyCode,String branchCode, String docDate) {
+		Set<Object[]> group = paymentRepo.getPaymentFillGrid(orgId, partyCode, branchCode, docDate);
+		
+		if(group!=null) {
+			System.out.println("YES values are there");
+		}
+		return getPaymentFillGrid(group);
+	}
+	private List<Map<String, Object>> getPaymentFillGrid(Set<Object[]> customer) {
+		List<Map<String, Object>> payfill = new ArrayList<>();
+		for (Object[] sup : customer) {
+		    Map<String, Object> payfillgrid = new HashMap<>();
+		    payfillgrid.put("orgId", sup[0] != null ? sup[0].toString() : "");
+		    payfillgrid.put("docId", sup[1] != null ? sup[1].toString() : "");
+		    payfillgrid.put("docDate", sup[2] != null ? sup[2].toString() : "");
+		    payfillgrid.put("refNo", sup[3] != null ? sup[3].toString() : "");
+		    payfillgrid.put("refDate", sup[4] != null ? sup[4].toString() : "");
+		    payfillgrid.put("suppRefNo", sup[5] != null ? sup[5].toString() : "");
+		    payfillgrid.put("suppRefDate", sup[6] != null ? sup[6].toString() : "");
+		    payfillgrid.put("currency", sup[7] != null ? sup[7].toString() : "");
+		    payfillgrid.put("exRate", sup[8] != null ? sup[8].toString() : "");
+		    payfillgrid.put("amount", sup[9] != null ? sup[9].toString() : "");
+		    payfillgrid.put("outstanding", sup[10] != null ? sup[10].toString() : "");
+		    payfillgrid.put("settled", sup[11] != null ? sup[11].toString() : "");
+		    payfillgrid.put("arapDetailsId", sup[12] != null ? sup[12].toString() : "");
+		    
+		    payfill.add(payfillgrid);
+		}
+		return payfill;
+	}
+
+	@Override
+	public List<Map<String, Object>> getarapoffsetadjustmentFillGrid(Long orgId, String partyCode, String branchCode,
+			String docDate, String docId) {
+Set<Object[]> group = arapAdjustmentsRepo.findarapoffsetadjustmentFillGrid(orgId, partyCode, branchCode, docDate,docId);
+		
+		if(group!=null) {
+			System.out.println("YES values are there");
+		}
+		return getarapoffsetadjustmentFillGrid(group);
+	}
+	private List<Map<String, Object>> getarapoffsetadjustmentFillGrid(Set<Object[]> customer) {
+		List<Map<String, Object>> arapoffsetfill = new ArrayList<>();
+		for (Object[] sup : customer) {
+		    Map<String, Object> arapOffsetAdjustmentFillGrid = new HashMap<>();
+
+		    arapOffsetAdjustmentFillGrid.put("orgId", sup[0] != null ? sup[0].toString() : "");
+		    arapOffsetAdjustmentFillGrid.put("docId", sup[1] != null ? sup[1].toString() : "");
+		    arapOffsetAdjustmentFillGrid.put("docDate", sup[2] != null ? sup[2].toString() : "");
+		    arapOffsetAdjustmentFillGrid.put("refNo", sup[3] != null ? sup[3].toString() : "");
+		    arapOffsetAdjustmentFillGrid.put("refDate", sup[4] != null ? sup[4].toString() : "");
+		    arapOffsetAdjustmentFillGrid.put("currency", sup[5] != null ? sup[5].toString() : "");
+		    arapOffsetAdjustmentFillGrid.put("exRate", sup[6] != null ? sup[6].toString() : "");
+		    arapOffsetAdjustmentFillGrid.put("amount", sup[7] != null ? sup[7].toString() : "");
+		    arapOffsetAdjustmentFillGrid.put("outstanding", sup[8] != null ? sup[8].toString() : "");
+		    arapOffsetAdjustmentFillGrid.put("settled", sup[9] != null ? sup[9].toString() : "");
+		    arapOffsetAdjustmentFillGrid.put("arapDetailsId", sup[10] != null ? sup[10].toString() : "");
+
+		    arapoffsetfill.add(arapOffsetAdjustmentFillGrid);
+		}
+		return arapoffsetfill;
+	}
 }
