@@ -68,6 +68,9 @@ public class ReceiptInvDetailsVO {
 
 	@Column(name = "settled", precision = 10, scale = 2)
 	private BigDecimal settled;
+	
+	@Column(name="issettled")
+	private String isSettled;
 
 	@Column(name = "recexrate", precision = 10, scale = 2)
 	private BigDecimal recExRate;
