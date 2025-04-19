@@ -102,8 +102,8 @@ public class DashboardServiceImpl implements DashboardService {
 	}
 
 	@Override
-	public List<Map<String, Object>> getPercentageDiffFromRevenue(Long orgId,Long finYear,String month,String year) {
-		Set<Object[]> chType = taxInvoiceRepo.getPercentageDiffFromRevenue(orgId,finYear,month,year);
+	public List<Map<String, Object>> getPercentageDiffFromRevenue(Long orgId) {
+		Set<Object[]> chType = taxInvoiceRepo.getPercentageDiffFromRevenue(orgId);
 		return getPercentage(chType);
 	}
 

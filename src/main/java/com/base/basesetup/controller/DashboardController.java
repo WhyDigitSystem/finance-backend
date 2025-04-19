@@ -119,12 +119,8 @@ public class DashboardController extends BaseController{
 	}
 	
 	@GetMapping("/getPercentageDiffFromRevenue")
-	public ResponseEntity<ResponseDTO> getPercentageDiffFromRevenue(@RequestParam(required = true) Long orgId,
-			@RequestParam(required = true) Long finYear,
-			@RequestParam(required = false) String month,
-			@RequestParam(required = false) String year
-			) {
-		String methodName = "getPercentageDiffFromRevenue()";
+	public ResponseEntity<ResponseDTO> getPercentageDiffFromRevenue(@RequestParam(required = true) Long orgId) {
+	String methodName = "getPercentageDiffFromRevenue()";
 		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
 		String errorMsg = null;
 		Map<String, Object> responseObjectsMap = new HashMap<>();
@@ -132,7 +128,7 @@ public class DashboardController extends BaseController{
 		List<Map<String, Object>> receiptAmont = new ArrayList<>();
 
 		try {
-			receiptAmont = dashboardService.getPercentageDiffFromRevenue(orgId,finYear,month,year);
+			receiptAmont = dashboardService.getPercentageDiffFromRevenue(orgId);
 		} catch (Exception e) {
 			errorMsg = e.getMessage();
 			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
