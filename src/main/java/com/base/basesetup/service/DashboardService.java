@@ -14,7 +14,7 @@ public interface DashboardService {
 
 	List<Map<String, Object>> getTdsSummary(Long orgId, String month, Long finYear);
 
-	List<Map<String, Object>> getPercentageDiffFromRevenue(Long orgId,Long finYear,String month,String year);
+	List<Map<String, Object>> getPercentageDiffFromRevenue(Long orgId );
 
 	List<Map<String, Object>> getPercentageDiffFromYear(Long orgId, Long finYear);
 
