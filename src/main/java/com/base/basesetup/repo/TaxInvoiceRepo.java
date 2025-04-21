@@ -130,7 +130,7 @@ public interface TaxInvoiceRepo extends JpaRepository<TaxInvoiceVO, Long> {
 			+ "    a.jobno AS joborderno,\r\n"
 			+ "    c.docid AS voucherno,\r\n"
 			+ "    c.docdate AS voucherdate,\r\n"
-			+ "    e.partyname AS billtoparty,\r\n"
+			+ "    e.partyshortname AS billtoparty,\r\n"
 			+ "    e.controllingoff,\r\n"
 			+ "    a.billcurr,\r\n"
 			+ "    a.billcurrrate,\r\n"
