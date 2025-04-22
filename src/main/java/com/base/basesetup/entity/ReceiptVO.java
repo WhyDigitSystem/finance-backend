@@ -154,6 +154,10 @@ public class ReceiptVO {
 	
 	@Column(name = "onaccount", precision = 10, scale = 2)
 	private BigDecimal onAccount;
+	
+	@Column(name = "outsatndingtotal", precision = 10, scale = 2)
+	private BigDecimal outStandingTotal;
+
 
 	@OneToMany(mappedBy = "receiptVO", cascade = CascadeType.ALL)
 	@JsonManagedReference

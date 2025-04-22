@@ -1,6 +1,7 @@
 package com.base.basesetup.service;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -18,12 +19,14 @@ import org.springframework.stereotype.Service;
 import com.base.basesetup.dto.ApBillBalanceDTO;
 import com.base.basesetup.dto.PaymentDTO;
 import com.base.basesetup.dto.PaymentInvDtlsDTO;
+import com.base.basesetup.dto.ReceiptInvDetailsDTO;
 import com.base.basesetup.entity.ApBillBalanceVO;
 import com.base.basesetup.entity.ArapAdjustmentsVO;
 import com.base.basesetup.entity.DocumentTypeMappingDetailsVO;
 import com.base.basesetup.entity.PartyMasterVO;
 import com.base.basesetup.entity.PaymentInvDtlsVO;
 import com.base.basesetup.entity.PaymentVO;
+import com.base.basesetup.entity.ReceiptInvDetailsVO;
 import com.base.basesetup.exception.ApplicationException;
 import com.base.basesetup.repo.ApBillBalanceRepo;
 import com.base.basesetup.repo.ArapAdjustmentsRepo;
@@ -205,55 +208,129 @@ public class APServiceImpl implements APService {
 			paymentInvDtlsRepo.deleteAll(paymentInvDtlsVOList);
 		}
 
-		BigDecimal netAmount = BigDecimal.ZERO; 
+//		BigDecimal netAmount = BigDecimal.ZERO; 
+//		BigDecimal onAccount = BigDecimal.ZERO;
+//
+//		List<PaymentInvDtlsVO> paymentInvDtlsVOs = new ArrayList<>();
+//		BigDecimal totalSettled = BigDecimal.ZERO;
+//
+//		if (paymentDTO.getPaymentInvDtlsDTO() != null || !paymentDTO.getPaymentInvDtlsDTO().isEmpty()) {
+//			for (PaymentInvDtlsDTO paymentInvDtlsDTO : paymentDTO.getPaymentInvDtlsDTO()) {
+//				PaymentInvDtlsVO paymentInvDtlsVO = new PaymentInvDtlsVO();
+//				paymentInvDtlsVO.setInvNo(paymentInvDtlsDTO.getInvNo());
+//				paymentInvDtlsVO.setInvDate(paymentInvDtlsDTO.getInvDate());
+//				paymentInvDtlsVO.setRefNo(paymentInvDtlsDTO.getRefNo());
+//				paymentInvDtlsVO.setRefDate(paymentInvDtlsDTO.getRefDate());
+//				paymentInvDtlsVO.setSupplierRefNo(paymentInvDtlsDTO.getSupplierRefNo());
+//				paymentInvDtlsVO.setSupplierRefDate(paymentInvDtlsDTO.getSupplierRefDate());
+//				paymentInvDtlsVO.setCurrency(paymentInvDtlsDTO.getCurrency());
+//				paymentInvDtlsVO.setExRate(paymentInvDtlsDTO.getExRate());
+//
+//				BigDecimal paymentAmt = paymentDTO.getPaymentAmt();
+//
+//
+//
+//				paymentInvDtlsVO.setAmount(paymentInvDtlsDTO.getAmount());
+//
+//				// Calculate netAmount (sum of settled amounts)
+//				netAmount = paymentDTO.getPaymentInvDtlsDTO().stream().map(PaymentInvDtlsDTO::getSettled)
+//						.reduce(BigDecimal.ZERO, BigDecimal::add);
+//				totalSettled = totalSettled.add(paymentInvDtlsDTO.getSettled());
+//
+//				// Calculate onAccount (the difference between paymentAmt and settled amounts)
+//				onAccount = paymentAmt.subtract(totalSettled);
+//
+//				paymentInvDtlsVO.setOutstanding(paymentInvDtlsDTO.getOutstanding());
+//				paymentInvDtlsVO.setSettled(paymentInvDtlsDTO.getSettled());
+//
+//				paymentInvDtlsVO.setPaymentVO(paymentVO);
+//				paymentInvDtlsVOs.add(paymentInvDtlsVO);
+//			}
+//			paymentVO.setPaymentInvDtlsVO(paymentInvDtlsVOs);
+//			if (netAmount.compareTo(paymentDTO.getPaymentAmt()) > 0) {
+//				throw new ApplicationException("Total Settled Amount should not be greater than Payment Amount");
+//			}
+//
+//			onAccount = paymentDTO.getPaymentAmt().subtract(netAmount);
+//			paymentVO.setNetAmount(netAmount);
+//			paymentVO.setOnAccount(onAccount);
+//		} else {
+//			paymentVO.setOnAccount(paymentDTO.getPaymentAmt());
+//		}
+		
+		BigDecimal netAmount = BigDecimal.ZERO;
 		BigDecimal onAccount = BigDecimal.ZERO;
+//		BigDecimal totalTdsAmount = BigDecimal.ZERO;
+		BigDecimal totalOutstanding = BigDecimal.ZERO;
+		BigDecimal receiptAmount = paymentDTO.getReceiptAmt();
 
 		List<PaymentInvDtlsVO> paymentInvDtlsVOs = new ArrayList<>();
-		BigDecimal totalSettled = BigDecimal.ZERO;
+		List<PaymentInvDtlsDTO> paymentDetailsList = paymentDTO.getPaymentInvDtlsDTO();
 
-		if (paymentDTO.getPaymentInvDtlsDTO() != null || !paymentDTO.getPaymentInvDtlsDTO().isEmpty()) {
-			for (PaymentInvDtlsDTO paymentInvDtlsDTO : paymentDTO.getPaymentInvDtlsDTO()) {
-				PaymentInvDtlsVO paymentInvDtlsVO = new PaymentInvDtlsVO();
-				paymentInvDtlsVO.setInvNo(paymentInvDtlsDTO.getInvNo());
-				paymentInvDtlsVO.setInvDate(paymentInvDtlsDTO.getInvDate());
-				paymentInvDtlsVO.setRefNo(paymentInvDtlsDTO.getRefNo());
-				paymentInvDtlsVO.setRefDate(paymentInvDtlsDTO.getRefDate());
-				paymentInvDtlsVO.setSupplierRefNo(paymentInvDtlsDTO.getSupplierRefNo());
-				paymentInvDtlsVO.setSupplierRefDate(paymentInvDtlsDTO.getSupplierRefDate());
-				paymentInvDtlsVO.setCurrency(paymentInvDtlsDTO.getCurrency());
-				paymentInvDtlsVO.setExRate(paymentInvDtlsDTO.getExRate());
+		if (paymentDetailsList != null && !paymentDetailsList.isEmpty()) {
+		    for (PaymentInvDtlsDTO dto : paymentDetailsList) {
+		    	PaymentInvDtlsVO vo = new PaymentInvDtlsVO();
 
-				BigDecimal paymentAmt = paymentDTO.getPaymentAmt();
+		        // Copy basic fields
+		        vo.setInvNo(dto.getInvNo());
+		        vo.setInvDate(dto.getInvDate());
+		        vo.setRefNo(dto.getRefNo());
+		        vo.setRefDate(dto.getRefDate());
+		        vo.setCurrency(dto.getCurrency());
+
+		        vo.setSettled(dto.getSettled());
+
+		        vo.setAmount(dto.getAmount());
+		        
+
+		        if (dto.getSettled().compareTo(dto.getAmount()) > 0) {
+		            throw new ApplicationException("Settled amount (" + dto.getSettled()
+		                    + ") cannot be greater than charge amount (" + dto.getAmount()
+		                    + ") for invoice: " + dto.getInvNo());
+		        }
 
 
+		        BigDecimal outstanding = dto.getAmount().subtract(dto.getSettled());
+		        if (outstanding.compareTo(BigDecimal.ZERO) < 0) {
+		            outstanding = BigDecimal.ZERO;
+		        }
+		        vo.setOutstanding(outstanding);
+		        
+		        totalOutstanding=totalOutstanding.add(vo.getOutstanding());
+		        
 
-				paymentInvDtlsVO.setAmount(paymentInvDtlsDTO.getAmount());
+		        if (dto.getSettled().compareTo(BigDecimal.ZERO) > 0) {
+		            netAmount = netAmount.add(dto.getSettled());
+		        }
 
-				// Calculate netAmount (sum of settled amounts)
-				netAmount = paymentDTO.getPaymentInvDtlsDTO().stream().map(PaymentInvDtlsDTO::getSettled)
-						.reduce(BigDecimal.ZERO, BigDecimal::add);
-				totalSettled = totalSettled.add(paymentInvDtlsDTO.getSettled());
+		        if (vo.getChargeAmt().compareTo(dto.getSettled()) == 0) {
+		            vo.setIsSettled(true);
+		        } else {
+		            vo.setIsSettled(false);
+		        }
 
-				// Calculate onAccount (the difference between paymentAmt and settled amounts)
-				onAccount = paymentAmt.subtract(totalSettled);
+		        paymentInvDtlsVOs.add(vo);
+		        vo.setPaymentVO(paymentVO);
+		    }
 
-				paymentInvDtlsVO.setOutstanding(paymentInvDtlsDTO.getOutstanding());
-				paymentInvDtlsVO.setSettled(paymentInvDtlsDTO.getSettled());
+		    if (receiptAmount.compareTo(netAmount) > 0) {
+		        onAccount = receiptAmount.subtract(netAmount);
+		    } else {
+		        onAccount = BigDecimal.ZERO;
+		    }
 
-				paymentInvDtlsVO.setPaymentVO(paymentVO);
-				paymentInvDtlsVOs.add(paymentInvDtlsVO);
-			}
-			paymentVO.setPaymentInvDtlsVO(paymentInvDtlsVOs);
-			if (netAmount.compareTo(paymentDTO.getPaymentAmt()) > 0) {
-				throw new ApplicationException("Total Settled Amount should not be greater than Payment Amount");
-			}
-
-			onAccount = paymentDTO.getPaymentAmt().subtract(netAmount);
-			paymentVO.setNetAmount(netAmount);
-			paymentVO.setOnAccount(onAccount);
+		    paymentVO.setPaymentInvDtlsVO(paymentInvDtlsVOs);
 		} else {
-			paymentVO.setOnAccount(paymentDTO.getPaymentAmt());
+		  
+		    onAccount = receiptAmount;
 		}
+
+	
+		paymentVO.setNetAmount(netAmount);
+		paymentVO.setOnAccount(onAccount);
+//		paymentVO.setTdsAmt(totalTdsAmount);
+		paymentVO.setOutStandingTotal(totalOutstanding);
+//		return paymentVO;
 
 	}
 

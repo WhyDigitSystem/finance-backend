@@ -321,6 +321,7 @@ public class ARServiceImpl implements ARService {
 		BigDecimal netAmount = BigDecimal.ZERO;
 		BigDecimal onAccount = BigDecimal.ZERO;
 		BigDecimal totalTdsAmount = BigDecimal.ZERO;
+		BigDecimal totalOutstanding = BigDecimal.ZERO;
 		BigDecimal receiptAmount = receiptDTO.getReceiptAmt();
 
 		List<ReceiptInvDetailsVO> receiptInvDetailsVOs = new ArrayList<>();
@@ -369,6 +370,9 @@ public class ARServiceImpl implements ARService {
 		            outstanding = BigDecimal.ZERO;
 		        }
 		        vo.setOutstanding(outstanding);
+		        
+		        totalOutstanding=totalOutstanding.add(vo.getOutstanding());
+		        
 
 		        if (dto.getSettled().compareTo(BigDecimal.ZERO) > 0) {
 		            netAmount = netAmount.add(dto.getSettled());
@@ -400,6 +404,7 @@ public class ARServiceImpl implements ARService {
 		receiptVO.setNetAmount(netAmount);
 		receiptVO.setOnAccount(onAccount);
 		receiptVO.setTdsAmt(totalTdsAmount);
+		receiptVO.setOutStandingTotal(totalOutstanding);
 		return receiptVO;
 	}
 

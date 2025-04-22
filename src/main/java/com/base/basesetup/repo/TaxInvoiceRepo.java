@@ -294,7 +294,7 @@ public interface TaxInvoiceRepo extends JpaRepository<TaxInvoiceVO, Long> {
 			+ "    FROM vw_revenue v\r\n"
 			+ "    WHERE \r\n"
 			+ "        v.finyear =?2\r\n"
-			+ "        AND v.orgid =?2\r\n"
+			+ "        AND v.orgid =?1\r\n"
 			+ "        AND ?4 = 'YEAR'\r\n"
 			+ "    GROUP BY v.orgid\r\n"
 			+ "    UNION\r\n"
