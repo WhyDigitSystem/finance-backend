@@ -166,7 +166,7 @@ public interface TaxInvoiceRepo extends JpaRepository<TaxInvoiceVO, Long> {
 			+ "    a.orgid, a.branchcode, a.vid, a.vdate, a.jobno, e.partyname, e.controllingoff, \r\n"
 			+ "    a.billcurr, a.billcurrrate, a.totalinvamountbc, a.totalinvamountlc, \r\n"
 			+ "    a.totaltaxableamountlc, a.gsttype, a.totaltaxamountlc, a.roundoffamountlc, \r\n"
-			+ "    c.docid, c.docdate, a.partytype\r\n"
+			+ "    c.docid, c.docdate, a.partytype,e.partyshortname\r\n"
 			+ "\r\n"
 			+ "ORDER BY\r\n"
 			+ "    vid, vdate")
