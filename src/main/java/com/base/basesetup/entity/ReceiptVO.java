@@ -59,10 +59,10 @@ public class ReceiptVO {
 	private String updatedBy;
 
 	@Column(name = "active")
-	private boolean active;
+	private boolean active  = true;
 
 	@Column(name = "cancel")
-	private boolean cancel;
+	private boolean cancel =false;
 
 	@Column(name = "cancelremarks", length = 25)
 	private String cancelRemarks;

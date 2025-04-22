@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.validation.Valid;
 
@@ -206,14 +207,22 @@ public class ArAdjustmentOffSetServiceImpl implements ArAdjustmentOffSetService 
 	
 	
 	@Override
-	public List<ReceiptVO> getAllCustomerReceiptByOrgIdAndBranchCode(Long orgId, String branchCode) {
+	public List<ReceiptVO> getAllCustomerReceiptByOrgIdAndBranchCode(Long orgId, String customerCode) {
 	    List<ReceiptVO> receiptVO = new ArrayList<>();
-	    if (ObjectUtils.isNotEmpty(orgId) && ObjectUtils.isNotEmpty(branchCode)) {
-	        LOGGER.info("Successfully Received receipt BY OrgId: {} and BranchCode: {}", orgId, branchCode);
-	        receiptVO = receiptRepo.getAllReceiptByOrgIdAndBranchCode(orgId, branchCode);
+
+	    if (ObjectUtils.isNotEmpty(orgId) && ObjectUtils.isNotEmpty(customerCode)) {
+	        LOGGER.info("Successfully Received receipt BY OrgId: {} and CustomerCode: {}", orgId, customerCode);
+
+	        List<ReceiptVO> allReceipts = receiptRepo.getAllReceiptByCode(orgId);
+
+	        receiptVO = allReceipts.stream()
+	            .filter(r -> customerCode.equals(r.getCustomerCode()))
+	            .collect(Collectors.toList());
 	    }
+
 	    return receiptVO;
 	}
+
 
 	//AP ADJUSTMENT OFFSET
 	

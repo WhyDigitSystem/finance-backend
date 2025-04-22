@@ -155,7 +155,7 @@ public class ArAdjustmentOffSetController extends BaseController {
 	//DropDown Api ARAdjustmentOffSet
 	
 	@GetMapping("/getAllCustomerReceiptByOrgIdAndBranchCode")
-	public ResponseEntity<ResponseDTO> getAllCustomerReceiptByOrgIdAndBranchCode(@RequestParam Long orgId,@RequestParam String branchCode) {
+	public ResponseEntity<ResponseDTO> getAllCustomerReceiptByOrgIdAndBranchCode(@RequestParam Long orgId,@RequestParam String customerCode) {
 		String methodName = "getAllCustomerReceiptByOrgIdAndBranchCode()";
 		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
 		String errorMsg = null;
@@ -163,7 +163,7 @@ public class ArAdjustmentOffSetController extends BaseController {
 		ResponseDTO responseDTO = null;
 		List<ReceiptVO> receiptVO = new ArrayList<>();
 		try {
-			receiptVO = arAdjustmentOffSetService.getAllCustomerReceiptByOrgIdAndBranchCode(orgId,branchCode);
+			receiptVO = arAdjustmentOffSetService.getAllCustomerReceiptByOrgIdAndBranchCode(orgId,customerCode);
 		} catch (Exception e) {
 			errorMsg = e.getMessage();
 			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);

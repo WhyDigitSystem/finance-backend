@@ -95,8 +95,8 @@ public interface ReceiptRepo extends JpaRepository<ReceiptVO, Long> {
 			+ "    c.vid")
 	Set<Object[]> findReciptFillGrid(Long orgId, String partyCode);
 
-	@Query(nativeQuery = true, value = "select * from receipt where orgid=?1 and branchcode=?2 and cancel=0")
-	List<ReceiptVO> getAllReceiptByOrgIdAndBranchCode(Long orgId, String branchCode);
+	@Query(nativeQuery = true, value = "select * from receipt r,receiptinvdetails r1 where r.orgid=?1 and r.customercode=?2 and r.cancel=0 and r.receiptid=r1.receiptid  and r1.issettled=false")
+	List<ReceiptVO> getAllReceiptByOrgIdAndBranchCode(Long orgId, String customerCode);
 
 	@Query(nativeQuery =true,value ="SELECT r.orgid, r.branchcode, r.finyear, \r\n"
 			+ "    r.createdby, \r\n"
@@ -246,6 +246,9 @@ public interface ReceiptRepo extends JpaRepository<ReceiptVO, Long> {
 			+ "FROM receipt r\r\n"
 			+ "WHERE r.orgid = ?1 and r.finyear=?3 and ((month(docdate)=month(current_date()) and ?2='Month')or ?2 is null )")
 	Set<Object[]> getReceiptAmont(Long orgId, String month, String year);
+	
+	@Query(nativeQuery = true, value = "select * from receipt r,receiptinvdetails r1 where r.orgid=?1  and r.cancel=0 and r.receiptid=r1.receiptid  and r1.issettled=false")
+	List<ReceiptVO> getAllReceiptByCode(Long orgId);
 
 
 }

@@ -62,7 +62,7 @@ public class ARServiceImpl implements ARService {
 
 		return receiptRepo.getAllReceiptReceivableByOrgId(orgId, finYear, branchCode);
 	}
-
+	
 	@Override
 	public List<ReceiptVO> getAllReceiptReceivableById(Long id) {
 		List<ReceiptVO> receiptReceivableVO = new ArrayList<>();
@@ -122,6 +122,7 @@ public class ARServiceImpl implements ARService {
 				arapadjustments.setFinYear(savedReceiptVO.getFinYear());
 				arapadjustments.setSourceId(savedReceiptVO.getId());
 				arapadjustments.setDocId(savedReceiptVO.getDocId());
+				arapadjustments.setDocDate(savedReceiptVO.getDocDate());
 				arapadjustments.setTdsAmt(savedReceiptVO.getTdsAmt());
 				arapadjustments.setRefNo(savedReceiptInvDetails.getInvNo());
 				arapadjustments.setRefDate(savedReceiptInvDetails.getInvDate());
@@ -158,13 +159,14 @@ public class ARServiceImpl implements ARService {
 				negativeArapAdjustments.setBranch(savedReceiptVO.getBranch());
 				negativeArapAdjustments.setFinYear(savedReceiptVO.getFinYear());
 				negativeArapAdjustments.setSourceId(savedReceiptVO.getId());
-				negativeArapAdjustments.setDocId(savedReceiptInvDetails.getInvNo()); // Changed as per request
+				negativeArapAdjustments.setDocId(savedReceiptInvDetails.getInvNo());
+				negativeArapAdjustments.setDocDate(savedReceiptInvDetails.getInvDate());
 				negativeArapAdjustments.setTdsAmt(savedReceiptVO.getTdsAmt());
 				negativeArapAdjustments.setRefNo(savedReceiptVO.getDocId()); // Changed as per request
-				negativeArapAdjustments.setRefDate(savedReceiptInvDetails.getInvDate());
+				negativeArapAdjustments.setRefDate(savedReceiptVO.getDocDate());
 				negativeArapAdjustments.setCurrency(savedReceiptVO.getCurrency());
-				negativeArapAdjustments.setBaseAmt(savedReceiptInvDetails.getSettled()); // Negative value
-				negativeArapAdjustments.setNativeAmt(savedReceiptInvDetails.getSettled()); // Negative value
+				negativeArapAdjustments.setBaseAmt(savedReceiptInvDetails.getSettled().negate()); 
+				negativeArapAdjustments.setNativeAmt(savedReceiptInvDetails.getSettled().negate());
 				negativeArapAdjustments.setVoucherType(savedReceiptVO.getType());
 				negativeArapAdjustments.setSubLedgerCode(savedReceiptVO.getCustomerCode());
 				negativeArapAdjustments.setExRate(savedReceiptInvDetails.getExRate());
@@ -175,7 +177,7 @@ public class ARServiceImpl implements ARService {
 				negativeArapAdjustments.setUpdatedBy(savedReceiptVO.getUpdatedBy());
 				negativeArapAdjustments.setBranchCode(savedReceiptVO.getBranchCode());
 				negativeArapAdjustments.setSubLedgerName(savedReceiptVO.getCustomerName());
-				negativeArapAdjustments.setAmount(savedReceiptInvDetails.getSettled().negate()); // Negative value
+				negativeArapAdjustments.setAmount(savedReceiptInvDetails.getSettled().negate());
 				negativeArapAdjustments.setAccountName(partyMaster.getAccountType());
 				arapAdjustmentsRepo.save(negativeArapAdjustments);
 			}
@@ -194,8 +196,8 @@ public class ARServiceImpl implements ARService {
 		receiptVO.setCustomer(receiptDTO.getCustomer());
 		receiptVO.setClient(receiptDTO.getClient());
 		receiptVO.setCreatedBy(receiptDTO.getCreatedBy());
-		receiptVO.setActive(receiptDTO.isActive());
-		receiptVO.setCancel(receiptDTO.isCancel());
+//		receiptVO.setActive(receiptDTO.isActive());
+//		receiptVO.setCancel(receiptDTO.isCancel());
 		receiptVO.setCancelRemarks(receiptDTO.getCancelRemarks());
 		receiptVO.setFinYear(receiptDTO.getFinYear());
 		receiptVO.setType(receiptDTO.getType());
@@ -318,7 +320,7 @@ public class ARServiceImpl implements ARService {
 
 		BigDecimal netAmount = BigDecimal.ZERO;
 		BigDecimal onAccount = BigDecimal.ZERO;
-//		BigDecimal totalChargeAmt = BigDecimal.ZERO;
+		BigDecimal totalTdsAmount = BigDecimal.ZERO;
 		BigDecimal receiptAmount = receiptDTO.getReceiptAmt();
 
 		List<ReceiptInvDetailsVO> receiptInvDetailsVOs = new ArrayList<>();
@@ -328,6 +330,7 @@ public class ARServiceImpl implements ARService {
 		    for (ReceiptInvDetailsDTO dto : receiptDetailsList) {
 		        ReceiptInvDetailsVO vo = new ReceiptInvDetailsVO();
 
+		        // Copy basic fields
 		        vo.setInvNo(dto.getInvNo());
 		        vo.setInvDate(dto.getInvDate());
 		        vo.setRefNo(dto.getRefNo());
@@ -342,13 +345,14 @@ public class ARServiceImpl implements ARService {
 		        vo.setRecExRate(dto.getRecExRate());
 		        vo.setTxnSettled(dto.getTxnSettled());
 		        vo.setGainAmt(dto.getGainAmt());
-		        vo.setIsSettled(dto.getIsSettled());	 
 		        vo.setAmount(dto.getAmount());
 
 		        BigDecimal totalAmount = dto.getAmount().add(dto.getGstAmt());
 
 		        BigDecimal tdsAmt = totalAmount.multiply(dto.getTds())
 		                .divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP);
+		        
+		        totalTdsAmount=totalTdsAmount.add(tdsAmt);
 
 		        BigDecimal chargeAmt = totalAmount.subtract(tdsAmt);
 
@@ -366,7 +370,16 @@ public class ARServiceImpl implements ARService {
 		        }
 		        vo.setOutstanding(outstanding);
 
-		        netAmount = netAmount.add(chargeAmt);
+		        if (dto.getSettled().compareTo(BigDecimal.ZERO) > 0) {
+		            netAmount = netAmount.add(dto.getSettled());
+		        }
+
+		        if (vo.getChargeAmt().compareTo(dto.getSettled()) == 0) {
+		            vo.setIsSettled(true);
+		        } else {
+		            vo.setIsSettled(false);
+		        }
+
 		        vo.setReceiptVO(receiptVO);
 		        receiptInvDetailsVOs.add(vo);
 		    }
@@ -379,14 +392,15 @@ public class ARServiceImpl implements ARService {
 
 		    receiptVO.setReceiptInvDetailsVO(receiptInvDetailsVOs);
 		} else {
+		  
 		    onAccount = receiptAmount;
 		}
 
+	
 		receiptVO.setNetAmount(netAmount);
 		receiptVO.setOnAccount(onAccount);
+		receiptVO.setTdsAmt(totalTdsAmount);
 		return receiptVO;
-
-
 	}
 
 	@Override

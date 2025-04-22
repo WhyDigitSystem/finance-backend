@@ -28,7 +28,7 @@ public class ReceiptInvDetailsDTO {
 //	private BigDecimal chargeAmt;
 //	private BigDecimal outstanding;
 	private BigDecimal settled;
-	private String isSettled;
+//	private String isSettled;
 	private BigDecimal recExRate;
 	private BigDecimal txnSettled;
 	private BigDecimal gainAmt;
