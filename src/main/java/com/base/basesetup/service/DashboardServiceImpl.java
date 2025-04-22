@@ -102,8 +102,8 @@ public class DashboardServiceImpl implements DashboardService {
 	}
 
 	@Override
-	public List<Map<String, Object>> getPercentageDiffFromRevenue(Long orgId) {
-		Set<Object[]> chType = taxInvoiceRepo.getPercentageDiffFromRevenue(orgId);
+	public List<Map<String, Object>> getPercentageDiffFromRevenue(Long orgId,Long finYear,String Month,String Year) {
+		Set<Object[]> chType = taxInvoiceRepo.getPercentageDiffFromRevenue( orgId, finYear, Month, Year);
 		return getPercentage(chType);
 	}
 
@@ -235,4 +235,24 @@ public class DashboardServiceImpl implements DashboardService {
 		return List1;
 
 	}
+
+	@Override
+	public List<Map<String, Object>> getmonthwiserevenue(Long orgId, Long finYear, String monthName) {
+		Set<Object[]> chType = taxInvoiceRepo.getRevenueMonthWiseData(orgId,finYear,monthName);
+		return getmonthwiserevenue(chType);
+	}
+
+	private List<Map<String, Object>> getmonthwiserevenue(Set<Object[]> chType) {
+		List<Map<String, Object>> List1 = new ArrayList<>();
+		for (Object[] ch : chType) {
+			Map<String, Object> map = new HashMap<>();
+			
+		      map.put("monthnumber", ch[0] != null ? ch[0].toString() : "");
+		      map.put("monthname", ch[1] != null ? ch[1].toString() : "");
+		      map.put("totalamount", ch[2] != null ? new BigDecimal(ch[2].toString()) : BigDecimal.ZERO);
+		     
+
+			List1.add(map);
+		}	return List1;
+		}
 }
