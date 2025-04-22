@@ -26,6 +26,7 @@ import com.base.basesetup.entity.ArAdjustmentOffSetVO;
 import com.base.basesetup.entity.ArOffSetInvoiceDetailsVO;
 import com.base.basesetup.entity.DocumentTypeMappingDetailsVO;
 import com.base.basesetup.entity.PaymentVO;
+import com.base.basesetup.entity.ReceiptInvDetailsVO;
 import com.base.basesetup.entity.ReceiptVO;
 import com.base.basesetup.exception.ApplicationException;
 import com.base.basesetup.repo.ApAdjustmentOffSetRepo;
@@ -208,19 +209,24 @@ public class ArAdjustmentOffSetServiceImpl implements ArAdjustmentOffSetService 
 	
 	@Override
 	public List<ReceiptVO> getAllCustomerReceiptByOrgIdAndBranchCode(Long orgId, String customerCode) {
-	    List<ReceiptVO> receiptVO = new ArrayList<>();
+	    List<ReceiptVO> receiptVOList = new ArrayList<>();
 
 	    if (ObjectUtils.isNotEmpty(orgId) && ObjectUtils.isNotEmpty(customerCode)) {
 	        LOGGER.info("Successfully Received receipt BY OrgId: {} and CustomerCode: {}", orgId, customerCode);
 
-	        List<ReceiptVO> allReceipts = receiptRepo.getAllReceiptByCode(orgId);
+	        receiptVOList = receiptRepo.getAllReceiptByOrgIdAndBranchCode(orgId, customerCode);
 
-	        receiptVO = allReceipts.stream()
-	            .filter(r -> customerCode.equals(r.getCustomerCode()))
-	            .collect(Collectors.toList());
+	        for (ReceiptVO receipt : receiptVOList) {
+	            List<ReceiptInvDetailsVO> filteredDetails = receipt.getReceiptInvDetailsVO()
+	                .stream()
+	                .filter(detail -> !detail.isIsSettled()) // Only unsettled ones
+	                .collect(Collectors.toList());
+
+	            receipt.setReceiptInvDetailsVO(filteredDetails);
+	        }
 	    }
 
-	    return receiptVO;
+	    return receiptVOList;
 	}
 
 
