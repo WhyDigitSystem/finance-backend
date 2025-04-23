@@ -966,7 +966,7 @@ public class CostInvoiceServiceImpl implements CostInvoiceService {
 	    accountsVO.setBranch(costInvoiceVO.getBranch());
 	    accountsVO.setBranchCode(costInvoiceVO.getBranchCode());
 	    accountsVO.setCurrency(costInvoiceVO.getCurrency());
-	    accountsVO.setExRate(costInvoiceVO.getExRate());
+	    accountsVO.setOrgId(costInvoiceVO.getOrgId());
 	    accountsVO.setRefNo(costInvoiceVO.getDocId());
 	    accountsVO.setRefDate(costInvoiceVO.getDocDate());
 	    accountsVO.setVId(costInvoiceVO.getVId());

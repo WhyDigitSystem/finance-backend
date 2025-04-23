@@ -595,8 +595,8 @@ public class ARServiceImpl implements ARService {
 	}
 
 	@Override
-	public List<Map<String, Object>> getReciptFillGrid(Long orgId, String partyCode) {
-		Set<Object[]> register = receiptRepo.findReciptFillGrid(orgId, partyCode);
+	public List<Map<String, Object>> getReciptFillGrid(Long orgId, String partyCode,String branchCode) {
+		Set<Object[]> register = receiptRepo.findReciptFillGrid(orgId, partyCode,branchCode);
 		return getRecipt(register);
 	}
 
@@ -616,7 +616,7 @@ public class ARServiceImpl implements ARService {
 			doctype.put("acccurrency", sup[9] != null ? sup[9].toString() : "");
 			doctype.put("exrate", sup[10] != null ? sup[10].toString() : "");
 			doctype.put("billamount", sup[11] != null ? sup[11].toString() : "");
-			doctype.put("arapsettled", sup[12] != null ? sup[12].toString() : "");
+			doctype.put("chargeAmt", sup[12] != null ? sup[12].toString() : "");
 			doctype.put("chargableamt", sup[13] != null ? sup[13].toString() : "");
 			doctype.put("tdsamt", sup[14] != null ? sup[14].toString() : "");
 			doctype.put("gstpercent", sup[15] != null ? sup[15].toString() : "");

@@ -5,6 +5,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -335,8 +336,11 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 	}
 
 	private LocalDate getLocalDateCellValue(Cell cell) {
-		return (cell == null || !DateUtil.isCellDateFormatted(cell)) ? null
-				: cell.getDateCellValue().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+	    if (cell == null || !DateUtil.isCellDateFormatted(cell)) {
+	        return null;
+	    }
+	    Date date = cell.getDateCellValue(); // returns java.util.Date
+	    return date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 	}
 
 	@Override
@@ -944,8 +948,8 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 }
 
 	@Override
-	public List<Map<String, Object>> getMonthlyAndYearWiseData(Long orgId, String month,String finYear) {
-		Set<Object[]> chType = partyMasterRepo.getMonthlyAndYearWiseData(orgId,month,finYear);
+	public List<Map<String, Object>> getMonthlyAndYearWiseData(Long orgId, String month,String finYear,String branchCode) {
+		Set<Object[]> chType = partyMasterRepo.getMonthlyAndYearWiseData(orgId,month,finYear,branchCode);
 		return getMonthlyAndYear(chType);
 	}
 
@@ -964,8 +968,8 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 }
 
 	@Override
-	public List<Map<String, Object>> getSalesDistributionData(Long orgId, String month, String finYear) {
-		Set<Object[]> chType = partyMasterRepo.getSalesDistributionData(orgId,month,finYear);
+	public List<Map<String, Object>> getSalesDistributionData(Long orgId, String month, String finYear,String branchCode) {
+		Set<Object[]> chType = partyMasterRepo.getSalesDistributionData(orgId,month,finYear,branchCode);
 		return getSalesDistribution(chType);
 	}
 

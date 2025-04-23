@@ -709,7 +709,7 @@ public class TaxInvoiceServiceImpl implements TaxInvoiceService {
 			taxInvoiceVO.setInvoiceNo(savedAccountsVO.getDocId());
 			taxInvoiceVO.setInvoiceDate(savedAccountsVO.getDocDate());
 
-			LocalDate vDate = taxInvoiceVO.getVDate();
+			LocalDate vDate = taxInvoiceVO.getVDate()!=null?taxInvoiceVO.getVDate():taxInvoiceVO.getDocDate();
 			int creditDays = taxInvoiceVO.getCreditDays();
 			LocalDate dueDate = vDate.plusDays(creditDays);
 			// Save dueDate in your entity
