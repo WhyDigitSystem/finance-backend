@@ -102,8 +102,8 @@ public class DashboardServiceImpl implements DashboardService {
 	}
 
 	@Override
-	public List<Map<String, Object>> getPercentageDiffFromRevenue(Long orgId,Long finYear,String Month,String Year) {
-		Set<Object[]> chType = taxInvoiceRepo.getPercentageDiffFromRevenue( orgId, finYear, Month, Year);
+	public List<Map<String, Object>> getPercentageDiffFromRevenue(Long orgId,Long finYear,String month,String year) {
+		Set<Object[]> chType = taxInvoiceRepo.getPercentageDiffFromRevenue(orgId,finYear,month,year);
 		return getPercentage(chType);
 	}
 
@@ -237,22 +237,51 @@ public class DashboardServiceImpl implements DashboardService {
 	}
 
 	@Override
-	public List<Map<String, Object>> getmonthwiserevenue(Long orgId, Long finYear, String monthName) {
-		Set<Object[]> chType = taxInvoiceRepo.getRevenueMonthWiseData(orgId,finYear,monthName);
-		return getmonthwiserevenue(chType);
+	public List<Map<String, Object>> getTotaltdsFromCustomer(Long orgId, Long finYear, String branchCode) {
+		Set<Object[]> chType = costInvoiceRepo.getTotaltdsFromCustomer(orgId,finYear,branchCode);
+		return getTotaltds(chType);
 	}
 
-	private List<Map<String, Object>> getmonthwiserevenue(Set<Object[]> chType) {
+	private List<Map<String, Object>> getTotaltds(Set<Object[]> chType) {
 		List<Map<String, Object>> List1 = new ArrayList<>();
 		for (Object[] ch : chType) {
 			Map<String, Object> map = new HashMap<>();
 			
-		      map.put("monthnumber", ch[0] != null ? ch[0].toString() : "");
-		      map.put("monthname", ch[1] != null ? ch[1].toString() : "");
-		      map.put("totalamount", ch[2] != null ? new BigDecimal(ch[2].toString()) : BigDecimal.ZERO);
+		      map.put("partyName", ch[0] != null ? ch[0].toString() : "");
+		      map.put("partyShortName", ch[1] != null ? ch[1].toString() : "");
+		      map.put("totalTds", ch[2] != null ? new BigDecimal(ch[2].toString()) : BigDecimal.ZERO);
+		      map.put("finYear", ch[3] != null ?  ch[1].toString() : "");
 		     
 
 			List1.add(map);
-		}	return List1;
 		}
+		return List1;
+
+	}
+
+	@Override
+	public List<Map<String, Object>> getTotaltdsFromCustomerBillWise(Long orgId, Long finYear, String branchCode,
+			String partyName) {
+		Set<Object[]> chType = costInvoiceRepo.getTotaltdsFromCustomerBillWise(orgId,finYear,branchCode,partyName);
+		return getTotaltdsFromCustomer(chType);
+	}
+
+	private List<Map<String, Object>> getTotaltdsFromCustomer(Set<Object[]> chType) {
+		List<Map<String, Object>> List1 = new ArrayList<>();
+		for (Object[] ch : chType) {
+			Map<String, Object> map = new HashMap<>();
+			
+		      map.put("docId", ch[0] != null ? ch[0].toString() : "");
+		      map.put("docDate", ch[1] != null ? ch[1].toString() : "");
+		      map.put("partyName", ch[2] != null ? ch[2].toString() : "");
+		      map.put("shortName", ch[3] != null ?  ch[3].toString() : "");
+		      map.put("tdsAmt", ch[4] != null ?  new BigDecimal(ch[4].toString()) : BigDecimal.ZERO);
+		      map.put("finYear", ch[5] != null ? ch[5].toString() : "");
+		     
+
+			List1.add(map);
+		}
+		return List1;
+
+	}
 }

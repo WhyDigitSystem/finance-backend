@@ -510,24 +510,21 @@ public class ARServiceImpl implements ARService {
 	private List<Map<String, Object>> getRecipt(Set<Object[]> getRegister) {
 		List<Map<String, Object>> doctypeMappingDetails = new ArrayList<>();
 		for (Object[] sup : getRegister) {
-		    Map<String, Object> doctype = new HashMap<>();
-		    doctype.put("arapDetailsId", sup[0] != null ? sup[0].toString() : "");
-		    doctype.put("branch", sup[1] != null ? sup[1].toString() : "");
-		    doctype.put("subledgerCode", sup[2] != null ? sup[2].toString() : "");
-		    doctype.put("vid", sup[3] != null ? sup[3].toString() : "");
-		    doctype.put("vdate", sup[4] != null ? sup[4].toString() : "");
-		    doctype.put("refno", sup[5] != null ? sup[5].toString() : "");
-		    doctype.put("refdate", sup[6] != null ? sup[6].toString() : "");
-		    doctype.put("supprefno", sup[7] != null ? sup[7].toString() : "");
-		    doctype.put("suprefdate", sup[8] != null ? sup[8].toString() : "");
-		    doctype.put("acccurrency", sup[9] != null ? sup[9].toString() : "");
-		    doctype.put("exrate", sup[10] != null ? sup[10].toString() : "");
-		    doctype.put("billamount", sup[11] != null ? sup[11].toString() : "");
-		    doctype.put("arapsettled", sup[12] != null ? sup[12].toString() : "");
-		    doctype.put("chargableamt", sup[13] != null ? sup[13].toString() : "");
-		    doctype.put("tdsamt", sup[14] != null ? sup[14].toString() : "");
-		    doctype.put("gstpercent", sup[15] != null ? sup[15].toString() : "");
-		    doctype.put("gstamount", sup[16] != null ? sup[16].toString() : "");
+			Map<String, Object> doctype = new HashMap<>();
+			doctype.put("arapDetailsId", sup[0] != null ? sup[0].toString() : "");
+			doctype.put("branch", sup[1] != null ? sup[1].toString() : "");
+			doctype.put("subLedgerCode", sup[2] != null ? sup[2].toString() : "");
+			doctype.put("vId", sup[3] != null ? sup[3].toString() : "");
+			doctype.put("vDatae", sup[4] != null ? sup[4].toString() : "");
+			doctype.put("refNo", sup[5] != null ? sup[5].toString() : "");
+			doctype.put("refDate", sup[6] != null ? sup[6].toString() : "");
+			doctype.put("supprefNo", sup[7] != null ? sup[7].toString() : "");
+			doctype.put("supprefDate", sup[8] != null ? sup[8].toString() : "");
+			doctype.put("acccurrency", sup[9] != null ? sup[9].toString() : "");
+			doctype.put("amount", sup[10] != null ? sup[10].toString() : "");
+			doctype.put("arapSettled", sup[11] != null ? sup[11].toString() : "");
+			doctype.put("chargableAmt", sup[12] != null ? sup[12].toString() : "");
+			doctype.put("tdsAmt", sup[13] != null ? sup[13].toString() : "");
 
 			doctypeMappingDetails.add(doctype);
 		}
