@@ -33,72 +33,23 @@ public interface ReceiptRepo extends JpaRepository<ReceiptVO, Long> {
 	@Query(nativeQuery = true, value = "select concat(prefixfield,lpad(lastno,5,0)) AS docid from documenttypemappingdetails where orgid=?1 and finyear=?2 and branchcode=?3 and screencode=?4")
 	String getArBillBalanceDocId(Long orgId, String finYear, String branchCode, String screenCode);
 
-	@Query(nativeQuery = true, value = "WITH b AS (\r\n"
-			+ "    SELECT \r\n"
-			+ "        subledgercode, \r\n"
-			+ "        docid, \r\n"
-			+ "        SUM(amount) AS settled\r\n"
-			+ "    FROM arapadjustments\r\n"
-			+ "    WHERE CANCEL = 'F'\r\n"
-			+ "    GROUP BY subledgercode, docid\r\n"
-			+ ")\r\n"
-			+ "SELECT \r\n"
-			+ "    a.arapdetailsid,\r\n"
-			+ "    a.branch,\r\n"
-			+ "    a.subledgercode,\r\n"
-			+ "    c.vid,\r\n"
-			+ "    c.vdate,\r\n"
-			+ "    a.refno,\r\n"
-			+ "    a.refdate,\r\n"
-			+ "    a.supprefno,\r\n"
-			+ "    a.suprefdate,\r\n"
-			+ "    a.acccurrency,\r\n"
-			+ "    a.exrate,\r\n"
-			+ "    SUM(t.billamount) AS totalAmount,\r\n"
-			+ "    IFNULL(b.settled, 0) AS arapsettled,\r\n"
-			+ "    a.chargableamt,\r\n"
-			+ "    a.tdsamt,\r\n"
-			+ "    t.gstpercent,\r\n"
-			+ "    SUM(t.gstamount) AS gstamount\r\n"
-			+ "FROM arapdetails a\r\n"
-			+ "LEFT JOIN b \r\n"
-			+ "    ON a.subledgercode = b.subledgercode \r\n"
-			+ "    AND a.docid = b.docid\r\n"
-			+ "JOIN taxinvoice d \r\n"
-			+ "    ON a.refno = d.docid \r\n"
-			+ "JOIN taxinvoicedetails t \r\n"
-			+ "    ON d.taxinvoiceid = t.taxinvoiceid \r\n"
-			+ "JOIN accounts c \r\n"
-			+ "    ON a.docid = c.docid\r\n"
-			+ "WHERE \r\n"
-			+ "    a.CANCEL = 'F'\r\n"
-			+ "    AND a.subledgercode =?2\r\n"
-			+ "    AND a.orgid =?1\r\n"
-			+ "GROUP BY \r\n"
-			+ "    a.arapdetailsid,\r\n"
-			+ "    a.branch,\r\n"
-			+ "    a.subledgercode,\r\n"
-			+ "    c.vid,\r\n"
-			+ "    c.vdate,\r\n"
-			+ "    a.refno,\r\n"
-			+ "    a.refdate,\r\n"
-			+ "    a.supprefno,\r\n"
-			+ "    a.suprefdate,\r\n"
-			+ "    a.acccurrency,\r\n"
-			+ "    a.exrate,\r\n"
-			+ "    b.settled,\r\n"
-			+ "    a.chargableamt,\r\n"
-			+ "    a.tdsamt,\r\n"
-			+ "    t.gstpercent\r\n"
-			+ "ORDER BY \r\n"
-			+ "    a.refdate,\r\n"
-			+ "    c.vid")
+	@Query(nativeQuery = true, value = "WITH b AS (\r\n" + "    SELECT subledgercode, docid, SUM(amount) AS settled\r\n"
+			+ "    FROM arapadjustments\r\n" + "    WHERE CANCEL = 'F'\r\n" + "    GROUP BY subledgercode, docid\r\n"
+			+ ")\r\n" + "SELECT \r\n" + "    a.arapdetailsid,\r\n" + "    a.branch,\r\n" + "    a.subledgercode,\r\n"
+			+ "    c.vid,\r\n" + "    c.vdate,\r\n" + "    a.refno,\r\n" + "    a.refdate,\r\n" + "    a.supprefno,\r\n"
+			+ "    a.suprefdate,\r\n" + "    a.acccurrency,\r\n" + "    a.exrate,\r\n" + "    a.amount,\r\n"
+			+ "   IFNULL(b.settled, 0) AS arapsettled, \r\n" + "    a.chargableamt,\r\n" + "    a.tdsamt\r\n"
+			+ "FROM arapdetails a\r\n" + "LEFT JOIN b \r\n" + "    ON a.subledgercode = b.subledgercode \r\n"
+			+ "    AND a.docid = b.docid join accounts c\r\n" + "WHERE  a.docid=c.docid and\r\n"
+			+ "    a.CANCEL = 'F' and a.subledgercode=?2 and a.orgid=?1\r\n" + "ORDER BY a.docdate, a.docid")
 	Set<Object[]> findReciptFillGrid(Long orgId, String partyCode);
 
-//	@Query(nativeQuery = true, value = "select * from receipt r,receiptinvdetails r1 where r.orgid=?1 and r.customercode=?2 and r.cancel=0 and r.receiptid=r1.receiptid  and r1.issettled=false")
-//	List<ReceiptVO> getAllReceiptByOrgIdAndBranchCode(Long orgId, String customerCode);
+	@Query(nativeQuery = true, value = "select * from receipt where orgid=?1 and branchcode=?2 and cancel=0")
+	List<ReceiptVO> getAllReceiptByOrgIdAndBranchCode(Long orgId, String branchCode);
 
 	@Query(nativeQuery =true,value ="SELECT r.orgid, r.branchcode, r.finyear, \r\n"
+
+
 			+ "    r.createdby, \r\n"
 			+ "    r.createdon, \r\n"
 			+ "    r.docid, \r\n"
@@ -111,7 +62,9 @@ public interface ReceiptRepo extends JpaRepository<ReceiptVO, Long> {
 			+ "    r.receiptamt AS receiptamount, \r\n"
 			+ "    r.bankcharges AS bankchargesamt, \r\n"
 			+ "    CASE \r\n"
+
 			+ "        WHEN tds_rank = 1 THEN r.tdsamt ELSE 0 \r\n"
+
 			+ "    END AS tdsamount, \r\n"
 			+ "    rd.invno AS invoiceno, \r\n"
 			+ "    rd.invdate AS invoicedate, \r\n"
@@ -246,25 +199,6 @@ public interface ReceiptRepo extends JpaRepository<ReceiptVO, Long> {
 			+ "FROM receipt r\r\n"
 			+ "WHERE r.orgid = ?1 and r.finyear=?3 and ((month(docdate)=month(current_date()) and ?2='Month')or ?2 is null )")
 	Set<Object[]> getReceiptAmont(Long orgId, String month, String year);
-	
-//	@Query(nativeQuery = true, value = "select * from receipt r,receiptinvdetails r1 where r.orgid=?1  and r.cancel=0 and r.receiptid=r1.receiptid  and r1.issettled=false")
-//	List<ReceiptVO> getAllReceiptByCode(Long orgId);
-	
-	
-	@Query(nativeQuery = true, 
-		       value = "SELECT * FROM receipt r, receiptinvdetails r1 " +
-		               "WHERE r.orgid = ?1 AND r.customercode = ?2 " +
-		               "AND r.cancel = 0 AND r.receiptid = r1.receiptid " +
-		               "AND r1.issettled = false")
-		List<ReceiptVO> getAllReceiptByOrgIdAndBranchCode(Long orgId, String customerCode);
-
-//		@Query(nativeQuery = true, 
-//		       value = "SELECT * FROM receipt r, receiptinvdetails r1 " +
-//		               "WHERE r.orgid = ?1 " +
-//		               "AND r.cancel = 0 AND r.receiptid = r1.receiptid " +
-//		               "AND r1.issettled = false")
-//		List<ReceiptVO> getAllReceiptByCode(Long orgId);
-
 
 
 }

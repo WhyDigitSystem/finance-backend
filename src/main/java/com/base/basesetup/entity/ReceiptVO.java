@@ -59,10 +59,10 @@ public class ReceiptVO {
 	private String updatedBy;
 
 	@Column(name = "active")
-	private boolean active  = true;
+	private boolean active;
 
 	@Column(name = "cancel")
-	private boolean cancel =false;
+	private boolean cancel;
 
 	@Column(name = "cancelremarks", length = 25)
 	private String cancelRemarks;
@@ -154,10 +154,6 @@ public class ReceiptVO {
 	
 	@Column(name = "onaccount", precision = 10, scale = 2)
 	private BigDecimal onAccount;
-	
-	@Column(name = "outsatndingtotal", precision = 10, scale = 2)
-	private BigDecimal outStandingTotal;
-
 
 	@OneToMany(mappedBy = "receiptVO", cascade = CascadeType.ALL)
 	@JsonManagedReference

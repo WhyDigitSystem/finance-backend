@@ -42,8 +42,8 @@ public class ReceiptDTO {
 	private String customer;
 	private String client;
 	private String createdBy;
-//	private boolean active;
-//	private boolean cancel;
+	private boolean active;
+	private boolean cancel;
 	private String cancelRemarks;
 	private String finYear;
 	private String receiptType1;

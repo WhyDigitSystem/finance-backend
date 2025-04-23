@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import javax.validation.Valid;
 
@@ -26,7 +25,6 @@ import com.base.basesetup.entity.ArAdjustmentOffSetVO;
 import com.base.basesetup.entity.ArOffSetInvoiceDetailsVO;
 import com.base.basesetup.entity.DocumentTypeMappingDetailsVO;
 import com.base.basesetup.entity.PaymentVO;
-import com.base.basesetup.entity.ReceiptInvDetailsVO;
 import com.base.basesetup.entity.ReceiptVO;
 import com.base.basesetup.exception.ApplicationException;
 import com.base.basesetup.repo.ApAdjustmentOffSetRepo;
@@ -208,27 +206,14 @@ public class ArAdjustmentOffSetServiceImpl implements ArAdjustmentOffSetService 
 	
 	
 	@Override
-	public List<ReceiptVO> getAllCustomerReceiptByOrgIdAndBranchCode(Long orgId, String customerCode) {
-	    List<ReceiptVO> receiptVOList = new ArrayList<>();
-
-	    if (ObjectUtils.isNotEmpty(orgId) && ObjectUtils.isNotEmpty(customerCode)) {
-	        LOGGER.info("Successfully Received receipt BY OrgId: {} and CustomerCode: {}", orgId, customerCode);
-
-	        receiptVOList = receiptRepo.getAllReceiptByOrgIdAndBranchCode(orgId, customerCode);
-
-	        for (ReceiptVO receipt : receiptVOList) {
-	            List<ReceiptInvDetailsVO> filteredDetails = receipt.getReceiptInvDetailsVO()
-	                .stream()
-	                .filter(detail -> !detail.isIsSettled()) // Only unsettled ones
-	                .collect(Collectors.toList());
-
-	            receipt.setReceiptInvDetailsVO(filteredDetails);
-	        }
+	public List<ReceiptVO> getAllCustomerReceiptByOrgIdAndBranchCode(Long orgId, String branchCode) {
+	    List<ReceiptVO> receiptVO = new ArrayList<>();
+	    if (ObjectUtils.isNotEmpty(orgId) && ObjectUtils.isNotEmpty(branchCode)) {
+	        LOGGER.info("Successfully Received receipt BY OrgId: {} and BranchCode: {}", orgId, branchCode);
+	        receiptVO = receiptRepo.getAllReceiptByOrgIdAndBranchCode(orgId, branchCode);
 	    }
-
-	    return receiptVOList;
+	    return receiptVO;
 	}
-
 
 	//AP ADJUSTMENT OFFSET
 	

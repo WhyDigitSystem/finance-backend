@@ -50,28 +50,7 @@ public interface APService {
 	List<Map<String, Object>> getAllPaymentRegister(Long orgId, String fromDate, String toDate, String subLedgerName);
 
 	List<Map<String, Object>> getPartyNameAndPartyCode(Long orgId);
-	
-	List<Map<String, Object>> getPaymentFillGrid(Long orgId, String partyCode,String branchCode, String docDate);
 
 //	String getApBillBalanceDocId(Long orgId, String finYear, String branch, String branchCode);
-	
-	List<Map<String, Object>> getAPAgeing(
-		    @RequestParam(required = true) String Asondate,
-		    @RequestParam(required = true) String partyname,
-		    @RequestParam(required = false) String pdate,
-		    @RequestParam(required = true) Long orgId
-		);
-
-	
-	List<Map<String, Object>> getAPOutstanding(
-		    @RequestParam(required = true) String Asondate,
-		    @RequestParam(required = true) String partyname,
-		    @RequestParam(required = false) String pdate,
-		    @RequestParam(required = true) Long orgId
-		);
-	
-	List<Map<String, Object>> getarapoffsetadjustmentFillGrid(Long orgId, String partyCode,String branchCode, String docDate,String docId);
-	
-	
 
 }
