@@ -68,6 +68,9 @@ public class ReceiptInvDetailsVO {
 
 	@Column(name = "settled", precision = 10, scale = 2)
 	private BigDecimal settled;
+	
+	@Column(name="issettled")
+	private boolean isSettled;
 
 	@Column(name = "recexrate", precision = 10, scale = 2)
 	private BigDecimal recExRate;
@@ -82,12 +85,24 @@ public class ReceiptInvDetailsVO {
 	@Column(name = "gstamt", precision = 10, scale = 2)
 	private BigDecimal gstAmt;
 	
-	
+
+
+	public void setIsSettled(boolean isSettled) {
+	    this.isSettled = isSettled;
+	}
+
+	public boolean isIsSettled() {
+	    return isSettled;
+	}
+
 
 
 	@ManyToOne
 	@JsonBackReference
 	@JoinColumn(name = "receiptid")
 	ReceiptVO receiptVO;
+
+
+
 
 }

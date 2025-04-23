@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
 import org.apache.commons.lang3.ObjectUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,7 +26,6 @@ import com.base.basesetup.entity.ChargesUrCostInvoiceGnaVO;
 import com.base.basesetup.entity.DocumentTypeMappingDetailsVO;
 import com.base.basesetup.entity.MultipleDocIdGenerationDetailsVO;
 import com.base.basesetup.entity.PartyMasterVO;
-import com.base.basesetup.entity.TdsRCostInvoiceGnaVO;
 import com.base.basesetup.entity.TdsUrCostInvoiceGnaVO;
 import com.base.basesetup.entity.UrCostInvoiceGnaVO;
 import com.base.basesetup.exception.ApplicationException;
@@ -34,6 +34,7 @@ import com.base.basesetup.repo.AccountsRepo;
 import com.base.basesetup.repo.ArapDetailsRepo;
 import com.base.basesetup.repo.ChargeTypeRequestRepo;
 import com.base.basesetup.repo.ChargesUrCostInvoiceGnaRepo;
+import com.base.basesetup.repo.CostInvoiceRepo;
 import com.base.basesetup.repo.DocumentTypeMappingDetailsRepo;
 import com.base.basesetup.repo.GroupLedgerRepo;
 import com.base.basesetup.repo.MultipleDocIdGenerationDetailsRepo;
@@ -45,6 +46,9 @@ import com.base.basesetup.repo.UrCostInvoiceGnaRepo;
 public class UrCostInvoiceGnaServiceImpl implements UrCostInvoiceGnaService {
 
 	public static final Logger LOGGER = LoggerFactory.getLogger(UrCostInvoiceGnaServiceImpl.class);
+	
+	@Autowired
+	CostInvoiceRepo costInvoiceRepo;
 
 	@Autowired
 	UrCostInvoiceGnaRepo urCostInvoiceGnaRepo;
@@ -312,7 +316,7 @@ public class UrCostInvoiceGnaServiceImpl implements UrCostInvoiceGnaService {
 		totaltdsAmount = totaltdsAmount.add(tdsAmount);
 
 		BigDecimal netAmountLc = sumOfLcAmount.subtract(totaltdsAmount).add(taxAmount);
-		BigDecimal actBillAmtLc = sumOfLcAmount.subtract(totaltdsAmount).add(taxAmount);
+		BigDecimal actBillAmtLc = sumOfLcAmount.add(taxAmount);
 		BigDecimal roundedValue = netAmountLc.setScale(0, RoundingMode.HALF_UP);
 		BigDecimal roundOff = roundedValue.subtract(netAmountLc);
 		
@@ -542,10 +546,13 @@ public class UrCostInvoiceGnaServiceImpl implements UrCostInvoiceGnaService {
 			accountsDetailsVOs.add(accountsDetailsVO);	
 			
 			for (TdsUrCostInvoiceGnaVO tdsUrCostInvoiceGnaVO : urCostInvoiceGnaVO.getTdsUrCostInvoiceGnaVO()) {
+				 Set<Object[]> tdsLedgers = costInvoiceRepo.getTdsLedgerFromAccount(urCostInvoiceGnaVO.getOrgId());
+
+			        for (Object[] ledger : tdsLedgers) {
 				AccountsDetailsVO accountsDetailsVO1 = new AccountsDetailsVO();
 				accountsDetailsVO1.setNDebitAmount(BigDecimal.ZERO);
-				accountsDetailsVO1.setACategory(tdsUrCostInvoiceGnaVO.getSection());
-				accountsDetailsVO1.setAccountName(tdsUrCostInvoiceGnaVO.getSection());
+				accountsDetailsVO1.setACategory(ledger[1].toString());
+				accountsDetailsVO1.setAccountName(ledger[0].toString());
 				accountsDetailsVO1.setDebitAmount(BigDecimal.ZERO);
 				accountsDetailsVO1.setNCreditAmount(tdsUrCostInvoiceGnaVO.getTotTdsWithAmt());
 				accountsDetailsVO1.setCreditAmount(tdsUrCostInvoiceGnaVO.getTotTdsWithAmt());
@@ -556,10 +563,15 @@ public class UrCostInvoiceGnaServiceImpl implements UrCostInvoiceGnaService {
 				accountsDetailsVO1.setBArapAmount(BigDecimal.ZERO);
 				accountsDetailsVO1.setSubledgerName("None");
 				accountsDetailsVO1.setSubLedgerCode("None");
+				accountsDetailsVO1.setACurrency(urCostInvoiceGnaVO.getCurrency());
+				accountsDetailsVO1.setAExRate(urCostInvoiceGnaVO.getExRate());
 				accountsDetailsVO1.setNArapAmount(BigDecimal.ZERO);
 				accountsDetailsVO1.setGstflag(3);
 				accountsDetailsVO1.setAccountsVO(accountsVO);
 				accountsDetailsVOs.add(accountsDetailsVO1);
+				
+				
+			        }
 
 			}
 

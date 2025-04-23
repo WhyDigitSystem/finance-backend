@@ -698,6 +698,7 @@ public class TaxInvoiceServiceImpl implements TaxInvoiceService {
 			arapDetailsVO.setDocDate(savedAccountsVO.getDocDate());
 			arapDetailsVO.setAccCurrency(savedAccountsVO.getCurrency());
 			arapDetailsVO.setExRate(savedAccountsVO.getExRate());
+			arapDetailsVO.setOrgId(savedAccountsVO.getOrgId());
 			arapDetailsVO.setAccName(accountsDetailsVOs2.getAccountName());
 			arapDetailsVO.setGstFlag(accountsDetailsVOs2.getGstflag());
 			arapDetailsVO.setSubLedgerName(accountsDetailsVOs2.getAccountName());

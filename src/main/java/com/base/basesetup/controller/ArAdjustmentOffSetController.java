@@ -154,33 +154,55 @@ public class ArAdjustmentOffSetController extends BaseController {
 	
 	//DropDown Api ARAdjustmentOffSet
 	
-	@GetMapping("/getAllCustomerReceiptByOrgIdAndBranchCode")
-	public ResponseEntity<ResponseDTO> getAllCustomerReceiptByOrgIdAndBranchCode(@RequestParam Long orgId,@RequestParam String branchCode) {
-		String methodName = "getAllCustomerReceiptByOrgIdAndBranchCode()";
-		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
-		String errorMsg = null;
-		Map<String, Object> responseObjectsMap = new HashMap<>();
-		ResponseDTO responseDTO = null;
-		List<ReceiptVO> receiptVO = new ArrayList<>();
-		try {
-			receiptVO = arAdjustmentOffSetService.getAllCustomerReceiptByOrgIdAndBranchCode(orgId,branchCode);
-		} catch (Exception e) {
-			errorMsg = e.getMessage();
-			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
-		}
-		if (StringUtils.isBlank(errorMsg)) {
-			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "ArAdjustmentOffSet information get successfully By OrgId");
-			responseObjectsMap.put("receiptVO", receiptVO);
-			responseDTO = createServiceResponse(responseObjectsMap);
-		} else {
-			responseDTO = createServiceResponseError(responseObjectsMap, "ArAdjustmentOffSet information receive failed By OrgId",
-					errorMsg);
-		}
-		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
-		return ResponseEntity.ok().body(responseDTO);
-
-	}
+//	@GetMapping("/getAllCustomerReceiptByOrgIdAndBranchCode")
+//	public ResponseEntity<ResponseDTO> getAllCustomerReceiptByOrgIdAndBranchCode(@RequestParam Long orgId,@RequestParam String customerCode) {
+//		String methodName = "getAllCustomerReceiptByOrgIdAndBranchCode()";
+//		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+//		String errorMsg = null;
+//		Map<String, Object> responseObjectsMap = new HashMap<>();
+//		ResponseDTO responseDTO = null;
+//		List<ReceiptVO> receiptVO = new ArrayList<>();
+//		try {
+//			receiptVO = arAdjustmentOffSetService.getAllCustomerReceiptByOrgIdAndBranchCode(orgId,customerCode);
+//		} catch (Exception e) {
+//			errorMsg = e.getMessage();
+//			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+//		}
+//		if (StringUtils.isBlank(errorMsg)) {
+//			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "ArAdjustmentOffSet information get successfully By OrgId");
+//			responseObjectsMap.put("receiptVO", receiptVO);
+//			responseDTO = createServiceResponse(responseObjectsMap);
+//		} else {
+//			responseDTO = createServiceResponseError(responseObjectsMap, "ArAdjustmentOffSet information receive failed By OrgId",
+//					errorMsg);
+//		}
+//		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+//		return ResponseEntity.ok().body(responseDTO);
+//
+//	}
 	
+	@GetMapping("/getAllCustomerReceiptByOrgIdAndBranchCode")
+	public ResponseEntity<ResponseDTO> getAllCustomerReceiptByOrgIdAndBranchCode(@RequestParam Long orgId, @RequestParam String customerCode) {
+	    String methodName = "getAllCustomerReceiptByOrgIdAndBranchCode()";
+	    LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+	    Map<String, Object> responseObjectsMap = new HashMap<>();
+	    ResponseDTO responseDTO;
+	    List<ReceiptVO> receiptVO;
+
+	    try {
+	        receiptVO = arAdjustmentOffSetService.getAllCustomerReceiptByOrgIdAndBranchCode(orgId, customerCode);
+	        responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "ArAdjustmentOffSet information get successfully By OrgId");
+	        responseObjectsMap.put("receiptVO", receiptVO);
+	        responseDTO = createServiceResponse(responseObjectsMap);
+	    } catch (Exception e) {
+	        LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, e.getMessage());
+	        responseDTO = createServiceResponseError(responseObjectsMap, "ArAdjustmentOffSet information receive failed By OrgId", e.getMessage());
+	    }
+
+	    LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+	    return ResponseEntity.ok().body(responseDTO);
+	}
+
 	
 	//AP ADJUSTMENT OFFSET
 	
