@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.base.basesetup.repo.CostInvoiceRepo;
 import com.base.basesetup.repo.PaymentRepo;
@@ -102,8 +103,8 @@ public class DashboardServiceImpl implements DashboardService {
 	}
 
 	@Override
-	public List<Map<String, Object>> getPercentageDiffFromRevenue(Long orgId,Long finYear,String month,String year) {
-		Set<Object[]> chType = taxInvoiceRepo.getPercentageDiffFromRevenue(orgId,finYear,month,year);
+	public List<Map<String, Object>> getPercentageDiffFromRevenue(Long orgId,Long finYear,String Month,String Year,String branchCode) {
+		Set<Object[]> chType = taxInvoiceRepo.getPercentageDiffFromRevenue( orgId, finYear, Month, Year,branchCode);
 		return getPercentage(chType);
 	}
 

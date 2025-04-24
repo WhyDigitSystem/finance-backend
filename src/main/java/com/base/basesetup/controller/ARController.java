@@ -427,7 +427,7 @@ public class ARController extends BaseController {
 	
 	// Receipt Register
 		@GetMapping("/getReciptFillGrid")
-		public ResponseEntity<ResponseDTO> getReciptFillGrid(@RequestParam Long orgId, @RequestParam String partyCode) {
+		public ResponseEntity<ResponseDTO> getReciptFillGrid(@RequestParam Long orgId, @RequestParam String partyCode,@RequestParam String branchCode) {
 			String methodName = "getReciptFillGrid()";
 			LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
 			String errorMsg = null;
@@ -435,7 +435,7 @@ public class ARController extends BaseController {
 			ResponseDTO responseDTO = null;
 			List<Map<String, Object>> reciptFillGrid = new ArrayList<>();
 			try {
-				reciptFillGrid = arReceivableService.getReciptFillGrid(orgId,partyCode);
+				reciptFillGrid = arReceivableService.getReciptFillGrid(orgId,partyCode,branchCode);
 			} catch (Exception e) {
 				errorMsg = e.getMessage();
 				LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
