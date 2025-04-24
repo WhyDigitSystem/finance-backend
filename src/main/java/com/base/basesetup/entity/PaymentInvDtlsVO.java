@@ -77,9 +77,22 @@ public class PaymentInvDtlsVO {
 
 	@Column(name = "txnsettled", precision = 10, scale = 2)
 	private BigDecimal txnSettled;
+	
+//	@Column(name="issettled")
+//	private boolean isSettled;
 
 	@Column(name = "gainorlossamt", precision = 10, scale = 2)
 	private BigDecimal gainOrLossAmt;
+	
+//	public void setIsSettled(boolean isSettled) {
+//	    this.isSettled = isSettled;
+//	}
+//
+//	public boolean isIsSettled() {
+//	    return isSettled;
+//	}
+
+	
 
 
 
