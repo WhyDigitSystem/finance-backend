@@ -106,7 +106,7 @@ public interface ReceiptRepo extends JpaRepository<ReceiptVO, Long> {
 			+ "    a.chargableamt,\r\n"
 			+ "    a.tdsamt,\r\n"
 			+ "    t.gstpercent,\r\n"
-			+ "    n.settamt\r\n"
+			+ "    n.settamt having SUM(d.totalinvamountlc - h.totalinvamountlc) - COALESCE(n.settamt, 0)>0\r\n"
 			+ "ORDER BY \r\n"
 			+ "    a.refdate,\r\n"
 			+ "    c.vid")
