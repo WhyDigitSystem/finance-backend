@@ -25,8 +25,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class TdsCostDebitNoteVO {
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "costdebitNotetaxprtculgen")
-	@SequenceGenerator(name = "costdebitNotetaxprtculgen", sequenceName = "costdebitNotetaxprtculseq", initialValue = 1000000001, allocationSize = 1)
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "costdebitnotetaxprtculgen")
+	@SequenceGenerator(name = "costdebitnotetaxprtculgen", sequenceName = "costdebitnotetaxprtculseq", initialValue = 1000000001, allocationSize = 1)
 	@Column(name = "costdebitnotetaxprtculid")
 	private Long id;
 	@Column(name = "tdswithholding", length = 10)
