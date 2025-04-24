@@ -112,10 +112,13 @@ public interface ReceiptRepo extends JpaRepository<ReceiptVO, Long> {
 			+ "    c.vid")
 	Set<Object[]> findReciptFillGrid(Long orgId, String partyCode,String branchCode);
 
-//	@Query(nativeQuery = true, value = "select * from receipt r,receiptinvdetails r1 where r.orgid=?1 and r.customercode=?2 and r.cancel=0 and r.receiptid=r1.receiptid  and r1.issettled=false")
-//	List<ReceiptVO> getAllReceiptByOrgIdAndBranchCode(Long orgId, String customerCode);
+
+	@Query(nativeQuery = true, value = "select * from receipt where orgid=?1 and branchcode=?2 and cancel=0")
+	List<ReceiptVO> getAllReceiptByOrgIdAndBranchCode(Long orgId, String branchCode);
 
 	@Query(nativeQuery =true,value ="SELECT r.orgid, r.branchcode, r.finyear, \r\n"
+
+
 			+ "    r.createdby, \r\n"
 			+ "    r.createdon, \r\n"
 			+ "    r.docid, \r\n"
@@ -128,7 +131,9 @@ public interface ReceiptRepo extends JpaRepository<ReceiptVO, Long> {
 			+ "    r.receiptamt AS receiptamount, \r\n"
 			+ "    r.bankcharges AS bankchargesamt, \r\n"
 			+ "    CASE \r\n"
+
 			+ "        WHEN tds_rank = 1 THEN r.tdsamt ELSE 0 \r\n"
+
 			+ "    END AS tdsamount, \r\n"
 			+ "    rd.invno AS invoiceno, \r\n"
 			+ "    rd.invdate AS invoicedate, \r\n"
@@ -179,7 +184,6 @@ public interface ReceiptRepo extends JpaRepository<ReceiptVO, Long> {
 			+ "    r.docid, \r\n"
 			+ "    r.chequebank, \r\n"
 			+ "    r.chequeutino, \r\n"
-
 			+ "    r.customername\r\n"
 			+ "")
 
@@ -263,25 +267,6 @@ public interface ReceiptRepo extends JpaRepository<ReceiptVO, Long> {
 			+ "FROM receipt r\r\n"
 			+ "WHERE r.orgid = ?1 and r.finyear=?3 and ((month(docdate)=month(current_date()) and ?2='Month')or ?2 is null )")
 	Set<Object[]> getReceiptAmont(Long orgId, String month, String year);
-	
-//	@Query(nativeQuery = true, value = "select * from receipt r,receiptinvdetails r1 where r.orgid=?1  and r.cancel=0 and r.receiptid=r1.receiptid  and r1.issettled=false")
-//	List<ReceiptVO> getAllReceiptByCode(Long orgId);
-	
-	
-	@Query(nativeQuery = true, 
-		       value = "SELECT * FROM receipt r, receiptinvdetails r1 " +
-		               "WHERE r.orgid = ?1 AND r.customercode = ?2 " +
-		               "AND r.cancel = 0 AND r.receiptid = r1.receiptid " +
-		               "AND r1.issettled = false")
-		List<ReceiptVO> getAllReceiptByOrgIdAndBranchCode(Long orgId, String customerCode);
-
-//		@Query(nativeQuery = true, 
-//		       value = "SELECT * FROM receipt r, receiptinvdetails r1 " +
-//		               "WHERE r.orgid = ?1 " +
-//		               "AND r.cancel = 0 AND r.receiptid = r1.receiptid " +
-//		               "AND r1.issettled = false")
-//		List<ReceiptVO> getAllReceiptByCode(Long orgId);
-
 
 
 }

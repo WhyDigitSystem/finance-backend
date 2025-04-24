@@ -201,7 +201,6 @@ public class ArapAdjustmentsServiceImpl implements ArapAdjustmentsService{
 			map.put("creditlimit", ch[28] != null ? ch[28].toString() : "");
 			map.put("creditdays", ch[29] != null ? ch[29].toString() : "");
 			map.put("doctypecode", ch[30] != null ? ch[30].toString() : "");
-			map.put("name", ch[31] != null ? ch[31].toString() : "");
 			
 			List1.add(map);
 		}
@@ -237,8 +236,6 @@ public class ArapAdjustmentsServiceImpl implements ArapAdjustmentsService{
 			map.put("mslab3", ch[15] != null ? ch[15].toString() : "");
 			map.put("mslab4", ch[16] != null ? ch[16].toString() : "");
 			map.put("mslab5", ch[17] != null ? ch[17].toString() : "");
-			map.put("name", ch[18] != null ? ch[18].toString() : "");
-			
 			
 			
 			List1.add(map);

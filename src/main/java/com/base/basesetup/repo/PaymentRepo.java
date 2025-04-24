@@ -53,20 +53,6 @@ public interface PaymentRepo extends JpaRepository<PaymentVO, Long> {
 			+ "FROM payment r\r\n"
 			+ "WHERE r.orgid = ?1 and r.finyear=?3 and ((month(docdate)=month(current_date()) and '?2'='Month')or ?2 is null )")
 	Set<Object[]> getPaymentAmont(Long orgId, String month, String year);
-	
-	
-	@Query(nativeQuery =true,value = "select  a.orgid,a.docid, a.docdate, a.refno, a.refdate, a.supprefno, a.supprefdate, a.currency,\r\n"
-			+ "a.exrate, \r\n"
-			+ "a.AMOUNT, (a.AMOUNT + a.ARAPSETTLED)  as outstanding,\r\n"
-			+ "(a.AMOUNT + a.ARAPSETTLED) as settled, A.arapdetailsID\r\n"
-			+ "from vw_gstarapoutstanding A\r\n"
-			+ "where a.SUBLEDGERcode = ?2\r\n"
-			+ "and  (a.AMOUNT + a.ARAPSETTLED)  <>  0 \r\n"
-			+ "and a.docdate<= ?4\r\n"
-			+ "and a.branch = ?3 \r\n"
-			+ "and a.orgid = ?1 \r\n"
-			+ "order by docdate, docid")
-	Set<Object[]> getPaymentFillGrid(Long orgId, String partyCode,String branchCode, String docDate);
 
 
 }

@@ -130,7 +130,7 @@ public interface TaxInvoiceRepo extends JpaRepository<TaxInvoiceVO, Long> {
 			+ "    a.jobno AS joborderno,\r\n"
 			+ "    c.docid AS voucherno,\r\n"
 			+ "    c.docdate AS voucherdate,\r\n"
-			+ "    e.partyshortname AS billtoparty,\r\n"
+			+ "    e.partyname AS billtoparty,\r\n"
 			+ "    e.controllingoff,\r\n"
 			+ "    a.billcurr,\r\n"
 			+ "    a.billcurrrate,\r\n"
@@ -166,7 +166,7 @@ public interface TaxInvoiceRepo extends JpaRepository<TaxInvoiceVO, Long> {
 			+ "    a.orgid, a.branchcode, a.vid, a.vdate, a.jobno, e.partyshortname, e.controllingoff, \r\n"
 			+ "    a.billcurr, a.billcurrrate, a.totalinvamountbc, a.totalinvamountlc, \r\n"
 			+ "    a.totaltaxableamountlc, a.gsttype, a.totaltaxamountlc, a.roundoffamountlc, \r\n"
-			+ "    c.docid, c.docdate, a.partytype,e.partyshortname\r\n"
+			+ "    c.docid, c.docdate, a.partytype\r\n"
 			+ "\r\n"
 			+ "ORDER BY\r\n"
 			+ "    vid, vdate")
@@ -236,18 +236,9 @@ public interface TaxInvoiceRepo extends JpaRepository<TaxInvoiceVO, Long> {
 //			+ "    AND ?3 = 'MONTH'\r\n"
 //			+ "GROUP BY v.orgid")
 	
-	@Query(nativeQuery = true,value =" SELECT \r\n"
-			+ "    SUM(a.curmnth) AS currentmonth,\r\n"
-			+ "    SUM(a.premonth) AS previousmonth,\r\n"
-			+ "    SUM(a.curyear) AS currentyear,\r\n"
-			+ "    SUM(a.preyear) AS previousyear\r\n"
-			+ "FROM (    -- Current Month Revenue\r\n"
-			+ "   SELECT \r\n"
-			+ "        v.orgid,\r\n"
-			+ "        SUM(v.amount) AS curmnth,\r\n"
-			+ "        0 AS premonth,\r\n"
-			+ "        0 AS curyear,\r\n"
-			+ "        0 AS preyear\r\n"
+	@Query(nativeQuery = true,value ="SELECT SUM(a.curmnth) AS currentmonth, SUM(a.premonth) AS previousmonth, SUM(a.curyear) AS currentyear, SUM(a.preyear) AS previousyear\r\n"
+			+ "FROM (\r\n"
+			+ "    SELECT v.orgid, SUM(v.amount) AS curmnth, 0 AS premonth, 0 AS curyear, 0 AS preyear\r\n"
 			+ "    FROM vw_revenue v\r\n"
 			+ "    INNER JOIN financialyear f \r\n"
 			+ "        ON v.finyear = f.finyear \r\n"
@@ -259,13 +250,7 @@ public interface TaxInvoiceRepo extends JpaRepository<TaxInvoiceVO, Long> {
 			+ "        AND  ?3 = 'MONTH'\r\n"
 			+ "    GROUP BY v.orgid\r\n"
 			+ "    UNION\r\n"
-			+ "    -- Previous Month Revenue (Handles transition from April to March)\r\n"
-			+ "    SELECT \r\n"
-			+ "        v.orgid,\r\n"
-			+ "        0 AS curmnth,\r\n"
-			+ "        SUM(v.amount) AS premonth,\r\n"
-			+ "        0 AS curyear,\r\n"
-			+ "        0 AS preyear\r\n"
+			+ "    SELECT v.orgid, 0 AS curmnth, SUM(v.amount) AS premonth, 0 AS curyear, 0 AS preyear\r\n"
 			+ "    FROM vw_revenue v\r\n"
 			+ "    WHERE \r\n"
 			+ "        v.finyear = (\r\n"
@@ -282,15 +267,10 @@ public interface TaxInvoiceRepo extends JpaRepository<TaxInvoiceVO, Long> {
 			+ "        )\r\n"
 			+ "        AND v.orgid =?1 and v.branchcode=?5\r\n"
 			+ "        AND ?3 = 'MONTH'\r\n"
+
 			+ "    GROUP BY v.orgid\r\n"
 			+ "    UNION\r\n"
-			+ "    -- Current Financial Year Revenue\r\n"
-			+ " SELECT \r\n"
-			+ "        v.orgid,\r\n"
-			+ "        0 AS curmnth,\r\n"
-			+ "        0 AS premonth,\r\n"
-			+ "        SUM(v.amount) AS curyear,\r\n"
-			+ "        0 AS preyear\r\n"
+			+ "    SELECT v.orgid, 0 AS curmnth, 0 AS premonth, SUM(v.amount) AS curyear, 0 AS preyear\r\n"
 			+ "    FROM vw_revenue v\r\n"
 			+ "    WHERE \r\n"
 			+ "        v.finyear =?2\r\n"
@@ -298,13 +278,7 @@ public interface TaxInvoiceRepo extends JpaRepository<TaxInvoiceVO, Long> {
 			+ "        AND ?4 = 'YEAR'\r\n"
 			+ "    GROUP BY v.orgid\r\n"
 			+ "    UNION\r\n"
-			+ "    -- Previous Financial Year Revenue\r\n"
-			+ "    SELECT \r\n"
-			+ "        v.orgid,\r\n"
-			+ "        0 AS curmnth,\r\n"
-			+ "        0 AS premonth,\r\n"
-			+ "        0 AS curyear,\r\n"
-			+ "        SUM(v.amount) AS preyear\r\n"
+			+ "    SELECT v.orgid, 0 AS curmnth, 0 AS premonth, 0 AS curyear, SUM(v.amount) AS preyear\r\n"
 			+ "    FROM vw_revenue v\r\n"
 			+ "    WHERE \r\n"
 			+ "        v.finyear = (?2 - 1)\r\n"
@@ -313,6 +287,7 @@ public interface TaxInvoiceRepo extends JpaRepository<TaxInvoiceVO, Long> {
 			+ "    GROUP BY v.orgid\r\n"
 			+ ") a" )
 	Set<Object[]> getPercentageDiffFromRevenue(Long orgId,Long finYear,String Month,String Year,String branchCode);
+
 
 	@Query(nativeQuery =true,value = "SELECT \r\n"
 			+ "    SUM(a.curyear) AS currentyear,\r\n"
@@ -389,20 +364,6 @@ public interface TaxInvoiceRepo extends JpaRepository<TaxInvoiceVO, Long> {
 			+ "    MONTH(t.vdate)\r\n"
 			+ "")
 	Set<Object[]> getSalesMonthWiseData(Long orgId, Long finYear, String branchCode);
-	
-	@Query(nativeQuery =true,value = "\r\n"
-			+ "select monthnumber,monthname,totalamount from (\r\n"
-			+ "SELECT \r\n"
-			+ "    MONTH(docdate) AS monthnumber,\r\n"
-			+ "    DATE_FORMAT(docdate, '%M') AS monthname,\r\n"
-			+ "    SUM(amount) AS totalamount\r\n"
-			+ "FROM vw_revenue\r\n"
-			+ "WHERE finyear = ?2\r\n"
-			+ "and orgid = ?1\r\n"
-			+ "GROUP BY MONTH(docdate), DATE_FORMAT(docdate, '%M')\r\n"
-			+ "ORDER BY MONTH(docdate)\r\n"
-			+ ") a where monthname = ?3 ")
-	Set<Object[]> getRevenueMonthWiseData(Long orgId, Long finYear, String monthName);
 
  
 

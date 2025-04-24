@@ -394,7 +394,19 @@ public interface CostInvoiceRepo extends JpaRepository<CostInvoiceVO, Long> {
 			+ "      END\r\n"
 			+ "  )\r\n"
 			+ "GROUP BY r.orgid) a")
+
 	Set<Object[]> getPercentageFromReceipt(Long orgId, Long finYear, String month);
+
+	@Query(nativeQuery=true,value="select c.suppliername,p.partyshortname,sum(d.totaltds) as totaltds,c.finyear  from tdscostinvoice d join costinvoice c  on d.costinvoiceid=c.costinvoiceid\r\n"
+			+ "join accounts a on a.vid=c.vid join partymaster p on c.suppliercode=p.partycode where c.finyear=?2 and c.orgid=?1 and c.branchcode=?3 \r\n"
+			+ " group by c.suppliername,p.partyshortname,c.finyear")
+	Set<Object[]> getTotaltdsFromCustomer(Long orgId, Long finYear, String branchCode);
+
+	@Query(nativeQuery=true,value="select c.vid,c.vdate, c.suppliername,p.partyshortname,d.totaltds,c.finyear  from tdscostinvoice d join costinvoice c  on d.costinvoiceid=c.costinvoiceid\r\n"
+			+ "join accounts a on a.vid=c.vid join partymaster p on c.suppliercode=p.partycode where c.suppliername=?4 \r\n"
+			+ "and c.finyear=?2 and c.orgid=?1 and c.branchcode=?3 \r\n"
+			+ "group by c.vid,c.vdate, c.suppliername,p.partyshortname,d.totaltds,c.finyear")
+	Set<Object[]> getTotaltdsFromCustomerBillWise(Long orgId, Long finYear, String branchCode, String partyName);
 
 
 

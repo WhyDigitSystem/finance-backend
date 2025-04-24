@@ -41,7 +41,7 @@ public class ARController extends BaseController {
 
 	// Receipt
 
-	@GetMapping("/getAllReceiptReceivableByOrgId")
+	@GetMapping("/getAllReceiptByOrgId")
 	public ResponseEntity<ResponseDTO> getAllReceiptReceivableByOrgId(@RequestParam Long orgId,@RequestParam String finYear,@RequestParam String branchCode) {
 		String methodName = "getAllReceiptReceivableByOrgId()";
 		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
