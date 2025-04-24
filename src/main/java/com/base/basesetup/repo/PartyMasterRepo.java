@@ -352,29 +352,19 @@ public interface PartyMasterRepo extends JpaRepository<PartyMasterVO, Long> {
 	@Query(nativeQuery = true, value = "select accountgroupname from groupledger where orgid=?1  and  category in('PAYABLE A/C','RECEIVABLE A/C')")
 	Set<Object[]> getAccountNameFromGroup(Long orgId);
 
-	@Query(nativeQuery =true,value ="SELECT \r\n"
-			+ "    t.partyname, \r\n"
-			+ "     SUM(t.totalchargeamountlc - g.totalchargeamountlc) AS amt, \r\n"
-			+ "    p.partyshortname\r\n"
-			+ "FROM taxinvoice t JOIN accounts a ON a.refno=t.docid JOIN irncreditnote g ON t.docid = g.originbillno\r\n"
-			+ "JOIN partymaster p ON p.partyname = t.partyname\r\n"
-			+ "WHERE t.branchcode=?4 and\r\n"
-			+ "    t.cancel = 'F'\r\n"
-			+ "     AND (MONTH(t.vdate) = MONTH(CURDATE()) )and '?2' = 'MONTH' \r\n"
-			+ "    AND t.orgid =?1\r\n"
-			+ "GROUP BY t.partyname, p.partyshortname\r\n"
+	@Query(nativeQuery =true,value ="SELECT t.partyname,SUM(case when g.totalchargeamountlc IS NULL THEN t.totalchargeamountlc else  (t.totalchargeamountlc - g.totalchargeamountlc)  end )AS amt, p.partyshortname\r\n"
+			+ "FROM taxinvoice t \r\n"
+			+ "JOIN accounts a ON a.refno = t.docid \r\n"
+			+ "left JOIN irncreditnote g ON t.docid = g.originbillno \r\n"
+			+ "JOIN partymaster p ON p.partyname = t.partyname \r\n"
+			+ "WHERE t.branchcode = ?4 AND t.cancel = 'F' AND MONTH(t.vdate) = MONTH(CURDATE()) AND ?2 = 'MONTH' AND t.orgid = ?1 GROUP BY t.partyname, p.partyshortname \r\n"
 			+ "UNION \r\n"
-			+ "SELECT \r\n"
-			+ "    t.partyname, \r\n"
-			+ "    SUM(t.totalchargeamountlc - g.totalchargeamountlc) AS amt, \r\n"
-			+ "    p.partyshortname\r\n"
-			+ "FROM taxinvoice t JOIN accounts a ON a.refno=t.docid JOIN irncreditnote g ON t.docid = g.originbillno\r\n"
-			+ "JOIN partymaster p ON p.partyname = t.partyname\r\n"
-			+ "WHERE t.branchcode=?4 and\r\n"
-			+ "    t.cancel = 'F' and 'ALL'=?2\r\n"
-			+ "    AND t.finyear=?3  \r\n"
-			+ "    AND t.orgid = ?1\r\n"
-			+ "GROUP BY t.partyname, p.partyshortname")
+			+ "SELECT t.partyname, SUM(case when g.totalchargeamountlc IS NULL THEN t.totalchargeamountlc else  (t.totalchargeamountlc - g.totalchargeamountlc)  end )AS amt, p.partyshortname \r\n"
+			+ "FROM taxinvoice t \r\n"
+			+ "JOIN accounts a ON a.refno = t.docid \r\n"
+			+ "Left JOIN irncreditnote g ON t.docid = g.originbillno \r\n"
+			+ "JOIN partymaster p ON p.partyname = t.partyname \r\n"
+			+ "WHERE t.branchcode = ?4 AND t.cancel = 'F' AND ?2 = 'ALL' AND t.finyear = ?3 AND t.orgid = ?1 GROUP BY t.partyname, p.partyshortname \r\n" )
 	Set<Object[]> getMonthlyAndYearWiseData(Long orgId, String month,String year,String branchCode);
 
 	

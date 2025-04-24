@@ -51,7 +51,7 @@ public interface APService {
 
 	List<Map<String, Object>> getPartyNameAndPartyCode(Long orgId);
 	
-	List<Map<String, Object>> getPaymentFillGrid(Long orgId, String partyCode,String branchCode);
+	List<Map<String, Object>> getPaymentFillGrid(Long orgId, String partyCode,String branchCode,String stateCode);
 
 //	String getApBillBalanceDocId(Long orgId, String finYear, String branch, String branchCode);
 	

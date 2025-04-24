@@ -657,8 +657,8 @@ public class APServiceImpl implements APService {
 	}
 
 	@Override
-	public List<Map<String, Object>> getPaymentFillGrid(Long orgId, String partyCode, String branchCode) {
-		Set<Object[]> group = paymentRepo.getPaymentFillGrid(orgId, partyCode, branchCode);
+	public List<Map<String, Object>> getPaymentFillGrid(Long orgId, String partyCode, String branchCode,String stateCode) {
+		Set<Object[]> group = paymentRepo.getPaymentFillGrid(orgId, partyCode, branchCode,stateCode);
 
 		if (group != null) {
 			System.out.println("YES values are there");

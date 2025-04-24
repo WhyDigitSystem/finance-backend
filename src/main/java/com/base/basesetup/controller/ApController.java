@@ -488,7 +488,7 @@ public class ApController extends BaseController {
 	
 	
 	@GetMapping("/getPaymentFillGrid")
-	public ResponseEntity<ResponseDTO> getPaymentFillGrid( Long orgId, String partyCode,String branchCode) {
+	public ResponseEntity<ResponseDTO> getPaymentFillGrid( Long orgId, String partyCode,String branchCode ,String stateCode) {
 		String methodName = "getPaymentFillGrid()";
 		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
 		String errorMsg = null;
@@ -496,7 +496,7 @@ public class ApController extends BaseController {
 		ResponseDTO responseDTO = null;
 		List<Map<String, Object>> paymentfillgrid = new ArrayList<>();
 		try {
-			paymentfillgrid = apService.getPaymentFillGrid(orgId,partyCode, branchCode);
+			paymentfillgrid = apService.getPaymentFillGrid(orgId,partyCode, branchCode,stateCode);
 		} catch (Exception e) {
 			errorMsg = e.getMessage();
 			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
