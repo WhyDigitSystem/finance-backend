@@ -25,12 +25,14 @@ import com.base.basesetup.entity.AccountsDetailsVO;
 import com.base.basesetup.entity.AccountsVO;
 import com.base.basesetup.entity.ArapDetailsVO;
 import com.base.basesetup.entity.ChargerCostDebitNoteVO;
+import com.base.basesetup.entity.ChargerCostInvoiceVO;
 import com.base.basesetup.entity.CostDebitNoteVO;
 import com.base.basesetup.entity.CostInvoiceVO;
 import com.base.basesetup.entity.DocumentTypeMappingDetailsVO;
 import com.base.basesetup.entity.GroupLedgerVO;
 import com.base.basesetup.entity.MultipleDocIdGenerationDetailsVO;
 import com.base.basesetup.entity.TdsCostDebitNoteVO;
+import com.base.basesetup.entity.TdsCostInvoiceVO;
 import com.base.basesetup.exception.ApplicationException;
 import com.base.basesetup.repo.AccountsDetailsRepo;
 import com.base.basesetup.repo.AccountsRepo;
@@ -390,7 +392,7 @@ public class CostDebitNoteServiceImpl implements CostDebitNoteService {
 		costDebitNoteVO.setTotChargesBillCurrAmt(totChargeAmtBillCurr);
 //		costDebitNoteVO.setNetBillCurrAmt(netAmountBillCurr);
 		costDebitNoteVO.setNetBillLcAmt(netAmountLc);
-		costDebitNoteVO.setTotChargesLcAmt(roundedValue);
+		costDebitNoteVO.setTotChargesLcAmt(totChargeAmtLc);
 
 		System.out.println("orgid :" + costDebitNoteDTO.getOrgId() + "orginbill" + costDebitNoteDTO.getOrginBill());
 
@@ -594,231 +596,187 @@ public class CostDebitNoteServiceImpl implements CostDebitNoteService {
 			multipleDocIdGenerationDetailsRepo.save(multipleDocIdGenerationDetailsVO);
 
 			// Create AccountsVO object and populate its fields
-			AccountsVO accountsVO = new AccountsVO();
-			accountsVO.setDocId(accountsDocId);
-			accountsVO.setSourceScreen(costDebitNoteVO.getScreenName());
-			accountsVO.setSourceScreenCode(costDebitNoteVO.getScreenCode());
-			accountsVO.setSourceId(costDebitNoteVO.getId());
-			accountsVO.setCreatedBy(costDebitNoteVO.getCreatedBy());
-			accountsVO.setModifiedBy(costDebitNoteVO.getUpdatedBy());
-			accountsVO.setOrgId(costDebitNoteVO.getOrgId());
-			accountsVO.setBranch(costDebitNoteVO.getBranch());
-			accountsVO.setBranchCode(costDebitNoteVO.getBranchCode());
-			accountsVO.setModifiedon(costDebitNoteVO.getCommonDate().getModifiedon().toUpperCase());
-			accountsVO.setCreatedon(costDebitNoteVO.getCommonDate().getModifiedon().toUpperCase());
-			accountsVO.setRefNo(costDebitNoteVO.getDocId());
-			accountsVO.setRefDate(costDebitNoteVO.getDocDate());
-			accountsVO.setCurrency(costDebitNoteVO.getCurrency());
-			accountsVO.setExRate(costDebitNoteVO.getExRate());
-			accountsVO.setRemarks(costDebitNoteVO.getRemarks());
-//			accountsVO.setBillMonth(costDebitNoteVO.getbil());
-			accountsVO.setFinYear(costDebitNoteVO.getFinYear());
+						AccountsVO accountsVO = new AccountsVO();
+						accountsVO.setDocId(accountsDocId);
+						accountsVO.setSourceScreen(costDebitNoteVO.getScreenName());
+						accountsVO.setSourceScreenCode(costDebitNoteVO.getScreenCode());
+						accountsVO.setSourceId(costDebitNoteVO.getId());
+						accountsVO.setCreatedBy(costDebitNoteVO.getCreatedBy());
+						accountsVO.setModifiedBy(costDebitNoteVO.getUpdatedBy());
+						accountsVO.setOrgId(costDebitNoteVO.getOrgId());
+						accountsVO.setBranch(costDebitNoteVO.getBranch());
+						accountsVO.setBranchCode(costDebitNoteVO.getBranchCode());
+						accountsVO.setModifiedon(costDebitNoteVO.getCommonDate().getModifiedon().toUpperCase());
+						accountsVO.setCreatedon(costDebitNoteVO.getCommonDate().getModifiedon().toUpperCase());
+						accountsVO.setRefNo(costDebitNoteVO.getDocId());
+						accountsVO.setRefDate(costDebitNoteVO.getDocDate());
+						accountsVO.setCurrency(costDebitNoteVO.getCurrency());
+						accountsVO.setExRate(costDebitNoteVO.getExRate());
+						accountsVO.setRemarks(costDebitNoteVO.getRemarks());
+//						accountsVO.setBillMonth(costDebitNoteVO.getbil());
+						accountsVO.setFinYear(costDebitNoteVO.getFinYear());
 
-			// Calculate total debit/credit amounts
-			BigDecimal totalDebitAmount = costDebitNoteVO.getNetBillCurrAmt();
-			accountsVO.setTotalDebitAmount(totalDebitAmount);
-			accountsVO.setTotalCreditAmount(totalDebitAmount);
-			accountsVO.setCreditDays(costDebitNoteVO.getCreditDays());
-			accountsVO.setAmountInWords(costDebitNoteVO.getAmountInWords());
-			accountsVO.setStTaxAmount(costDebitNoteVO.getGstInputLcAmt());
-			accountsVO.setChargeableAmount(costDebitNoteVO.getTotChargesLcAmt());
-//			accountsVO.setSalesType(costDebitNoteVO.getSalesType());
+						// Calculate total debit/credit amounts
+						BigDecimal totalDebitAmount = costDebitNoteVO.getNetBillCurrAmt();
+						accountsVO.setTotalDebitAmount(totalDebitAmount);
+						accountsVO.setTotalCreditAmount(totalDebitAmount);
+						accountsVO.setCreditDays(costDebitNoteVO.getCreditDays());
+						accountsVO.setAmountInWords(costDebitNoteVO.getAmountInWords());
+						accountsVO.setStTaxAmount(costDebitNoteVO.getGstInputLcAmt());
+						accountsVO.setChargeableAmount(costDebitNoteVO.getTotChargesLcAmt());
+//						accountsVO.setSalesType(costDebitNoteVO.getSalesType());
 
-			// Create AccountsDetailsVO list and populate it
-			List<AccountsDetailsVO> accountsDetailsVOs = new ArrayList<>();
+						// Create AccountsDetailsVO list and populate it
+						List<AccountsDetailsVO> accountsDetailsVOs = new ArrayList<>();
 
-			// Add PAYABLE A/C entry
-			AccountsDetailsVO accountsDetailsVO = new AccountsDetailsVO();
-			accountsDetailsVO.setNDebitAmount(BigDecimal.ZERO);
-			accountsDetailsVO.setACategory("PAYABLE A/C");
-			accountsDetailsVO.setAccountName("PAYABLE A/C");
-			accountsDetailsVO.setDebitAmount(BigDecimal.ZERO);
-			accountsDetailsVO.setNCreditAmount(costDebitNoteVO.getNetBillCurrAmt());
-			accountsDetailsVO.setCreditAmount(costDebitNoteVO.getNetBillCurrAmt());
-			accountsDetailsVO.setArapFlag(true);
-			accountsDetailsVO.setArapAmount(costDebitNoteVO.getNetBillCurrAmt());
-			accountsDetailsVO.setBDebitAmount(BigDecimal.ZERO);
-			accountsDetailsVO.setBCrAmount(BigDecimal.ZERO);
-			accountsDetailsVO.setBArapAmount(BigDecimal.ZERO);
-			accountsDetailsVO.setACurrency(costDebitNoteVO.getCurrency());
-			accountsDetailsVO.setAExRate(costDebitNoteVO.getExRate());
-			accountsDetailsVO.setSubledgerName(costDebitNoteVO.getSupplierName());
-			accountsDetailsVO.setSubLedgerCode(costDebitNoteVO.getSupplierCode());
-			accountsDetailsVO.setNArapAmount(BigDecimal.ZERO);
-			accountsDetailsVO.setGstflag(6);
-			accountsDetailsVO.setAccountsVO(accountsVO);
-			accountsDetailsVOs.add(accountsDetailsVO);
-			
-			for (TdsCostDebitNoteVO tdsCostDebitVO : costDebitNoteVO.getTdsCostDebitNoteVO()) {
-				AccountsDetailsVO accountsDetailsVO1 = new AccountsDetailsVO();
-				accountsDetailsVO1.setNDebitAmount(BigDecimal.ZERO);
-				accountsDetailsVO1.setACategory(tdsCostDebitVO.getSection());
-				accountsDetailsVO1.setAccountName(tdsCostDebitVO.getSection());
-				accountsDetailsVO1.setDebitAmount(BigDecimal.ZERO);
-				accountsDetailsVO1.setNCreditAmount(tdsCostDebitVO.getTotTdsWhAmnt());
-				accountsDetailsVO1.setCreditAmount(tdsCostDebitVO.getTotTdsWhAmnt());
-				accountsDetailsVO1.setArapFlag(false);
-				accountsDetailsVO1.setArapAmount(BigDecimal.ZERO);
-				accountsDetailsVO1.setBDebitAmount(BigDecimal.ZERO);
-				accountsDetailsVO1.setBCrAmount(BigDecimal.ZERO);
-				accountsDetailsVO1.setBArapAmount(BigDecimal.ZERO);
-				accountsDetailsVO1.setSubledgerName("None");
-				accountsDetailsVO1.setSubLedgerCode("None");
-				accountsDetailsVO1.setNArapAmount(BigDecimal.ZERO);
-				accountsDetailsVO1.setGstflag(3);
-				accountsDetailsVO1.setAccountsVO(accountsVO);
-				accountsDetailsVOs.add(accountsDetailsVO1);
+						// Add PAYABLE A/C entry
+						AccountsDetailsVO accountsDetailsVO = new AccountsDetailsVO();
+						accountsDetailsVO.setNDebitAmount(costDebitNoteVO.getNetBillCurrAmt());
+						accountsDetailsVO.setACategory("PAYABLE A/C");
+						accountsDetailsVO.setAccountName("PAYABLE A/C");
+						accountsDetailsVO.setDebitAmount(costDebitNoteVO.getNetBillCurrAmt());
+						accountsDetailsVO.setNCreditAmount(BigDecimal.ZERO);
+						accountsDetailsVO.setCreditAmount(BigDecimal.ZERO);
+						accountsDetailsVO.setArapFlag(true);
+						accountsDetailsVO.setArapAmount(costDebitNoteVO.getNetBillCurrAmt().multiply(new BigDecimal(-1)));
+						accountsDetailsVO.setBDebitAmount(costDebitNoteVO.getNetBillCurrAmt());
+						accountsDetailsVO.setBCrAmount(BigDecimal.ZERO);
+						accountsDetailsVO.setBArapAmount(costDebitNoteVO.getNetBillCurrAmt().multiply(new BigDecimal(-1)));
+						accountsDetailsVO.setACurrency(costDebitNoteVO.getCurrency());
+						accountsDetailsVO.setAExRate(costDebitNoteVO.getExRate());
+						accountsDetailsVO.setSubledgerName(costDebitNoteVO.getSupplierName());
+						accountsDetailsVO.setSubLedgerCode(costDebitNoteVO.getSupplierCode());
+						accountsDetailsVO.setNArapAmount(costDebitNoteVO.getNetBillCurrAmt().multiply(new BigDecimal(-1)));
+						accountsDetailsVO.setGstflag(6);
+						accountsDetailsVO.setAccountsVO(accountsVO);
+						accountsDetailsVOs.add(accountsDetailsVO);
+					
+						for (TdsCostDebitNoteVO tdsCostDebitVO : costDebitNoteVO.getTdsCostDebitNoteVO()) {
 
-			}
-			
+							Set<Object[]> ch = costDebitNoteRepo.getAccountNameFromTDSLedger(costDebitNoteVO.getOrgId());
 
-			if (costDebitNoteVO.getRoundOff().compareTo(BigDecimal.ZERO) != 0) {
-//				BigDecimal roundOffAmount = costDebitNoteVO.getRoundOff().setScale(2, RoundingMode.HALF_UP);
-				accountsDetailsVO.setNDebitAmount(costDebitNoteVO.getRoundOff());
-				accountsDetailsVO.setACategory("PAYABLE A/C");
-				accountsDetailsVO.setSubLedgerCode("None");
-				accountsDetailsVO.setDebitAmount(costDebitNoteVO.getRoundOff());
-				accountsDetailsVO.setNCreditAmount(BigDecimal.ZERO);
-				accountsDetailsVO.setCreditAmount(BigDecimal.ZERO);
-				accountsDetailsVO.setArapFlag(false);
-				accountsDetailsVO.setArapAmount(BigDecimal.ZERO);
-				accountsDetailsVO.setBDebitAmount(costDebitNoteVO.getRoundOff());
-				accountsDetailsVO.setBCrAmount(BigDecimal.ZERO);
-				accountsDetailsVO.setBArapAmount(BigDecimal.ZERO);
-				accountsDetailsVO.setACurrency(costDebitNoteVO.getCurrency());
-				accountsDetailsVO.setAExRate(costDebitNoteVO.getExRate());
-				accountsDetailsVO.setSubledgerName("None");
-				accountsDetailsVO.setNArapAmount(BigDecimal.ZERO);
-				accountsDetailsVO.setGstflag(3);
-				accountsDetailsVO.setAccountsVO(accountsVO);
-				accountsDetailsVOs.add(accountsDetailsVO);
-			}
+							for (Object[] ch1 : ch) {
 
-//			if (costDebitNoteVO.getRoundOff() < 0) {
-//				accountsDetailsVO.setNDebitAmount(costDebitNoteVO.getRoundOff()));
-//				accountsDetailsVO.setACategory("PAYABLE A/C");
-//				accountsDetailsVO.setSubLedgerCode("None");
-//				accountsDetailsVO.setDebitAmount(BigDecimal.valueOf(costDebitNoteVO.getRoundOff()));
-//				accountsDetailsVO.setNCreditAmount(BigDecimal.ZERO);
-//				accountsDetailsVO.setCreditAmount(BigDecimal.ZERO);
-//				accountsDetailsVO.setArapFlag(false);
-//				accountsDetailsVO.setArapAmount(BigDecimal.valueOf(costDebitNoteVO.getRoundOff()));
-//				accountsDetailsVO.setBDebitAmount(BigDecimal.valueOf(costDebitNoteVO.getRoundOff()));
-//				accountsDetailsVO.setBCrAmount(BigDecimal.ZERO);
-//				accountsDetailsVO.setBArapAmount(BigDecimal.valueOf(costDebitNoteVO.getRoundOff()));
-//				accountsDetailsVO.setACurrency(costDebitNoteVO.getCurrency());
-//				accountsDetailsVO.setAExRate(costDebitNoteVO.getExRate());
-//				accountsDetailsVO.setSubledgerName("None");
-//				accountsDetailsVO.setNArapAmount(BigDecimal.valueOf(costDebitNoteVO.getRoundOff()));
-//				accountsDetailsVO.setGstflag(3);
-//				accountsDetailsVO.setAccountsVO(accountsVO);
-//				accountsDetailsVOs.add(accountsDetailsVO);
-//			}
-//
-//			if (costDebitNoteVO.getRoundOff() > 0) {
-//				accountsDetailsVO.setNDebitAmount(BigDecimal.ZERO);
-//				accountsDetailsVO.setACategory("PAYABLE A/C");
-//				accountsDetailsVO.setSubLedgerCode("None");
-//				accountsDetailsVO.setDebitAmount(BigDecimal.valueOf(costDebitNoteVO.getRoundOff()));
-//				accountsDetailsVO.setNCreditAmount(BigDecimal.ZERO);
-//				accountsDetailsVO.setCreditAmount(BigDecimal.ZERO);
-//				accountsDetailsVO.setArapFlag(false);
-//				accountsDetailsVO.setArapAmount(BigDecimal.valueOf(costDebitNoteVO.getRoundOff()));
-//				accountsDetailsVO.setBDebitAmount(BigDecimal.valueOf(costDebitNoteVO.getRoundOff()));
-//				accountsDetailsVO.setBCrAmount(BigDecimal.ZERO);
-//				accountsDetailsVO.setBArapAmount(BigDecimal.valueOf(costDebitNoteVO.getRoundOff()));
-//				accountsDetailsVO.setACurrency(costDebitNoteVO.getCurrency());
-//				accountsDetailsVO.setAExRate(costDebitNoteVO.getExRate());
-//				accountsDetailsVO.setSubledgerName("None");
-//				accountsDetailsVO.setNArapAmount(BigDecimal.valueOf(costDebitNoteVO.getRoundOff()));
-//				accountsDetailsVO.setGstflag(3);
-//				accountsDetailsVO.setAccountsVO(accountsVO);
-//				accountsDetailsVOs.add(accountsDetailsVO);
-//			}
+								AccountsDetailsVO accountsDetailsVO1 = new AccountsDetailsVO();
+								accountsDetailsVO1.setNDebitAmount(tdsCostDebitVO.getTotTdsWhAmnt());
+								accountsDetailsVO1.setACategory(ch1[1].toString());
+								accountsDetailsVO1.setAccountName(ch1[0].toString());
+								accountsDetailsVO1.setDebitAmount(tdsCostDebitVO.getTotTdsWhAmnt());
+								accountsDetailsVO1.setNCreditAmount(BigDecimal.ZERO);
+								accountsDetailsVO1.setCreditAmount(BigDecimal.ZERO);
+								accountsDetailsVO1.setArapFlag(false);
+								accountsDetailsVO1.setArapAmount(BigDecimal.ZERO);
+								accountsDetailsVO1.setBDebitAmount(tdsCostDebitVO.getTotTdsWhAmnt());
+								accountsDetailsVO1.setBCrAmount(BigDecimal.ZERO);
+								accountsDetailsVO1.setBArapAmount(BigDecimal.ZERO);
+								accountsDetailsVO1.setSubledgerName("None");
+								accountsDetailsVO1.setSubLedgerCode("None");
+								accountsDetailsVO1.setACurrency(costDebitNoteVO.getCurrency());
+								accountsDetailsVO1.setAExRate(costDebitNoteVO.getExRate());
+								accountsDetailsVO1.setNArapAmount(BigDecimal.ZERO);
+								accountsDetailsVO1.setGstflag(3);
+								accountsDetailsVO1.setAccountsVO(accountsVO);
+								accountsDetailsVOs.add(accountsDetailsVO1);
 
-			// Group and process GST-related ledgers
-			Map<String, BigDecimal> ledgerSumMap = new HashMap<>();
-			for (ChargerCostDebitNoteVO gstVO : costDebitNoteVO.getChargerCostDebitNoteVO()) {
-				String ledger = gstVO.getLedger();
-				BigDecimal lcAmount = gstVO.getLcAmt();
+							}
 
-				ledgerSumMap.put(ledger, ledgerSumMap.getOrDefault(ledger, BigDecimal.ZERO).add(lcAmount));
-			}
+						}
 
-			// Add GST ledger entries
-			for (Map.Entry<String, BigDecimal> entry : ledgerSumMap.entrySet()) {
-				GroupLedgerVO groupLedgerVO = groupLedgerRepo.findByAccountGroupName(entry.getKey());
 
-				AccountsDetailsVO gstAccountDetailsVO = new AccountsDetailsVO();
-				gstAccountDetailsVO.setACategory(groupLedgerVO.getCategory());
-				gstAccountDetailsVO.setNDebitAmount(entry.getValue());
-				gstAccountDetailsVO.setDebitAmount(entry.getValue());
-				gstAccountDetailsVO.setNCreditAmount(BigDecimal.ZERO);
-				gstAccountDetailsVO.setCreditAmount(BigDecimal.ZERO);
-				gstAccountDetailsVO.setArapFlag(false);
-				gstAccountDetailsVO.setArapAmount(BigDecimal.ZERO);
-				gstAccountDetailsVO.setBDebitAmount(entry.getValue());
-				gstAccountDetailsVO.setBCrAmount(BigDecimal.ZERO);
-				gstAccountDetailsVO.setBArapAmount(BigDecimal.ZERO);
-				gstAccountDetailsVO.setAccountName(groupLedgerVO.getAccountGroupName());
-				gstAccountDetailsVO.setACurrency(costDebitNoteVO.getCurrency());
-				gstAccountDetailsVO.setAExRate(costDebitNoteVO.getExRate());
-				gstAccountDetailsVO.setSubledgerName("None");
-				gstAccountDetailsVO.setSubLedgerCode("None");
-				gstAccountDetailsVO.setNArapAmount(BigDecimal.ZERO);
-				gstAccountDetailsVO.setGstflag(3);
-				gstAccountDetailsVO.setAccountsVO(accountsVO);
-				accountsDetailsVOs.add(gstAccountDetailsVO);
-			}
+//						for (ChargerCostDebitNoteVO gstVO : costDebitNoteVO.getChargerCostDebitNoteVO()) {
+////							String ledger = gstVO.getLedger();
+////							BigDecimal lcAmount = gstVO.getLcAmt();
+//			//
+////							ledgerSumMap.put(ledger, ledgerSumMap.getOrDefault(ledger, BigDecimal.ZERO).add(lcAmount));
+////						}
+//			//
+////						// Add GST ledger entries
+////						for (Map.Entry<String, BigDecimal> entry : ledgerSumMap.entrySet()) {
+//							GroupLedgerVO groupLedgerVO = groupLedgerRepo.findByAccountGroupName(gstVO.getLedger());
+						
+						Map<String, BigDecimal> ledgerSumMap = new HashMap<>();
+						for (ChargerCostDebitNoteVO gstVO : costDebitNoteVO.getChargerCostDebitNoteVO()) {
+							String ledger = gstVO.getLedger();
+							BigDecimal lcAmount = gstVO.getLcAmt();
 
-			accountsVO.setAccountsDetailsVO(accountsDetailsVOs);
+							ledgerSumMap.put(ledger, ledgerSumMap.getOrDefault(ledger, BigDecimal.ZERO).add(lcAmount));
+						}
 
-			// Save AccountsVO and update TaxInvoiceVO
-			AccountsVO savedAccountsVO = accountsRepo.save(accountsVO);
-			int gstflag = 6;
-			AccountsDetailsVO accountsDetailsVOs2 = accountsDetailsRepo.findByAccountsVOAndGstflag(savedAccountsVO,
-					gstflag);
-			ArapDetailsVO arapDetailsVO = new ArapDetailsVO();
-			arapDetailsVO.setSourceTransid(accountsDetailsVOs2.getId());
-			arapDetailsVO.setCreatedBy(savedAccountsVO.getCreatedBy());
-			arapDetailsVO.setUpdatedBy(savedAccountsVO.getModifiedBy());
-			arapDetailsVO.setBranch(savedAccountsVO.getBranch());
-			arapDetailsVO.setBranchCode(savedAccountsVO.getBranchCode());
-			arapDetailsVO.setFinYear(savedAccountsVO.getFinYear());
-			arapDetailsVO.setRefNo(savedAccountsVO.getRefNo());
-			arapDetailsVO.setRefDate(savedAccountsVO.getRefDate());
-			arapDetailsVO.setSubLedgerCode(accountsDetailsVOs2.getSubLedgerCode());
-			arapDetailsVO.setCurrency(accountsDetailsVOs2.getACurrency());
-			arapDetailsVO.setExRate(accountsDetailsVOs2.getAExRate());
-			arapDetailsVO.setAmount(accountsDetailsVOs2.getArapAmount().multiply(new BigDecimal(-1)));
-			arapDetailsVO.setBaseAmt(accountsDetailsVOs2.getArapAmount().multiply(new BigDecimal(-1)));
-			arapDetailsVO.setDueDate(savedAccountsVO.getDueDate());
-			arapDetailsVO.setCreditDays(savedAccountsVO.getCreditDays());
-			arapDetailsVO.setDocId(savedAccountsVO.getDocId());
-			arapDetailsVO.setDocDate(savedAccountsVO.getDocDate());
-			arapDetailsVO.setAccCurrency(savedAccountsVO.getCurrency());
-			arapDetailsVO.setExRate(savedAccountsVO.getExRate());
-			arapDetailsVO.setAccName(accountsDetailsVOs2.getAccountName());
-			arapDetailsVO.setGstFlag(accountsDetailsVOs2.getGstflag());
-			arapDetailsVO.setSubLedgerName(accountsDetailsVOs2.getAccountName());
-			arapDetailsVO.setSalesType(savedAccountsVO.getSalesType());
-			arapDetailsVO.setNativeAmt(accountsDetailsVOs2.getArapAmount().multiply(new BigDecimal(-1)));
-			arapDetailsRepo.save(arapDetailsVO);
-			costDebitNoteVO.setPurVoucherNo(savedAccountsVO.getDocId());
-			costDebitNoteVO.setPurVoucherDate(savedAccountsVO.getDocDate());
-			costDebitNoteVO.setApproveStatus(action);
-			costDebitNoteVO.setApproveBy(actionBy);
-			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy hh:mm:ss a");
-			costDebitNoteVO.setApproveOn(LocalDateTime.now().format(formatter).toUpperCase());
+						// Add GST ledger entries
+						for (Map.Entry<String, BigDecimal> entry : ledgerSumMap.entrySet()) {
+							GroupLedgerVO groupLedgerVO = groupLedgerRepo.findByAccountGroupName(entry.getKey());
 
-			return costDebitNoteRepo.save(costDebitNoteVO);
+							AccountsDetailsVO gstAccountDetailsVO = new AccountsDetailsVO();
+							gstAccountDetailsVO.setACategory(groupLedgerVO.getCategory());
+							gstAccountDetailsVO.setNDebitAmount(BigDecimal.ZERO);
+							gstAccountDetailsVO.setDebitAmount(BigDecimal.ZERO);
+							gstAccountDetailsVO.setNCreditAmount(entry.getValue());
+							gstAccountDetailsVO.setCreditAmount(entry.getValue());
+							gstAccountDetailsVO.setArapFlag(false);
+							gstAccountDetailsVO.setArapAmount(BigDecimal.ZERO);
+							gstAccountDetailsVO.setBDebitAmount(BigDecimal.ZERO);
+							gstAccountDetailsVO.setBCrAmount(entry.getValue());
+							gstAccountDetailsVO.setBArapAmount(BigDecimal.ZERO);
+							gstAccountDetailsVO.setAccountName(groupLedgerVO.getAccountGroupName());
+							gstAccountDetailsVO.setACurrency(costDebitNoteVO.getCurrency());
+							gstAccountDetailsVO.setAExRate(costDebitNoteVO.getExRate());
+							gstAccountDetailsVO.setSubledgerName("None");
+							gstAccountDetailsVO.setSubLedgerCode("None");
+							gstAccountDetailsVO.setNArapAmount(BigDecimal.ZERO);
+							gstAccountDetailsVO.setGstflag(3);
+							gstAccountDetailsVO.setAccountsVO(accountsVO);
+							accountsDetailsVOs.add(gstAccountDetailsVO);
+						}
 
-		} else if (costDebitNoteVO.getApproveStatus().equals("Approved")) {
-			throw new ApplicationException("This Invoice Already Approved,");
-		} else {
-			throw new ApplicationException("This Invoice Already Rejected");
-		}
-	}
+						accountsVO.setAccountsDetailsVO(accountsDetailsVOs);
+
+						// Save AccountsVO and update TaxInvoiceVO
+						AccountsVO savedAccountsVO = accountsRepo.save(accountsVO);
+						int gstflag = 6;
+						AccountsDetailsVO accountsDetailsVOs2 = accountsDetailsRepo.findByAccountsVOAndGstflag(savedAccountsVO,
+								gstflag);
+						ArapDetailsVO arapDetailsVO = new ArapDetailsVO();
+						arapDetailsVO.setSourceTransid(accountsDetailsVOs2.getId());
+						arapDetailsVO.setCreatedBy(savedAccountsVO.getCreatedBy());
+						arapDetailsVO.setUpdatedBy(savedAccountsVO.getModifiedBy());
+						arapDetailsVO.setBranch(savedAccountsVO.getBranch());
+						arapDetailsVO.setBranchCode(savedAccountsVO.getBranchCode());
+						arapDetailsVO.setFinYear(savedAccountsVO.getFinYear());
+						arapDetailsVO.setRefNo(savedAccountsVO.getRefNo());
+						arapDetailsVO.setRefDate(savedAccountsVO.getRefDate());
+						arapDetailsVO.setSubLedgerCode(accountsDetailsVOs2.getSubLedgerCode());
+						arapDetailsVO.setCurrency(accountsDetailsVOs2.getACurrency());
+						arapDetailsVO.setExRate(accountsDetailsVOs2.getAExRate());
+						arapDetailsVO.setAmount(accountsDetailsVOs2.getArapAmount().multiply(new BigDecimal(1)));
+						arapDetailsVO.setBaseAmt(accountsDetailsVOs2.getArapAmount().multiply(new BigDecimal(1)));
+						arapDetailsVO.setDueDate(savedAccountsVO.getDueDate());
+						arapDetailsVO.setCreditDays(savedAccountsVO.getCreditDays());
+						arapDetailsVO.setDocId(savedAccountsVO.getDocId());
+						arapDetailsVO.setDocDate(savedAccountsVO.getDocDate());
+						arapDetailsVO.setAccCurrency(savedAccountsVO.getCurrency());
+						arapDetailsVO.setExRate(savedAccountsVO.getExRate());
+						arapDetailsVO.setAccName(accountsDetailsVOs2.getAccountName());
+						arapDetailsVO.setGstFlag(accountsDetailsVOs2.getGstflag());
+						arapDetailsVO.setSubLedgerName(accountsDetailsVOs2.getSubledgerName());
+						arapDetailsVO.setSalesType(savedAccountsVO.getSalesType());
+						arapDetailsVO.setNativeAmt(accountsDetailsVOs2.getArapAmount().multiply(new BigDecimal(1)));
+						arapDetailsRepo.save(arapDetailsVO);
+						costDebitNoteVO.setPurVoucherNo(savedAccountsVO.getDocId());
+						costDebitNoteVO.setPurVoucherDate(savedAccountsVO.getDocDate());
+						costDebitNoteVO.setApproveStatus(action);
+						costDebitNoteVO.setApproveBy(actionBy);
+						DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy hh:mm:ss a");
+						costDebitNoteVO.setApproveOn(LocalDateTime.now().format(formatter).toUpperCase());
+
+						return costDebitNoteRepo.save(costDebitNoteVO);
+
+					} else if (costDebitNoteVO.getApproveStatus().equals("Approved")) {
+						throw new ApplicationException("This Invoice Already Approved,");
+					} else {
+						throw new ApplicationException("This Invoice Already Rejected");
+					}
+				}
+
 
 	@Override
 	public List<Map<String, Object>> getInterAndIntraDetailsForCostInvoice(Long orgId, String gstType,

@@ -57,13 +57,9 @@ public class ARServiceImpl implements ARService {
 
 	// Receipt
 	@Override
-	public List<ReceiptVO> getAllReceiptReceivableByOrgId(Long orgId) {
-		List<ReceiptVO> receiptReceivableVO = new ArrayList<>();
-		if (ObjectUtils.isNotEmpty(orgId)) {
-			LOGGER.info("Successfully Received ReceiptReceivable BY OrgId : {}", orgId);
-			receiptReceivableVO = receiptRepo.getAllReceiptReceivableByOrgId(orgId);
-		}
-		return receiptReceivableVO;
+	public List<ReceiptVO> getAllReceiptReceivableByOrgId(Long orgId, String finYear, String branchCode) {
+
+		return receiptRepo.getAllReceiptReceivableByOrgId(orgId,finYear, branchCode);
 	}
 
 	@Override
@@ -506,8 +502,8 @@ public class ARServiceImpl implements ARService {
 	}
 
 	@Override
-	public List<Map<String, Object>> getReciptFillGrid(Long orgId, String partyCode) {
-		Set<Object[]> register = receiptRepo.findReciptFillGrid(orgId, partyCode);
+	public List<Map<String, Object>> getReciptFillGrid(Long orgId, String partyCode,String branchCode) {
+		Set<Object[]> register = receiptRepo.findReciptFillGrid(orgId, partyCode,branchCode);
 		return getRecipt(register);
 	}
 
@@ -525,10 +521,13 @@ public class ARServiceImpl implements ARService {
 			doctype.put("supprefNo", sup[7] != null ? sup[7].toString() : "");
 			doctype.put("supprefDate", sup[8] != null ? sup[8].toString() : "");
 			doctype.put("acccurrency", sup[9] != null ? sup[9].toString() : "");
-			doctype.put("amount", sup[10] != null ? sup[10].toString() : "");
-			doctype.put("arapSettled", sup[11] != null ? sup[11].toString() : "");
-			doctype.put("chargableAmt", sup[12] != null ? sup[12].toString() : "");
-			doctype.put("tdsAmt", sup[13] != null ? sup[13].toString() : "");
+			doctype.put("exrate", sup[10] != null ? sup[10].toString() : "");
+			doctype.put("billamount", sup[11] != null ? sup[11].toString() : "");
+			doctype.put("chargeAmt", sup[12] != null ? sup[12].toString() : "");
+			doctype.put("chargableamt", sup[13] != null ? sup[13].toString() : "");
+			doctype.put("tdsamt", sup[14] != null ? sup[14].toString() : "");
+			doctype.put("gstpercent", sup[15] != null ? sup[15].toString() : "");
+			doctype.put("gstamount", sup[16] != null ? sup[16].toString() : "");
 
 			doctypeMappingDetails.add(doctype);
 		}

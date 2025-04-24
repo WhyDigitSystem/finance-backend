@@ -1,4 +1,4 @@
-package com.base.basesetup.entity;
+	package com.base.basesetup.entity;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -133,7 +133,7 @@ public class ReceiptVO {
 	@Column(name = "chequeutino", length = 100)
 	private String chequeUtiNo;
 
-	@Column(name = "chequeutidt")
+	@Column(name = "chequeutidate")
 	private LocalDate chequeUtiDate;
 
 	@Column(name = "receivedfrom", length = 100)

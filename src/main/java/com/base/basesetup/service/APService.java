@@ -18,7 +18,7 @@ import com.base.basesetup.exception.ApplicationException;
 public interface APService {
 
 //	Payment
-	List<PaymentVO> getAllPaymentByOrgId(Long orgId);
+	List<PaymentVO> getAllPaymentByOrgId(Long orgId,String finYear, String branchCode);
 
 	List<PaymentVO> getPaymentById(Long id);
 

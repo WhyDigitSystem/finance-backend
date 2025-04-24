@@ -35,7 +35,9 @@ public class VendorDTO {
 	private List<VendorsStateDTO> vendorStateDTO;
 	private List<VendorsAddressDTO> vendorAddressDTO;
 	private List<SpecialTdsDTO> specialTdsDTO;
+
 	
     private List<VendorCurrencyMappingDTO> vendorCurrencyMappingDTO = new ArrayList<>();
+
 
 }

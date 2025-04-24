@@ -62,6 +62,19 @@ public interface UrCostInvoiceGnaRepo extends JpaRepository<UrCostInvoiceGnaVO, 
 	Set<Object[]> getUrChargeLedgerDetails(Long id,String chargeLedger);
 
 	UrCostInvoiceGnaVO findByOrgIdAndIdAndDocId(Long orgId, Long id, String docId);
+	
+	@Query(nativeQuery = true, value = "select  accountgroupname,category from groupledger where orgid=?1 and gsttaxflag!='NA' and \r\n"
+			+ "category='TAX' and gsttaxflag IN ('OUTPUT TAX') and gsttype=?2  and accountgroupname=?3\r\n"
+			+ " group by  accountgroupname")
+	Set<Object[]>  getOuputPosting(Long orgId, String gstType, String  accountName);
+	
+	@Query(nativeQuery = true, value = "select  accountgroupname,category from groupledger where orgid=?1 and gsttaxflag!='NA' and \r\n"
+			+ "category='TAX' and gsttaxflag IN ('INPUT TAX') and gsttype=?2  and accountgroupname=?3\r\n"
+			+ " group by  accountgroupname")
+	Set<Object[]>  getInputPosting(Long orgId, String gstType, String  accountName);
+	
+	@Query(nativeQuery = true, value = "select accountgroupname,category from groupledger where accountgroupname=?1")
+	Set<Object[]>  getLedgerPosting( String  accountName);
 
 
 }

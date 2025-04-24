@@ -161,12 +161,12 @@ public class ArapAdjustmentsServiceImpl implements ArapAdjustmentsService{
 	}
 
 	@Override
-	public List<Map<String, Object>> GetArapAgeing(String asondate, String pdate, String partyname, Long Orgid) {
-		Set<Object[]> mapp = arapAdjustmentsRepo.findArapAgeing(asondate, pdate, partyname,Orgid);
-		return getPollResultForUser(mapp);
+	public List<Map<String, Object>> GetArapAgeing(String asondate, String pdate, String partyname, Long orgId) {
+		Set<Object[]> mapp = arapAdjustmentsRepo.findArapAgeing(asondate, pdate, partyname,orgId);
+		return GetArapAgeing(mapp);
 	}
 
-	private List<Map<String, Object>> getPollResultForUser(Set<Object[]> mapp) {
+	private List<Map<String, Object>> GetArapAgeing(Set<Object[]> mapp) {
 		List<Map<String, Object>> List1 = new ArrayList<>();
 		for (Object[] ch : mapp) {
 			Map<String, Object> map = new HashMap<>();
@@ -200,11 +200,51 @@ public class ArapAdjustmentsServiceImpl implements ArapAdjustmentsService{
 			map.put("product", ch[27] != null ? ch[27].toString() : "");
 			map.put("creditlimit", ch[28] != null ? ch[28].toString() : "");
 			map.put("creditdays", ch[29] != null ? ch[29].toString() : "");
+			map.put("doctypecode", ch[30] != null ? ch[30].toString() : "");
 			
 			List1.add(map);
 		}
 		return List1;
 	}
+	
+	
+	@Override
+	public List<Map<String, Object>> GetArapAdjustments(String asondt,String partyName, String branch, Long orgId, String pdate) {
+		Set<Object[]> mapp = arapAdjustmentsRepo.findArapAdjustments(asondt,partyName,branch,orgId,pdate);
+		return GetArapAdjustments(mapp);
+	}
+
+	private List<Map<String, Object>> GetArapAdjustments(Set<Object[]> mapp) {
+		List<Map<String, Object>> List1 = new ArrayList<>();
+		for (Object[] ch : mapp) {
+			Map<String, Object> map = new HashMap<>();
+			map.put("orgid", ch[0] != null ? ch[0].toString() : ""); // Empty string if null
+			map.put("subledgercode", ch[1] != null ? ch[1].toString() : "");
+			map.put("subledgername", ch[2] != null ? ch[2].toString() : "");
+			map.put("partytype", ch[3] != null ? ch[3].toString() : "");
+			map.put("branch", ch[4] != null ? ch[4].toString() : "");
+			map.put("jobbranch", ch[5] != null ? ch[5].toString() : "");
+			map.put("currency", ch[6] != null ? ch[6].toString() : ""); // Empty string if null
+			map.put("creditdays", ch[7] != null ? ch[7].toString() : "");
+			map.put("creditlimit", ch[8] != null ? ch[8].toString() : "");
+			map.put("amount", ch[9] != null ? ch[9].toString() : "");
+			map.put("outstanding", ch[10] != null ? ch[10].toString() : "");
+			map.put("unadjusted", ch[11] != null ? ch[11].toString() : "");
+			map.put("totaldue", ch[12] != null ? ch[12].toString() : ""); // Empty string if null
+			map.put("mslab1", ch[13] != null ? ch[13].toString() : "");
+			map.put("mslab2", ch[14] != null ? ch[14].toString() : "");
+			map.put("mslab3", ch[15] != null ? ch[15].toString() : "");
+			map.put("mslab4", ch[16] != null ? ch[16].toString() : "");
+			map.put("mslab5", ch[17] != null ? ch[17].toString() : "");
+			
+			
+			List1.add(map);
+		}
+		return List1;
+	}
+	
+	
+	
 	}
 	
 	
