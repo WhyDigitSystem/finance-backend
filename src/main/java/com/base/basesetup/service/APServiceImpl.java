@@ -1,6 +1,7 @@
 package com.base.basesetup.service;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -18,16 +19,14 @@ import org.springframework.stereotype.Service;
 import com.base.basesetup.dto.ApBillBalanceDTO;
 import com.base.basesetup.dto.PaymentDTO;
 import com.base.basesetup.dto.PaymentInvDtlsDTO;
-import com.base.basesetup.dto.TaxInvoiceDTO;
-import com.base.basesetup.dto.TdsPaymentDTO;
+import com.base.basesetup.dto.ReceiptInvDetailsDTO;
 import com.base.basesetup.entity.ApBillBalanceVO;
 import com.base.basesetup.entity.ArapAdjustmentsVO;
 import com.base.basesetup.entity.DocumentTypeMappingDetailsVO;
 import com.base.basesetup.entity.PartyMasterVO;
 import com.base.basesetup.entity.PaymentInvDtlsVO;
 import com.base.basesetup.entity.PaymentVO;
-import com.base.basesetup.entity.TaxInvoiceVO;
-import com.base.basesetup.entity.TdsPaymentVO;
+import com.base.basesetup.entity.ReceiptInvDetailsVO;
 import com.base.basesetup.exception.ApplicationException;
 import com.base.basesetup.repo.ApBillBalanceRepo;
 import com.base.basesetup.repo.ArapAdjustmentsRepo;
@@ -65,8 +64,8 @@ public class APServiceImpl implements APService {
 
 	@Override
 	public List<PaymentVO> getAllPaymentByOrgId(Long orgId, String finYear, String branchCode) {
-	
-		return paymentRepo.getAllPaymentByOrgId(orgId,finYear, branchCode);
+
+		return paymentRepo.getAllPaymentByOrgId(orgId, finYear, branchCode);
 	}
 
 	@Override
@@ -134,33 +133,32 @@ public class APServiceImpl implements APService {
 			adjustmentsVO.setNativeAmt(dtlsVO.getSettled());
 			adjustmentsVO.setOrgId(paymentVO.getOrgId());
 			adjustmentsVO.setAccCurrency(dtlsVO.getCurrency());
-		//	adjustmentsVO.setAccountName(paymentVO.getPartyName());
+			// adjustmentsVO.setAccountName(paymentVO.getPartyName());
 			adjustmentsVO.setBranch(paymentVO.getBranch());
 			adjustmentsVO.setSourceId(dtlsVO.getId());
-			
-			PartyMasterVO masterVO=partyMasterRepo.findByPartyCode(paymentVO.getPartyCode());
+
+			PartyMasterVO masterVO = partyMasterRepo.findByPartyCode(paymentVO.getPartyCode());
 			adjustmentsVO.setAccountName(masterVO.getAccountType());
-			
+
 			arapAdjustmentsRepo.save(adjustmentsVO);
-			
-			
+
 			ArapAdjustmentsVO negativeAdjustmentsVO = new ArapAdjustmentsVO();
 			negativeAdjustmentsVO.setCancel(false);
 			negativeAdjustmentsVO.setActive(true);
 			negativeAdjustmentsVO.setCreatedBy(paymentVO.getCreatedBy());
 			negativeAdjustmentsVO.setUpdatedBy(paymentVO.getUpdatedBy());
 			negativeAdjustmentsVO.setFinYear(paymentVO.getFinYear());
-			negativeAdjustmentsVO.setDocId(paymentVO.getDocId());
-			negativeAdjustmentsVO.setDocDate(paymentVO.getDocDate());
-			negativeAdjustmentsVO.setRefNo(dtlsVO.getInvNo());
-			negativeAdjustmentsVO.setRefDate(dtlsVO.getInvDate());
+			negativeAdjustmentsVO.setDocId(dtlsVO.getInvNo());
+			negativeAdjustmentsVO.setDocDate(dtlsVO.getInvDate());
+			negativeAdjustmentsVO.setRefNo(paymentVO.getDocId());
+			negativeAdjustmentsVO.setRefDate(paymentVO.getDocDate());
 			negativeAdjustmentsVO.setSubLedgerCode(paymentVO.getPartyCode());
 			negativeAdjustmentsVO.setSubLedgerName(paymentVO.getPartyName());
 			negativeAdjustmentsVO.setCurrency(dtlsVO.getCurrency());
 			negativeAdjustmentsVO.setExRate(dtlsVO.getExRate());
 			negativeAdjustmentsVO.setAmount(dtlsVO.getSettled().negate());
-			negativeAdjustmentsVO.setBaseAmt(dtlsVO.getSettled());
-			negativeAdjustmentsVO.setNativeAmt(dtlsVO.getSettled());
+			negativeAdjustmentsVO.setBaseAmt(dtlsVO.getSettled().negate());
+			negativeAdjustmentsVO.setNativeAmt(dtlsVO.getSettled().negate());
 			negativeAdjustmentsVO.setOrgId(paymentVO.getOrgId());
 			negativeAdjustmentsVO.setAccCurrency(dtlsVO.getCurrency());
 			negativeAdjustmentsVO.setAccountName(masterVO.getAccountType());
@@ -209,55 +207,121 @@ public class APServiceImpl implements APService {
 			paymentInvDtlsRepo.deleteAll(paymentInvDtlsVOList);
 		}
 
-		BigDecimal netAmount = BigDecimal.ZERO; 
+//		BigDecimal netAmount = BigDecimal.ZERO; 
+//		BigDecimal onAccount = BigDecimal.ZERO;
+//
+//		List<PaymentInvDtlsVO> paymentInvDtlsVOs = new ArrayList<>();
+//		BigDecimal totalSettled = BigDecimal.ZERO;
+//
+//		if (paymentDTO.getPaymentInvDtlsDTO() != null || !paymentDTO.getPaymentInvDtlsDTO().isEmpty()) {
+//			for (PaymentInvDtlsDTO paymentInvDtlsDTO : paymentDTO.getPaymentInvDtlsDTO()) {
+//				PaymentInvDtlsVO paymentInvDtlsVO = new PaymentInvDtlsVO();
+//				paymentInvDtlsVO.setInvNo(paymentInvDtlsDTO.getInvNo());
+//				paymentInvDtlsVO.setInvDate(paymentInvDtlsDTO.getInvDate());
+//				paymentInvDtlsVO.setRefNo(paymentInvDtlsDTO.getRefNo());
+//				paymentInvDtlsVO.setRefDate(paymentInvDtlsDTO.getRefDate());
+//				paymentInvDtlsVO.setSupplierRefNo(paymentInvDtlsDTO.getSupplierRefNo());
+//				paymentInvDtlsVO.setSupplierRefDate(paymentInvDtlsDTO.getSupplierRefDate());
+//				paymentInvDtlsVO.setCurrency(paymentInvDtlsDTO.getCurrency());
+//				paymentInvDtlsVO.setExRate(paymentInvDtlsDTO.getExRate());
+//
+//				BigDecimal paymentAmt = paymentDTO.getPaymentAmt();
+//
+//
+//
+//				paymentInvDtlsVO.setAmount(paymentInvDtlsDTO.getAmount());
+//
+//				// Calculate netAmount (sum of settled amounts)
+//				netAmount = paymentDTO.getPaymentInvDtlsDTO().stream().map(PaymentInvDtlsDTO::getSettled)
+//						.reduce(BigDecimal.ZERO, BigDecimal::add);
+//				totalSettled = totalSettled.add(paymentInvDtlsDTO.getSettled());
+//
+//				// Calculate onAccount (the difference between paymentAmt and settled amounts)
+//				onAccount = paymentAmt.subtract(totalSettled);
+//
+//				paymentInvDtlsVO.setOutstanding(paymentInvDtlsDTO.getOutstanding());
+//				paymentInvDtlsVO.setSettled(paymentInvDtlsDTO.getSettled());
+//
+//				paymentInvDtlsVO.setPaymentVO(paymentVO);
+//				paymentInvDtlsVOs.add(paymentInvDtlsVO);
+//			}
+//			paymentVO.setPaymentInvDtlsVO(paymentInvDtlsVOs);
+//			if (netAmount.compareTo(paymentDTO.getPaymentAmt()) > 0) {
+//				throw new ApplicationException("Total Settled Amount should not be greater than Payment Amount");
+//			}
+//
+//			onAccount = paymentDTO.getPaymentAmt().subtract(netAmount);
+//			paymentVO.setNetAmount(netAmount);
+//			paymentVO.setOnAccount(onAccount);
+//		} else {
+//			paymentVO.setOnAccount(paymentDTO.getPaymentAmt());
+//		}
+
+		BigDecimal netAmount = BigDecimal.ZERO;
 		BigDecimal onAccount = BigDecimal.ZERO;
+//		BigDecimal totalTdsAmount = BigDecimal.ZERO;
+		BigDecimal totalOutstanding = BigDecimal.ZERO;
+		BigDecimal receiptAmount = paymentDTO.getReceiptAmt();
 
 		List<PaymentInvDtlsVO> paymentInvDtlsVOs = new ArrayList<>();
-		BigDecimal totalSettled = BigDecimal.ZERO;
+		List<PaymentInvDtlsDTO> paymentDetailsList = paymentDTO.getPaymentInvDtlsDTO();
 
-		if (paymentDTO.getPaymentInvDtlsDTO() != null || !paymentDTO.getPaymentInvDtlsDTO().isEmpty()) {
-			for (PaymentInvDtlsDTO paymentInvDtlsDTO : paymentDTO.getPaymentInvDtlsDTO()) {
-				PaymentInvDtlsVO paymentInvDtlsVO = new PaymentInvDtlsVO();
-				paymentInvDtlsVO.setInvNo(paymentInvDtlsDTO.getInvNo());
-				paymentInvDtlsVO.setInvDate(paymentInvDtlsDTO.getInvDate());
-				paymentInvDtlsVO.setRefNo(paymentInvDtlsDTO.getRefNo());
-				paymentInvDtlsVO.setRefDate(paymentInvDtlsDTO.getRefDate());
-				paymentInvDtlsVO.setSupplierRefNo(paymentInvDtlsDTO.getSupplierRefNo());
-				paymentInvDtlsVO.setSupplierRefDate(paymentInvDtlsDTO.getSupplierRefDate());
-				paymentInvDtlsVO.setCurrency(paymentInvDtlsDTO.getCurrency());
-				paymentInvDtlsVO.setExRate(paymentInvDtlsDTO.getExRate());
+		if (paymentDetailsList != null && !paymentDetailsList.isEmpty()) {
+			for (PaymentInvDtlsDTO dto : paymentDetailsList) {
+				PaymentInvDtlsVO vo = new PaymentInvDtlsVO();
 
-				BigDecimal paymentAmt = paymentDTO.getPaymentAmt();
+				// Copy basic fields
+				vo.setInvNo(dto.getInvNo());
+				vo.setInvDate(dto.getInvDate());
+				vo.setRefNo(dto.getRefNo());
+				vo.setRefDate(dto.getRefDate());
+				vo.setCurrency(dto.getCurrency());
+				vo.setExRate(dto.getExRate());
+				vo.setSupplierRefNo(dto.getSupplierRefNo());
+				vo.setSupplierRefDate(dto.getSupplierRefDate());
+				vo.setSettled(dto.getSettled());
 
+				vo.setAmount(dto.getAmount());
 
+				if (dto.getSettled().compareTo(dto.getAmount()) > 0) {
+					throw new ApplicationException(
+							"Settled amount (" + dto.getSettled() + ") cannot be greater than charge amount ("
+									+ dto.getAmount() + ") for invoice: " + dto.getInvNo());
+				}
 
-				paymentInvDtlsVO.setAmount(paymentInvDtlsDTO.getAmount());
+				BigDecimal outstanding = dto.getAmount().subtract(dto.getSettled());
+				if (outstanding.compareTo(BigDecimal.ZERO) < 0) {
+					outstanding = BigDecimal.ZERO;
+				}
+				vo.setOutstanding(outstanding);
 
-				// Calculate netAmount (sum of settled amounts)
-				netAmount = paymentDTO.getPaymentInvDtlsDTO().stream().map(PaymentInvDtlsDTO::getSettled)
-						.reduce(BigDecimal.ZERO, BigDecimal::add);
-				totalSettled = totalSettled.add(paymentInvDtlsDTO.getSettled());
+				totalOutstanding = totalOutstanding.add(vo.getOutstanding());
 
-				// Calculate onAccount (the difference between paymentAmt and settled amounts)
-				onAccount = paymentAmt.subtract(totalSettled);
+				if (dto.getSettled().compareTo(BigDecimal.ZERO) > 0) {
+					netAmount = netAmount.add(dto.getSettled());
+				}
 
-				paymentInvDtlsVO.setOutstanding(paymentInvDtlsDTO.getOutstanding());
-				paymentInvDtlsVO.setSettled(paymentInvDtlsDTO.getSettled());
-
-				paymentInvDtlsVO.setPaymentVO(paymentVO);
-				paymentInvDtlsVOs.add(paymentInvDtlsVO);
+				paymentInvDtlsVOs.add(vo);
+				vo.setPaymentVO(paymentVO);
 			}
+
+			if (receiptAmount.compareTo(netAmount) > 0) {
+				onAccount = receiptAmount.subtract(netAmount);
+			} else {
+				onAccount = BigDecimal.ZERO;
+			}
+
 			paymentVO.setPaymentInvDtlsVO(paymentInvDtlsVOs);
-			if (netAmount.compareTo(paymentDTO.getPaymentAmt()) > 0) {
-				throw new ApplicationException("Total Settled Amount should not be greater than Payment Amount");
-			}
-
-			onAccount = paymentDTO.getPaymentAmt().subtract(netAmount);
-			paymentVO.setNetAmount(netAmount);
-			paymentVO.setOnAccount(onAccount);
 		} else {
-			paymentVO.setOnAccount(paymentDTO.getPaymentAmt());
+
+			onAccount = receiptAmount;
 		}
+
+		paymentVO.setNetAmount(netAmount);
+		paymentVO.setOnAccount(onAccount);
+//		paymentVO.setTdsAmt(totalTdsAmount);
+		paymentVO.setOutStandingTotal(totalOutstanding);
+//		return paymentVO;
 
 	}
 
@@ -515,4 +579,152 @@ public class APServiceImpl implements APService {
 		return payment;
 	}
 
+	@Override
+	public List<Map<String, Object>> getAPAgeing(String Asondate, String partyname, String pdate, Long orgId) {
+		Set<Object[]> group = arapAdjustmentsRepo.findAPAgenig(Asondate, partyname, pdate, orgId);
+		return getAPAgeing(group);
+	}
+
+	private List<Map<String, Object>> getAPAgeing(Set<Object[]> customer) {
+		List<Map<String, Object>> apage = new ArrayList<>();
+		for (Object[] sup : customer) {
+			Map<String, Object> apageing = new HashMap<>();
+			apageing.put("partyName", sup[0] != null ? sup[0].toString() : "");
+			apageing.put("partyCode", sup[1] != null ? sup[1].toString() : "");
+
+			apageing.put("orgid", sup[2] != null ? sup[2].toString() : "");
+			apageing.put("arapdetailsid", sup[3] != null ? sup[3].toString() : "");
+			apageing.put("doctypecode", sup[4] != null ? sup[4].toString() : "");
+			apageing.put("branch", sup[5] != null ? sup[5].toString() : "");
+			apageing.put("subledgercode", sup[6] != null ? sup[6].toString() : "");
+			apageing.put("subledgername", sup[7] != null ? sup[7].toString() : "");
+			apageing.put("partytype", sup[8] != null ? sup[8].toString() : "");
+			apageing.put("subledgerdivision", sup[9] != null ? sup[9].toString() : "");
+			apageing.put("currency", sup[10] != null ? sup[10].toString() : "");
+			apageing.put("docid", sup[11] != null ? sup[11].toString() : "");
+			apageing.put("docdate", sup[12] != null ? sup[12].toString() : "");
+			apageing.put("supprefno", sup[13] != null ? sup[13].toString() : "");
+			apageing.put("duedate", sup[14] != null ? sup[14].toString() : "");
+			apageing.put("refno", sup[15] != null ? sup[15].toString() : "");
+			apageing.put("refdate", sup[16] != null ? sup[16].toString() : "");
+			apageing.put("amount", sup[17] != null ? sup[17].toString() : "");
+			apageing.put("outstanding", sup[18] != null ? sup[18].toString() : "");
+			apageing.put("totaldue", sup[19] != null ? sup[19].toString() : "");
+			apageing.put("unadjusted", sup[20] != null ? sup[20].toString() : "");
+			apageing.put("ddays", sup[21] != null ? sup[21].toString() : "");
+			apageing.put("mslab1", sup[22] != null ? sup[22].toString() : "");
+			apageing.put("mslab2", sup[23] != null ? sup[23].toString() : "");
+			apageing.put("mslab3", sup[24] != null ? sup[24].toString() : "");
+			apageing.put("mslab4", sup[25] != null ? sup[25].toString() : "");
+			apageing.put("mslab5", sup[26] != null ? sup[26].toString() : "");
+			apageing.put("name", sup[27] != null ? sup[27].toString() : "");
+
+			apage.add(apageing);
+		}
+		return apage;
+	}
+
+	@Override
+	public List<Map<String, Object>> getAPOutstanding(String Asondate, String partyname, String pdate, Long orgId) {
+		Set<Object[]> group = arapAdjustmentsRepo.findAPOutstanding(Asondate, partyname, pdate, orgId);
+		return getAPOutstanding(group);
+	}
+
+	private List<Map<String, Object>> getAPOutstanding(Set<Object[]> customer) {
+		List<Map<String, Object>> apage = new ArrayList<>();
+		for (Object[] sup : customer) {
+			Map<String, Object> apageing = new HashMap<>();
+			apageing.put("orgId", sup[0] != null ? sup[0].toString() : "");
+			apageing.put("subledgerCode", sup[1] != null ? sup[1].toString() : "");
+			apageing.put("subledgerName", sup[2] != null ? sup[2].toString() : "");
+			apageing.put("partyType", sup[3] != null ? sup[3].toString() : "");
+			apageing.put("creditDays", sup[4] != null ? sup[4].toString() : "");
+			apageing.put("creditLimit", sup[5] != null ? sup[5].toString() : "");
+			apageing.put("amount", sup[6] != null ? sup[6].toString() : "");
+			apageing.put("outstanding", sup[7] != null ? sup[7].toString() : "");
+			apageing.put("unadjusted", sup[8] != null ? sup[8].toString() : "");
+			apageing.put("totalDue", sup[9] != null ? sup[9].toString() : "");
+			apageing.put("mslab1", sup[10] != null ? sup[10].toString() : "");
+			apageing.put("mslab2", sup[11] != null ? sup[11].toString() : "");
+			apageing.put("mslab3", sup[12] != null ? sup[12].toString() : "");
+			apageing.put("mslab4", sup[13] != null ? sup[13].toString() : "");
+			apageing.put("mslab5", sup[14] != null ? sup[14].toString() : "");
+			apageing.put("name", sup[15] != null ? sup[15].toString() : "");
+
+			apage.add(apageing);
+		}
+		return apage;
+	}
+
+	@Override
+	public List<Map<String, Object>> getPaymentFillGrid(Long orgId, String partyCode, String branchCode,String stateCode) {
+		Set<Object[]> group = paymentRepo.getPaymentFillGrid(orgId, partyCode, branchCode,stateCode);
+
+		if (group != null) {
+			System.out.println("YES values are there");
+		}
+		return getPaymentFillGrid(group);
+	}
+
+	private List<Map<String, Object>> getPaymentFillGrid(Set<Object[]> customer) {
+		List<Map<String, Object>> payfill = new ArrayList<>();
+		for (Object[] sup : customer) {
+			Map<String, Object> doctype = new HashMap<>();
+			doctype.put("arapDetailsId", sup[0] != null ? sup[0].toString() : "");
+			doctype.put("branch", sup[1] != null ? sup[1].toString() : "");
+			doctype.put("subledgerCode", sup[2] != null ? sup[2].toString() : "");
+			doctype.put("vid", sup[3] != null ? sup[3].toString() : "");
+			doctype.put("vdate", sup[4] != null ? sup[4].toString() : "");
+			doctype.put("refno", sup[5] != null ? sup[5].toString() : "");
+			doctype.put("refdate", sup[6] != null ? sup[6].toString() : "");
+			doctype.put("supprefno", sup[7] != null ? sup[7].toString() : "");
+			doctype.put("suprefdate", sup[8] != null ? sup[8].toString() : "");
+			doctype.put("acccurrency", sup[9] != null ? sup[9].toString() : "");
+			doctype.put("exrate", sup[10] != null ? sup[10].toString() : "");
+			doctype.put("billamount", sup[11] != null ? sup[11].toString() : "");
+			doctype.put("chargeAmt", sup[12] != null ? sup[12].toString() : "");
+			doctype.put("chargableamt", sup[13] != null ? sup[13].toString() : "");
+			doctype.put("tdsamt", sup[14] != null ? sup[14].toString() : "");
+			doctype.put("gstpercent", sup[15] != null ? sup[15].toString() : "");
+			doctype.put("gstamount", sup[16] != null ? sup[16].toString() : "");
+
+
+			payfill.add(doctype);
+		}
+		return payfill;
+	}
+
+//	@Override
+//	public List<Map<String, Object>> getarapoffsetadjustmentFillGrid(Long orgId, String partyCode, String branchCode,
+//			String docDate, String docId) {
+//		Set<Object[]> group = arapAdjustmentsRepo.findarapoffsetadjustmentFillGrid(orgId, partyCode, branchCode,
+//				docDate, docId);
+//
+//		if (group != null) {
+//			System.out.println("YES values are there");
+//		}
+//		return getarapoffsetadjustmentFillGrid(group);
+//	}
+//
+//	private List<Map<String, Object>> getarapoffsetadjustmentFillGrid(Set<Object[]> customer) {
+//		List<Map<String, Object>> arapoffsetfill = new ArrayList<>();
+//		for (Object[] sup : customer) {
+//			Map<String, Object> arapOffsetAdjustmentFillGrid = new HashMap<>();
+//
+//			arapOffsetAdjustmentFillGrid.put("orgId", sup[0] != null ? sup[0].toString() : "");
+//			arapOffsetAdjustmentFillGrid.put("docId", sup[1] != null ? sup[1].toString() : "");
+//			arapOffsetAdjustmentFillGrid.put("docDate", sup[2] != null ? sup[2].toString() : "");
+//			arapOffsetAdjustmentFillGrid.put("refNo", sup[3] != null ? sup[3].toString() : "");
+//			arapOffsetAdjustmentFillGrid.put("refDate", sup[4] != null ? sup[4].toString() : "");
+//			arapOffsetAdjustmentFillGrid.put("currency", sup[5] != null ? sup[5].toString() : "");
+//			arapOffsetAdjustmentFillGrid.put("exRate", sup[6] != null ? sup[6].toString() : "");
+//			arapOffsetAdjustmentFillGrid.put("amount", sup[7] != null ? sup[7].toString() : "");
+//			arapOffsetAdjustmentFillGrid.put("outstanding", sup[8] != null ? sup[8].toString() : "");
+//			arapOffsetAdjustmentFillGrid.put("settled", sup[9] != null ? sup[9].toString() : "");
+//			arapOffsetAdjustmentFillGrid.put("arapDetailsId", sup[10] != null ? sup[10].toString() : "");
+//
+//			arapoffsetfill.add(arapOffsetAdjustmentFillGrid);
+//		}
+//		return arapoffsetfill;
+//	}
 }

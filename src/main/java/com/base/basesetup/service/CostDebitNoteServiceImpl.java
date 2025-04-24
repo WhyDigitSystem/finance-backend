@@ -438,8 +438,39 @@ public class CostDebitNoteServiceImpl implements CostDebitNoteService {
 
 	@Override
 	public List<CostDebitNoteVO> getCostDebitNoteById(Long id) {
-		return costDebitNoteRepo.getByCostDebitNoteById(id);
+		
+		List<CostDebitNoteVO> costInvoiceVOList = new ArrayList<>();
+
+		if (ObjectUtils.isNotEmpty(id)) {
+			LOGGER.info("Successfully Received  CostInvoice BY Id : {}", id);
+			costInvoiceVOList = costDebitNoteRepo.getByCostDebitNoteById(id);
+
+			for (CostDebitNoteVO costDebitNoteVO : costInvoiceVOList) {
+				List<ChargerCostDebitNoteVO> gstLines = new ArrayList<>();
+				List<ChargerCostDebitNoteVO> normalCharges = new ArrayList<>();
+
+				// Iterate through the chargerCostInvoiceVO list and split charges
+				for (ChargerCostDebitNoteVO charge : costDebitNoteVO.getChargerCostDebitNoteVO()) {
+					if (isGstCharge(charge)) {
+						gstLines.add(charge); // Add GST related charges to gstLines
+					} else {
+						normalCharges.add(charge); // Add normal charges to normalCharges
+					}
+				}
+
+				costDebitNoteVO.setGstLines(gstLines);
+				costDebitNoteVO.setNormalCharges(normalCharges);
+			}
+		}
+		return costInvoiceVOList;
 	}
+
+	private boolean isGstCharge(ChargerCostDebitNoteVO charge) {
+		// Check if chargeName contains "CGST", "SGST" or "IGST" to identify GST charges
+		return charge.getChargeName() != null && (charge.getChargeName().contains("CGST")
+				|| charge.getChargeName().contains("SGST") || charge.getChargeName().contains("IGST"));
+	}
+	
 
 	@Override
 	public List<CostDebitNoteVO> getActiveCostDebitNote() {

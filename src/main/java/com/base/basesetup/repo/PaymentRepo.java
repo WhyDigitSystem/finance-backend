@@ -53,6 +53,53 @@ public interface PaymentRepo extends JpaRepository<PaymentVO, Long> {
 			+ "FROM payment r\r\n"
 			+ "WHERE r.orgid = ?1 and r.finyear=?3 and ((month(docdate)=month(current_date()) and '?2'='Month')or ?2 is null )")
 	Set<Object[]> getPaymentAmont(Long orgId, String month, String year);
+	
+	
+	@Query(nativeQuery =true,value = "WITH b AS (\r\n"
+			+ "    SELECT subledgercode, refno AS docid, SUM(amount) AS settled\r\n"
+			+ "    FROM arapadjustments\r\n"
+			+ "    WHERE CANCEL = 'F'\r\n"
+			+ "    GROUP BY subledgercode, refno\r\n"
+			+ "    HAVING SUM(amount) > 0\r\n"
+			+ "),\r\n"
+			+ "n AS (\r\n"
+			+ "    SELECT orgid, refno, SUM(amount) AS settamt\r\n"
+			+ "    FROM arapadjustments\r\n"
+			+ "    WHERE amount > 0\r\n"
+			+ "    GROUP BY orgid, refno\r\n"
+			+ ")\r\n"
+			+ "SELECT ROW_NUMBER() OVER () AS id, a.branch, a.subledgercode, c.vid, c.vdate, a.refno, a.refdate, a.supprefno, a.suprefdate, a.acccurrency, a.exrate, \r\n"
+			+ "    CASE \r\n"
+			+ "        WHEN h.totchargeslcamt IS NULL THEN d.totchargeslcamt \r\n"
+			+ "        ELSE d.totchargeslcamt - h.totchargeslcamt \r\n"
+			+ "    END AS totalAmount,\r\n"
+			+ "   ( CASE \r\n"
+			+ "        WHEN h.totchargeslcamt IS NULL THEN d.totchargeslcamt \r\n"
+			+ "        ELSE d.totchargeslcamt - h.totchargeslcamt \r\n"
+			+ "    end)\r\n"
+			+ " - COALESCE(n.settamt, 0) AS invamount,\r\n"
+			+ "-- SUM(d.totchargeslcamt - h.totchargeslcamt) AS totalAmount, \r\n"
+			+ "   --  SUM(d.totchargeslcamt - h.totchargeslcamt) - COALESCE(n.settamt, 0) AS invamount, \r\n"
+			+ "    a.chargableamt, a.tdsamt, t.gstpercent, \r\n"
+			+ "    SUM(d.gstinputlcamt - h.gstinputlcamt) AS gstamount\r\n"
+			+ "FROM arapdetails a\r\n"
+			+ "LEFT JOIN b ON a.subledgercode = b.subledgercode AND a.docid = b.docid\r\n"
+			+ "join partymaster p on a.subledgercode = partycode \r\n"
+			+ "join partystate p2  on p.partymasterid = p2.partymasterid\r\n"
+			+ " JOIN costinvoice d ON a.refno = d.docid\r\n"
+			+ "JOIN chargercostinvoice t ON d.costinvoiceid = t.costinvoiceid\r\n"
+			+ " JOIN accounts c ON a.docid = c.docid\r\n"
+			+ "left JOIN costdebitnote h ON d.docid = h.orginbill\r\n"
+			+ " LEFT JOIN n ON n.orgid = a.orgid AND n.refno = c.vid\r\n"
+			+ " WHERE d.branchcode = ?3 AND a.CANCEL = 'F' AND a.subledgercode = ?2 AND a.orgid = ?1 and p2.statecode =?4\r\n"
+			+ " GROUP BY a.branch, a.subledgercode, c.vid, c.vdate, a.refno, a.refdate, a.supprefno,h.totchargeslcamt,d.totchargeslcamt,\r\n"
+			+ "a.suprefdate, a.acccurrency, a.exrate, b.settled, a.chargableamt, a.tdsamt, t.gstpercent, n.settamt\r\n"
+			+ " HAVING sum( CASE \r\n"
+			+ "        WHEN h.totchargeslcamt IS NULL THEN d.totchargeslcamt \r\n"
+			+ "        ELSE d.totchargeslcamt - h.totchargeslcamt \r\n"
+			+ "    END) - COALESCE(n.settamt, 0) > 0\r\n"
+			+ "ORDER BY a.refdate, c.vid")
+	Set<Object[]> getPaymentFillGrid(Long orgId, String partyCode,String branchCode,String stateCode);
 
 
 }
