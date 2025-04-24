@@ -113,6 +113,9 @@ public class PaymentVO {
     @Column(name = "netamount", precision = 10, scale = 2)
     private BigDecimal netAmount;
     
+    @Column(name = "outstandingtotal", precision = 10, scale = 2)
+    private BigDecimal outStandingTotal;
+    
     @Column(name = "branch", length = 25)
     private String branch;
 
