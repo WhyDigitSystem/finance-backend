@@ -285,4 +285,10 @@ public class DashboardServiceImpl implements DashboardService {
 		return List1;
 
 	}
+
+	@Override
+	public List<Map<String, Object>> getmonthwiserevenue(Long orgId, Long finYear, String monthName) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }
