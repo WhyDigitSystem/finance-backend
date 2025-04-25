@@ -73,7 +73,7 @@ public interface ReceiptRepo extends JpaRepository<ReceiptVO, Long> {
 			+ "    ON a.refno = d.docid JOIN taxinvoicedetails t \r\n"
 			+ "    ON d.taxinvoiceid = t.taxinvoiceid JOIN accounts c \r\n"
 			+ "    ON a.docid = c.docid LEFT JOIN irncreditnote h \r\n"
-			+ "    ON d.docid = h.originbillno left JOIN n \r\n"
+			+ "    ON d.docid = h.originbillno and h.approvestatus='Approved' left JOIN n \r\n"
 			+ "    ON n.orgid = a.orgid \r\n"
 			+ "    AND n.refno = c.vid WHERE \r\n"
 			+ "    d.branchcode = ?3 \r\n"

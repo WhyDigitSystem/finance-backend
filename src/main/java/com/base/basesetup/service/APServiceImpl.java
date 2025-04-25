@@ -123,6 +123,7 @@ public class APServiceImpl implements APService {
 			adjustmentsVO.setDocId(paymentVO.getDocId());
 			adjustmentsVO.setDocDate(paymentVO.getDocDate());
 			adjustmentsVO.setRefNo(dtlsVO.getInvNo());
+			adjustmentsVO.setBranchCode(paymentVO.getBranchCode());
 			adjustmentsVO.setRefDate(dtlsVO.getInvDate());
 			adjustmentsVO.setSubLedgerCode(paymentVO.getPartyCode());
 			adjustmentsVO.setSubLedgerName(paymentVO.getPartyName());
@@ -133,7 +134,6 @@ public class APServiceImpl implements APService {
 			adjustmentsVO.setNativeAmt(dtlsVO.getSettled());
 			adjustmentsVO.setOrgId(paymentVO.getOrgId());
 			adjustmentsVO.setAccCurrency(dtlsVO.getCurrency());
-			// adjustmentsVO.setAccountName(paymentVO.getPartyName());
 			adjustmentsVO.setBranch(paymentVO.getBranch());
 			adjustmentsVO.setSourceId(dtlsVO.getId());
 
@@ -145,6 +145,7 @@ public class APServiceImpl implements APService {
 			ArapAdjustmentsVO negativeAdjustmentsVO = new ArapAdjustmentsVO();
 			negativeAdjustmentsVO.setCancel(false);
 			negativeAdjustmentsVO.setActive(true);
+			negativeAdjustmentsVO.setBranchCode(paymentVO.getBranchCode());
 			negativeAdjustmentsVO.setCreatedBy(paymentVO.getCreatedBy());
 			negativeAdjustmentsVO.setUpdatedBy(paymentVO.getUpdatedBy());
 			negativeAdjustmentsVO.setFinYear(paymentVO.getFinYear());
@@ -172,7 +173,7 @@ public class APServiceImpl implements APService {
 		return response;
 	}
 
-	private void getPaymentVOFromPaymentDTO(PaymentDTO paymentDTO, PaymentVO paymentVO) throws ApplicationException {
+	private PaymentVO getPaymentVOFromPaymentDTO(PaymentDTO paymentDTO, PaymentVO paymentVO) throws ApplicationException {
 
 		paymentVO.setPaymentType(paymentDTO.getPaymentType());
 		paymentVO.setBankChargeAcc(paymentDTO.getBankChargeAcc());
@@ -261,7 +262,7 @@ public class APServiceImpl implements APService {
 		BigDecimal onAccount = BigDecimal.ZERO;
 //		BigDecimal totalTdsAmount = BigDecimal.ZERO;
 		BigDecimal totalOutstanding = BigDecimal.ZERO;
-		BigDecimal receiptAmount = paymentDTO.getReceiptAmt();
+		BigDecimal totalSettled = BigDecimal.ZERO;
 
 		List<PaymentInvDtlsVO> paymentInvDtlsVOs = new ArrayList<>();
 		List<PaymentInvDtlsDTO> paymentDetailsList = paymentDTO.getPaymentInvDtlsDTO();
@@ -269,60 +270,54 @@ public class APServiceImpl implements APService {
 		if (paymentDetailsList != null && !paymentDetailsList.isEmpty()) {
 			for (PaymentInvDtlsDTO dto : paymentDetailsList) {
 				PaymentInvDtlsVO vo = new PaymentInvDtlsVO();
-
-				// Copy basic fields
 				vo.setInvNo(dto.getInvNo());
 				vo.setInvDate(dto.getInvDate());
 				vo.setRefNo(dto.getRefNo());
 				vo.setRefDate(dto.getRefDate());
+				vo.setExRate(dto.getExRate());
+				vo.setGstAmount(dto.getGstAmount());
 				vo.setCurrency(dto.getCurrency());
 				vo.setExRate(dto.getExRate());
 				vo.setSupplierRefNo(dto.getSupplierRefNo());
 				vo.setSupplierRefDate(dto.getSupplierRefDate());
 				vo.setSettled(dto.getSettled());
-
+				vo.setChargeAmt(dto.getAmount().add(dto.getGstAmount()));
 				vo.setAmount(dto.getAmount());
-
-				if (dto.getSettled().compareTo(dto.getAmount()) > 0) {
+				vo.setPaymentVO(paymentVO);
+				BigDecimal reciptAmount = paymentDTO.getPaymentAmt();
+				netAmount = paymentDTO.getPaymentInvDtlsDTO().stream().map(PaymentInvDtlsDTO::getSettled)
+						.reduce(BigDecimal.ZERO, BigDecimal::add);
+				totalSettled = totalSettled.add(dto.getSettled());
+				onAccount = reciptAmount.subtract(totalSettled);
+				paymentInvDtlsVOs.add(vo);
+				if (dto.getSettled().compareTo(dto.getAmount().add(dto.getGstAmount())) > 0) {
 					throw new ApplicationException(
 							"Settled amount (" + dto.getSettled() + ") cannot be greater than charge amount ("
 									+ dto.getAmount() + ") for invoice: " + dto.getInvNo());
 				}
 
-				BigDecimal outstanding = dto.getAmount().subtract(dto.getSettled());
-				if (outstanding.compareTo(BigDecimal.ZERO) < 0) {
-					outstanding = BigDecimal.ZERO;
-				}
+				BigDecimal outstanding = dto.getOutStanding();
 				vo.setOutstanding(outstanding);
 
 				totalOutstanding = totalOutstanding.add(vo.getOutstanding());
 
-				if (dto.getSettled().compareTo(BigDecimal.ZERO) > 0) {
-					netAmount = netAmount.add(dto.getSettled());
-				}
-
-				paymentInvDtlsVOs.add(vo);
-				vo.setPaymentVO(paymentVO);
-			}
-
-			if (receiptAmount.compareTo(netAmount) > 0) {
-				onAccount = receiptAmount.subtract(netAmount);
-			} else {
-				onAccount = BigDecimal.ZERO;
 			}
 
 			paymentVO.setPaymentInvDtlsVO(paymentInvDtlsVOs);
-		} else {
+			if (netAmount.compareTo(paymentDTO.getPaymentAmt()) > 0) {
+				throw new ApplicationException("Total Settled Amount should not be greater than Payment Amount");
+			}
 
-			onAccount = receiptAmount;
+			onAccount = paymentDTO.getPaymentAmt().subtract(netAmount);
+			paymentVO.setNetAmount(netAmount);
+			paymentVO.setOnAccount(onAccount);
+		} else
+
+		{
+			paymentVO.setOnAccount(paymentDTO.getPaymentAmt());
 		}
-
-		paymentVO.setNetAmount(netAmount);
-		paymentVO.setOnAccount(onAccount);
-//		paymentVO.setTdsAmt(totalTdsAmount);
 		paymentVO.setOutStandingTotal(totalOutstanding);
-//		return paymentVO;
-
+		return paymentVO;
 	}
 
 	@Override
@@ -657,8 +652,8 @@ public class APServiceImpl implements APService {
 	}
 
 	@Override
-	public List<Map<String, Object>> getPaymentFillGrid(Long orgId, String partyCode, String branchCode,String stateCode) {
-		Set<Object[]> group = paymentRepo.getPaymentFillGrid(orgId, partyCode, branchCode,stateCode);
+	public List<Map<String, Object>> getPaymentFillGrid(Long orgId, String partyCode, String branchCode) {
+		Set<Object[]> group = paymentRepo.getPaymentFillGrid(orgId, partyCode, branchCode);
 
 		if (group != null) {
 			System.out.println("YES values are there");
@@ -684,10 +679,7 @@ public class APServiceImpl implements APService {
 			doctype.put("billamount", sup[11] != null ? sup[11].toString() : "");
 			doctype.put("chargeAmt", sup[12] != null ? sup[12].toString() : "");
 			doctype.put("chargableamt", sup[13] != null ? sup[13].toString() : "");
-			doctype.put("tdsamt", sup[14] != null ? sup[14].toString() : "");
-			doctype.put("gstpercent", sup[15] != null ? sup[15].toString() : "");
-			doctype.put("gstamount", sup[16] != null ? sup[16].toString() : "");
-
+			doctype.put("gstamount", sup[14] != null ? sup[14].toString() : "");
 
 			payfill.add(doctype);
 		}
