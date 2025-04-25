@@ -18,6 +18,8 @@ import com.base.basesetup.dto.CostCenterDTO;
 import com.base.basesetup.dto.EmployeeDTO;
 import com.base.basesetup.dto.GroupLedgerDTO;
 import com.base.basesetup.dto.HSNSacCodeDTO;
+import com.base.basesetup.dto.ItemMasterDTO;
+import com.base.basesetup.dto.ItemMasterDTO;
 import com.base.basesetup.dto.ListOfValuesDTO;
 import com.base.basesetup.dto.PartyMasterDTO;
 import com.base.basesetup.dto.SacCodeDTO;
@@ -232,5 +234,11 @@ public interface MasterService {
 	HSNSacCodeVO getAllHSNSacCodeById(Long id);
 
 	List<HSNSacCodeVO> findHSNSacCodeByActive();
+	
+	// Item Master
+	
+	Map<String, Object> updateCreateItemMaster(ItemMasterDTO itemMasterDTO) throws ApplicationException;
+
+	
 
 }
