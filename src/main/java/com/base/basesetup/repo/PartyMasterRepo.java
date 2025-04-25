@@ -371,7 +371,7 @@ public interface PartyMasterRepo extends JpaRepository<PartyMasterVO, Long> {
 	
 	@Query(nativeQuery =true,value ="SELECT \r\n"
 			+ "    j.product, \r\n"
-			+ "    SUM(t.totalchargeamountlc - g.totalchargeamountlc) AS amt,\r\n"
+			+ "    sum(case when g.totalchargeamountlc is not null then  (t.totalchargeamountlc - g.totalchargeamountlc)  else t.totalchargeamountlc end )as  amt,\r\n"
 			+ "    t.orgid\r\n"
 			+ "FROM taxinvoice t JOIN irncreditnote g ON t.docid = g.originbillno\r\n"
 			+ "JOIN jobcard j ON j.jobno = t.joborderno\r\n"
@@ -385,7 +385,7 @@ public interface PartyMasterRepo extends JpaRepository<PartyMasterVO, Long> {
 			+ "UNION\r\n"
 			+ "SELECT \r\n"
 			+ "    j.product, \r\n"
-			+ "    SUM(t.totalchargeamountlc - g.totalchargeamountlc) AS amt,\r\n"
+			+ "    sum(case when g.totalchargeamountlc is not null then  (t.totalchargeamountlc - g.totalchargeamountlc)  else t.totalchargeamountlc end )as  amt,\r\n"
 			+ "    t.orgid\r\n"
 			+ "FROM taxinvoice t JOIN irncreditnote g ON t.docid = g.originbillno\r\n"
 			+ "join accounts a on a.refno=t.docid\r\n"

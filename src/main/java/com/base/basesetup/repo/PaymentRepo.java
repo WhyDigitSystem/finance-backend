@@ -84,7 +84,7 @@ public interface PaymentRepo extends JpaRepository<PaymentVO, Long> {
 			+ "    a.supprefno,\r\n"
 			+ "    a.suprefdate,\r\n"
 			+ "    a.acccurrency,\r\n"
-			+ "    a.exrate,\r\n"
+			+ "    d.exrate,\r\n"
 			+ "    SUM(d.totchargeslcamt - COALESCE(h.totchargeslcamt, 0)) AS totalAmount,\r\n"
 			+ "    SUM(d.actbillcurramt - COALESCE(h.actbillcurramt, 0)) - COALESCE(n.settamt, 0) AS invamount,\r\n"
 			+ "    a.chargableamt,\r\n"
@@ -109,9 +109,9 @@ public interface PaymentRepo extends JpaRepository<PaymentVO, Long> {
 			+ "    a.supprefno,\r\n"
 			+ "    a.suprefdate,\r\n"
 			+ "    a.acccurrency,\r\n"
-			+ "    a.exrate,\r\n"
+			+ "    d.exrate,\r\n"
 			+ "    a.chargableamt,\r\n"
-			+ "    a.tdsamt,n.settamt")
+			+ "    a.tdsamt,n.settamt having SUM(d.actbillcurramt - COALESCE(h.actbillcurramt, 0)) - COALESCE(n.settamt, 0)>0")
 	Set<Object[]> getPaymentFillGrid(Long orgId, String partyCode,String branchCode);
 
 

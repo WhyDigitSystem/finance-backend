@@ -148,6 +148,8 @@ public class PaymentVO {
     
     @Column(name="onaccount")
     private BigDecimal onAccount;
+    
+    
 	
 	@OneToMany(mappedBy = "paymentVO", cascade = CascadeType.ALL)
 	@JsonManagedReference
