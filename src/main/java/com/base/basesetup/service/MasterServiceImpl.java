@@ -40,6 +40,7 @@ import com.base.basesetup.dto.CostCenterDTO;
 import com.base.basesetup.dto.EmployeeDTO;
 import com.base.basesetup.dto.GroupLedgerDTO;
 import com.base.basesetup.dto.HSNSacCodeDTO;
+import com.base.basesetup.dto.ItemMasterDTO;
 import com.base.basesetup.dto.ListOfValues1DTO;
 import com.base.basesetup.dto.ListOfValuesDTO;
 import com.base.basesetup.dto.PartyAddressDTO;
@@ -73,6 +74,7 @@ import com.base.basesetup.entity.CostCenterVO;
 import com.base.basesetup.entity.EmployeeVO;
 import com.base.basesetup.entity.GroupLedgerVO;
 import com.base.basesetup.entity.HSNSacCodeVO;
+import com.base.basesetup.entity.ItemMasterVO;
 import com.base.basesetup.entity.ListOfValues1VO;
 import com.base.basesetup.entity.ListOfValuesVO;
 import com.base.basesetup.entity.PartyAddressVO;
@@ -110,6 +112,7 @@ import com.base.basesetup.repo.DocumentTypeMappingDetailsRepo;
 import com.base.basesetup.repo.EmployeeRepo;
 import com.base.basesetup.repo.GroupLedgerRepo;
 import com.base.basesetup.repo.HSNSacCodeRepo;
+import com.base.basesetup.repo.ItemMasterRepo;
 import com.base.basesetup.repo.ListOfValues1Repo;
 import com.base.basesetup.repo.ListOfValuesRepo;
 import com.base.basesetup.repo.PartyAddressRepo;
@@ -143,6 +146,9 @@ public class MasterServiceImpl implements MasterService {
 	@Autowired
 	BranchRepo branchRepo;
 
+	@Autowired
+	ItemMasterRepo itemMasterRepo;
+	
 	@Autowired
 	EmployeeRepo employeeRepo;
 
@@ -1825,6 +1831,7 @@ public class MasterServiceImpl implements MasterService {
 			partyAddressVO.setAddressLine2(partyAddressDTO.getAddressLine2());
 			partyAddressVO.setAddressLine3(partyAddressDTO.getAddressLine3());
 			partyAddressVO.setPincode(partyAddressDTO.getPincode());
+			partyAddressVO.setContact(partyAddressDTO.getContact());
 
 			partyAddressVO.setPartyMasterVO(partyMasterVO);
 			partyAddressVOs.add(partyAddressVO);
@@ -2544,6 +2551,77 @@ public class MasterServiceImpl implements MasterService {
 	public List<HSNSacCodeVO> findHSNSacCodeByActive() {
 
 		return hsnSacCodeRepo.findHSNSacCodeByActive();
+	}
+
+	@Override
+	public Map<String, Object> updateCreateItemMaster(ItemMasterDTO itemMasterDTO) throws ApplicationException {
+		String message;
+
+		ItemMasterVO itemMasterVO = new ItemMasterVO();
+
+		if (itemMasterDTO.getId() != null) {
+			// Fetch existing ItemVO for update
+			itemMasterVO = itemMasterRepo.findById(itemMasterDTO.getId())
+					.orElseThrow(() -> new ApplicationException("Item master not found"));
+			itemMasterVO.setModifiedBy(itemMasterDTO.getCreatedBy());
+
+
+			createUpdateItemMasterVOByItemMasterDTO(itemMasterDTO, itemMasterVO);
+			message = "Item Master Updated Successfully";
+			
+		} else {
+			
+			// Check for duplicate dupChk before creating
+		    boolean isDupChkExists = itemMasterRepo.existsByDupChk(itemMasterDTO.getDupChk());
+		    if (isDupChkExists) {
+		        throw new ApplicationException("Duplicate value found item for the customer: " + itemMasterDTO.getDupChk());
+		    }
+		    
+			// Create new ItemVO
+			itemMasterVO.setCreatedBy(itemMasterDTO.getCreatedBy());
+			itemMasterVO.setModifiedBy(itemMasterDTO.getCreatedBy());
+			createUpdateItemMasterVOByItemMasterDTO(itemMasterDTO, itemMasterVO);
+			message = "Item Master Created Successfully";
+		}
+
+		// Save the ItemVO
+		itemMasterRepo.save(itemMasterVO);
+
+		// Prepare response
+		Map<String, Object> response = new HashMap<>();
+		response.put("itemMasterVO", itemMasterVO);
+		response.put("message", message);
+		return response;
+	}
+
+	private void createUpdateItemMasterVOByItemMasterDTO(@Valid ItemMasterDTO itemMasterDTO, ItemMasterVO itemMasterVO) {
+		itemMasterVO.setPartNo(itemMasterDTO.getPartNo());
+		itemMasterVO.setId(itemMasterDTO.getId());
+		itemMasterVO.setOrgId(itemMasterDTO.getOrgId());
+		itemMasterVO.setBranch(itemMasterDTO.getBranch());
+		itemMasterVO.setBranchCode(itemMasterDTO.getBranchCode());
+		itemMasterVO.setFinYear(itemMasterDTO.getFinYear());
+		itemMasterVO.setCreatedBy(itemMasterDTO.getCreatedBy());
+		itemMasterVO.setModifiedBy(itemMasterDTO.getModifiedBy());
+		itemMasterVO.setActive(itemMasterDTO.isActive());
+		itemMasterVO.setCancel(itemMasterDTO.isCancel());
+		itemMasterVO.setCancelRemarks(itemMasterDTO.getCancelRemarks());
+		itemMasterVO.setCreatedOn(itemMasterDTO.getCreatedOn());
+		itemMasterVO.setModifiedOn(itemMasterDTO.getModifiedOn());
+		itemMasterVO.setCustPartNo(itemMasterDTO.getCustPartNo());
+		// itemMasterVO.setDupChk(itemMasterDTO.getDupChk());
+		String partNo = itemMasterDTO.getPartNo() != null ? itemMasterDTO.getPartNo().trim() : "";
+		String customer = itemMasterDTO.getCustomer() != null ? itemMasterDTO.getCustomer().trim() : "";
+		itemMasterVO.setDupChk(partNo+customer);
+		
+		itemMasterVO.setHsnCode(itemMasterDTO.getHsnCode());
+		itemMasterVO.setItemType(itemMasterDTO.getItemType());
+		itemMasterVO.setPartDesc(itemMasterDTO.getPartDesc());
+		itemMasterVO.setPartNo(itemMasterDTO.getPartNo());
+		itemMasterVO.setUnit(itemMasterDTO.getUnit());
+		itemMasterVO.setCustomer(itemMasterDTO.getCustomer());
+		itemMasterVO.setWeight(itemMasterDTO.getWeight());
+
 	}
 
 }
