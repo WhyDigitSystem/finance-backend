@@ -632,6 +632,8 @@ public class CostDebitNoteServiceImpl implements CostDebitNoteService {
 						accountsVO.setSourceScreen(costDebitNoteVO.getScreenName());
 						accountsVO.setSourceScreenCode(costDebitNoteVO.getScreenCode());
 						accountsVO.setSourceId(costDebitNoteVO.getId());
+						accountsVO.setVId(costDebitNoteVO.getVId());
+						accountsVO.setVDate(costDebitNoteVO.getVDate());
 						accountsVO.setCreatedBy(costDebitNoteVO.getCreatedBy());
 						accountsVO.setModifiedBy(costDebitNoteVO.getUpdatedBy());
 						accountsVO.setOrgId(costDebitNoteVO.getOrgId());
