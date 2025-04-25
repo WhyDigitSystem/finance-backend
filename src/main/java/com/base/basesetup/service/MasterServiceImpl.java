@@ -2606,8 +2606,6 @@ public class MasterServiceImpl implements MasterService {
 		itemMasterVO.setActive(itemMasterDTO.isActive());
 		itemMasterVO.setCancel(itemMasterDTO.isCancel());
 		itemMasterVO.setCancelRemarks(itemMasterDTO.getCancelRemarks());
-		itemMasterVO.setCreatedOn(itemMasterDTO.getCreatedOn());
-		itemMasterVO.setModifiedOn(itemMasterDTO.getModifiedOn());
 		itemMasterVO.setCustPartNo(itemMasterDTO.getCustPartNo());
 		// itemMasterVO.setDupChk(itemMasterDTO.getDupChk());
 		String partNo = itemMasterDTO.getPartNo() != null ? itemMasterDTO.getPartNo().trim() : "";

@@ -31,7 +31,7 @@ public class ItemMasterVO {
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "itemmastergen")
 	@SequenceGenerator(name = "itemmastergen", sequenceName = "itemmasterseq", initialValue = 1000000001, allocationSize = 1)
-	@Column(name = "itemMasterid")
+	@Column(name = "itemmasterid")
 	private Long id;
 	@Column(name = "orgid")
 	private Long orgId;
@@ -56,10 +56,6 @@ public class ItemMasterVO {
 	@Column(name = "screenname",length = 30)
 	private String screenName="ITEM MASTER";
 	
-	@Column(name = "createdon")
-	private LocalDate createdOn;
-	@Column(name = "modifiedon")
-	private LocalDate modifiedOn;
 	@Column(name = "custpartno")
 	private String custPartNo;
 	@Column(name = "dupchk")
