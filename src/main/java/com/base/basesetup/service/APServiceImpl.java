@@ -657,8 +657,8 @@ public class APServiceImpl implements APService {
 	}
 
 	@Override
-	public List<Map<String, Object>> getPaymentFillGrid(Long orgId, String partyCode, String branchCode,String stateCode) {
-		Set<Object[]> group = paymentRepo.getPaymentFillGrid(orgId, partyCode, branchCode,stateCode);
+	public List<Map<String, Object>> getPaymentFillGrid(Long orgId, String partyCode, String branchCode) {
+		Set<Object[]> group = paymentRepo.getPaymentFillGrid(orgId, partyCode, branchCode);
 
 		if (group != null) {
 			System.out.println("YES values are there");
@@ -684,9 +684,7 @@ public class APServiceImpl implements APService {
 			doctype.put("billamount", sup[11] != null ? sup[11].toString() : "");
 			doctype.put("chargeAmt", sup[12] != null ? sup[12].toString() : "");
 			doctype.put("chargableamt", sup[13] != null ? sup[13].toString() : "");
-			doctype.put("tdsamt", sup[14] != null ? sup[14].toString() : "");
-			doctype.put("gstpercent", sup[15] != null ? sup[15].toString() : "");
-			doctype.put("gstamount", sup[16] != null ? sup[16].toString() : "");
+			doctype.put("gstamount", sup[14] != null ? sup[14].toString() : "");
 
 
 			payfill.add(doctype);
