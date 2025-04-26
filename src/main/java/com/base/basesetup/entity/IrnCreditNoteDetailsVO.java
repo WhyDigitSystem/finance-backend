@@ -30,7 +30,7 @@ import lombok.NoArgsConstructor;
 public class IrnCreditNoteDetailsVO {
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "irncreditnotedetailsgen")
-	@SequenceGenerator(name = "irncreditdetailsgen", sequenceName = "irncreditnotedetailsseq", initialValue = 1000000001, allocationSize = 1)
+	@SequenceGenerator(name = "irncreditnotedetailsgen", sequenceName = "irncreditnotedetailsseq", initialValue = 1000000001, allocationSize = 1)
 	@Column(name = "irncreditnotedetailsid")
 	private Long id;
 	
