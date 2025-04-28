@@ -686,6 +686,7 @@ public class TaxInvoiceServiceImpl implements TaxInvoiceService {
 			arapDetailsVO.setBranchCode(savedAccountsVO.getBranchCode());
 			arapDetailsVO.setFinYear(savedAccountsVO.getFinYear());
 			arapDetailsVO.setRefNo(savedAccountsVO.getRefNo());
+			arapDetailsVO.setOrgId(savedAccountsVO.getOrgId());
 			arapDetailsVO.setRefDate(savedAccountsVO.getRefDate());
 			arapDetailsVO.setSubLedgerCode(accountsDetailsVOs2.getSubLedgerCode());
 			arapDetailsVO.setCurrency(accountsDetailsVOs2.getACurrency());
@@ -708,7 +709,7 @@ public class TaxInvoiceServiceImpl implements TaxInvoiceService {
 			taxInvoiceVO.setInvoiceNo(savedAccountsVO.getDocId());
 			taxInvoiceVO.setInvoiceDate(savedAccountsVO.getDocDate());
 
-			LocalDate vDate = taxInvoiceVO.getVDate();
+			LocalDate vDate = taxInvoiceVO.getVDate()!=null?taxInvoiceVO.getVDate():taxInvoiceVO.getDocDate();
 			int creditDays = taxInvoiceVO.getCreditDays();
 			LocalDate dueDate = vDate.plusDays(creditDays);
 			// Save dueDate in your entity
@@ -1025,6 +1026,9 @@ public class TaxInvoiceServiceImpl implements TaxInvoiceService {
 	        map.put("Rate", ch[20] != null ? new BigDecimal(ch[20].toString()) : BigDecimal.ZERO);
 	        map.put("BillAmount", ch[21] != null ? new BigDecimal(ch[21].toString()) : BigDecimal.ZERO);
 	        map.put("PartyType", ch[22] != null ? ch[22].toString() : "");
+	        map.put("docId", ch[23] != null ? ch[23].toString() : "");
+	        map.put("docDate", ch[24] != null ? ch[24].toString() : "");
+	        map.put("screenCode", ch[25] != null ? ch[25].toString() : "");
 
 	        resultList.add(map);
 	    }

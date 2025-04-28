@@ -51,7 +51,7 @@ public class ARServiceImpl implements ARService {
 
 	@Autowired
 	ArapAdjustmentsRepo arapAdjustmentsRepo;
-	
+
 	@Autowired
 	PartyMasterRepo partyMasterRepo;
 
@@ -59,7 +59,7 @@ public class ARServiceImpl implements ARService {
 	@Override
 	public List<ReceiptVO> getAllReceiptReceivableByOrgId(Long orgId, String finYear, String branchCode) {
 
-		return receiptRepo.getAllReceiptReceivableByOrgId(orgId,finYear, branchCode);
+		return receiptRepo.getAllReceiptReceivableByOrgId(orgId, finYear, branchCode);
 	}
 
 	@Override
@@ -124,12 +124,11 @@ public class ARServiceImpl implements ARService {
 				arapadjustments.setTdsAmt(savedReceiptVO.getTdsAmt());
 				arapadjustments.setRefNo(savedReceiptInvDetails.getInvNo());
 				arapadjustments.setRefDate(savedReceiptInvDetails.getInvDate());
-//					arapadjustments.setAccountName(savedReceiptVO.getS());
 				arapadjustments.setCurrency(savedReceiptVO.getCurrency());
-//					arapadjustments.setAccCurrency(savedReceiptVO.getAcpdatedBy());
+				arapadjustments.setAccCurrency(savedReceiptVO.getCurrency());
+				arapadjustments.setCurrency(savedReceiptVO.getCurrency());
 				arapadjustments.setBaseAmt(savedReceiptInvDetails.getSettled());
 				arapadjustments.setNativeAmt(savedReceiptInvDetails.getSettled());
-//					arapadjustments.setOffDocId(savedGrnVO.getSupplierName());
 				arapadjustments.setVoucherType(savedReceiptVO.getType());
 				arapadjustments.setSubLedgerCode(savedReceiptVO.getCustomerCode());
 				arapadjustments.setExRate(savedReceiptInvDetails.getExRate());
@@ -145,41 +144,38 @@ public class ARServiceImpl implements ARService {
 				arapadjustments.setSubLedgerName(savedReceiptVO.getCustomerName());
 				arapadjustments.setAmount(savedReceiptInvDetails.getSettled());
 				arapadjustments.setSubLedgerName(savedReceiptVO.getCustomerName());
-				
+
 				PartyMasterVO partyMaster = partyMasterRepo.findByPartyCode(savedReceiptVO.getCustomerCode());
-				
+
 				arapadjustments.setAccountName(partyMaster.getAccountType());
-				System.out.println("ACCOUNT TYPE : "+partyMaster.getAccountType());
+				System.out.println("ACCOUNT TYPE : " + partyMaster.getAccountType());
 				arapAdjustmentsRepo.save(arapadjustments);
-				
-				
-				
-				
+
 				// Second posting with negative values
-		        ArapAdjustmentsVO negativeArapAdjustments = new ArapAdjustmentsVO();
-		        negativeArapAdjustments.setBranch(savedReceiptVO.getBranch());
-		        negativeArapAdjustments.setFinYear(savedReceiptVO.getFinYear());
-		        negativeArapAdjustments.setSourceId(savedReceiptVO.getId());
-		        negativeArapAdjustments.setDocId(savedReceiptInvDetails.getInvNo()); // Changed as per request
-		        negativeArapAdjustments.setTdsAmt(savedReceiptVO.getTdsAmt());
-		        negativeArapAdjustments.setRefNo(savedReceiptVO.getDocId()); // Changed as per request
-		        negativeArapAdjustments.setRefDate(savedReceiptInvDetails.getInvDate());
-		        negativeArapAdjustments.setCurrency(savedReceiptVO.getCurrency());
-		        negativeArapAdjustments.setBaseAmt(savedReceiptInvDetails.getSettled()); // Negative value
-		        negativeArapAdjustments.setNativeAmt(savedReceiptInvDetails.getSettled()); // Negative value
-		        negativeArapAdjustments.setVoucherType(savedReceiptVO.getType());
-		        negativeArapAdjustments.setSubLedgerCode(savedReceiptVO.getCustomerCode());
-		        negativeArapAdjustments.setExRate(savedReceiptInvDetails.getExRate());
-		        negativeArapAdjustments.setOrgId(savedReceiptVO.getOrgId());
-		        negativeArapAdjustments.setActive(savedReceiptVO.isActive());
-		        negativeArapAdjustments.setCancel(savedReceiptVO.isCancel());
-		        negativeArapAdjustments.setCreatedBy(savedReceiptVO.getCreatedBy());
-		        negativeArapAdjustments.setUpdatedBy(savedReceiptVO.getUpdatedBy());
-		        negativeArapAdjustments.setBranchCode(savedReceiptVO.getBranchCode());
-		        negativeArapAdjustments.setSubLedgerName(savedReceiptVO.getCustomerName());
-		        negativeArapAdjustments.setAmount(savedReceiptInvDetails.getSettled().negate()); // Negative value
-		        negativeArapAdjustments.setAccountName(partyMaster.getAccountType());
-		        arapAdjustmentsRepo.save(negativeArapAdjustments);
+				ArapAdjustmentsVO negativeArapAdjustments = new ArapAdjustmentsVO();
+				negativeArapAdjustments.setBranch(savedReceiptVO.getBranch());
+				negativeArapAdjustments.setFinYear(savedReceiptVO.getFinYear());
+				negativeArapAdjustments.setSourceId(savedReceiptVO.getId());
+				negativeArapAdjustments.setDocId(savedReceiptInvDetails.getInvNo()); // Changed as per request
+				negativeArapAdjustments.setTdsAmt(savedReceiptVO.getTdsAmt());
+				negativeArapAdjustments.setRefNo(savedReceiptVO.getDocId()); // Changed as per request
+				negativeArapAdjustments.setRefDate(savedReceiptInvDetails.getInvDate());
+				negativeArapAdjustments.setCurrency(savedReceiptVO.getCurrency());
+				negativeArapAdjustments.setBaseAmt(savedReceiptInvDetails.getSettled()); // Negative value
+				negativeArapAdjustments.setNativeAmt(savedReceiptInvDetails.getSettled()); // Negative value
+				negativeArapAdjustments.setVoucherType(savedReceiptVO.getType());
+				negativeArapAdjustments.setSubLedgerCode(savedReceiptVO.getCustomerCode());
+				negativeArapAdjustments.setExRate(savedReceiptInvDetails.getExRate());
+				negativeArapAdjustments.setOrgId(savedReceiptVO.getOrgId());
+				negativeArapAdjustments.setActive(savedReceiptVO.isActive());
+				negativeArapAdjustments.setCancel(savedReceiptVO.isCancel());
+				negativeArapAdjustments.setCreatedBy(savedReceiptVO.getCreatedBy());
+				negativeArapAdjustments.setUpdatedBy(savedReceiptVO.getUpdatedBy());
+				negativeArapAdjustments.setBranchCode(savedReceiptVO.getBranchCode());
+				negativeArapAdjustments.setSubLedgerName(savedReceiptVO.getCustomerName());
+				negativeArapAdjustments.setAmount(savedReceiptInvDetails.getSettled().negate()); // Negative value
+				negativeArapAdjustments.setAccountName(partyMaster.getAccountType());
+				arapAdjustmentsRepo.save(negativeArapAdjustments);
 			}
 		}
 
@@ -189,7 +185,8 @@ public class ARServiceImpl implements ARService {
 		return response;
 	}
 
-	private ReceiptVO createUpdateReceiptVOByReceiptDTO(@Valid ReceiptDTO receiptDTO, ReceiptVO receiptVO) throws ApplicationException {
+	private ReceiptVO createUpdateReceiptVOByReceiptDTO(@Valid ReceiptDTO receiptDTO, ReceiptVO receiptVO)
+			throws ApplicationException {
 		receiptVO.setBranch(receiptDTO.getBranch());
 		receiptVO.setBranchCode(receiptDTO.getBranchCode());
 		receiptVO.setCustomer(receiptDTO.getCustomer());
@@ -228,10 +225,7 @@ public class ARServiceImpl implements ARService {
 			receiptInvDetailsRepo.deleteAll(receiptInvDetailsVO1);
 		}
 
-
-		
-		
-		BigDecimal netAmount = BigDecimal.ZERO; 
+		BigDecimal netAmount = BigDecimal.ZERO;
 		BigDecimal onAccount = BigDecimal.ZERO;
 
 		List<ReceiptInvDetailsVO> receiptInvDetailsVOs = new ArrayList<>();
@@ -256,11 +250,7 @@ public class ARServiceImpl implements ARService {
 				receiptInvDetailsVO.setOutstanding(receiptInvDetailsDTO.getOutstanding());
 				receiptInvDetailsVO.setTds(receiptInvDetailsDTO.getTds());
 				receiptInvDetailsVO.setGstAmt(receiptInvDetailsDTO.getGstAmt());
-				
-				
 				BigDecimal paymentAmt = receiptDTO.getReceiptAmt();
-
-
 
 				receiptInvDetailsVO.setAmount(receiptInvDetailsDTO.getAmount());
 
@@ -271,21 +261,7 @@ public class ARServiceImpl implements ARService {
 
 				// Calculate onAccount (the difference between paymentAmt and settled amounts)
 				onAccount = paymentAmt.subtract(totalSettled);
-				
-//
-//				BigDecimal receiptAmt = receiptDTO.getReceiptAmt();
-//
-//				receiptInvDetailsVO.setAmount(receiptInvDetailsDTO.getAmount());
-//
-//				netAmount = receiptDTO.getReceiptInvDetailaDTO().stream().map(ReceiptInvDetailsDTO::getSettled)
-//						.reduce(BigDecimal.ZERO, BigDecimal::add);
-//				totalSettled = totalSettled.add(receiptInvDetailsDTO.getSettled());
 
-				// BigDecimal totalSettled1 = receiptInvDetailsDTO.getSettled() != null ?
-				// receiptInvDetailsDTO.getSettled()
-				// : BigDecimal.ZERO;
-				onAccount = paymentAmt.subtract(totalSettled);
-				
 				receiptInvDetailsVO.setSettled(receiptInvDetailsDTO.getSettled());
 				receiptInvDetailsVO.setRecExRate(receiptInvDetailsDTO.getRecExRate());
 				receiptInvDetailsVO.setTxnSettled(receiptInvDetailsDTO.getTxnSettled());
@@ -296,9 +272,8 @@ public class ARServiceImpl implements ARService {
 
 			}
 
-
 			receiptVO.setReceiptInvDetailsVO(receiptInvDetailsVOs);
-			
+
 			if (netAmount.compareTo(receiptDTO.getReceiptAmt()) > 0) {
 				throw new ApplicationException("Total Settled Amount should not be greater than Receipt Amount");
 			}
@@ -502,8 +477,8 @@ public class ARServiceImpl implements ARService {
 	}
 
 	@Override
-	public List<Map<String, Object>> getReciptFillGrid(Long orgId, String partyCode) {
-		Set<Object[]> register = receiptRepo.findReciptFillGrid(orgId, partyCode);
+	public List<Map<String, Object>> getReciptFillGrid(Long orgId, String partyCode, String branchCode) {
+		Set<Object[]> register = receiptRepo.findReciptFillGrid(orgId, partyCode, branchCode);
 		return getRecipt(register);
 	}
 
@@ -514,17 +489,20 @@ public class ARServiceImpl implements ARService {
 			doctype.put("arapDetailsId", sup[0] != null ? sup[0].toString() : "");
 			doctype.put("branch", sup[1] != null ? sup[1].toString() : "");
 			doctype.put("subLedgerCode", sup[2] != null ? sup[2].toString() : "");
-			doctype.put("vId", sup[3] != null ? sup[3].toString() : "");
-			doctype.put("vDatae", sup[4] != null ? sup[4].toString() : "");
+			doctype.put("vid", sup[3] != null ? sup[3].toString() : "");
+			doctype.put("vdate", sup[4] != null ? sup[4].toString() : "");
 			doctype.put("refNo", sup[5] != null ? sup[5].toString() : "");
-			doctype.put("refDate", sup[6] != null ? sup[6].toString() : "");
+			doctype.put("refate", sup[6] != null ? sup[6].toString() : "");
 			doctype.put("supprefNo", sup[7] != null ? sup[7].toString() : "");
 			doctype.put("supprefDate", sup[8] != null ? sup[8].toString() : "");
 			doctype.put("acccurrency", sup[9] != null ? sup[9].toString() : "");
-			doctype.put("amount", sup[10] != null ? sup[10].toString() : "");
-			doctype.put("arapSettled", sup[11] != null ? sup[11].toString() : "");
-			doctype.put("chargableAmt", sup[12] != null ? sup[12].toString() : "");
-			doctype.put("tdsAmt", sup[13] != null ? sup[13].toString() : "");
+			doctype.put("exrate", sup[10] != null ? sup[10].toString() : "");
+			doctype.put("billamount", sup[11] != null ? sup[11].toString() : "");
+			doctype.put("chargeAmt", sup[12] != null ? sup[12].toString() : "");
+			doctype.put("chargableamt", sup[13] != null ? sup[13].toString() : "");
+			doctype.put("tdsamt", sup[14] != null ? sup[14].toString() : "");
+			doctype.put("gstpercent", sup[15] != null ? sup[15].toString() : "");
+			doctype.put("gstamount", sup[16] != null ? sup[16].toString() : "");
 
 			doctypeMappingDetails.add(doctype);
 		}

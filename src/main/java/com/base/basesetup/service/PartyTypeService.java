@@ -59,7 +59,7 @@ public interface PartyTypeService {
 	
 	List<Map<String, Object>> getAllLedgerReport(Long orgId,String accountName,String branchCode,String fromDate,String toDate);
 
-	List<Map<String, Object>> getMonthlyAndYearWiseData(Long orgId, String month,String finYear);
+	List<Map<String, Object>> getMonthlyAndYearWiseData(Long orgId, String month,String finYear,String branchCode);
 
-	List<Map<String, Object>> getSalesDistributionData(Long orgId, String month, String finYear);
+	List<Map<String, Object>> getSalesDistributionData(Long orgId, String month, String finYear, String branchCode);
 }

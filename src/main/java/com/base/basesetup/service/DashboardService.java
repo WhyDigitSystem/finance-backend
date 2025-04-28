@@ -13,8 +13,16 @@ public interface DashboardService {
 	List<Map<String, Object>> getPaymentAmont(Long orgId, String month, String year);
 
 	List<Map<String, Object>> getTdsSummary(Long orgId, String month, Long finYear);
-
-	List<Map<String, Object>> getPercentageDiffFromRevenue(Long orgId,Long finYear,String month,String year);
+  
+	List<Map<String, Object>> getPercentageDiffFromRevenue(Long orgId,Long finYear,String Month,String Year,String branchCode);
+	
+	List<Map<String, Object>> getRevenueMonthWiseRevenue(Long orgId, Long finYear, String monthName);
+	
+	List<Map<String, Object>> getRevenueMonthWiseCost(Long orgId, Long finYear, String monthName);
+	
+	List<Map<String, Object>> getRevenueMonthWiseRecepit(Long orgId, Long finYear, String monthName );
+	
+	List<Map<String, Object>> getRevenueMonthWisePayment(Long orgId, Long finYear, String monthName );
 
 	List<Map<String, Object>> getPercentageDiffFromYear(Long orgId, Long finYear);
 

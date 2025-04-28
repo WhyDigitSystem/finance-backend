@@ -68,6 +68,9 @@ public class PaymentInvDtlsVO {
 
 	@Column(name = "outstanding", precision = 10, scale = 2)
 	private BigDecimal outstanding;
+	
+	@Column(name="gstamount")
+    private BigDecimal gstAmount;
 
 	@Column(name = "settled", precision = 10, scale = 2)
 	private BigDecimal settled;
@@ -77,9 +80,15 @@ public class PaymentInvDtlsVO {
 
 	@Column(name = "txnsettled", precision = 10, scale = 2)
 	private BigDecimal txnSettled;
+	
+
 
 	@Column(name = "gainorlossamt", precision = 10, scale = 2)
 	private BigDecimal gainOrLossAmt;
+	
+
+
+	
 
 
 

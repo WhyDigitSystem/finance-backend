@@ -5,6 +5,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -335,8 +336,11 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 	}
 
 	private LocalDate getLocalDateCellValue(Cell cell) {
-		return (cell == null || !DateUtil.isCellDateFormatted(cell)) ? null
-				: cell.getDateCellValue().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+		if (cell == null || !DateUtil.isCellDateFormatted(cell)) {
+			return null;
+		}
+		Date date = cell.getDateCellValue(); // returns java.util.Date
+		return date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 	}
 
 	@Override
@@ -867,8 +871,10 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 	}
 
 	@Override
-	public List<Map<String, Object>> getAllPartyLedgerReport(Long orgId,String partyName,String partyType,String branch,String fromDate,String toDate) {
-		Set<Object[]> chType = partyMasterRepo.getAllPartyLedgerReport(orgId, partyName,partyType, branch, fromDate, toDate);
+	public List<Map<String, Object>> getAllPartyLedgerReport(Long orgId, String partyName, String partyType,
+			String branch, String fromDate, String toDate) {
+		Set<Object[]> chType = partyMasterRepo.getAllPartyLedgerReport(orgId, partyName, partyType, branch, fromDate,
+				toDate);
 		return getAllPartyLedger(chType);
 	}
 
@@ -899,8 +905,9 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 	}
 
 	@Override
-	public List<Map<String, Object>> getAllLedgerReport(Long orgId,String accountName, String branchCode, String fromDate, String toDate) {
-		Set<Object[]> chType = partyMasterRepo.getAllLedgerReport(orgId,accountName, branchCode, fromDate, toDate);
+	public List<Map<String, Object>> getAllLedgerReport(Long orgId, String accountName, String branchCode,
+			String fromDate, String toDate) {
+		Set<Object[]> chType = partyMasterRepo.getAllLedgerReport(orgId, accountName, branchCode, fromDate, toDate);
 		return getAllLedger(chType);
 	}
 
@@ -941,11 +948,12 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 		}
 		return List1;
 
-}
+	}
 
 	@Override
-	public List<Map<String, Object>> getMonthlyAndYearWiseData(Long orgId, String month,String finYear) {
-		Set<Object[]> chType = partyMasterRepo.getMonthlyAndYearWiseData(orgId,month,finYear);
+	public List<Map<String, Object>> getMonthlyAndYearWiseData(Long orgId, String month, String finYear,
+			String branchCode) {
+		Set<Object[]> chType = partyMasterRepo.getMonthlyAndYearWiseData(orgId, month, finYear, branchCode);
 		return getMonthlyAndYear(chType);
 	}
 
@@ -956,16 +964,17 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 			map.put("partyName", ch[0].toString());
 			map.put("amt", ch[1] != null ? ch[1].toString() : "");
 			map.put("partyShortName", ch[2] != null ? ch[2].toString() : "");
-			//map.put("preMnthAmt", ch[3].toString());
+			// map.put("preMnthAmt", ch[3].toString());
 			List1.add(map);
 		}
 		return List1;
 
-}
+	}
 
 	@Override
-	public List<Map<String, Object>> getSalesDistributionData(Long orgId, String month, String finYear) {
-		Set<Object[]> chType = partyMasterRepo.getSalesDistributionData(orgId,month,finYear);
+	public List<Map<String, Object>> getSalesDistributionData(Long orgId, String month, String finYear,
+			String branchCode) {
+		Set<Object[]> chType = partyMasterRepo.getSalesDistributionData(orgId, month, finYear, branchCode);
 		return getSalesDistribution(chType);
 	}
 
@@ -979,6 +988,6 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 		}
 		return List1;
 
-}
+	}
 
 }
