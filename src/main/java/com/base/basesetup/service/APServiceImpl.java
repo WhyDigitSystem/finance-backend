@@ -686,6 +686,12 @@ public class APServiceImpl implements APService {
 		return payfill;
 	}
 
+	@Override
+	public List<PaymentVO> getAllPaymentByOrgIdAndBranchCode(Long orgId, String branchCode, String partyName) {
+
+		return paymentRepo.getAllPaymentByOrgIdAndBranchCode(orgId,branchCode,partyName);
+	}
+
 //	@Override
 //	public List<Map<String, Object>> getarapoffsetadjustmentFillGrid(Long orgId, String partyCode, String branchCode,
 //			String docDate, String docId) {

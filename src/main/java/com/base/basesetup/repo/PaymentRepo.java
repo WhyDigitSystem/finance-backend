@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import com.base.basesetup.entity.PaymentVO;
+import com.base.basesetup.entity.ReceiptVO;
 
 @Repository
 public interface PaymentRepo extends JpaRepository<PaymentVO, Long> {
@@ -113,6 +114,9 @@ public interface PaymentRepo extends JpaRepository<PaymentVO, Long> {
 			+ "    a.chargableamt,\r\n"
 			+ "    a.tdsamt,n.settamt having SUM(d.actbillcurramt - COALESCE(h.actbillcurramt, 0)) - COALESCE(n.settamt, 0)>0")
 	Set<Object[]> getPaymentFillGrid(Long orgId, String partyCode,String branchCode);
+	
+	@Query(nativeQuery = true, value = "select * from payment where orgid=?1 and branchcode=?2 and cancel=0 and partyname=?3 and  onaccount > 0")
+	List<PaymentVO> getAllPaymentByOrgIdAndBranchCode(Long orgId, String branchCode,String partyName);
 
 
 }
