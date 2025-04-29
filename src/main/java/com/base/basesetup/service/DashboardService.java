@@ -38,5 +38,7 @@ public interface DashboardService {
 
 	List<Map<String, Object>> getTotaltdsFromCustomerBillWise(Long orgId, Long finYear, String branchCode,
 			String partyName);
+	
+	List<Map<String, Object>> getTrailBalanceReport(String startDate, String endDate, String branch,String message,String finYear);
 
 }
