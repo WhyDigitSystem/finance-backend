@@ -904,7 +904,7 @@ public class TransactionServiceImpl implements TransactionService {
 		fundTransferVO.setCorpAccount(fundTransferDTO.getCorpAccount());
 		fundTransferVO.setTransferTo(fundTransferDTO.getTransferTo());
 		fundTransferVO.setBranchAcc(fundTransferDTO.getBranchAcc());
-		fundTransferVO.setAmtBase(fundTransferDTO.getAmtBase());
+		fundTransferVO.setAmtBase(fundTransferDTO.getAmount().multiply(fundTransferDTO.getExRate()));
 		fundTransferVO.setNarration(fundTransferDTO.getNarration());
 
 	}

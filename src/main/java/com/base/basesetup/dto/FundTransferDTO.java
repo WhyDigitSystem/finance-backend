@@ -15,7 +15,7 @@ public class FundTransferDTO {
 	private Long id;
 	private String branch;
 	private String currency;
-	private String exRate;
+	private BigDecimal exRate;
 	private BigDecimal amount;
 	private Long orgId;
 	private String createdBy;
@@ -29,6 +29,6 @@ public class FundTransferDTO {
 	private String corpAccount;
 	private String transferTo;
 	private String branchAcc;
-	private BigDecimal amtBase;
+//	private BigDecimal amtBase;
 	private String narration;
 }
