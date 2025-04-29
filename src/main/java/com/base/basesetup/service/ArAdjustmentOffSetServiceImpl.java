@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.validation.Valid;
 
@@ -206,11 +207,11 @@ public class ArAdjustmentOffSetServiceImpl implements ArAdjustmentOffSetService 
 	
 	
 	@Override
-	public List<ReceiptVO> getAllCustomerReceiptByOrgIdAndBranchCode(Long orgId, String branchCode) {
+	public List<ReceiptVO> getAllCustomerReceiptByOrgIdAndBranchCode(Long orgId, String branchCode,String customerName) {
 	    List<ReceiptVO> receiptVO = new ArrayList<>();
 	    if (ObjectUtils.isNotEmpty(orgId) && ObjectUtils.isNotEmpty(branchCode)) {
-	        LOGGER.info("Successfully Received receipt BY OrgId: {} and BranchCode: {}", orgId, branchCode);
-	        receiptVO = receiptRepo.getAllReceiptByOrgIdAndBranchCode(orgId, branchCode);
+	        LOGGER.info("Successfully Received receipt BY OrgId: {} and BranchCode: {}", orgId, branchCode,customerName);
+	        receiptVO = receiptRepo.getAllReceiptByOrgIdAndBranchCode(orgId, branchCode,customerName);
 	    }
 	    return receiptVO;
 	}
@@ -373,5 +374,33 @@ public class ArAdjustmentOffSetServiceImpl implements ArAdjustmentOffSetService 
 	    apAdjustmentOffSetVO.setForexGainOrLoss(totalForexGainOrLoss.setScale(2, RoundingMode.HALF_UP));
 	    
 	    apAdjustmentOffSetVO.setApOffSetInvoiceDetailsVO(apOffSetInvoiceDetailsVOs);
+	}
+
+	@Override
+	public List<Map<String, Object>> getArOffsetFillgrid(Long orgId, String subLedgerCode, String docId, String branch,
+			String docDate) {
+		Set<Object[]> register = receiptRepo.getArOffsetFillgrid(orgId, subLedgerCode, docId,branch,docDate);
+		return getArOffset(register);
+	}
+
+	private List<Map<String, Object>> getArOffset(Set<Object[]> getRegister) {
+		List<Map<String, Object>> doctypeMappingDetails = new ArrayList<>();
+		for (Object[] sup : getRegister) {
+			
+			Map<String, Object> doctype = new HashMap<>();
+			doctype.put("docId", sup[0] != null ? sup[0].toString() : "");
+			doctype.put("docDate", sup[1] != null ? sup[1].toString() : "");
+			doctype.put("refNo", sup[2] != null ? sup[2].toString() : "");
+			doctype.put("refDate", sup[3] != null ? sup[3].toString() : "");
+			doctype.put("currency", sup[4] != null ? sup[4].toString() : "");
+			doctype.put("exRate", sup[5] != null ? sup[5].toString() : "");
+			doctype.put("amount", sup[6] != null ? new BigDecimal(sup[6].toString()) : BigDecimal.ZERO);
+			doctype.put("outstanding", sup[7] != null ? new BigDecimal(sup[7].toString()) : BigDecimal.ZERO);
+			doctype.put("settled", sup[8] != null ? new BigDecimal(sup[8].toString()) : BigDecimal.ZERO);
+
+			doctypeMappingDetails.add(doctype);
+		}
+
+		return doctypeMappingDetails;
 	}
 }

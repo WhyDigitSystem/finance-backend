@@ -144,7 +144,7 @@ public class ARServiceImpl implements ARService {
 				arapadjustments.setSubLedgerName(savedReceiptVO.getCustomerName());
 				arapadjustments.setAmount(savedReceiptInvDetails.getSettled());
 				arapadjustments.setSubLedgerName(savedReceiptVO.getCustomerName());
-
+				arapadjustments.setBaseAmt(savedReceiptInvDetails.getSettled());
 				PartyMasterVO partyMaster = partyMasterRepo.findByPartyCode(savedReceiptVO.getCustomerCode());
 
 				arapadjustments.setAccountName(partyMaster.getAccountType());
@@ -274,7 +274,7 @@ public class ARServiceImpl implements ARService {
 
 			receiptVO.setReceiptInvDetailsVO(receiptInvDetailsVOs);
 
-			if (netAmount.compareTo(receiptDTO.getReceiptAmt()) > 0) {
+			if (netAmount.compareTo(receiptDTO.getReceiptAmt()) >= 0) {
 				throw new ApplicationException("Total Settled Amount should not be greater than Receipt Amount");
 			}
 
