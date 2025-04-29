@@ -102,8 +102,8 @@ public interface ReceiptRepo extends JpaRepository<ReceiptVO, Long> {
 	Set<Object[]> findReciptFillGrid(Long orgId, String partyCode,String branchCode);
 
 
-	@Query(nativeQuery = true, value = "select * from receipt where orgid=?1 and branchcode=?2 and cancel=0")
-	List<ReceiptVO> getAllReceiptByOrgIdAndBranchCode(Long orgId, String branchCode);
+	@Query(nativeQuery = true, value = "select * from receipt where orgid=?1 and branchcode=?2 and cancel=0 and customerName=?3 and  onaccount > 0")
+	List<ReceiptVO> getAllReceiptByOrgIdAndBranchCode(Long orgId, String branchCode,String customerName);
 
 	@Query(nativeQuery =true,value ="SELECT r.orgid, r.branchcode, r.finyear, \r\n"
 
@@ -256,6 +256,31 @@ public interface ReceiptRepo extends JpaRepository<ReceiptVO, Long> {
 			+ "FROM receipt r\r\n"
 			+ "WHERE r.orgid = ?1 and r.finyear=?3 and ((month(docdate)=month(current_date()) and ?2='Month')or ?2 is null )")
 	Set<Object[]> getReceiptAmont(Long orgId, String month, String year);
+
+	@Query(nativeQuery =true,value = "SELECT \r\n"
+			+ "    a.docid, \r\n"
+			+ "    a.docdate, \r\n"
+			+ "    a.refno, \r\n"
+			+ "    a.refdate, \r\n"
+			+ "    a.currency, \r\n"
+			+ "    a.exrate,\r\n"
+		//	+ "   -- fn_getexrate(a.currency, :docdate) AS texrate,\r\n"
+			+ "    a.AMOUNT, \r\n"
+			+ "    (a.AMOUNT + a.baseamt) AS outstanding,\r\n"
+			+ "    (a.AMOUNT + a.baseamt) AS settled\r\n"
+			+ "    -- a.arapdetailsID \r\n"
+			+ "FROM \r\n"
+			+ "    arapadjustments a\r\n"
+			+ "WHERE \r\n"
+			+ "    a.SUBLEDGERcode = ?2\r\n"
+			+ "    AND (a.AMOUNT + a.baseamt) <> 0\r\n"
+			+ "    AND a.docdate <= ?5\r\n"
+			+ "    AND a.docid <> ?3\r\n"
+			+ "    AND a.branch = ?4\r\n"
+			+ "    AND a.orgid=?1\r\n"
+			+ "ORDER BY \r\n"
+			+ "    a.docdate, a.docid")
+	Set<Object[]> getArOffsetFillgrid(Long orgId, String subLedgerCode, String docId, String branch, String docDate);
 
 
 	@Query(nativeQuery =true,value ="SELECT \r\n"
