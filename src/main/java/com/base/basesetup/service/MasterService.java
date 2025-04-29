@@ -19,7 +19,6 @@ import com.base.basesetup.dto.EmployeeDTO;
 import com.base.basesetup.dto.GroupLedgerDTO;
 import com.base.basesetup.dto.HSNSacCodeDTO;
 import com.base.basesetup.dto.ItemMasterDTO;
-import com.base.basesetup.dto.ItemMasterDTO;
 import com.base.basesetup.dto.ListOfValuesDTO;
 import com.base.basesetup.dto.PartyMasterDTO;
 import com.base.basesetup.dto.SacCodeDTO;
@@ -36,6 +35,7 @@ import com.base.basesetup.entity.CostCenterVO;
 import com.base.basesetup.entity.EmployeeVO;
 import com.base.basesetup.entity.GroupLedgerVO;
 import com.base.basesetup.entity.HSNSacCodeVO;
+import com.base.basesetup.entity.ItemMasterVO;
 import com.base.basesetup.entity.ListOfValuesVO;
 import com.base.basesetup.entity.PartyMasterVO;
 import com.base.basesetup.entity.SacCodeVO;
@@ -239,6 +239,11 @@ public interface MasterService {
 	
 	Map<String, Object> updateCreateItemMaster(ItemMasterDTO itemMasterDTO) throws ApplicationException;
 
+	List<ItemMasterVO> getAllItemMasterByOrgId(Long orgId, String branchCode);
+
+	List<ItemMasterVO> getAllItemMasterById(Long id);
+
+	List<ItemMasterVO> getAllItemMasterByActive();
 	
 
 }

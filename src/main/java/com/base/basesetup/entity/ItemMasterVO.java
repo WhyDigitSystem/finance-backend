@@ -56,6 +56,7 @@ public class ItemMasterVO {
 	@Column(name = "screenname",length = 30)
 	private String screenName="ITEM MASTER";
 	
+  
 	@Column(name = "custpartno")
 	private String custPartNo;
 	@Column(name = "dupchk")
