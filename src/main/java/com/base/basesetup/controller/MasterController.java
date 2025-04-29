@@ -51,6 +51,7 @@ import com.base.basesetup.entity.CostCenterVO;
 import com.base.basesetup.entity.EmployeeVO;
 import com.base.basesetup.entity.GroupLedgerVO;
 import com.base.basesetup.entity.HSNSacCodeVO;
+import com.base.basesetup.entity.ItemMasterVO;
 import com.base.basesetup.entity.ListOfValuesVO;
 import com.base.basesetup.entity.PartyMasterVO;
 import com.base.basesetup.entity.SacCodeVO;
@@ -2259,5 +2260,85 @@ public class MasterController extends BaseController {
 		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
 		return ResponseEntity.ok().body(responseDTO);
 	}
+	
+	@GetMapping("/getAllItemMasterByOrgId")
+	public ResponseEntity<ResponseDTO> getAllItemMasterByOrgId(@RequestParam Long id, String branchCode) {
+		String methodName = "getAllItemMasterByOrgId()";
+		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+		String errorMsg = null;
+		Map<String, Object> responseObjectsMap = new HashMap<>();
+		ResponseDTO responseDTO = null;
+		List<ItemMasterVO> ItemMasterVO = new ArrayList<>();
+		try {
+			ItemMasterVO = masterService.getAllItemMasterByOrgId(id,branchCode);
+		} catch (Exception e) {
+			errorMsg = e.getMessage();
+			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+		}
+		if (StringUtils.isBlank(errorMsg)) {
+			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "ItemMaster information get successfully By Orgid");
+			responseObjectsMap.put("ItemMasterVO", ItemMasterVO);
+			responseDTO = createServiceResponse(responseObjectsMap);
+		} else {
+			responseDTO = createServiceResponseError(responseObjectsMap,
+					"ItemMaster information receive failed By Orgid", errorMsg);
+		}
+		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+		return ResponseEntity.ok().body(responseDTO);
 
+	}
+	
+	@GetMapping("/getAllItemMasterById")
+	public ResponseEntity<ResponseDTO> getAllItemMasterById(@RequestParam Long id) {
+		String methodName = "getAllItemMasterById()";
+		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+		String errorMsg = null;
+		Map<String, Object> responseObjectsMap = new HashMap<>();
+		ResponseDTO responseDTO = null;
+		List<ItemMasterVO> ItemMasterVO = new ArrayList<>();
+		try {
+			ItemMasterVO = masterService.getAllItemMasterById(id);
+		} catch (Exception e) {
+			errorMsg = e.getMessage();
+			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+		}
+		if (StringUtils.isBlank(errorMsg)) {
+			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "ItemMaster information get successfully By id");
+			responseObjectsMap.put("ItemMasterVO", ItemMasterVO);
+			responseDTO = createServiceResponse(responseObjectsMap);
+		} else {
+			responseDTO = createServiceResponseError(responseObjectsMap,
+					"ItemMaster information receive failed By id", errorMsg);
+		}
+		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+		return ResponseEntity.ok().body(responseDTO);
+
+	}
+	
+	@GetMapping("/getAllItemMasterByActive")
+	public ResponseEntity<ResponseDTO> getAllItemMasterByActive() {
+		String methodName = "getAllItemMasterByActive()";
+		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+		String errorMsg = null;
+		Map<String, Object> responseObjectsMap = new HashMap<>();
+		ResponseDTO responseDTO = null;
+		List<ItemMasterVO> ItemMasterVO = new ArrayList<>();
+		try {
+			ItemMasterVO = masterService.getAllItemMasterByActive();
+		} catch (Exception e) {
+			errorMsg = e.getMessage();
+			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+		}
+		if (StringUtils.isBlank(errorMsg)) {
+			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "ItemMaster information get successfully By active");
+			responseObjectsMap.put("ItemMasterVO", ItemMasterVO);
+			responseDTO = createServiceResponse(responseObjectsMap);
+		} else {
+			responseDTO = createServiceResponseError(responseObjectsMap,
+					"ItemMaster information receive failed By active", errorMsg);
+		}
+		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+		return ResponseEntity.ok().body(responseDTO);
+
+	}
 }

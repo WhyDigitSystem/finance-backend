@@ -2622,4 +2622,19 @@ public class MasterServiceImpl implements MasterService {
 
 	}
 
+	@Override
+	public List<ItemMasterVO> getAllItemMasterByOrgId(Long orgId, String branchCode) {
+		return itemMasterRepo.getAllItemMasterByOrgId(orgId, branchCode);
+	}
+
+	@Override
+	public List<ItemMasterVO> getAllItemMasterById(Long id) {
+		return itemMasterRepo.getAllItemMasterById(id);
+	}
+
+	@Override
+	public List<ItemMasterVO> getAllItemMasterByActive() {
+		return itemMasterRepo.getAllItemMasterByActive();
+	}
+
 }
