@@ -2247,7 +2247,7 @@ public class MasterController extends BaseController {
 		Map<String, Object> responseObjectsMap = new HashMap<>();
 		ResponseDTO responseDTO = null;
 		try {
-			Map<String, Object> itemMasterVO = masterService.updateCreateItemMaster(itemMasterDTO);
+			Map<String, Object>  itemMasterVO = masterService.updateCreateItemMaster(itemMasterDTO);
 			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, itemMasterVO.get("message"));
 			responseObjectsMap.put("ItemMasterVO",itemMasterVO.get("branchVO")) ;
 			responseDTO = createServiceResponse(responseObjectsMap);
