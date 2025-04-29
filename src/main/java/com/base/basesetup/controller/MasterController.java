@@ -2250,7 +2250,7 @@ public class MasterController extends BaseController {
 		try {
 			Map<String, Object>  itemMasterVO = masterService.updateCreateItemMaster(itemMasterDTO);
 			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, itemMasterVO.get("message"));
-			responseObjectsMap.put("ItemMasterVO",itemMasterVO.get("branchVO")) ;
+			responseObjectsMap.put("itemMasterVO",itemMasterVO.get("itemMasterVO")) ;
 			responseDTO = createServiceResponse(responseObjectsMap);
 		} catch (Exception e) {
 			errorMsg = e.getMessage();
