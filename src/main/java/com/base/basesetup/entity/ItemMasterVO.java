@@ -56,10 +56,7 @@ public class ItemMasterVO {
 	@Column(name = "screenname",length = 30)
 	private String screenName="ITEM MASTER";
 	
-	@Column(name = "createdon")
-	private LocalDate createdOn;
-	@Column(name = "modifiedon")
-	private LocalDate modifiedOn;
+	
 	@Column(name = "custpartno")
 	private String custPartNo;
 	@Column(name = "dupchk")

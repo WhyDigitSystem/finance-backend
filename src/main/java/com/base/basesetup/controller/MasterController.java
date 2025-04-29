@@ -33,13 +33,13 @@ import com.base.basesetup.dto.CostCenterDTO;
 import com.base.basesetup.dto.EmployeeDTO;
 import com.base.basesetup.dto.GroupLedgerDTO;
 import com.base.basesetup.dto.HSNSacCodeDTO;
+import com.base.basesetup.dto.ItemMasterDTO;
 import com.base.basesetup.dto.ListOfValuesDTO;
 import com.base.basesetup.dto.PartyMasterDTO;
 import com.base.basesetup.dto.ResponseDTO;
 import com.base.basesetup.dto.SacCodeDTO;
 import com.base.basesetup.dto.SetTaxRateDTO;
 import com.base.basesetup.dto.SubLedgerAccountDTO;
-import com.base.basesetup.dto.TaxInvoiceDTO;
 import com.base.basesetup.dto.TaxMasterDTO;
 import com.base.basesetup.dto.TcsMasterDTO;
 import com.base.basesetup.dto.TdsMasterDTO;
@@ -56,7 +56,6 @@ import com.base.basesetup.entity.PartyMasterVO;
 import com.base.basesetup.entity.SacCodeVO;
 import com.base.basesetup.entity.SetTaxRateVO;
 import com.base.basesetup.entity.SubLedgerAccountVO;
-import com.base.basesetup.entity.TaxInvoiceVO;
 import com.base.basesetup.entity.TaxMasterVO;
 import com.base.basesetup.entity.TcsMasterVO;
 import com.base.basesetup.entity.TdsMasterVO;
@@ -2234,6 +2233,31 @@ public class MasterController extends BaseController {
 		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
 		return ResponseEntity.ok().body(responseDTO);
 
+	}
+	
+	
+	// Item Master
+	
+	
+	@PutMapping("/updateCreateItemMaster")
+	public ResponseEntity<ResponseDTO> updateCreateItemMaster(@RequestBody ItemMasterDTO itemMasterDTO) {
+		String methodName = "createBranch()";
+		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+		String errorMsg = null;
+		Map<String, Object> responseObjectsMap = new HashMap<>();
+		ResponseDTO responseDTO = null;
+		try {
+			Map<String, Object> itemMasterVO = masterService.updateCreateItemMaster(itemMasterDTO);
+			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, itemMasterVO.get("message"));
+			responseObjectsMap.put("ItemMasterVO", itemMasterVO.get("branchVO"));
+			responseDTO = createServiceResponse(responseObjectsMap);
+		} catch (Exception e) {
+			errorMsg = e.getMessage();
+			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+			responseDTO = createServiceResponseError(responseObjectsMap, errorMsg, errorMsg);
+		}
+		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+		return ResponseEntity.ok().body(responseDTO);
 	}
 
 }

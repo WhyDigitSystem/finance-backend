@@ -25,9 +25,7 @@ public class ItemMasterDTO {
 	private boolean cancel=false;
 	private String cancelRemarks;
 	
-	
-	private LocalDate createdOn;
-	private LocalDate modifiedOn;
+	 
 	private String custPartNo;
 	private String dupChk;
 	private String hsnCode;
