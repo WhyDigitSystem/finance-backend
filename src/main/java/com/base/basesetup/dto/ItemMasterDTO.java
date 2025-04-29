@@ -25,7 +25,6 @@ public class ItemMasterDTO {
 	private boolean cancel=false;
 	private String cancelRemarks;
 	
-	 
 	private String custPartNo;
 	private String dupChk;
 	private String hsnCode;

@@ -356,4 +356,29 @@ public class DashboardServiceImpl implements DashboardService {
 		}
 		return List1;
 	}
+
+	@Override
+	public List<Map<String, Object>> getTrailBalanceReport(String startDate, String endDate, String branch,String message,String finYear) {
+		Set<Object[]> chType = receiptRepo.getTrailBalanceReport(startDate,endDate, branch, message, finYear);
+		return getTrailBalanceReport(chType);
+	}
+
+	private List<Map<String, Object>> getTrailBalanceReport(Set<Object[]> chType) {
+		List<Map<String, Object>> List1 = new ArrayList<>();
+		for (Object[] ch : chType) {
+			Map<String, Object> map = new HashMap<>();
+			map.put("groupName", ch[0] != null ? ch[0].toString() : "");
+			map.put("accountCode", ch[1] != null ? ch[1].toString() : "");
+			map.put("subledgerCode", ch[2] != null ? ch[2].toString() : "");
+			map.put("subledgerName", ch[3] != null ? ch[3].toString() : "");
+			map.put("odbamount", ch[4] != null ? new BigDecimal(ch[4].toString()) : BigDecimal.ZERO);
+			map.put("ocramount", ch[5] != null ? new BigDecimal(ch[5].toString()) : BigDecimal.ZERO);
+			map.put("tdbamount", ch[6] != null ? new BigDecimal(ch[6].toString()) : BigDecimal.ZERO);
+			map.put("tcramount", ch[7] != null ? new BigDecimal(ch[7].toString()) : BigDecimal.ZERO);
+			map.put("cdbamount", ch[8] != null ? new BigDecimal(ch[8].toString()) : BigDecimal.ZERO);
+			map.put("ccramount", ch[9] != null ? new BigDecimal(ch[9].toString()) : BigDecimal.ZERO);
+			List1.add(map);
+		}
+		return List1;
+	}
 }
