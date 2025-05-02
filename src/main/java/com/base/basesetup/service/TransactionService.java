@@ -118,6 +118,10 @@ public interface TransactionService {
 	List<GeneralJournalVO> getGeneralJournalByActive();
 
 	List<Map<String, Object>> getAccountNameFromGroup(Long orgId);
+	
+	List<Map<String, Object>> getAccountNameFromGroupLedgerGeneral(Long orgId);
+	
+	List<Map<String, Object>> getSubLedgerNameFromPartyMaster(Long orgId,String accountName);
 
 // DebitNote
 	List<DebitNoteVO> getAllDebitNoteByOrgId(Long orgId);
