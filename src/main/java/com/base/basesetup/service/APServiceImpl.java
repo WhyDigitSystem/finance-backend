@@ -244,7 +244,7 @@ public class APServiceImpl implements APService {
 			accountsDetailsVO1.setArapAmount(BigDecimal.ZERO);
 			accountsDetailsVO1.setBDebitAmount(BigDecimal.ZERO);
 			accountsDetailsVO1.setBCrAmount(paymentVO.getPaymentAmt());
-			accountsDetailsVO1.setBArapAmount(paymentVO.getPaymentAmt());
+			accountsDetailsVO1.setBArapAmount(BigDecimal.ZERO);
 			accountsDetailsVO1.setACurrency(paymentVO.getCurrency());
 			accountsDetailsVO1.setSubledgerName("None");
 			accountsDetailsVO1.setNArapAmount(BigDecimal.ZERO);
