@@ -400,7 +400,7 @@ public class ARServiceImpl implements ARService {
 			receiptVO.setReceiptInvDetailsVO(receiptInvDetailsVOs);
 
 
-			if (netAmount.compareTo(receiptDTO.getReceiptAmt()) >= 0) {
+			if (netAmount.compareTo(receiptDTO.getReceiptAmt()) > 0) {
 
 				throw new ApplicationException("Total Settled Amount should not be greater than Receipt Amount");
 			}
