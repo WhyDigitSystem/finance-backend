@@ -15,6 +15,8 @@ import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
+import org.springframework.format.annotation.DateTimeFormat;
+
 import com.base.basesetup.dto.CreatedUpdatedDate;
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
@@ -129,7 +131,7 @@ public class PaymentVO {
     private String updatedBy;
 
     @Column(name = "active")
-    private boolean active;
+    private boolean active =true;
 
     @Column(name = "cancel")
     private boolean cancel;
@@ -149,6 +151,18 @@ public class PaymentVO {
     @Column(name="onaccount")
     private BigDecimal onAccount;
     
+	@Column(name="approvestatus",length = 20)
+	private String approveStatus;
+	
+	@Column(name="approveby",length = 20)
+	private String approveBy;
+	
+	@Column(name = "status",length = 30)
+	private String status;
+    
+	@DateTimeFormat(pattern = "dd-MM-yyyy hh:mm:ss a")
+	@Column(name="approveon")
+	private String approveOn;
     
 	
 	@OneToMany(mappedBy = "paymentVO", cascade = CascadeType.ALL)

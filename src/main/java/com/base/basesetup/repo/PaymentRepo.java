@@ -118,5 +118,7 @@ public interface PaymentRepo extends JpaRepository<PaymentVO, Long> {
 	@Query(nativeQuery = true, value = "select * from payment where orgid=?1 and branchcode=?2 and cancel=0 and partyname=?3 and  onaccount > 0")
 	List<PaymentVO> getAllPaymentByOrgIdAndBranchCode(Long orgId, String branchCode,String partyName);
 
+	PaymentVO findByOrgIdAndIdAndDocId(Long orgId, Long id, String docId);
+
 
 }

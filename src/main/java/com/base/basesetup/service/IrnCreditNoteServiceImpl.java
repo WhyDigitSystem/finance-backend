@@ -478,6 +478,8 @@ public class IrnCreditNoteServiceImpl implements IrnCreditNoteService {
 	        accountsVO.setRefDate(irnCreditNoteVO.getDocDate());
 	        accountsVO.setCurrency(irnCreditNoteVO.getBillCurr());
 	        accountsVO.setExRate(irnCreditNoteVO.getBillCurrRate());
+	        accountsVO.setVDate(irnCreditNoteVO.getVdate());
+	        accountsVO.setVId(irnCreditNoteVO.getVid()); 
 	        accountsVO.setRemarks(irnCreditNoteVO.getCreditRemarks());
 	        accountsVO.setSupplierRefNo(irnCreditNoteVO.getSupplierRefNo());
 	        accountsVO.setSupplierRefDate(irnCreditNoteVO.getSupplierRefDate());
@@ -499,6 +501,7 @@ public class IrnCreditNoteServiceImpl implements IrnCreditNoteService {
 	        AccountsDetailsVO accountsDetailsVO = new AccountsDetailsVO();
 	        accountsDetailsVO.setNDebitAmount(BigDecimal.ZERO);
 	        accountsDetailsVO.setACategory("RECEIVABLE A/C");
+	        accountsDetailsVO.setAccountName("RECEIVABLE A/C");
 	        accountsDetailsVO.setSubLedgerCode(irnCreditNoteVO.getPartyCode());
 	        accountsDetailsVO.setDebitAmount(BigDecimal.ZERO);
 	        accountsDetailsVO.setNCreditAmount(irnCreditNoteVO.getTotalInvAmountLc());
@@ -581,9 +584,10 @@ public class IrnCreditNoteServiceImpl implements IrnCreditNoteService {
 			arapDetailsVO.setDocDate(savedAccountsVO.getDocDate());
 			arapDetailsVO.setAccCurrency(savedAccountsVO.getCurrency());
 			arapDetailsVO.setExRate(savedAccountsVO.getExRate());
+			arapDetailsVO.setOrgId(savedAccountsVO.getOrgId());
 			arapDetailsVO.setAccName(accountsDetailsVOs2.getAccountName());
 			arapDetailsVO.setGstFlag(accountsDetailsVOs2.getGstflag());
-			arapDetailsVO.setSubLedgerName(accountsDetailsVOs2.getAccountName());
+			arapDetailsVO.setSubLedgerName(accountsDetailsVOs2.getSubledgerName());
 			arapDetailsVO.setSalesType(savedAccountsVO.getSalesType());
 			arapDetailsVO.setNativeAmt(accountsDetailsVOs2.getArapAmount().multiply(new BigDecimal(-1)));
 			arapDetailsRepo.save(arapDetailsVO);
