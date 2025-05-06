@@ -34,6 +34,7 @@ import com.base.basesetup.repo.AccountsRepo;
 import com.base.basesetup.repo.ArapDetailsRepo;
 import com.base.basesetup.repo.ChargeTypeRequestRepo;
 import com.base.basesetup.repo.ChargesUrCostInvoiceGnaRepo;
+import com.base.basesetup.repo.CostInvoiceRepo;
 import com.base.basesetup.repo.DocumentTypeMappingDetailsRepo;
 import com.base.basesetup.repo.GroupLedgerRepo;
 import com.base.basesetup.repo.MultipleDocIdGenerationDetailsRepo;
@@ -45,6 +46,9 @@ import com.base.basesetup.repo.UrCostInvoiceGnaRepo;
 public class UrCostInvoiceGnaServiceImpl implements UrCostInvoiceGnaService {
 
 	public static final Logger LOGGER = LoggerFactory.getLogger(UrCostInvoiceGnaServiceImpl.class);
+	
+	@Autowired
+	CostInvoiceRepo costInvoiceRepo;
 
 	@Autowired
 	UrCostInvoiceGnaRepo urCostInvoiceGnaRepo;
@@ -542,11 +546,16 @@ public class UrCostInvoiceGnaServiceImpl implements UrCostInvoiceGnaService {
 			accountsDetailsVOs.add(accountsDetailsVO);	
 			
 			for (TdsUrCostInvoiceGnaVO tdsUrCostInvoiceGnaVO : urCostInvoiceGnaVO.getTdsUrCostInvoiceGnaVO()) {
+		        Set<Object[]> tdsLedgers = costInvoiceRepo.getTdsLedgerFromAccount(urCostInvoiceGnaVO.getOrgId());
+
+		        for (Object[] ledger : tdsLedgers) {
 				AccountsDetailsVO accountsDetailsVO1 = new AccountsDetailsVO();
 				accountsDetailsVO1.setNDebitAmount(BigDecimal.ZERO);
-				accountsDetailsVO1.setACategory(tdsUrCostInvoiceGnaVO.getSection());
-				accountsDetailsVO1.setAccountName(tdsUrCostInvoiceGnaVO.getSection());
+				accountsDetailsVO1.setAccountName(ledger[0].toString());
+				accountsDetailsVO1.setACategory(ledger[1].toString());
 				accountsDetailsVO1.setDebitAmount(BigDecimal.ZERO);
+				accountsDetailsVO1.setACurrency(urCostInvoiceGnaVO.getCurrency());
+				accountsDetailsVO1.setAExRate(urCostInvoiceGnaVO.getExRate());
 				accountsDetailsVO1.setNCreditAmount(tdsUrCostInvoiceGnaVO.getTotTdsWithAmt());
 				accountsDetailsVO1.setCreditAmount(tdsUrCostInvoiceGnaVO.getTotTdsWithAmt());
 				accountsDetailsVO1.setArapFlag(false);
@@ -560,6 +569,7 @@ public class UrCostInvoiceGnaServiceImpl implements UrCostInvoiceGnaService {
 				accountsDetailsVO1.setGstflag(3);
 				accountsDetailsVO1.setAccountsVO(accountsVO);
 				accountsDetailsVOs.add(accountsDetailsVO1);
+		        }
 
 			}
 
@@ -697,7 +707,7 @@ public class UrCostInvoiceGnaServiceImpl implements UrCostInvoiceGnaService {
 			arapDetailsVO.setExRate(savedAccountsVO.getExRate());
 			arapDetailsVO.setAccName(accountsDetailsVOs2.getAccountName());
 			arapDetailsVO.setGstFlag(accountsDetailsVOs2.getGstflag());
-			arapDetailsVO.setSubLedgerName(accountsDetailsVOs2.getAccountName());
+			arapDetailsVO.setSubLedgerName(accountsDetailsVOs2.getSubledgerName());
 			arapDetailsVO.setSalesType(savedAccountsVO.getSalesType());
 			arapDetailsVO.setNativeAmt(accountsDetailsVOs2.getArapAmount());
 			arapDetailsRepo.save(arapDetailsVO);

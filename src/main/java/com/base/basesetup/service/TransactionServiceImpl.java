@@ -978,11 +978,12 @@ public class TransactionServiceImpl implements TransactionService {
 
 	private void createUpdateJournalVOByGeneralJournalDTO(@Valid GeneralJournalDTO generalJournalDTO,
 			GeneralJournalVO generalJournalVO) throws ApplicationException {
+
+// Basic field mappings
 		generalJournalVO.setVoucherSubType(generalJournalDTO.getVoucherSubType());
 		generalJournalVO.setRemarks(generalJournalDTO.getRemarks().toUpperCase());
 		generalJournalVO.setCurrency(generalJournalDTO.getCurrency());
 		generalJournalVO.setExRate(generalJournalDTO.getExRate());
-
 		generalJournalVO.setRefNo(generalJournalDTO.getRefNo().toUpperCase());
 		generalJournalVO.setRefDate(generalJournalDTO.getRefDate());
 		generalJournalVO.setOrgId(generalJournalDTO.getOrgId());
@@ -991,42 +992,50 @@ public class TransactionServiceImpl implements TransactionService {
 		generalJournalVO.setFinYear(generalJournalDTO.getFinYear());
 
 		if (ObjectUtils.isNotEmpty(generalJournalDTO.getId())) {
-			List<ParticularsJournalVO> particularsJournalVOList = particularsJournalRepo
+			List<ParticularsJournalVO> existingEntries = particularsJournalRepo
 					.findByGeneralJournalVO(generalJournalVO);
-			particularsJournalRepo.deleteAll(particularsJournalVOList);
+			particularsJournalRepo.deleteAll(existingEntries);
 		}
 
 		BigDecimal totalDebitAmount = BigDecimal.ZERO;
 		BigDecimal totalCreditAmount = BigDecimal.ZERO;
 		List<ParticularsJournalVO> particularsJournalVOs = new ArrayList<>();
-		for (ParticularsJournalDTO particularsJournalDTO : generalJournalDTO.getParticularsJournalDTO()) {
-			ParticularsJournalVO particularsJournalVO = new ParticularsJournalVO();
 
-			particularsJournalVO.setAccountsName(particularsJournalDTO.getAccountsName());
-			particularsJournalVO.setSubledgerName(particularsJournalDTO.getSubledgerName());
-			particularsJournalVO.setSubLedgerCode(particularsJournalDTO.getSubLedgerCode());
-			if (particularsJournalDTO.getDebitAmount() != null
-					&& particularsJournalDTO.getDebitAmount().compareTo(BigDecimal.ZERO) != 0) {
-				particularsJournalVO.setDebitAmount(particularsJournalDTO.getDebitAmount());
-				particularsJournalVO.setCreditAmount(BigDecimal.ZERO);
+		for (ParticularsJournalDTO dto : generalJournalDTO.getParticularsJournalDTO()) {
+			ParticularsJournalVO vo = new ParticularsJournalVO();
+			vo.setAccountsName(dto.getAccountsName());
+			vo.setSubledgerName(dto.getSubledgerName());
+			vo.setSubLedgerCode(dto.getSubLedgerCode());
+
+			BigDecimal debit = dto.getDebitAmount() != null ? dto.getDebitAmount() : BigDecimal.ZERO;
+			BigDecimal credit = dto.getCreditAmount() != null ? dto.getCreditAmount() : BigDecimal.ZERO;
+
+			if (debit.compareTo(BigDecimal.ZERO) > 0 && credit.compareTo(BigDecimal.ZERO) == 0) {
+				vo.setDebitAmount(debit);
+				vo.setCreditAmount(BigDecimal.ZERO);
+			} else if (credit.compareTo(BigDecimal.ZERO) > 0 && debit.compareTo(BigDecimal.ZERO) == 0) {
+				vo.setCreditAmount(credit);
+				vo.setDebitAmount(BigDecimal.ZERO);
 			} else {
-				particularsJournalVO.setCreditAmount(particularsJournalDTO.getCreditAmount());
-				particularsJournalVO.setDebitAmount(BigDecimal.ZERO);
+				throw new ApplicationException(
+						"Each journal entry must have either debit or credit amount, not both or neither.");
 			}
-			totalCreditAmount = totalCreditAmount.add(particularsJournalVO.getCreditAmount());
-			totalDebitAmount = totalDebitAmount.add(particularsJournalVO.getDebitAmount());
-			particularsJournalVO.setNarration(particularsJournalDTO.getNarration());
-			particularsJournalVO.setGeneralJournalVO(generalJournalVO);
-			particularsJournalVOs.add(particularsJournalVO);
-		}
-		if (totalCreditAmount.equals(totalDebitAmount)) {
-			generalJournalVO.setTotalCreditAmount(totalCreditAmount);
-			generalJournalVO.setTotalDebitAmount(totalDebitAmount);
-		} else {
-			throw new ApplicationException("Total Debit Amount and Total Credit Amount Should be Equal");
-		}
-		generalJournalVO.setParticularsJournalVO(particularsJournalVOs);
 
+			totalDebitAmount = totalDebitAmount.add(vo.getDebitAmount());
+			totalCreditAmount = totalCreditAmount.add(vo.getCreditAmount());
+
+			vo.setNarration(dto.getNarration());
+			vo.setGeneralJournalVO(generalJournalVO);
+			particularsJournalVOs.add(vo);
+		}
+
+		if (totalCreditAmount.compareTo(totalDebitAmount) != 0) {
+			throw new ApplicationException("Total Debit Amount and Total Credit Amount should be equal.");
+		}
+
+		generalJournalVO.setTotalCreditAmount(totalCreditAmount);
+		generalJournalVO.setTotalDebitAmount(totalDebitAmount);
+		generalJournalVO.setParticularsJournalVO(particularsJournalVOs);
 	}
 
 	@Override
@@ -1379,9 +1388,6 @@ public class TransactionServiceImpl implements TransactionService {
 			paymentVoucherVO.setCreatedBy(paymentVoucherDTO.getCreatedBy());
 			paymentVoucherVO.setUpdatedBy(paymentVoucherDTO.getCreatedBy());
 
-			paymentVoucherVO.setUpdatedBy(paymentVoucherDTO.getCreatedBy());
-//			paymentVoucherVO.setCreatedBy(paymentVoucherDTO.getCreatedBy());
-
 		} else {
 			paymentVoucherVO = paymentVoucherRepo.findById(paymentVoucherDTO.getId())
 					.orElseThrow(() -> new ApplicationException("Invalid PaymentVoucher details"));
@@ -1400,7 +1406,7 @@ public class TransactionServiceImpl implements TransactionService {
 	}
 
 	private PaymentVoucherVO getPaymentVoucherVOFromPaymentVoucherDTO(@Valid PaymentVoucherDTO paymentVoucherDTO,
-			PaymentVoucherVO paymentVoucherVO) {
+			PaymentVoucherVO paymentVoucherVO) throws ApplicationException {
 		paymentVoucherVO.setVehicleSubType(paymentVoucherDTO.getVehicleSubType());
 		paymentVoucherVO.setReferenceNo(paymentVoucherDTO.getReferenceNo());
 		paymentVoucherVO.setCurrency(paymentVoucherDTO.getCurrency());
@@ -1429,6 +1435,9 @@ public class TransactionServiceImpl implements TransactionService {
 			ParticularsPaymentVoucherRepo.deleteAll(particularsPaymentVoucherVOs);
 		}
 
+		BigDecimal totalDebitAmount = BigDecimal.ZERO;
+		BigDecimal totalCreditAmount = BigDecimal.ZERO;
+
 		List<ParticularsPaymentVoucherVO> particularsPaymentVoucherVOs = new ArrayList<>();
 		for (ParticularsPaymentVoucherDTO particularsPaymentVoucherDTO : paymentVoucherDTO
 				.getParticularsPaymentVoucherDTO()) {
@@ -1437,15 +1446,40 @@ public class TransactionServiceImpl implements TransactionService {
 			particularsPaymentVoucherVO.setAccountName(particularsPaymentVoucherDTO.getAccountName());
 			particularsPaymentVoucherVO.setSubLedgerCode(particularsPaymentVoucherDTO.getSubLedgerCode());
 			particularsPaymentVoucherVO.setSubLedgerName(particularsPaymentVoucherDTO.getSubLedgerName());
-			particularsPaymentVoucherVO.setDebit(particularsPaymentVoucherDTO.getDebit());
-			particularsPaymentVoucherVO.setCredit(particularsPaymentVoucherDTO.getCredit());
+
+			BigDecimal debit = particularsPaymentVoucherDTO.getDebit() != null ? particularsPaymentVoucherDTO.getDebit()
+					: BigDecimal.ZERO;
+			BigDecimal credit = particularsPaymentVoucherDTO.getCredit() != null
+					? particularsPaymentVoucherDTO.getCredit()
+					: BigDecimal.ZERO;
+
+			if (debit.compareTo(BigDecimal.ZERO) > 0 && credit.compareTo(BigDecimal.ZERO) == 0) {
+				particularsPaymentVoucherVO.setDebit(debit);
+				particularsPaymentVoucherVO.setCredit(BigDecimal.ZERO);
+			} else if (credit.compareTo(BigDecimal.ZERO) > 0 && debit.compareTo(BigDecimal.ZERO) == 0) {
+				particularsPaymentVoucherVO.setCredit(credit);
+				particularsPaymentVoucherVO.setDebit(BigDecimal.ZERO);
+			} else {
+				throw new ApplicationException(
+						"Each journal entry must have either debit or credit amount, not both or neither.");
+			}
+
+			totalDebitAmount = totalDebitAmount.add(particularsPaymentVoucherVO.getDebit());
+			totalCreditAmount = totalCreditAmount.add(particularsPaymentVoucherVO.getCredit());
+
 			particularsPaymentVoucherVO.setNarration(particularsPaymentVoucherDTO.getNarration());
 			particularsPaymentVoucherVO.setPaymentVoucherVO(paymentVoucherVO);
-
 			particularsPaymentVoucherVOs.add(particularsPaymentVoucherVO);
-		}
-		paymentVoucherVO.setParticularsPaymentVoucherVO(particularsPaymentVoucherVOs);
 
+		}
+
+		if (totalCreditAmount.compareTo(totalDebitAmount) != 0) {
+			throw new ApplicationException("Total Debit Amount and Total Credit Amount should be equal.");
+		}
+
+		paymentVoucherVO.setTotalCreditAmount(totalCreditAmount);
+		paymentVoucherVO.setTotalDebitAmount(totalDebitAmount);
+		paymentVoucherVO.setParticularsPaymentVoucherVO(particularsPaymentVoucherVOs);
 		return paymentVoucherVO;
 
 	}
@@ -2448,17 +2482,16 @@ public class TransactionServiceImpl implements TransactionService {
 		if (ObjectUtils.isNotEmpty(tmsJobCardDTO.getId())) {
 			tmsJobCardVO = tmsJobCardRepo.findById(tmsJobCardDTO.getId())
 					.orElseThrow(() -> new ApplicationException("Invalid TmsJobCard details"));
-			
+
 			if (!tmsJobCardVO.getRefNo().equals(tmsJobCardDTO.getRefNo())) {
-				if (tmsJobCardRepo.existsByrefNoAndOrgId(tmsJobCardDTO.getRefNo(),
-						tmsJobCardDTO.getOrgId())) {
-			
+				if (tmsJobCardRepo.existsByrefNoAndOrgId(tmsJobCardDTO.getRefNo(), tmsJobCardDTO.getOrgId())) {
+
 					String errorMessage = String.format("This RefNo: %s already exists for this organization.",
 							tmsJobCardDTO.getRefNo());
 					throw new ApplicationException(errorMessage);
 				}
 				tmsJobCardVO.setRefNo(tmsJobCardDTO.getRefNo());
-				}
+			}
 			tmsJobCardVO.setUpdatedBy(tmsJobCardVO.getCreatedBy());
 			getJobCardVOFromJobCardDTO(tmsJobCardDTO, tmsJobCardVO);
 			message = "TmsJobCard Updated Successfully";
@@ -2475,10 +2508,9 @@ public class TransactionServiceImpl implements TransactionService {
 							tmsJobCardDTO.getFinYear(), tmsJobCardDTO.getBranchCode(), screenCode);
 			documentTypeMappingDetailsVO.setLastno(documentTypeMappingDetailsVO.getLastno() + 1);
 			documentTypeMappingDetailsRepo.save(documentTypeMappingDetailsVO);
-			
-			if (tmsJobCardRepo.existsByrefNoAndOrgId(tmsJobCardDTO.getRefNo(),
-					tmsJobCardDTO.getOrgId())) {
-		
+
+			if (tmsJobCardRepo.existsByrefNoAndOrgId(tmsJobCardDTO.getRefNo(), tmsJobCardDTO.getOrgId())) {
+
 				String errorMessage = String.format("This RefNo: %s already exists for this organization.",
 						tmsJobCardDTO.getRefNo());
 				throw new ApplicationException(errorMessage);
@@ -2504,7 +2536,7 @@ public class TransactionServiceImpl implements TransactionService {
 		tmsJobCardVO.setSalesCategory(tmsJobCardDTO.getSalesCategory());
 		tmsJobCardVO.setSalesPerson(tmsJobCardDTO.getSalesPerson());
 		tmsJobCardVO.setIncome(tmsJobCardDTO.getIncome());
-		tmsJobCardVO.setExpense(tmsJobCardDTO.getExpense().multiply(BigDecimal.valueOf(-1)));	
+		tmsJobCardVO.setExpense(tmsJobCardDTO.getExpense().multiply(BigDecimal.valueOf(-1)));
 		tmsJobCardVO.setProfit(tmsJobCardDTO.getIncome().subtract(tmsJobCardDTO.getExpense()));
 		tmsJobCardVO.setRemarks(tmsJobCardDTO.getRemarks());
 		tmsJobCardVO.setCreatedBy(tmsJobCardDTO.getCreatedBy());
@@ -2525,9 +2557,6 @@ public class TransactionServiceImpl implements TransactionService {
 		tmsJobCardVO.setRefNo(tmsJobCardDTO.getRefNo());
 		tmsJobCardVO.setRefDate(tmsJobCardDTO.getRefDate());
 		tmsJobCardVO.setService(tmsJobCardDTO.getService());
-
-
-
 
 		if (ObjectUtils.isNotEmpty(tmsJobCardDTO.getId())) {
 			List<CostCenterJobCardVO> costCenterTmsJobCardVO1 = costCenterTmsJobCardRepo.findByJobCardVO(tmsJobCardVO);
@@ -2570,8 +2599,8 @@ public class TransactionServiceImpl implements TransactionService {
 	}
 
 	@Override
-	public List<Map<String, Object>> getExponesByCostInvoice(Long orgId,String customerName) {
-		Set<Object[]> chType = tmsJobCardRepo.getExponesByCostInvoice(orgId ,customerName);
+	public List<Map<String, Object>> getExponesByCostInvoice(Long orgId, String customerName) {
+		Set<Object[]> chType = tmsJobCardRepo.getExponesByCostInvoice(orgId, customerName);
 		return getExponesByCost(chType);
 	}
 
@@ -2647,11 +2676,11 @@ public class TransactionServiceImpl implements TransactionService {
 
 	private void createUpdateAdjustmentJournalVOByAdjustmentJournalDTO(@Valid AdjustmentJournalDTO adjustmentJournalDTO,
 			AdjustmentJournalVO adjustmentJournalVO) throws ApplicationException {
+
 		adjustmentJournalVO.setAdjustmentType(adjustmentJournalDTO.getAdjustmentType());
 		adjustmentJournalVO.setRemarks(adjustmentJournalDTO.getRemarks().toUpperCase());
 		adjustmentJournalVO.setCurrency(adjustmentJournalDTO.getCurrency());
 		adjustmentJournalVO.setExRate(adjustmentJournalDTO.getExRate());
-
 		adjustmentJournalVO.setRefNo(adjustmentJournalDTO.getRefNo().toUpperCase());
 		adjustmentJournalVO.setRefDate(adjustmentJournalDTO.getRefDate());
 		adjustmentJournalVO.setSuppRefNo(adjustmentJournalDTO.getSuppRefNo().toUpperCase());
@@ -2662,51 +2691,54 @@ public class TransactionServiceImpl implements TransactionService {
 		adjustmentJournalVO.setFinYear(adjustmentJournalDTO.getFinYear());
 
 		if (ObjectUtils.isNotEmpty(adjustmentJournalVO.getId())) {
-			List<AccountParticularsVO> accountParticularsVOList = accountParticularsRepo
-					.findByAdjustmentJournalVO(adjustmentJournalVO);
-			accountParticularsRepo.deleteAll(accountParticularsVOList);
+			List<AccountParticularsVO> existing = accountParticularsRepo.findByAdjustmentJournalVO(adjustmentJournalVO);
+			accountParticularsRepo.deleteAll(existing);
 		}
 
 		BigDecimal totalDebitAmount = BigDecimal.ZERO;
 		BigDecimal totalCreditAmount = BigDecimal.ZERO;
 		List<AccountParticularsVO> accountParticularsVOs = new ArrayList<>();
-		for (AccountParticularsDTO accountParticularsDTO : adjustmentJournalDTO.getAccountParticularsDTO()) {
-			AccountParticularsVO accountParticularsVO = new AccountParticularsVO();
 
-			accountParticularsVO.setAccountsName(accountParticularsDTO.getAccountsName());
-			accountParticularsVO.setSubledgerName(accountParticularsDTO.getSubledgerName());
-			accountParticularsVO.setSubLedgerCode(accountParticularsDTO.getSubLedgerCode());
-			if (accountParticularsDTO.getDebitAmount() != null
-					&& accountParticularsDTO.getDebitAmount().compareTo(BigDecimal.ZERO) != 0) {
-				accountParticularsVO.setDebitAmount(accountParticularsDTO.getDebitAmount());
-				accountParticularsVO.setCreditAmount(BigDecimal.ZERO);
+		for (AccountParticularsDTO dto : adjustmentJournalDTO.getAccountParticularsDTO()) {
+			AccountParticularsVO vo = new AccountParticularsVO();
+			vo.setAccountsName(dto.getAccountsName());
+			vo.setSubledgerName(dto.getSubledgerName());
+			vo.setSubLedgerCode(dto.getSubLedgerCode());
+
+			BigDecimal debit = dto.getDebitAmount() != null ? dto.getDebitAmount() : BigDecimal.ZERO;
+			BigDecimal credit = dto.getCreditAmount() != null ? dto.getCreditAmount() : BigDecimal.ZERO;
+			BigDecimal debitBase = dto.getDebitBase() != null ? dto.getDebitBase() : BigDecimal.ZERO;
+			BigDecimal creditBase = dto.getCreditBase() != null ? dto.getCreditBase() : BigDecimal.ZERO;
+
+			if (debit.compareTo(BigDecimal.ZERO) > 0 && credit.compareTo(BigDecimal.ZERO) == 0) {
+				vo.setDebitAmount(debit);
+				vo.setCreditAmount(BigDecimal.ZERO);
+				vo.setDebitBase(debitBase);
+				vo.setCreditBase(BigDecimal.ZERO);
+			} else if (credit.compareTo(BigDecimal.ZERO) > 0 && debit.compareTo(BigDecimal.ZERO) == 0) {
+				vo.setCreditAmount(credit);
+				vo.setDebitAmount(BigDecimal.ZERO);
+				vo.setCreditBase(creditBase);
+				vo.setDebitBase(BigDecimal.ZERO);
 			} else {
-				accountParticularsVO.setCreditAmount(accountParticularsDTO.getCreditAmount());
-				accountParticularsVO.setDebitAmount(BigDecimal.ZERO);
-			}
-			totalCreditAmount = totalCreditAmount.add(accountParticularsVO.getCreditAmount());
-			totalDebitAmount = totalDebitAmount.add(accountParticularsVO.getDebitAmount());
-
-			if (accountParticularsDTO.getDebitBase() != null
-					&& accountParticularsDTO.getDebitBase().compareTo(BigDecimal.ZERO) != 0) {
-				accountParticularsVO.setDebitBase(accountParticularsDTO.getDebitBase());
-				accountParticularsVO.setCreditBase(BigDecimal.ZERO);
-			} else {
-				accountParticularsVO.setCreditBase(accountParticularsDTO.getDebitBase());
-				accountParticularsVO.setDebitBase(BigDecimal.ZERO);
+				throw new ApplicationException(
+						"Each account entry must have either debit or credit amount, not both or neither.");
 			}
 
-			accountParticularsVO.setAdjustmentJournalVO(adjustmentJournalVO);  
-			accountParticularsVOs.add(accountParticularsVO);
+			totalDebitAmount = totalDebitAmount.add(vo.getDebitAmount());
+			totalCreditAmount = totalCreditAmount.add(vo.getCreditAmount());
+
+			vo.setAdjustmentJournalVO(adjustmentJournalVO);
+			accountParticularsVOs.add(vo);
 		}
-		if (totalCreditAmount.equals(totalDebitAmount)) {
-			adjustmentJournalVO.setTotalCreditAmount(totalCreditAmount);
-			adjustmentJournalVO.setTotalDebitAmount(totalDebitAmount);
-		} else {
-			throw new ApplicationException("Total Debit Amount and Total Credit Amount Should be Equal");
+
+		if (totalDebitAmount.compareTo(totalCreditAmount) != 0) {
+			throw new ApplicationException("Total Debit Amount and Total Credit Amount should be equal.");
 		}
+
+		adjustmentJournalVO.setTotalDebitAmount(totalDebitAmount);
+		adjustmentJournalVO.setTotalCreditAmount(totalCreditAmount);
 		adjustmentJournalVO.setAccountParticularsVO(accountParticularsVOs);
-
 	}
 
 	@Override
@@ -3172,4 +3204,41 @@ public class TransactionServiceImpl implements TransactionService {
 		return details1;
 	}
 
+	@Override
+	public List<Map<String, Object>> getAccountNameFromGroupLedgerGeneral(Long orgId) {
+
+		Set<Object[]> result = generalJournalRepo.findAccountNameFromGroupLedgerGeneral(orgId);
+		return getAccountNameFromGroupLedger(result);
+	}
+
+	private List<Map<String, Object>> getAccountNameFromGroupLedger(Set<Object[]> result) {
+		List<Map<String, Object>> details1 = new ArrayList<>();
+		for (Object[] fs : result) {
+			Map<String, Object> part = new HashMap<>();
+			part.put("category", fs[0] != null ? fs[0].toString() : "");
+			part.put("accountName", fs[1] != null ? fs[1].toString() : "");
+
+			details1.add(part);
+		}
+		return details1;
+	}
+
+	@Override
+	public List<Map<String, Object>> getSubLedgerNameFromPartyMaster(Long orgId, String accountName) {
+		Set<Object[]> result = generalJournalRepo.findSubLedgerNameFromPartyMaster(orgId, accountName);
+		return getSubLedgerNameFromPartyMaster(result);
+	}
+
+	private List<Map<String, Object>> getSubLedgerNameFromPartyMaster(Set<Object[]> result) {
+		List<Map<String, Object>> details1 = new ArrayList<>();
+		for (Object[] fs : result) {
+			Map<String, Object> part = new HashMap<>();
+			part.put("subLedgerName", fs[0] != null ? fs[0].toString() : "");
+			part.put("subLedgerCode", fs[1] != null ? fs[1].toString() : "");
+
+			details1.add(part);
+		}
+		return details1;
+
+	}
 }

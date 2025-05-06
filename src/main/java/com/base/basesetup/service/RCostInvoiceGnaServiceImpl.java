@@ -23,6 +23,7 @@ import com.base.basesetup.dto.RCostInvoiceGnaDTO;
 import com.base.basesetup.dto.TdsRCostInvoiceGnaDTO;
 import com.base.basesetup.entity.AccountsDetailsVO;
 import com.base.basesetup.entity.AccountsVO;
+import com.base.basesetup.entity.ArapDetailsVO;
 import com.base.basesetup.entity.ChargeRCostInvoiceGnaVO;
 import com.base.basesetup.entity.DocumentTypeMappingDetailsVO;
 import com.base.basesetup.entity.GroupLedgerVO;
@@ -31,8 +32,11 @@ import com.base.basesetup.entity.PartyMasterVO;
 import com.base.basesetup.entity.RCostInvoiceGnaVO;
 import com.base.basesetup.entity.TdsRCostInvoiceGnaVO;
 import com.base.basesetup.exception.ApplicationException;
+import com.base.basesetup.repo.AccountsDetailsRepo;
 import com.base.basesetup.repo.AccountsRepo;
+import com.base.basesetup.repo.ArapDetailsRepo;
 import com.base.basesetup.repo.ChargeRCostInvoiceGnaRepo;
+import com.base.basesetup.repo.CostInvoiceRepo;
 import com.base.basesetup.repo.DocumentTypeMappingDetailsRepo;
 import com.base.basesetup.repo.GroupLedgerRepo;
 import com.base.basesetup.repo.MultipleDocIdGenerationDetailsRepo;
@@ -43,6 +47,9 @@ import com.base.basesetup.repo.TdsRCostInvoiceGnaRepo;
 public class RCostInvoiceGnaServiceImpl implements RCostInvoiceGnaService {
 
 	public static final Logger LOGGER = LoggerFactory.getLogger(RCostInvoiceGnaServiceImpl.class);
+	
+	@Autowired
+	CostInvoiceRepo costInvoiceRepo;
 
 	@Autowired
 	RCostInvoiceGnaRepo rCostInvoiceGnaRepo;
@@ -64,6 +71,13 @@ public class RCostInvoiceGnaServiceImpl implements RCostInvoiceGnaService {
 
 	@Autowired
 	AccountsRepo accountsRepo;
+	
+
+	@Autowired
+	ArapDetailsRepo arapDetailsRepo;
+	
+	@Autowired
+	AccountsDetailsRepo accountsDetailsRepo;
 
 	@Autowired
 	MultipleDocIdGenerationDetailsRepo multipleDocIdGenerationDetailsRepo;
@@ -637,11 +651,16 @@ public class RCostInvoiceGnaServiceImpl implements RCostInvoiceGnaService {
 			accountsDetailsVOs.add(accountsDetailsVO);
 
 			for (TdsRCostInvoiceGnaVO tdsRCostInvoiceGnaVO : rCostInvoiceGnaVO.getTdsRCostInvoiceGnaVO()) {
+		        Set<Object[]> tdsLedgers = costInvoiceRepo.getTdsLedgerFromAccount(rCostInvoiceGnaVO.getOrgId());
+
+		        for (Object[] ledger : tdsLedgers) {
 				AccountsDetailsVO accountsDetailsVO1 = new AccountsDetailsVO();
 				accountsDetailsVO1.setNDebitAmount(BigDecimal.ZERO);
-				accountsDetailsVO1.setACategory(tdsRCostInvoiceGnaVO.getSection());
-				accountsDetailsVO1.setAccountName(tdsRCostInvoiceGnaVO.getSection());
+				accountsDetailsVO1.setAccountName(ledger[0].toString());
+				accountsDetailsVO1.setACategory(ledger[1].toString());
 				accountsDetailsVO1.setDebitAmount(BigDecimal.ZERO);
+				accountsDetailsVO1.setACurrency(rCostInvoiceGnaVO.getCurrency());
+				accountsDetailsVO1.setAExRate(rCostInvoiceGnaVO.getExRate());
 				accountsDetailsVO1.setNCreditAmount(tdsRCostInvoiceGnaVO.getTotalTdsAmt());
 				accountsDetailsVO1.setCreditAmount(tdsRCostInvoiceGnaVO.getTotalTdsAmt());
 				accountsDetailsVO1.setArapFlag(false);
@@ -652,9 +671,10 @@ public class RCostInvoiceGnaServiceImpl implements RCostInvoiceGnaService {
 				accountsDetailsVO1.setSubledgerName("None");
 				accountsDetailsVO1.setSubLedgerCode("None");
 				accountsDetailsVO1.setNArapAmount(BigDecimal.ZERO);
-				accountsDetailsVO1.setGstflag(6);
+				accountsDetailsVO1.setGstflag(3);
 				accountsDetailsVO1.setAccountsVO(accountsVO);
 				accountsDetailsVOs.add(accountsDetailsVO1);
+		        }
 
 			}
 
@@ -693,9 +713,37 @@ public class RCostInvoiceGnaServiceImpl implements RCostInvoiceGnaService {
 				accountsDetailsVOs.add(gstAccountDetailsVO);
 			}
 			accountsVO.setAccountsDetailsVO(accountsDetailsVOs);
-
-			// Save AccountsVO and update TaxInvoiceVO
 			AccountsVO savedAccountsVO = accountsRepo.save(accountsVO);
+
+			int gstflag = 6;
+			AccountsDetailsVO accountsDetailsVOs2 = accountsDetailsRepo.findByAccountsVOAndGstflag(savedAccountsVO,
+					gstflag);
+			ArapDetailsVO arapDetailsVO = new ArapDetailsVO();
+			arapDetailsVO.setSourceTransid(accountsDetailsVOs2.getId());
+			arapDetailsVO.setCreatedBy(savedAccountsVO.getCreatedBy());
+			arapDetailsVO.setUpdatedBy(savedAccountsVO.getModifiedBy());
+			arapDetailsVO.setBranch(savedAccountsVO.getBranch());
+			arapDetailsVO.setBranchCode(savedAccountsVO.getBranchCode());
+			arapDetailsVO.setFinYear(savedAccountsVO.getFinYear());
+			arapDetailsVO.setRefNo(savedAccountsVO.getRefNo());
+			arapDetailsVO.setRefDate(savedAccountsVO.getRefDate());
+			arapDetailsVO.setSubLedgerCode(accountsDetailsVOs2.getSubLedgerCode());
+			arapDetailsVO.setCurrency(accountsDetailsVOs2.getACurrency());
+			arapDetailsVO.setExRate(accountsDetailsVOs2.getAExRate());
+			arapDetailsVO.setAmount(accountsDetailsVOs2.getArapAmount());
+			arapDetailsVO.setBaseAmt(accountsDetailsVOs2.getArapAmount());
+			arapDetailsVO.setDueDate(savedAccountsVO.getDueDate());
+			arapDetailsVO.setCreditDays(savedAccountsVO.getCreditDays());
+			arapDetailsVO.setDocId(savedAccountsVO.getDocId());
+			arapDetailsVO.setDocDate(savedAccountsVO.getDocDate());
+			arapDetailsVO.setAccCurrency(savedAccountsVO.getCurrency());
+			arapDetailsVO.setExRate(savedAccountsVO.getExRate());
+			arapDetailsVO.setAccName(accountsDetailsVOs2.getAccountName());
+			arapDetailsVO.setGstFlag(accountsDetailsVOs2.getGstflag());
+			arapDetailsVO.setSubLedgerName(accountsDetailsVOs2.getSubledgerName());
+			arapDetailsVO.setSalesType(savedAccountsVO.getSalesType());
+			arapDetailsVO.setNativeAmt(accountsDetailsVOs2.getArapAmount());
+			arapDetailsRepo.save(arapDetailsVO);
 			rCostInvoiceGnaVO.setPurVoucherNo(savedAccountsVO.getDocId());
 			rCostInvoiceGnaVO.setPurVoucherDate(savedAccountsVO.getDocDate());
 

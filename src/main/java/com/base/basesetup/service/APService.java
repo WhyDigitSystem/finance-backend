@@ -72,6 +72,8 @@ public interface APService {
 	
 //	List<Map<String, Object>> getarapoffsetadjustmentFillGrid(Long orgId, String partyCode,String branchCode, String docDate,String docId);
 	
+	List<PaymentVO> getAllPaymentByOrgIdAndBranchCode(Long orgId, String branchCode,String partyName);
+	
 	
 
 }
