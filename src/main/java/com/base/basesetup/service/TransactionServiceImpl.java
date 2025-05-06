@@ -2321,7 +2321,7 @@ public class TransactionServiceImpl implements TransactionService {
 							reconcileCashDTO.getFinYear(), reconcileCashDTO.getBranchCode(), screenCode);
 			documentTypeMappingDetailsVO.setLastno(documentTypeMappingDetailsVO.getLastno() + 1);
 			documentTypeMappingDetailsRepo.save(documentTypeMappingDetailsVO);
-
+  System.out.println(reconcileCashDTO.getCreatedBy());
 			reconcileCashVO.setUpdatedBy(reconcileCashDTO.getCreatedBy());
 			reconcileCashVO.setCreatedBy(reconcileCashDTO.getCreatedBy());
 			message = "ReconcileCash Created Successfully";

@@ -1,8 +1,6 @@
 package com.base.basesetup.entity;
 
 import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.time.LocalDate;
 
 import javax.persistence.Column;
 import javax.persistence.Embedded;
@@ -27,7 +25,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class ItemMasterVO {
-	
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "itemmastergen")
 	@SequenceGenerator(name = "itemmastergen", sequenceName = "itemmasterseq", initialValue = 1000000001, allocationSize = 1)
