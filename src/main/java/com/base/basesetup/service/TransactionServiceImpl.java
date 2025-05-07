@@ -3215,7 +3215,26 @@ public class TransactionServiceImpl implements TransactionService {
 		List<Map<String, Object>> details1 = new ArrayList<>();
 		for (Object[] fs : result) {
 			Map<String, Object> part = new HashMap<>();
-			part.put("category", fs[0] != null ? fs[0].toString() : "");
+			part.put("accountcode", fs[0] != null ? fs[0].toString() : "");
+			part.put("accountName", fs[1] != null ? fs[1].toString() : "");
+
+			details1.add(part);
+		}
+		return details1;
+	}
+	
+	@Override
+	public List<Map<String, Object>> getAccountNameFromGroupLedgerGeneralfordepositandwithdraw(Long orgId) {
+
+		Set<Object[]> result = generalJournalRepo.findAccountNameFromGroupLedgerGeneral(orgId);
+		return getAccountNameFromGroupLedgerGeneralfordepositandwithdraw(result);
+	}
+
+	private List<Map<String, Object>> getAccountNameFromGroupLedgerGeneralfordepositandwithdraw(Set<Object[]> result) {
+		List<Map<String, Object>> details1 = new ArrayList<>();
+		for (Object[] fs : result) {
+			Map<String, Object> part = new HashMap<>();
+			part.put("accountcode", fs[0] != null ? fs[0].toString() : "");
 			part.put("accountName", fs[1] != null ? fs[1].toString() : "");
 
 			details1.add(part);

@@ -310,5 +310,7 @@ public interface TransactionService {
 
 	List<Map<String, Object>> getAccountNamefromGroupLedgerforCV(Long orgId);
 
+	List<Map<String, Object>> getAccountNameFromGroupLedgerGeneralfordepositandwithdraw(Long orgId);
+
 
 }
