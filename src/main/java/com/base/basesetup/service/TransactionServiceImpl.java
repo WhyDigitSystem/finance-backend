@@ -2973,86 +2973,85 @@ public class TransactionServiceImpl implements TransactionService {
 			message = "BankingWithdrawal Created Successfully";
 		}
 
-		// Save withdrawal object first
+		// Save withdrawal first
 		bankingWithdrawalVO = bankingWithdrawalRepo.save(bankingWithdrawalVO);
 
-		// Fetch particulars
+		// Get withdrawal details (multiple grid rows)
 		List<WithdrawalParticularsVO> withdrawalParticularsVOs = withdrawalParticularsRepo
 		        .findByBankingWithdrawalVO(bankingWithdrawalVO);
 
+		// Generate doc ID and update last no
+		String screenCode1 = "AC";
+		String sourceScreenCode = bankingWithdrawalVO.getScreenCode();
+
+		String accountsDocId = accountsRepo.getApproveDocId(
+		        bankingWithdrawalVO.getOrgId(),
+		        bankingWithdrawalVO.getFinYear(),
+		        bankingWithdrawalVO.getBranchCode(),
+		        sourceScreenCode,
+		        screenCode1
+		);
+
+		MultipleDocIdGenerationDetailsVO multipleDocIdGenerationDetailsVO = multipleDocIdGenerationDetailsRepo
+		        .findByOrgIdAndFinYearAndBranchCodeAndSourceScreenCodeAndScreenCode(
+		                bankingWithdrawalVO.getOrgId(),
+		                bankingWithdrawalVO.getFinYear(),
+		                bankingWithdrawalVO.getBranchCode(),
+		                sourceScreenCode,
+		                screenCode1
+		        );
+		multipleDocIdGenerationDetailsVO.setLastno(multipleDocIdGenerationDetailsVO.getLastno() + 1);
+		multipleDocIdGenerationDetailsRepo.save(multipleDocIdGenerationDetailsVO);
+
+		// Create and save AccountsVO (only once)
+		AccountsVO accountsVO = new AccountsVO();
+		accountsVO.setDocId(accountsDocId);
+		accountsVO.setSourceScreen(bankingWithdrawalVO.getScreenName());
+		accountsVO.setSourceScreenCode(bankingWithdrawalVO.getScreenCode());
+		accountsVO.setSourceId(bankingWithdrawalVO.getId());
+		accountsVO.setCreatedBy(bankingWithdrawalVO.getCreatedBy());
+		accountsVO.setModifiedBy(bankingWithdrawalVO.getUpdatedBy());
+		accountsVO.setOrgId(bankingWithdrawalVO.getOrgId());
+		accountsVO.setBranch(bankingWithdrawalVO.getBranch());
+		accountsVO.setBranchCode(bankingWithdrawalVO.getBranchCode());
+		accountsVO.setModifiedon(bankingWithdrawalVO.getCommonDate().getModifiedon().toUpperCase());
+		accountsVO.setCreatedon(bankingWithdrawalVO.getCommonDate().getModifiedon().toUpperCase());
+		accountsVO.setRefNo(bankingWithdrawalVO.getDocId());
+		accountsVO.setRefDate(bankingWithdrawalVO.getDocDate());
+		accountsVO.setCurrency(bankingWithdrawalVO.getCurrency());
+		accountsVO.setExRate(bankingWithdrawalVO.getExchangeRate());
+		accountsVO.setRemarks(bankingWithdrawalVO.getRemarks());
+		accountsVO.setFinYear(bankingWithdrawalVO.getFinYear());
+		BigDecimal totalDepositAmount=BigDecimal.ZERO;
+//		accountsVO.setTotalDebitAmount(bankingWithdrawalVO.getWithdrawalAmount());
+		accountsVO.setTotalCreditAmount(bankingWithdrawalVO.getWithdrawalAmount());
+
+		accountsVO = accountsRepo.save(accountsVO);
+
+		List<AccountsDetailsVO> accountsDetailsVOs = new ArrayList<>();
+
+
+		AccountsDetailsVO creditEntry = new AccountsDetailsVO();
+		creditEntry.setNDebitAmount(BigDecimal.ZERO);
+		creditEntry.setAccountName(bankingWithdrawalVO.getBankAccount());
+		creditEntry.setSubLedgerCode("None");
+		creditEntry.setDebitAmount(BigDecimal.ZERO);
+		creditEntry.setNCreditAmount(bankingWithdrawalVO.getWithdrawalAmount());
+		creditEntry.setCreditAmount(bankingWithdrawalVO.getWithdrawalAmount());
+		creditEntry.setArapFlag(false);
+		creditEntry.setArapAmount(BigDecimal.ZERO);
+		creditEntry.setBDebitAmount(BigDecimal.ZERO);
+		creditEntry.setBCrAmount(bankingWithdrawalVO.getWithdrawalAmount());
+		creditEntry.setBArapAmount(BigDecimal.ZERO);
+		creditEntry.setACurrency(bankingWithdrawalVO.getCurrency());
+		creditEntry.setAExRate(bankingWithdrawalVO.getExchangeRate());
+		creditEntry.setSubledgerName("None");
+		creditEntry.setNArapAmount(BigDecimal.ZERO);
+		creditEntry.setAccountsVO(accountsVO);
+		accountsDetailsVOs.add(creditEntry);
+
+	
 		for (WithdrawalParticularsVO dtlsVO : withdrawalParticularsVOs) {
-
-		    String screenCode1 = "AC";
-		    String sourceScreenCode = bankingWithdrawalVO.getScreenCode();
-
-		    String accountsDocId = accountsRepo.getApproveDocId(
-		            bankingWithdrawalVO.getOrgId(),
-		            bankingWithdrawalVO.getFinYear(),
-		            bankingWithdrawalVO.getBranchCode(),
-		            sourceScreenCode,
-		            screenCode1
-		    );
-
-		    // Update document number
-		    MultipleDocIdGenerationDetailsVO multipleDocIdGenerationDetailsVO = multipleDocIdGenerationDetailsRepo
-		            .findByOrgIdAndFinYearAndBranchCodeAndSourceScreenCodeAndScreenCode(
-		                    bankingWithdrawalVO.getOrgId(),
-		                    bankingWithdrawalVO.getFinYear(),
-		                    bankingWithdrawalVO.getBranchCode(),
-		                    sourceScreenCode,
-		                    screenCode1
-		            );
-		    multipleDocIdGenerationDetailsVO.setLastno(multipleDocIdGenerationDetailsVO.getLastno() + 1);
-		    multipleDocIdGenerationDetailsRepo.save(multipleDocIdGenerationDetailsVO);
-
-		    // Create and save AccountsVO first
-		    AccountsVO accountsVO = new AccountsVO();
-		    accountsVO.setDocId(accountsDocId);
-		    accountsVO.setSourceScreen(bankingWithdrawalVO.getScreenName());
-		    accountsVO.setSourceScreenCode(bankingWithdrawalVO.getScreenCode());
-		    accountsVO.setSourceId(bankingWithdrawalVO.getId());
-		    accountsVO.setCreatedBy(bankingWithdrawalVO.getCreatedBy());
-		    accountsVO.setModifiedBy(bankingWithdrawalVO.getUpdatedBy());
-		    accountsVO.setOrgId(bankingWithdrawalVO.getOrgId());
-		    accountsVO.setBranch(bankingWithdrawalVO.getBranch());
-		    accountsVO.setBranchCode(bankingWithdrawalVO.getBranchCode());
-		    accountsVO.setModifiedon(bankingWithdrawalVO.getCommonDate().getModifiedon().toUpperCase());
-		    accountsVO.setCreatedon(bankingWithdrawalVO.getCommonDate().getModifiedon().toUpperCase());
-		    accountsVO.setRefNo(bankingWithdrawalVO.getDocId());
-		    accountsVO.setRefDate(bankingWithdrawalVO.getDocDate());
-		    accountsVO.setCurrency(bankingWithdrawalVO.getCurrency());
-		    accountsVO.setExRate(bankingWithdrawalVO.getExchangeRate());
-		    accountsVO.setRemarks(bankingWithdrawalVO.getRemarks());
-		    accountsVO.setFinYear(bankingWithdrawalVO.getFinYear());
-		    accountsVO.setTotalDebitAmount(bankingWithdrawalVO.getWithdrawalAmount());
-		    accountsVO.setTotalCreditAmount(bankingWithdrawalVO.getWithdrawalAmount());
-
-		    // ✅ Save AccountsVO before assigning it to AccountsDetailsVOs
-		    accountsVO = accountsRepo.save(accountsVO);
-
-		    List<AccountsDetailsVO> accountsDetailsVOs = new ArrayList<>();
-
-		    // CREDIT entry — bank
-		    AccountsDetailsVO creditEntry = new AccountsDetailsVO();
-		    creditEntry.setNDebitAmount(BigDecimal.ZERO);
-		    creditEntry.setAccountName(bankingWithdrawalVO.getBankAccount());
-		    creditEntry.setSubLedgerCode("None");
-		    creditEntry.setDebitAmount(BigDecimal.ZERO);
-		    creditEntry.setNCreditAmount(bankingWithdrawalVO.getWithdrawalAmount());
-		    creditEntry.setCreditAmount(bankingWithdrawalVO.getWithdrawalAmount());
-		    creditEntry.setArapFlag(false);
-		    creditEntry.setArapAmount(BigDecimal.ZERO);
-		    creditEntry.setBDebitAmount(BigDecimal.ZERO);
-		    creditEntry.setBCrAmount(bankingWithdrawalVO.getWithdrawalAmount());
-		    creditEntry.setBArapAmount(BigDecimal.ZERO);
-		    creditEntry.setACurrency(bankingWithdrawalVO.getCurrency());
-		    creditEntry.setAExRate(bankingWithdrawalVO.getExchangeRate());
-		    creditEntry.setSubledgerName("None");
-		    creditEntry.setNArapAmount(BigDecimal.ZERO);
-		    creditEntry.setAccountsVO(accountsVO);
-		    accountsDetailsVOs.add(creditEntry);
-
-		    // DEBIT entry — account
 		    AccountsDetailsVO debitEntry = new AccountsDetailsVO();
 		    debitEntry.setNDebitAmount(dtlsVO.getDebit());
 		    debitEntry.setAccountName(dtlsVO.getAccountsName());
@@ -3062,6 +3061,7 @@ public class TransactionServiceImpl implements TransactionService {
 		    debitEntry.setCreditAmount(BigDecimal.ZERO);
 		    debitEntry.setArapFlag(false);
 		    debitEntry.setArapAmount(BigDecimal.ZERO);
+		    totalDepositAmount=totalDepositAmount.add(dtlsVO.getDebit());
 		    debitEntry.setBDebitAmount(dtlsVO.getDebit());
 		    debitEntry.setBCrAmount(BigDecimal.ZERO);
 		    debitEntry.setBArapAmount(BigDecimal.ZERO);
@@ -3071,10 +3071,11 @@ public class TransactionServiceImpl implements TransactionService {
 		    debitEntry.setNArapAmount(BigDecimal.ZERO);
 		    debitEntry.setAccountsVO(accountsVO);
 		    accountsDetailsVOs.add(debitEntry);
-
-		   
-		    accountsDetailsRepo.saveAll(accountsDetailsVOs);
 		}
+		accountsVO.setTotalDebitAmount(totalDepositAmount);
+
+		accountsDetailsRepo.saveAll(accountsDetailsVOs);
+
 
 
 		Map<String, Object> response = new HashMap<>();
