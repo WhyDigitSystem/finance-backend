@@ -3,6 +3,7 @@ package com.base.basesetup.service;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -1106,6 +1107,13 @@ public class CostInvoiceServiceImpl implements CostInvoiceService {
 	    // Final invoice updates
 	    costInvoiceVO.setPurVoucherNo(savedAccountsVO.getDocId());
 	    costInvoiceVO.setPurVoucherDate(savedAccountsVO.getDocDate());
+	    
+		LocalDate vDate = costInvoiceVO.getVDate()!=null?costInvoiceVO.getVDate():costInvoiceVO.getDocDate();
+		int creditDays = costInvoiceVO.getCreditDays();
+		LocalDate dueDate = vDate.plusDays(creditDays);
+		// Save dueDate in your entity
+		savedAccountsVO.setDueDate(dueDate);
+		costInvoiceVO.setDueDate(dueDate);
 	    costInvoiceVO.setApproveStatus(action);
 	    costInvoiceVO.setApproveBy(actionBy);
 	    costInvoiceVO.setApproveOn(LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd-MM-yyyy hh:mm:ss a")).toUpperCase());

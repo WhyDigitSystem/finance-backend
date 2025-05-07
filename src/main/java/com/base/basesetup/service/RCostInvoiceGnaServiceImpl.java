@@ -2,6 +2,7 @@ package com.base.basesetup.service;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -747,6 +748,12 @@ public class RCostInvoiceGnaServiceImpl implements RCostInvoiceGnaService {
 			rCostInvoiceGnaVO.setPurVoucherNo(savedAccountsVO.getDocId());
 			rCostInvoiceGnaVO.setPurVoucherDate(savedAccountsVO.getDocDate());
 
+			LocalDate vDate = rCostInvoiceGnaVO.getVDate()!=null?rCostInvoiceGnaVO.getVDate():rCostInvoiceGnaVO.getDocDate();
+			int creditDays = rCostInvoiceGnaVO.getCreditDays();
+			LocalDate dueDate = vDate.plusDays(creditDays);
+			// Save dueDate in your entity
+			savedAccountsVO.setDueDate(dueDate);
+			rCostInvoiceGnaVO.setDueDate(dueDate);
 			rCostInvoiceGnaVO.setApproveStatus(action);
 			rCostInvoiceGnaVO.setApproveBy(actionBy);
 			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy hh:mm:ss a");

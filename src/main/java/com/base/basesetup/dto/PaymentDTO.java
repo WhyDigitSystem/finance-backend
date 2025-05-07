@@ -43,6 +43,7 @@ public class PaymentDTO {
 	private String createdBy;
 
 	private String finYear;
+	private String status;
 	
 
 	private List<PaymentInvDtlsDTO> paymentInvDtlsDTO;
