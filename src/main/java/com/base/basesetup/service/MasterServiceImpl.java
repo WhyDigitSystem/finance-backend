@@ -62,6 +62,7 @@ import com.base.basesetup.dto.TcsMaster2DTO;
 import com.base.basesetup.dto.TcsMasterDTO;
 import com.base.basesetup.dto.TdsMaster2DTO;
 import com.base.basesetup.dto.TdsMasterDTO;
+import com.base.basesetup.dto.UomDTO;
 import com.base.basesetup.entity.Account1VO;
 import com.base.basesetup.entity.Account2VO;
 import com.base.basesetup.entity.Account3VO;
@@ -98,6 +99,7 @@ import com.base.basesetup.entity.TcsMaster2VO;
 import com.base.basesetup.entity.TcsMasterVO;
 import com.base.basesetup.entity.TdsMaster2VO;
 import com.base.basesetup.entity.TdsMasterVO;
+import com.base.basesetup.entity.UomVO;
 import com.base.basesetup.exception.ApplicationException;
 import com.base.basesetup.repo.Account1Repo;
 import com.base.basesetup.repo.Account2Repo;
@@ -136,6 +138,7 @@ import com.base.basesetup.repo.TcsMaster2Repo;
 import com.base.basesetup.repo.TcsMasterRepo;
 import com.base.basesetup.repo.TdsMaster2Repo;
 import com.base.basesetup.repo.TdsMasterRepo;
+import com.base.basesetup.repo.UomRepo;
 
 import io.jsonwebtoken.io.IOException;
 
@@ -148,6 +151,9 @@ public class MasterServiceImpl implements MasterService {
 
 	@Autowired
 	ItemMasterRepo itemMasterRepo;
+	
+	@Autowired
+	UomRepo uomRepo;
 	
 	@Autowired
 	EmployeeRepo employeeRepo;
@@ -2596,7 +2602,7 @@ public class MasterServiceImpl implements MasterService {
 
 	private void createUpdateItemMasterVOByItemMasterDTO(@Valid ItemMasterDTO itemMasterDTO, ItemMasterVO itemMasterVO) {
 		itemMasterVO.setPartNo(itemMasterDTO.getPartNo());
-		itemMasterVO.setId(itemMasterDTO.getId());
+	//	itemMasterVO.setId(itemMasterDTO.getId());
 		itemMasterVO.setOrgId(itemMasterDTO.getOrgId());
 		itemMasterVO.setBranch(itemMasterDTO.getBranch());
 		itemMasterVO.setBranchCode(itemMasterDTO.getBranchCode());
@@ -2637,4 +2643,74 @@ public class MasterServiceImpl implements MasterService {
 		return itemMasterRepo.getAllItemMasterByActive();
 	}
 
+	// uom
+	
+	
+	@Override
+	public List<UomVO> getUomByOrgId(Long orgId) {
+		List<UomVO> uomVO = new ArrayList<>();
+		if (ObjectUtils.isNotEmpty(orgId)) {
+			LOGGER.info("Successfully Received Uom BY OrgId : {}", orgId);
+			uomVO = uomRepo.getUomByOrgId(orgId);
+		}
+		return uomVO;
+	}
+
+	@Override
+	public List<UomVO> getUomById(Long id) {
+		List<UomVO> uomVO = new ArrayList<>();
+		if (ObjectUtils.isNotEmpty(id)) {
+			LOGGER.info("Successfully Received Uom BY Id : {}", id);
+			uomVO = uomRepo.getUomById(id);
+		}
+		return uomVO;
+	}
+
+	@Override
+	public Map<String, Object> updateCreateUom(@Valid UomDTO uomDTO) throws ApplicationException {
+		String screenCode = "D";
+		UomVO uomVO = new UomVO();
+		String message;
+		if (ObjectUtils.isNotEmpty(uomDTO.getId())) {
+			uomVO = uomRepo.findById(uomDTO.getId()).orElseThrow(() -> new ApplicationException("Uom not found"));
+
+			if (!uomVO.getUomCode().equalsIgnoreCase(uomDTO.getUomCode())) {
+				if (uomRepo.existsByUomCodeAndOrgId(uomDTO.getUomCode(), uomDTO.getOrgId())) {
+					String errorMessage = String.format("The UomCode: %s  already exists This Organization.",
+							uomDTO.getUomCode());
+					throw new ApplicationException(errorMessage);
+				}
+			}
+
+			uomVO.setUpdatedBy(uomDTO.getCreatedBy());
+			createUpdateUomVOByUomDTO(uomDTO, uomVO);
+			message = "Uom  Updated Successfully";
+		} else {
+
+			if (uomRepo.existsByUomCodeAndOrgId(uomDTO.getUomCode(), uomDTO.getOrgId())) {
+				String errorMessage = String.format("The UomCode: %s  already exists This Organization.",
+						uomDTO.getUomCode());
+				throw new ApplicationException(errorMessage);
+			}
+			uomVO.setCreatedBy(uomDTO.getCreatedBy());
+			uomVO.setUpdatedBy(uomDTO.getCreatedBy());
+			createUpdateUomVOByUomDTO(uomDTO, uomVO);
+			message = "Uom Created Successfully";
+		}
+
+		uomRepo.save(uomVO);
+		Map<String, Object> response = new HashMap<>();
+		response.put("uomVO", uomVO);
+		response.put("message", message);
+		return response;
+	}
+
+	private void createUpdateUomVOByUomDTO(@Valid UomDTO uomDTO, UomVO uomVO) throws ApplicationException {
+		uomVO.setUomCode(uomDTO.getUomCode());
+		uomVO.setUomDesc(uomDTO.getUomDesc());
+		uomVO.setOrgId(uomDTO.getOrgId());
+		uomVO.setActive(uomDTO.isActive());
+
+	}
+	
 }

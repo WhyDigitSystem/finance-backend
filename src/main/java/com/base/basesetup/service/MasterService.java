@@ -27,6 +27,7 @@ import com.base.basesetup.dto.SubLedgerAccountDTO;
 import com.base.basesetup.dto.TaxMasterDTO;
 import com.base.basesetup.dto.TcsMasterDTO;
 import com.base.basesetup.dto.TdsMasterDTO;
+import com.base.basesetup.dto.UomDTO;
 import com.base.basesetup.entity.AccountVO;
 import com.base.basesetup.entity.BranchVO;
 import com.base.basesetup.entity.ChargeTypeRequestVO;
@@ -44,6 +45,7 @@ import com.base.basesetup.entity.SubLedgerAccountVO;
 import com.base.basesetup.entity.TaxMasterVO;
 import com.base.basesetup.entity.TcsMasterVO;
 import com.base.basesetup.entity.TdsMasterVO;
+import com.base.basesetup.entity.UomVO;
 import com.base.basesetup.exception.ApplicationException;
 
 import io.jsonwebtoken.io.IOException;
@@ -245,5 +247,12 @@ public interface MasterService {
 
 	List<ItemMasterVO> getAllItemMasterByActive();
 	
+	// UOM
+
+	List<UomVO> getUomByOrgId(Long orgId);
+
+	List<UomVO> getUomById(Long id);
+
+	Map<String, Object> updateCreateUom(@Valid UomDTO uomDTO) throws ApplicationException;
 
 }
