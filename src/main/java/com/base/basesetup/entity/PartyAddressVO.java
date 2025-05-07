@@ -48,13 +48,13 @@ public class PartyAddressVO {
     @Column(name = "addresstype", length = 30)
     private String addressType;
 
-    @Column(name = "addressline1", length = 50)
+    @Column(name = "addressline1", length = 200)
     private String addressLine1;
 
-    @Column(name = "addressline2", length = 50)
+    @Column(name = "addressline2", length = 200)
     private String addressLine2;
 
-    @Column(name = "addressline3", length = 50)
+    @Column(name = "addressline3", length = 200)
     private String addressLine3;
 
     @Column(name = "pincode") 

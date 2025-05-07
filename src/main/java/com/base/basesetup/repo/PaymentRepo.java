@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import com.base.basesetup.entity.PaymentVO;
+import com.base.basesetup.entity.ReceiptVO;
 
 @Repository
 public interface PaymentRepo extends JpaRepository<PaymentVO, Long> {
@@ -15,14 +16,16 @@ public interface PaymentRepo extends JpaRepository<PaymentVO, Long> {
 	@Query(value = "Select * from payment where paymentid=?1", nativeQuery = true)
 	List<PaymentVO> getPaymentById(Long id);
 
-	@Query(value = "select * from payment  where orgid=?1 ", nativeQuery = true)
-	List<PaymentVO> getAllPaymentByOrgId(Long orgId);
+	@Query(value = "select * from payment  where orgid=?1  and finyear=?2 and branchcode=?3", nativeQuery = true)
+	List<PaymentVO> getAllPaymentByOrgId(Long orgId,String finYear, String branchCode);
 
 	@Query(nativeQuery = true, value = "select a.docid,a.docdate,a.partyname,a.bankcashacc,a.receiptamt,a.bankcharges,a.tdsamt,a.chequebank,a.chequeno,b.invno,b.invdate,b.refno,b.refdate,b.amount,b.outstanding,b.settled,a.createdon,a.createdby from payment a, paymentinvdtls b where a.paymentid=b.paymentid and a.orgid=?1 and a.docdate BETWEEN ?2 AND ?3 and a.partyname =?4")
 	Set<Object[]> findAllPaymentRegister(Long orgId, String fromDate, String toDate, String subLedgerName);
 
-	@Query(nativeQuery = true, value = "select partyname,partycode from partymaster where orgid=?1 and active=1 and partytype='VENDOR'")
-	Set<Object[]> findPartyNameAndCodeForPayment(Long orgId);
+	@Query(nativeQuery = true, value = "SELECT p.partyname,p.partycode,c.transcurrency,s.statecode,s.gstin FROM partymaster p,partystate s ,partycurrencymapping c\r\n"
+			+ "WHERE p.partymasterid = s.partymasterid and c.partymasterid = p.partymasterid  and p.orgid =?1\r\n"
+			+ "AND p.active = 1 and p.partytype='VENDOR' and p.partyname=?2")
+	Set<Object[]> findPartyNameAndCodeForPayment(Long orgId, String partyName);
 
 	@Query(nativeQuery = true, value = "SELECT a.currency AS incurrency FROM partymaster a WHERE a.orgid = ?1 AND a.branch = ?2 AND a.branchcode = ?3  AND a.finyear = ?4 \r\n"
 			+ "  AND a.partyname = ?5 AND a.active = 1 UNION SELECT b.transcurrency AS incurrency FROM partymaster a JOIN partycurrencymapping b \r\n"
@@ -39,5 +42,83 @@ public interface PaymentRepo extends JpaRepository<PaymentVO, Long> {
 
 	@Query(nativeQuery = true, value = "select concat(prefixfield,lpad(lastno,5,0)) AS docid from documenttypemappingdetails where orgid=?1 and finyear=?2 and branchcode=?3 and screencode=?4")
 	String getPaymentDocId(Long orgId, String finYear, String branchCode, String screenCode);
+
+
+	@Query(nativeQuery =true,value ="select p.partyname,p.partycode from partymaster p where orgid=?1  and p.partytype='VENDOR' group by p.partyname,p.partycode")
+	Set<Object[]> findPartyNameAndPartyCode(Long orgId);
+
+	@Query(nativeQuery = true, value = "select * from payment where orgid=?1 and branchcode=?2 and cancel=0")
+	List<PaymentVO> getAllVendorPaymentByOrgIdAndBranchCode(Long orgId, String branchCode);
+
+	@Query(nativeQuery =true,value ="SELECT SUM(r.paymentamt) AS paymentamt\r\n"
+			+ "FROM payment r\r\n"
+			+ "WHERE r.orgid = ?1 and r.finyear=?3 and ((month(docdate)=month(current_date()) and '?2'='Month')or ?2 is null )")
+	Set<Object[]> getPaymentAmont(Long orgId, String month, String year);
+	
+	
+	@Query(nativeQuery =true,value = "with n AS (\r\n"
+			+ "    SELECT \r\n"
+			+ "        orgid, \r\n"
+			+ "        refno, \r\n"
+			+ "        SUM(amount) AS settamt \r\n"
+			+ "    FROM arapadjustments \r\n"
+			+ "    WHERE amount > 0 \r\n"
+			+ "    GROUP BY orgid, refno\r\n"
+			+ "),\r\n"
+			+ " b AS (\r\n"
+			+ "    SELECT \r\n"
+			+ "        subledgercode, \r\n"
+			+ "        refno AS docid, \r\n"
+			+ "        SUM(amount) AS settled\r\n"
+			+ "    FROM arapadjustments\r\n"
+			+ "    WHERE CANCEL = 'F'\r\n"
+			+ "    GROUP BY subledgercode, refno \r\n"
+			+ "    HAVING SUM(amount) > 0\r\n"
+			+ ")\r\n"
+			+ "select ROW_NUMBER() OVER () AS id,\r\n"
+			+ "    a.branch,\r\n"
+			+ "    a.subledgercode,\r\n"
+			+ "    c.vid,\r\n"
+			+ "    c.vdate,\r\n"
+			+ "    a.refno,\r\n"
+			+ "    a.refdate,\r\n"
+			+ "    a.supprefno,\r\n"
+			+ "    a.suprefdate,\r\n"
+			+ "    a.acccurrency,\r\n"
+			+ "    d.exrate,\r\n"
+			+ "    SUM(d.totchargeslcamt - COALESCE(h.totchargeslcamt, 0)) AS totalAmount,\r\n"
+			+ "    SUM(d.actbillcurramt - COALESCE(h.actbillcurramt, 0)) - COALESCE(n.settamt, 0) AS invamount,\r\n"
+			+ "    a.chargableamt,\r\n"
+			+ "    SUM(d.gstinputlcamt - COALESCE(h.gstinputlcamt, 0)) AS gstamount from arapdetails a JOIN costinvoice d \r\n"
+			+ "    ON a.refno = d.docid  LEFT JOIN costdebitnote h \r\n"
+			+ "    ON d.docid = h.orginbill and h.approvestatus='Approved' JOIN accounts c \r\n"
+			+ "    ON a.docid = c.docid left JOIN n \r\n"
+			+ "    ON n.orgid = a.orgid \r\n"
+			+ "    AND n.refno = c.vid LEFT JOIN b \r\n"
+			+ "    ON a.subledgercode = b.subledgercode \r\n"
+			+ "    AND a.docid = b.docid WHERE \r\n"
+			+ "    d.branchcode = ?3 \r\n"
+			+ "    AND a.CANCEL = 'F'\r\n"
+			+ "    AND a.subledgercode = ?2\r\n"
+			+ "    AND a.orgid = ?1  group by\r\n"
+			+ "    a.branch,\r\n"
+			+ "    a.subledgercode,\r\n"
+			+ "    c.vid,\r\n"
+			+ "    c.vdate,\r\n"
+			+ "    a.refno,\r\n"
+			+ "    a.refdate,\r\n"
+			+ "    a.supprefno,\r\n"
+			+ "    a.suprefdate,\r\n"
+			+ "    a.acccurrency,\r\n"
+			+ "    d.exrate,\r\n"
+			+ "    a.chargableamt,\r\n"
+			+ "    a.tdsamt,n.settamt having SUM(d.actbillcurramt - COALESCE(h.actbillcurramt, 0)) - COALESCE(n.settamt, 0)>0")
+	Set<Object[]> getPaymentFillGrid(Long orgId, String partyCode,String branchCode);
+	
+	@Query(nativeQuery = true, value = "select * from payment where orgid=?1 and branchcode=?2 and cancel=0 and partyname=?3 and  onaccount > 0")
+	List<PaymentVO> getAllPaymentByOrgIdAndBranchCode(Long orgId, String branchCode,String partyName);
+
+	PaymentVO findByOrgIdAndIdAndDocId(Long orgId, Long id, String docId);
+
 
 }

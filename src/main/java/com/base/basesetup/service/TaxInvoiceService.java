@@ -3,6 +3,7 @@ package com.base.basesetup.service;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
@@ -46,6 +47,13 @@ public interface TaxInvoiceService {
 	List<Map<String, Object>> getCreditDaysFromCustomer(Long orgId, String customerCode);
 
 	List<Map<String, Object>> getAllJobNoByActice(Long orgId);
+
+	List<Map<String, Object>> getJobCardForTaxInvoice(Long orgId, String partyCode);
+
+	List<Map<String, Object>> getReportDetailsForSalesRegister(String fromDate, String toDate,
+			Long orgId, String branchCode, String partyCode);
+
+	List<Map<String, Object>> getDsahboardRevenue(Long orgId, String billMonth, String finYear);
 
 
 

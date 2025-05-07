@@ -1,4 +1,4 @@
-package com.base.basesetup.entity;
+	package com.base.basesetup.entity;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -130,11 +130,11 @@ public class ReceiptVO {
 	@Column(name = "receiptType1", length = 20)
 	private String receiptType1;
 
-	@Column(name = "chequeutino", length = 10)
+	@Column(name = "chequeutino", length = 100)
 	private String chequeUtiNo;
 
-	@Column(name = "chequeutidt")
-	private LocalDate chequeUtiDt;
+	@Column(name = "chequeutidate")
+	private LocalDate chequeUtiDate;
 
 	@Column(name = "receivedfrom", length = 100)
 	private String receivedFrom;
@@ -152,10 +152,8 @@ public class ReceiptVO {
 	@Column(name = "netamount", precision = 10, scale = 2)
 	private BigDecimal netAmount;
 	
-	@JsonGetter("active")
-	public String getActive() {
-		return active ? "Active" : "In-Active";
-	}
+	@Column(name = "onaccount", precision = 10, scale = 2)
+	private BigDecimal onAccount;
 
 	@OneToMany(mappedBy = "receiptVO", cascade = CascadeType.ALL)
 	@JsonManagedReference

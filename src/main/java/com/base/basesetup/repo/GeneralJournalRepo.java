@@ -28,7 +28,13 @@ public interface GeneralJournalRepo extends JpaRepository<GeneralJournalVO, Long
 
 	@Query(nativeQuery = true, value = "select accountgroupname from groupledger where orgid=?1 and type='account'  and  active=1 and category not in('TAX','PAYABLE A/C','RECEIVABLE A/C')")
 	Set<Object[]> findAccountNameFromGroup( Long orgId);
+	
+	@Query(nativeQuery = true, value = "select  distinct(category),case when category ='RECEIVABLE A/C'  then 'RECEIVABLE'  when category = 'PAYABLE A/C' then 'PAYABLE' else 'OTHERS' end as accountname from groupledger a0 \r\n"
+			+ "where  a0.Active=1 and a0.category not in ('TAX','')and a0.category is not null and a0.orgid=?1")
+	Set<Object[]> findAccountNameFromGroupLedgerGeneral(Long orgId);
 
+	@Query(nativeQuery = true, value = "select a1.partyshortname, a1.partycode from partymaster a1 where a1.active=1 and a1.orgid=?1 and  a1.accounttype =?2 order by a1.partyname")
+	Set<Object[]> findSubLedgerNameFromPartyMaster(Long orgId,String accountName);
 
 
 }

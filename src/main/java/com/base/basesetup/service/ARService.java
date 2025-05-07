@@ -17,7 +17,7 @@ import com.base.basesetup.exception.ApplicationException;
 public interface ARService {
 
 	// Receipt
-	List<ReceiptVO> getAllReceiptReceivableByOrgId(Long orgId);
+	List<ReceiptVO> getAllReceiptReceivableByOrgId(Long orgId, String finYear, String branchCode);
 
 	Map<String, Object> updateCreateReceiptReceivable(@Valid ReceiptDTO receiptReceivableDTO)
 			throws ApplicationException;
@@ -47,4 +47,8 @@ public interface ARService {
 // 	ReceiptRegister
 	List<Map<String, Object>> getAllReceiptRegister(Long orgId,
 			String fromDate, String toDate, String subLedgerName);
+
+	List<Map<String, Object>> getReciptFillGrid(Long orgId, String partyCode, String branchCode);
+
+
 }

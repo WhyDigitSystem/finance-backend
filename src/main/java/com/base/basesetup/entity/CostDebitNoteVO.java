@@ -14,6 +14,7 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -118,6 +119,12 @@ public class CostDebitNoteVO {
 //	private String costType;
 	@Column(name = "approved")
 	private boolean approved;
+	@Column(name = "vid", length = 50)
+	private String vId;
+	@Column(name = "vdate")
+	private LocalDate vDate;
+	@Column(name="amountinwords")
+	private String amountInWords;
 
 //	SUMMARY
 	@Column(name = "totchargesbillcurramt", precision = 10, scale = 2)
@@ -174,10 +181,17 @@ public class CostDebitNoteVO {
 //	private String partyAddType;
 
 	// summary
+	
+	@Transient
+	List<ChargerCostDebitNoteVO> gstLines;
+
+	@Transient
+	List<ChargerCostDebitNoteVO> normalCharges;
+
 
 	@OneToMany(mappedBy = "costDebitNoteVO", cascade = CascadeType.ALL)
 	@JsonManagedReference
-	List<ChargerCostDebitNoteVO> costDebitChargesVO;
+	List<ChargerCostDebitNoteVO> chargerCostDebitNoteVO;
 
 	@OneToMany(mappedBy = "costDebitNoteVO", cascade = CascadeType.ALL)
 	@JsonManagedReference

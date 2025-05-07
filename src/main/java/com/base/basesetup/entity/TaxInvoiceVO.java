@@ -65,6 +65,8 @@ public class TaxInvoiceVO {
 	private String bizMode;
 	@Column(name = "partyname",length = 150)
 	private String partyName;
+	@Column(name = "duedate")
+	private LocalDate dueDate;
 	@Column(name = "partyid")
 	private Long partyId;
 	@Column(name = "partycode",length = 10)
@@ -108,6 +110,13 @@ public class TaxInvoiceVO {
 	private BigDecimal billCurrRate;
 	@Column(name = "creditdays",length = 5)
 	private int creditDays;
+	@Column(name = "remarks",length = 255)
+	private String remarks;
+	
+	@Column(name = "vid", length = 50)
+	private String vId;
+	@Column(name = "vdate")
+	private LocalDate vDate;
 	
 	@Column(name = "shipperinvoiceno",length = 30)
 	private String shipperInvoiceNo;
@@ -155,6 +164,7 @@ public class TaxInvoiceVO {
 	private String amountInWords;
 	@Column(name = "billingremarks",length = 30)
 	private String billingRemarks;
+	private double annexureSubTotal;
 
 	
 
@@ -167,6 +177,11 @@ public class TaxInvoiceVO {
 	@OneToMany(mappedBy = "taxInvoiceVO", cascade = CascadeType.ALL)
 	@JsonManagedReference
 	List<TaxInvoiceGstVO> taxInvoiceGstVO;
+	
+	@OneToMany(mappedBy = "taxInvoiceVO", cascade = CascadeType.ALL)
+	@JsonManagedReference
+	List<TaxInvoiceAnnexureVO> taxInvoiceAnnexureVO;
+	
 
 	@Embedded
 	@Builder.Default

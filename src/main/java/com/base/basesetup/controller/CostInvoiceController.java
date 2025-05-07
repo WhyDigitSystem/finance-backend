@@ -26,7 +26,6 @@ import com.base.basesetup.dto.CostInvoiceDTO;
 import com.base.basesetup.dto.ResponseDTO;
 import com.base.basesetup.entity.CostInvoiceVO;
 import com.base.basesetup.entity.PartyMasterVO;
-import com.base.basesetup.entity.TaxInvoiceVO;
 import com.base.basesetup.service.CostInvoiceService;
 
 @CrossOrigin
@@ -42,7 +41,7 @@ public class CostInvoiceController extends BaseController {
 	// CostInvoice
 
 	@GetMapping("/getAllCostInvoiceByOrgId")
-	public ResponseEntity<ResponseDTO> getAllCostInvoiceByOrgId(@RequestParam(required = false) Long orgId) {
+	public ResponseEntity<ResponseDTO> getAllCostInvoiceByOrgId(@RequestParam Long orgId,@RequestParam String finYear,@RequestParam String branchCode) {
 		String methodName = "getAllCostInvoiceByOrgId()";
 		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
 		String errorMsg = null;
@@ -50,7 +49,7 @@ public class CostInvoiceController extends BaseController {
 		ResponseDTO responseDTO = null;
 		List<CostInvoiceVO> costInvoiceVO = new ArrayList<>();
 		try {
-			costInvoiceVO = costInvoiceService.getAllCostInvoiceByOrgId(orgId);
+			costInvoiceVO = costInvoiceService.getAllCostInvoiceByOrgId(orgId,finYear,branchCode);
 		} catch (Exception e) {
 			errorMsg = e.getMessage();
 			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
@@ -580,5 +579,59 @@ public class CostInvoiceController extends BaseController {
 		return ResponseEntity.ok().body(responseDTO);
 	}
 
+	@GetMapping("/getCostInvoiceById")
+	public ResponseEntity<ResponseDTO> getCostInvoiceById(@RequestParam Long id) {
+		String methodName = "getCostInvoiceById()";
+		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+		String errorMsg = null;
+		Map<String, Object> responseObjectsMap = new HashMap<>();
+		ResponseDTO responseDTO = null;
+		CostInvoiceVO costInvoiceVO = new CostInvoiceVO();
+		try {
+			costInvoiceVO = costInvoiceService.getCostInvoiceById(id);
+		} catch (Exception e) {
+			errorMsg = e.getMessage();
+			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+		}
+		if (StringUtils.isBlank(errorMsg)) {
+			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "CostInvoice information get successfully By id");
+			responseObjectsMap.put("costInvoiceVO", costInvoiceVO);
+			responseDTO = createServiceResponse(responseObjectsMap);
+		} else {
+			responseDTO = createServiceResponseError(responseObjectsMap, "CostInvoice information receive failedByOrgId",
+					errorMsg);
+		}
+		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+		return ResponseEntity.ok().body(responseDTO);
+	}
+	
+	@GetMapping("/getDsahboardCost")
+	public ResponseEntity<ResponseDTO> getDsahboardCost(@RequestParam(required =false) Long orgId,@RequestParam (required =false) String billMonth,
+			@RequestParam (required =false) String finYear) {
+		String methodName = "getDsahboardCost()";
+		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+		String errorMsg = null;
+		Map<String, Object> responseObjectsMap = new HashMap<>();
+		ResponseDTO responseDTO = null;
+		List<Map<String, Object>> mapp = new ArrayList<>();
+
+		try {
+			mapp = costInvoiceService.getDsahboardCost(orgId,billMonth,finYear);
+		} catch (Exception e) {
+			errorMsg = e.getMessage();
+			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+		}
+
+		if (StringUtils.isBlank(errorMsg)) {
+			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "Cost retrieved successfully");
+			responseObjectsMap.put("cost", mapp);
+			responseDTO = createServiceResponse(responseObjectsMap);
+		} else {
+			responseDTO = createServiceResponseError(responseObjectsMap, "Cost to retrieve JobCard", errorMsg);
+		}
+
+		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+		return ResponseEntity.ok().body(responseDTO);
+	}
 
 }

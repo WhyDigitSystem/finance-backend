@@ -63,6 +63,8 @@ public class ChargerDebitNoteVO {
 	private BigDecimal gstPercentage;
 	@Column(name = "gst")
 	private String gst;
+	@Column(name = "description")
+	private String description;
 	
 	@ManyToOne
 	@JsonBackReference

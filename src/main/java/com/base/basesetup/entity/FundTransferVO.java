@@ -42,7 +42,7 @@ public class FundTransferVO {
 	@Column(name = "currency",length =10)
 	private String currency;
 	@Column(name = "exrate",precision =10,scale =2)
-	private String exRate;
+	private BigDecimal exRate;
 	@Column(name = "amount",precision =10,scale =2)
 	private BigDecimal amount;
 	@Column(name = "active")

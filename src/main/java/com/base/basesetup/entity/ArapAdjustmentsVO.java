@@ -14,6 +14,7 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 import com.base.basesetup.dto.CreatedUpdatedDate;
+import com.fasterxml.jackson.annotation.JsonGetter;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -36,8 +37,8 @@ public class ArapAdjustmentsVO {
 	private String branch;
 	@Column(name = "finyear", length = 20)
 	private String finYear;
-	@Column(name = "source", length = 50)
-	private String source;
+	@Column(name = "sourceid")
+	private Long sourceId;
 	@Column(name = "docid", length = 50)
 	private String docId;
 	@Column(name = "refno", length = 50)
@@ -49,7 +50,7 @@ public class ArapAdjustmentsVO {
 	@Column(name = "acccurrency", length = 20)
 	private String accCurrency;
 	@Column(name = "baseamt", precision = 10, scale = 2)
-	private BigDecimal baseAmnt;
+	private BigDecimal baseAmt;
 	@Column(name = "nativeamt", precision = 10, scale = 2)
 	private BigDecimal nativeAmt;
 	@Column(name = "offdocid", length = 50)
@@ -98,6 +99,14 @@ public class ArapAdjustmentsVO {
 	private boolean gstFlag;
 	@Column(name = "subledgername", length = 50)
 	private String subLedgerName;
+	@Column(name = "amount")
+	private BigDecimal amount;
+	
+	
+	@JsonGetter("active")
+	public String getActive() {
+		return active ? "Active" : "In-Active";
+	}
 
 	@Embedded
 	@Builder.Default

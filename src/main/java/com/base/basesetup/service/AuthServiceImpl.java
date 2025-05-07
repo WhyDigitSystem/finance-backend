@@ -310,6 +310,37 @@ public class AuthServiceImpl implements AuthService {
 		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
 	}
 
+//	@Override
+//	public void changePassword(ChangePasswordFormDTO changePasswordRequest) {
+//		String methodName = "changePassword()";
+//		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+//		if (ObjectUtils.isEmpty(changePasswordRequest) || StringUtils.isBlank(changePasswordRequest.getUserName())
+//				|| StringUtils.isBlank(changePasswordRequest.getOldPassword())
+//				|| StringUtils.isBlank(changePasswordRequest.getNewPassword())) {
+//			throw new ApplicationContextException(UserConstants.ERRROR_MSG_INVALID_CHANGE_PASSWORD_INFORMATION);
+//		}
+//		UserVO userVO = userRepo.getUserName(changePasswordRequest.getUserName());
+//		System.out.println("UserName :"+userVO.getUserName());
+//		if (ObjectUtils.isNotEmpty(userVO)) {
+//			if (compareEncodedPasswordWithEncryptedPassword(changePasswordRequest.getOldPassword(),
+//					userVO.getPassword())) {
+//				try {
+//					userVO.setPassword(encoder.encode(CryptoUtils.getDecrypt(changePasswordRequest.getNewPassword())));
+//				} catch (Exception e) {
+//					throw new ApplicationContextException(UserConstants.ERRROR_MSG_UNABLE_TO_ENCODE_USER_PASSWORD);
+//				}
+//				userRepo.save(userVO);
+//				userService.createUserAction(userVO.getUserName(), userVO.getId(),
+//						UserConstants.USER_ACTION_TYPE_CHANGE_PASSWORD);
+//			} else {
+//				throw new ApplicationContextException(UserConstants.ERRROR_MSG_OLD_PASSWORD_MISMATCH);
+//			}
+//		} else {
+//			throw new ApplicationContextException(UserConstants.ERRROR_MSG_USER_INFORMATION_NOT_FOUND);
+//		}
+//		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+//	}
+	
 	@Override
 	public void changePassword(ChangePasswordFormDTO changePasswordRequest) {
 		String methodName = "changePassword()";
@@ -419,6 +450,7 @@ public class AuthServiceImpl implements AuthService {
 		userDTO.setOrgId(userVO.getOrgId());
 		userDTO.setActive(userVO.isActive());
 		userDTO.setUserType(userVO.getUserType());
+		userDTO.setFinYear(userVO.getFinYear());
 		userDTO.setEmail(userVO.getEmail());
 		userDTO.setAllIndiaAcces(userVO.isActive());
 		userDTO.setUserName(userVO.getUserName());
