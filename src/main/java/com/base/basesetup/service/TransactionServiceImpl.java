@@ -2973,24 +2973,15 @@ public class TransactionServiceImpl implements TransactionService {
 			message = "BankingWithdrawal Created Successfully";
 		}
 
-		// Save withdrawal first
 		bankingWithdrawalVO = bankingWithdrawalRepo.save(bankingWithdrawalVO);
 
-		// Get withdrawal details (multiple grid rows)
 		List<WithdrawalParticularsVO> withdrawalParticularsVOs = withdrawalParticularsRepo
 		        .findByBankingWithdrawalVO(bankingWithdrawalVO);
 
-		// Generate doc ID and update last no
 		String screenCode1 = "AC";
 		String sourceScreenCode = bankingWithdrawalVO.getScreenCode();
 
-		String accountsDocId = accountsRepo.getApproveDocId(
-		        bankingWithdrawalVO.getOrgId(),
-		        bankingWithdrawalVO.getFinYear(),
-		        bankingWithdrawalVO.getBranchCode(),
-		        sourceScreenCode,
-		        screenCode1
-		);
+		String accountsDocId = accountsRepo.getApproveDocId( bankingWithdrawalVO.getOrgId(),bankingWithdrawalVO.getFinYear(),bankingWithdrawalVO.getBranchCode(),sourceScreenCode,screenCode1);
 
 		MultipleDocIdGenerationDetailsVO multipleDocIdGenerationDetailsVO = multipleDocIdGenerationDetailsRepo
 		        .findByOrgIdAndFinYearAndBranchCodeAndSourceScreenCodeAndScreenCode(
@@ -3003,7 +2994,6 @@ public class TransactionServiceImpl implements TransactionService {
 		multipleDocIdGenerationDetailsVO.setLastno(multipleDocIdGenerationDetailsVO.getLastno() + 1);
 		multipleDocIdGenerationDetailsRepo.save(multipleDocIdGenerationDetailsVO);
 
-		// Create and save AccountsVO (only once)
 		AccountsVO accountsVO = new AccountsVO();
 		accountsVO.setDocId(accountsDocId);
 		accountsVO.setSourceScreen(bankingWithdrawalVO.getScreenName());
@@ -3137,7 +3127,7 @@ public class TransactionServiceImpl implements TransactionService {
 			bankingWithdrawalVO.setTotalDebitAmount(totalDebitAmount);
 
 		} else {
-			throw new ApplicationException("Total DebitAmount Should be Equal to");
+			throw new ApplicationException("Total DebitAmount Should be Equal to WithDrawal");
 
 		}
 
