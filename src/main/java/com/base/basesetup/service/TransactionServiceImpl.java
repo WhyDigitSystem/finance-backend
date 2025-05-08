@@ -2822,7 +2822,101 @@ public class TransactionServiceImpl implements TransactionService {
 			message = "BankingDeposit Created Successfully";
 		}
 
-		bankingDepositRepo.save(bankingDepositVO);
+		bankingDepositVO = bankingDepositRepo.save(bankingDepositVO);
+
+		List<DepositParticularsVO> depositParticularsVOs = depositParticularsRepo
+				.findByBankingDepositVO(bankingDepositVO);
+
+		// Generate doc ID and update last no
+		String screenCode1 = "AC";
+		String sourceScreenCode = bankingDepositVO.getScreenCode();
+
+		String accountsDocId = accountsRepo.getApproveDocId(bankingDepositVO.getOrgId(), bankingDepositVO.getFinYear(),
+				bankingDepositVO.getBranchCode(), sourceScreenCode, screenCode1);
+
+		MultipleDocIdGenerationDetailsVO multipleDocIdGenerationDetailsVO = multipleDocIdGenerationDetailsRepo
+				.findByOrgIdAndFinYearAndBranchCodeAndSourceScreenCodeAndScreenCode(bankingDepositVO.getOrgId(),
+						bankingDepositVO.getFinYear(), bankingDepositVO.getBranchCode(), sourceScreenCode, screenCode1);
+		multipleDocIdGenerationDetailsVO.setLastno(multipleDocIdGenerationDetailsVO.getLastno() + 1);
+		multipleDocIdGenerationDetailsRepo.save(multipleDocIdGenerationDetailsVO);
+
+		AccountsVO accountsVO = new AccountsVO();
+		accountsVO.setDocId(bankingDepositVO.getDocId());
+		accountsVO.setSourceScreen(bankingDepositVO.getScreenName());
+		accountsVO.setSourceId(bankingDepositVO.getId());
+		accountsVO.setCreatedBy(bankingDepositVO.getCreatedBy());
+		accountsVO.setModifiedBy(bankingDepositVO.getUpdatedBy());
+		accountsVO.setOrgId(bankingDepositVO.getOrgId());
+		accountsVO.setBranch(bankingDepositVO.getBranch());
+		accountsVO.setBranchCode(bankingDepositVO.getBranchCode());
+		accountsVO.setRefNo(bankingDepositVO.getDocId());
+		accountsVO.setRefDate(bankingDepositVO.getDocDate());
+//		accountsVO.setVId(savedReceiptVO.getVId());
+//		accountsVO.setVDate(savedReceiptVO.getVDate());
+		accountsVO.setCurrency(bankingDepositVO.getCurrency());
+		accountsVO.setExRate(bankingDepositVO.getExchangeRate());
+		accountsVO.setRemarks(bankingDepositVO.getRemarks());
+		accountsVO.setFinYear(bankingDepositVO.getFinYear());
+
+		accountsVO.setTotalDebitAmount(bankingDepositVO.getDepositAmount());
+		accountsVO.setTotalCreditAmount(BigDecimal.ZERO);
+//		accountsVO.setCreditDays(taxInvoiceVO.getCreditDays());
+//		accountsVO.setAmountInWords(savedReceiptVO.getAmountInWords());
+//		accountsVO.setStTaxAmount(taxInvoiceVO.getTotalTaxableAmountLc());
+//		accountsVO.setChargeableAmount(taxInvoiceVO.getTotalChargeAmountLc());
+
+		accountsVO=accountsRepo.save(accountsVO);
+		
+		// Create AccountsDetailsVO list and populate it
+		List<AccountsDetailsVO> accountsDetailsVOs = new ArrayList<>();
+
+		// RECEIVABLE A/C entry (Debit)
+		AccountsDetailsVO accountsDetailsVO = new AccountsDetailsVO();
+		accountsDetailsVO.setNDebitAmount(BigDecimal.ZERO);
+		accountsDetailsVO.setACategory("RECEIVABLE A/C");
+		accountsDetailsVO.setAccountName(bankingDepositVO.getBankAccount());
+		accountsDetailsVO.setSubLedgerCode("");
+		accountsDetailsVO.setDebitAmount(bankingDepositVO.getDepositAmount());
+		accountsDetailsVO.setNCreditAmount(BigDecimal.ZERO);
+		accountsDetailsVO.setCreditAmount(BigDecimal.ZERO);
+		accountsDetailsVO.setArapFlag(true);
+		accountsDetailsVO.setArapAmount(BigDecimal.ZERO);
+		accountsDetailsVO.setBDebitAmount(bankingDepositVO.getDepositAmount());
+		accountsDetailsVO.setBCrAmount(BigDecimal.ZERO);
+		accountsDetailsVO.setBArapAmount(BigDecimal.ZERO);
+		accountsDetailsVO.setACurrency(bankingDepositVO.getCurrency());
+		accountsDetailsVO.setSubledgerName("NONE");
+		accountsDetailsVO.setNArapAmount(BigDecimal.ZERO);
+		accountsDetailsVO.setGstflag(1);
+		accountsDetailsVO.setAccountsVO(accountsVO);
+		accountsDetailsVOs.add(accountsDetailsVO);
+
+		for (DepositParticularsVO depositParticularsVO : depositParticularsVOs) {
+
+			AccountsDetailsVO accountsDetailsVO1 = new AccountsDetailsVO();
+			accountsDetailsVO1.setNDebitAmount(BigDecimal.ZERO);
+			accountsDetailsVO1.setAccountName(depositParticularsVO.getAccountsName());
+			accountsDetailsVO1.setSubLedgerCode("None");
+			accountsDetailsVO1.setDebitAmount(BigDecimal.ZERO);
+			accountsDetailsVO1.setNCreditAmount(depositParticularsVO.getCredit());
+			accountsDetailsVO1.setCreditAmount(depositParticularsVO.getCredit());
+			accountsDetailsVO1.setArapFlag(false);
+			accountsDetailsVO1.setArapAmount(BigDecimal.ZERO);
+			accountsDetailsVO1.setBDebitAmount(BigDecimal.ZERO);
+			accountsDetailsVO1.setBCrAmount(depositParticularsVO.getCredit());
+			accountsDetailsVO1.setBArapAmount(BigDecimal.ZERO);
+			accountsDetailsVO1.setACurrency("");
+			accountsDetailsVO1.setSubledgerName("None");
+			accountsDetailsVO1.setNArapAmount(BigDecimal.ZERO);
+			accountsDetailsVO1.setGstflag(1);
+			accountsDetailsVO1.setAccountsVO(accountsVO);
+			accountsDetailsVOs.add(accountsDetailsVO1);
+
+		}
+		accountsVO.setAccountsDetailsVO(accountsDetailsVOs);
+
+		accountsDetailsRepo.saveAll(accountsDetailsVOs);
+
 		Map<String, Object> response = new HashMap<>();
 		response.put("bankingDepositVO", bankingDepositVO);
 		response.put("message", message);
@@ -2875,13 +2969,13 @@ public class TransactionServiceImpl implements TransactionService {
 			depositParticularsVO.setBankingDepositVO(bankingDepositVO);
 			depositParticularsVOs.add(depositParticularsVO);
 		}
-		if (totalCreditAmount.equals(totalDebitAmount)) {
+		if (totalCreditAmount.equals(bankingDepositDTO.getDepositAmount())) {
 			bankingDepositVO.setTotalCreditAmount(totalCreditAmount);
 			bankingDepositVO.setTotalDebitAmount(totalDebitAmount);
 			bankingDepositVO.setTotalAmount(bankingDepositDTO.getDepositAmount());
 
 		} else {
-			throw new ApplicationException("Total Debit Amount and Total Credit Amount Should be Equal");
+			throw new ApplicationException("Total Credit Amount Should Not be Greater Than Deposit Amount");
 		}
 		bankingDepositVO.setDepositparticularsVO(depositParticularsVOs);
 
