@@ -26,6 +26,7 @@ import com.base.basesetup.entity.ApBillBalanceVO;
 import com.base.basesetup.entity.ArapAdjustmentsVO;
 import com.base.basesetup.entity.ArapDetailsVO;
 import com.base.basesetup.entity.DocumentTypeMappingDetailsVO;
+import com.base.basesetup.entity.MultipleDocIdGenerationDetailsVO;
 import com.base.basesetup.entity.PartyMasterVO;
 import com.base.basesetup.entity.PaymentInvDtlsVO;
 import com.base.basesetup.entity.PaymentVO;
@@ -36,6 +37,7 @@ import com.base.basesetup.repo.ApBillBalanceRepo;
 import com.base.basesetup.repo.ArapAdjustmentsRepo;
 import com.base.basesetup.repo.ArapDetailsRepo;
 import com.base.basesetup.repo.DocumentTypeMappingDetailsRepo;
+import com.base.basesetup.repo.MultipleDocIdGenerationDetailsRepo;
 import com.base.basesetup.repo.PartyMasterRepo;
 import com.base.basesetup.repo.PaymentInvDtlsRepo;
 import com.base.basesetup.repo.PaymentRepo;
@@ -75,6 +77,9 @@ public class APServiceImpl implements APService {
 	
 	@Autowired
 	ArapDetailsRepo arapDetailsRepo;
+	
+	@Autowired
+	MultipleDocIdGenerationDetailsRepo multipleDocIdGenerationDetailsRepo;
 
 	@Override
 	public List<PaymentVO> getAllPaymentByOrgId(Long orgId, String finYear, String branchCode) {
@@ -183,8 +188,21 @@ public class APServiceImpl implements APService {
 			negativeAdjustmentsVO.setSourceId(dtlsVO.getId());
 			arapAdjustmentsRepo.save(negativeAdjustmentsVO);
 			
+			String screenCode1 = "AC";
+			String sourceScreenCode = paymentVO.getScreenCode();
+
+			String accountsDocId = accountsRepo.getApproveDocId(paymentVO.getOrgId(),paymentVO.getFinYear(),paymentVO.getBranchCode(),sourceScreenCode,screenCode1);
+
+			MultipleDocIdGenerationDetailsVO multipleDocIdGenerationDetailsVO = multipleDocIdGenerationDetailsRepo
+			        .findByOrgIdAndFinYearAndBranchCodeAndSourceScreenCodeAndScreenCode(paymentVO.getOrgId(),paymentVO.getFinYear(),paymentVO.getBranchCode(),sourceScreenCode,
+			                screenCode1
+			        );
+			multipleDocIdGenerationDetailsVO.setLastno(multipleDocIdGenerationDetailsVO.getLastno() + 1);
+			multipleDocIdGenerationDetailsRepo.save(multipleDocIdGenerationDetailsVO);
+
+			
 			AccountsVO accountsVO = new AccountsVO();
-			accountsVO.setDocId(paymentVO.getDocId());
+			accountsVO.setDocId(accountsDocId);
 			accountsVO.setSourceScreen(paymentVO.getScreenName());
 			accountsVO.setSourceId(paymentVO.getId());
 			accountsVO.setCreatedBy(paymentVO.getCreatedBy());
