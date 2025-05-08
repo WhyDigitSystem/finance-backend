@@ -2686,7 +2686,131 @@ public class TransactionServiceImpl implements TransactionService {
 			message = "AdjustmentJournal Created Successfully";
 		}
 
-		adjustmentJournalRepo.save(adjustmentJournalVO);
+		adjustmentJournalVO=adjustmentJournalRepo.save(adjustmentJournalVO);
+		List<AccountParticularsVO> accountParticularsVOs = accountParticularsRepo.findByAdjustmentJournalVO(adjustmentJournalVO);
+		for (AccountParticularsVO dtlsVO : accountParticularsVOs) {
+		
+			String screenCode1 = "AC";
+			String sourceScreenCode = adjustmentJournalVO.getScreenCode();
+
+			String accountsDocId = accountsRepo.getApproveDocId(adjustmentJournalVO.getOrgId(),adjustmentJournalVO.getFinYear(),adjustmentJournalVO.getBranchCode(),sourceScreenCode,screenCode1);
+
+			MultipleDocIdGenerationDetailsVO multipleDocIdGenerationDetailsVO = multipleDocIdGenerationDetailsRepo
+			        .findByOrgIdAndFinYearAndBranchCodeAndSourceScreenCodeAndScreenCode(adjustmentJournalVO.getOrgId(),adjustmentJournalVO.getFinYear(),adjustmentJournalVO.getBranchCode(),sourceScreenCode,
+			                screenCode1
+			        );
+			multipleDocIdGenerationDetailsVO.setLastno(multipleDocIdGenerationDetailsVO.getLastno() + 1);
+			multipleDocIdGenerationDetailsRepo.save(multipleDocIdGenerationDetailsVO);
+
+			
+			AccountsVO accountsVO = new AccountsVO();
+			accountsVO.setDocId(accountsDocId);
+			accountsVO.setSourceScreen(adjustmentJournalVO.getScreenName());
+			accountsVO.setSourceId(adjustmentJournalVO.getId());
+			accountsVO.setCreatedBy(adjustmentJournalVO.getCreatedBy());
+			accountsVO.setModifiedBy(adjustmentJournalVO.getUpdatedBy());
+			accountsVO.setOrgId(adjustmentJournalVO.getOrgId());
+			accountsVO.setBranch(adjustmentJournalVO.getBranch());
+			accountsVO.setBranchCode(adjustmentJournalVO.getBranchCode());
+			accountsVO.setRefNo(adjustmentJournalVO.getDocId());
+			accountsVO.setRefDate(adjustmentJournalVO.getDocDate());
+//			accountsVO.setVId(savedReceiptVO.getVId());
+//			accountsVO.setVDate(savedReceiptVO.getVDate());
+			accountsVO.setCurrency(adjustmentJournalVO.getCurrency());
+			accountsVO.setExRate(adjustmentJournalVO.getExRate());
+			accountsVO.setRemarks(adjustmentJournalVO.getCancelRemarks());
+			accountsVO.setFinYear(adjustmentJournalVO.getFinYear());
+
+			accountsVO.setTotalDebitAmount(adjustmentJournalVO.getTotalDebitAmount());
+			accountsVO.setTotalCreditAmount(adjustmentJournalVO.getTotalDebitAmount());
+//			accountsVO.setCreditDays(taxInvoiceVO.getCreditDays());
+//			accountsVO.setAmountInWords(savedReceiptVO.getAmountInWords());
+//			accountsVO.setStTaxAmount(taxInvoiceVO.getTotalTaxableAmountLc());
+//			accountsVO.setChargeableAmount(taxInvoiceVO.getTotalChargeAmountLc());
+
+			// Create AccountsDetailsVO list and populate it
+			List<AccountsDetailsVO> accountsDetailsVOs = new ArrayList<>();
+
+			// BANK/CASH entry (Debit)
+			AccountsDetailsVO accountsDetailsVO1 = new AccountsDetailsVO();
+			accountsDetailsVO1.setNDebitAmount(BigDecimal.ZERO);
+//			accountsDetailsVO1.setAccountName(paymentVO.getBankCashAcc());
+			accountsDetailsVO1.setSubLedgerCode(dtlsVO.getSubLedgerCode());
+			accountsDetailsVO1.setDebitAmount(BigDecimal.ZERO);
+			accountsDetailsVO1.setNCreditAmount(dtlsVO.getCreditAmount());
+			accountsDetailsVO1.setCreditAmount(dtlsVO.getCreditAmount());
+			accountsDetailsVO1.setArapFlag(true	);
+			accountsDetailsVO1.setArapAmount(dtlsVO.getCreditAmount().multiply(BigDecimal.valueOf(-1)));
+			accountsDetailsVO1.setBDebitAmount(BigDecimal.ZERO);
+			accountsDetailsVO1.setBCrAmount(dtlsVO.getCreditAmount());
+			accountsDetailsVO1.setBArapAmount(dtlsVO.getCreditAmount().multiply(BigDecimal.valueOf(-1)));
+//			accountsDetailsVO1.setACurrency(paymentVO.getCurrency());
+			accountsDetailsVO1.setSubledgerName(dtlsVO.getSubledgerName());
+			accountsDetailsVO1.setNArapAmount(BigDecimal.ZERO);
+			accountsDetailsVO1.setGstflag(1);
+			accountsDetailsVO1.setAccountsVO(accountsVO);
+			accountsDetailsVOs.add(accountsDetailsVO1); 
+			
+			
+			// RECEIVABLE A/C entry (Credit)
+			AccountsDetailsVO accountsDetailsVO = new AccountsDetailsVO();
+			accountsDetailsVO.setNDebitAmount(dtlsVO.getDebitAmount());
+//			accountsDetailsVO.setACategory("PAYABLE A/C");
+//			accountsDetailsVO.setAccountName("PAYABLE A/C");
+			accountsDetailsVO.setSubLedgerCode("None");
+			accountsDetailsVO.setDebitAmount(dtlsVO.getDebitAmount());
+			accountsDetailsVO.setNCreditAmount(BigDecimal.ZERO);
+			accountsDetailsVO.setCreditAmount(BigDecimal.ZERO);
+			accountsDetailsVO.setArapFlag(false);
+			accountsDetailsVO.setArapAmount(dtlsVO.getDebitAmount().multiply(BigDecimal.valueOf(-1)));
+//			accountsDetailsVO.setBDebitAmount(paymentVO.getPaymentAmt());
+			accountsDetailsVO.setBCrAmount(BigDecimal.ZERO);
+			accountsDetailsVO.setBArapAmount(dtlsVO.getDebitAmount().multiply(BigDecimal.valueOf(-1)));
+//			accountsDetailsVO.setACurrency(paymentVO.getCurrency());
+			accountsDetailsVO.setSubledgerName("None");
+			accountsDetailsVO.setNArapAmount(dtlsVO.getDebitAmount().multiply(BigDecimal.valueOf(-1)));
+			accountsDetailsVO.setGstflag(3);
+			accountsDetailsVO.setAccountsVO(accountsVO);
+			accountsDetailsVOs.add(accountsDetailsVO);
+		
+			accountsVO.setAccountsDetailsVO(accountsDetailsVOs);
+
+
+			// Save AccountsVO and update TaxInvoiceVO
+			AccountsVO savedAccountsVO = accountsRepo.save(accountsVO);
+			int gstflag = 1;
+
+			AccountsDetailsVO accountsDetailsVOs2 = accountsDetailsRepo.findByAccountsVOAndGstflag(savedAccountsVO,
+					gstflag);
+			ArapDetailsVO arapDetailsVO = new ArapDetailsVO();
+			arapDetailsVO.setSourceTransid(accountsDetailsVOs2.getId());
+			arapDetailsVO.setCreatedBy(savedAccountsVO.getCreatedBy());
+			arapDetailsVO.setUpdatedBy(savedAccountsVO.getModifiedBy());
+			arapDetailsVO.setBranch(savedAccountsVO.getBranch());
+			arapDetailsVO.setBranchCode(savedAccountsVO.getBranchCode());
+			arapDetailsVO.setFinYear(savedAccountsVO.getFinYear());
+			arapDetailsVO.setRefNo(savedAccountsVO.getRefNo());
+			arapDetailsVO.setOrgId(savedAccountsVO.getOrgId());
+			arapDetailsVO.setRefDate(savedAccountsVO.getRefDate());
+			arapDetailsVO.setSubLedgerCode(accountsDetailsVOs2.getSubLedgerCode());
+			arapDetailsVO.setCurrency(accountsDetailsVOs2.getACurrency());
+			arapDetailsVO.setExRate(accountsDetailsVOs2.getAExRate());
+			arapDetailsVO.setAmount(accountsDetailsVOs2.getArapAmount());
+			arapDetailsVO.setBaseAmt(accountsDetailsVOs2.getArapAmount());
+			arapDetailsVO.setDueDate(savedAccountsVO.getDueDate());
+			arapDetailsVO.setCreditDays(savedAccountsVO.getCreditDays());
+			arapDetailsVO.setDocId(savedAccountsVO.getDocId());
+			arapDetailsVO.setDocDate(savedAccountsVO.getDocDate());
+			arapDetailsVO.setAccCurrency(savedAccountsVO.getCurrency());
+			arapDetailsVO.setExRate(savedAccountsVO.getExRate());
+			arapDetailsVO.setAccName(accountsDetailsVOs2.getAccountName());
+			arapDetailsVO.setGstFlag(accountsDetailsVOs2.getGstflag());
+			arapDetailsVO.setSubLedgerName(accountsDetailsVOs2.getSubledgerName());
+			arapDetailsVO.setSalesType(savedAccountsVO.getSalesType());
+			arapDetailsVO.setNativeAmt(accountsDetailsVOs2.getArapAmount());
+			arapDetailsRepo.save(arapDetailsVO);
+		}
+		
 		Map<String, Object> response = new HashMap<>();
 		response.put("adjustmentJournalVO", adjustmentJournalVO);
 		response.put("message", message);
