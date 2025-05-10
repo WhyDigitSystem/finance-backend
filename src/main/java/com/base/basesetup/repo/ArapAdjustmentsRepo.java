@@ -1,10 +1,13 @@
 package com.base.basesetup.repo;
 
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.base.basesetup.entity.ArapAdjustmentsVO;
@@ -1673,6 +1676,11 @@ public interface ArapAdjustmentsRepo extends JpaRepository<ArapAdjustmentsVO, Lo
  			+ "subledgername\r\n"
  			+ "") 
  	Set<Object[]> findAPOutstanding(String Asondate, String partyname, String pdate, Long orgId);
-	
+
+ 	
+ 	@Query("SELECT a FROM ArapAdjustmentsVO a WHERE a.subLedgerCode = :partyCode AND a.docId = :docId AND a.docDate = :docDate AND a.refNo = :refNo AND a.refDate = :refDate")
+ 	Optional<ArapAdjustmentsVO> findByUniqueKeys(@Param("partyCode") String partyCode, @Param("docId") String docId,@Param("docDate") LocalDate docDate,@Param("refNo") String refNo,@Param("refDate") LocalDate refDate);
+
+// 	Optional<ArapAdjustmentsVO> findByUniqueKeys(String partyCode, String docId, LocalDate docDate, String refNo, LocalDate refDate);
 
 }
