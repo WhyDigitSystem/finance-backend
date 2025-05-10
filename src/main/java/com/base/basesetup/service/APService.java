@@ -74,8 +74,8 @@ public interface APService {
 	
 	List<PaymentVO> getAllPaymentByOrgIdAndBranchCode(Long orgId, String branchCode,String partyName);
 
-//	PaymentVO approvePayment(Long orgId, Long id, String docId, String action, String actionBy)
-//			throws ApplicationException;
+	PaymentVO approvePayment(Long orgId, Long id, String docId, String action, String actionBy)
+			throws ApplicationException;
 	
 	
 
