@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import com.base.basesetup.dto.ArBillBalanceDTO;
 import com.base.basesetup.dto.ReceiptDTO;
 import com.base.basesetup.entity.ArBillBalanceVO;
+import com.base.basesetup.entity.PaymentVO;
 import com.base.basesetup.entity.ReceiptVO;
 import com.base.basesetup.exception.ApplicationException;
 
@@ -49,6 +50,9 @@ public interface ARService {
 			String fromDate, String toDate, String subLedgerName);
 
 	List<Map<String, Object>> getReciptFillGrid(Long orgId, String partyCode, String branchCode);
+
+	ReceiptVO approveReceipt(Long orgId, Long id, String docId, String action, String actionBy)
+			throws ApplicationException;
 
 
 }
