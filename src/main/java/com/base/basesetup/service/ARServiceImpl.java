@@ -343,6 +343,7 @@ public class ARServiceImpl implements ARService {
 		receiptVO.setClient(receiptDTO.getClient());
 		receiptVO.setCreatedBy(receiptDTO.getCreatedBy());
 		receiptVO.setActive(receiptDTO.isActive());
+		receiptVO.setStatus(receiptDTO.getStatus());
 		receiptVO.setCancel(receiptDTO.isCancel());
 		receiptVO.setCancelRemarks(receiptDTO.getCancelRemarks());
 		receiptVO.setFinYear(receiptDTO.getFinYear());
