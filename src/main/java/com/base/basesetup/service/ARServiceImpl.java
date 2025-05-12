@@ -143,23 +143,15 @@ public class ARServiceImpl implements ARService {
 				
 				 String partyCode = savedReceiptVO.getCustomerCode();
 				    String docId = savedReceiptVO.getDocId();
-				    LocalDate docDate = savedReceiptVO.getDocDate();
 				    String invNo = savedReceiptInvDetails.getInvNo();
-				    LocalDate invDate = savedReceiptInvDetails.getInvDate();
 				    
-				    ArapAdjustmentsVO existingForward = arapAdjustmentsRepo.findByDocIdAndDocDateAndRefNoAndOrgIdAndSubledgerCode(
-					        docId, docDate, invNo, savedReceiptVO.getOrgId(), partyCode
+				    ArapAdjustmentsVO existingForward = arapAdjustmentsRepo.findByDocIdAndRefNoAndOrgIdAndSubledgerCode(
+					        docId, invNo, savedReceiptVO.getOrgId(), partyCode
 					    );
 					    if (existingForward != null) {
 					        arapAdjustmentsRepo.delete(existingForward);
 					    }
 
-					    ArapAdjustmentsVO existingReverse = arapAdjustmentsRepo.findByDocIdAndDocDateAndRefNoAndOrgIdAndSubledgerCode(
-					        invNo, docDate, docId, savedReceiptVO.getOrgId(), partyCode
-					    );
-					    if (existingReverse != null) {
-					        arapAdjustmentsRepo.delete(existingReverse);
-					    }
 				
 				
 				ArapAdjustmentsVO arapadjustments = new ArapAdjustmentsVO();
@@ -199,6 +191,14 @@ public class ARServiceImpl implements ARService {
 				System.out.println("ACCOUNT TYPE : " + partyMaster.getAccountType());
 				arapAdjustmentsRepo.save(arapadjustments);
 
+				
+			    ArapAdjustmentsVO existingReverse = arapAdjustmentsRepo.findByDocIdAndRefNoAndOrgIdAndSubledgerCode(
+				        invNo,  docId, savedReceiptVO.getOrgId(), partyCode
+				    );
+				    if (existingReverse != null) {
+				        arapAdjustmentsRepo.delete(existingReverse);
+				    }
+				
 				// Second posting with negative values
 				ArapAdjustmentsVO negativeArapAdjustments = new ArapAdjustmentsVO();
 				negativeArapAdjustments.setBranch(savedReceiptVO.getBranch());

@@ -1679,8 +1679,8 @@ public interface ArapAdjustmentsRepo extends JpaRepository<ArapAdjustmentsVO, Lo
  	Set<Object[]> findAPOutstanding(String Asondate, String partyname, String pdate, Long orgId);
 
  	
-	@Query(nativeQuery = true, value = "select * from arapadjustments a where a.docid=?1 and a.docdate=?2  and a.refno=?3 and a.orgid=?4 and a.subledgercode=?5")
-	ArapAdjustmentsVO findByDocIdAndDocDateAndRefNoAndOrgIdAndSubledgerCode(String docId, LocalDate docDate,String refNo,Long orgId ,String subledgerCode);
+	@Query(nativeQuery = true, value = "select * from arapadjustments a where a.docid=?1  and a.refno=?2 and a.orgid=?3 and a.subledgercode=?4")
+	ArapAdjustmentsVO findByDocIdAndRefNoAndOrgIdAndSubledgerCode(String docId,String refNo,Long orgId ,String subledgerCode);
 
 // 	Optional<ArapAdjustmentsVO> findByUniqueKeys(String partyCode, String docId, LocalDate docDate, String refNo, LocalDate refDate);
 
