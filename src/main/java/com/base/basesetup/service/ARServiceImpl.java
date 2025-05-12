@@ -146,12 +146,20 @@ public class ARServiceImpl implements ARService {
 				    LocalDate docDate = savedReceiptVO.getDocDate();
 				    String invNo = savedReceiptInvDetails.getInvNo();
 				    LocalDate invDate = savedReceiptInvDetails.getInvDate();
+				    
+				    ArapAdjustmentsVO existingForward = arapAdjustmentsRepo.findByDocIdAndDocDateAndRefNoAndOrgIdAndSubledgerCode(
+					        docId, docDate, invNo, savedReceiptVO.getOrgId(), partyCode
+					    );
+					    if (existingForward != null) {
+					        arapAdjustmentsRepo.delete(existingForward);
+					    }
 
-				    arapAdjustmentsRepo.findByUniqueKeys(partyCode, docId, docDate, invNo, invDate)
-				        .ifPresent(arapAdjustmentsRepo::delete);
-
-				    arapAdjustmentsRepo.findByUniqueKeys(partyCode, invNo, invDate, docId, docDate)
-				        .ifPresent(arapAdjustmentsRepo::delete);
+					    ArapAdjustmentsVO existingReverse = arapAdjustmentsRepo.findByDocIdAndDocDateAndRefNoAndOrgIdAndSubledgerCode(
+					        invNo, docDate, docId, savedReceiptVO.getOrgId(), partyCode
+					    );
+					    if (existingReverse != null) {
+					        arapAdjustmentsRepo.delete(existingReverse);
+					    }
 				
 				
 				ArapAdjustmentsVO arapadjustments = new ArapAdjustmentsVO();

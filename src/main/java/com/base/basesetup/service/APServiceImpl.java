@@ -143,12 +143,21 @@ public class APServiceImpl implements APService {
 		    LocalDate docDate = paymentVO.getDocDate();
 		    String invNo = dtlsVO.getInvNo();
 		    LocalDate invDate = dtlsVO.getInvDate();
+		    
+		    ArapAdjustmentsVO existingForward = arapAdjustmentsRepo.findByDocIdAndDocDateAndRefNoAndOrgIdAndSubledgerCode(
+		        docId, docDate, invNo, paymentVO.getOrgId(), partyCode
+		    );
+		    if (existingForward != null) {
+		        arapAdjustmentsRepo.delete(existingForward);
+		    }
 
-		    arapAdjustmentsRepo.findByUniqueKeys(partyCode, docId, docDate, invNo, invDate)
-		        .ifPresent(arapAdjustmentsRepo::delete);
+		    ArapAdjustmentsVO existingReverse = arapAdjustmentsRepo.findByDocIdAndDocDateAndRefNoAndOrgIdAndSubledgerCode(
+		        invNo, docDate, docId, paymentVO.getOrgId(), partyCode
+		    );
+		    if (existingReverse != null) {
+		        arapAdjustmentsRepo.delete(existingReverse);
+		    }
 
-		    arapAdjustmentsRepo.findByUniqueKeys(partyCode, invNo, invDate, docId, docDate)
-		        .ifPresent(arapAdjustmentsRepo::delete);
 
 		    ArapAdjustmentsVO adjustmentsVO = new ArapAdjustmentsVO();
 		    adjustmentsVO.setCancel(false);
@@ -172,13 +181,15 @@ public class APServiceImpl implements APService {
 		    adjustmentsVO.setBranchCode(paymentVO.getBranchCode());
 		    adjustmentsVO.setBranch(paymentVO.getBranch());
 		    adjustmentsVO.setSourceId(dtlsVO.getId());
+		 
+		    
+			PartyMasterVO partyMaster = partyMasterRepo.findByPartyCode(paymentVO.getPartyCode());
 
-		    PartyMasterVO masterVO = partyMasterRepo.findByPartyCode(partyCode);
-		    adjustmentsVO.setAccountName(masterVO.getAccountType());
+			adjustmentsVO.setAccountName(partyMaster.getAccountType());
+			System.out.println("ACCOUNT TYPE : " + partyMaster.getAccountType());
+			arapAdjustmentsRepo.save(adjustmentsVO);
 
-		    arapAdjustmentsRepo.save(adjustmentsVO);
 
-		    // Create fresh NEGATIVE adjustment (reversed doc/ref)
 		    ArapAdjustmentsVO negativeAdjustmentsVO = new ArapAdjustmentsVO();
 		    negativeAdjustmentsVO.setCancel(false);
 		    negativeAdjustmentsVO.setActive(true);
@@ -198,7 +209,7 @@ public class APServiceImpl implements APService {
 		    negativeAdjustmentsVO.setNativeAmt(dtlsVO.getSettled().negate());
 		    negativeAdjustmentsVO.setOrgId(paymentVO.getOrgId());
 		    negativeAdjustmentsVO.setAccCurrency(dtlsVO.getCurrency());
-		    negativeAdjustmentsVO.setAccountName(masterVO.getAccountType());
+		    negativeAdjustmentsVO.setAccountName(partyMaster.getAccountType());
 		    negativeAdjustmentsVO.setBranchCode(paymentVO.getBranchCode());
 		    negativeAdjustmentsVO.setBranch(paymentVO.getBranch());
 		    negativeAdjustmentsVO.setSourceId(dtlsVO.getId());
