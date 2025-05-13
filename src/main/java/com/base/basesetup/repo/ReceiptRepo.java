@@ -399,4 +399,6 @@ public interface ReceiptRepo extends JpaRepository<ReceiptVO, Long> {
 			+ "    accountcode")
 	Set<Object[]> getTrailBalanceReport(String startDate, String endDate, String branch,String message,String finYear);
 
+	ReceiptVO findByOrgIdAndIdAndDocId(Long orgId, Long id, String docId);
+
 }

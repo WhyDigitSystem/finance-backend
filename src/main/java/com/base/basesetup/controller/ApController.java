@@ -628,25 +628,25 @@ public class ApController extends BaseController {
 
 	}
 
-//	@PutMapping("/approvePayment")
-//	public ResponseEntity<ResponseDTO> approvePayment(@RequestParam Long orgId, @RequestParam Long id,
-//			@RequestParam String docId, @RequestParam String action, @RequestParam String actionBy) {
-//		String methodName = "approvePayment()";
-//		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
-//		String errorMsg = null;
-//		Map<String, Object> responseObjectsMap = new HashMap<>();
-//		ResponseDTO responseDTO = null;
-//		try {
-//			PaymentVO taxInvoiceVO = apService.approvePayment(orgId, id, docId, action, actionBy);
-//			responseObjectsMap.put("taxInvoiceVO", taxInvoiceVO);
-//			responseDTO = createServiceResponse(responseObjectsMap);
-//		} catch (Exception e) {
-//			errorMsg = e.getMessage();
-//			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
-//			responseDTO = createServiceResponseError(responseObjectsMap, errorMsg, errorMsg);
-//		}
-//		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
-//		return ResponseEntity.ok().body(responseDTO);
-//	}
+	@PutMapping("/approvePayment")
+	public ResponseEntity<ResponseDTO> approvePayment(@RequestParam Long orgId, @RequestParam Long id,
+			@RequestParam String docId, @RequestParam String action, @RequestParam String actionBy) {
+		String methodName = "approvePayment()";
+		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+		String errorMsg = null;
+		Map<String, Object> responseObjectsMap = new HashMap<>();
+		ResponseDTO responseDTO = null;
+		try {
+			PaymentVO taxInvoiceVO = apService.approvePayment(orgId, id, docId, action, actionBy);
+			responseObjectsMap.put("taxInvoiceVO", taxInvoiceVO);
+			responseDTO = createServiceResponse(responseObjectsMap);
+		} catch (Exception e) {
+			errorMsg = e.getMessage();
+			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+			responseDTO = createServiceResponseError(responseObjectsMap, errorMsg, errorMsg);
+		}
+		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+		return ResponseEntity.ok().body(responseDTO);
+	}
 
 }

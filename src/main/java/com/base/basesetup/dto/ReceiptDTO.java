@@ -50,6 +50,7 @@ public class ReceiptDTO {
 	private String currency;
 	private BigDecimal currencyAmount;
 	private Long orgId;
+	private String status;
 	private BigDecimal currencyAmt;
 
 	List<ReceiptInvDetailsDTO> receiptInvDetailaDTO;

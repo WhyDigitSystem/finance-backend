@@ -1,6 +1,7 @@
 package com.base.basesetup.service;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -26,6 +27,7 @@ import com.base.basesetup.entity.ApBillBalanceVO;
 import com.base.basesetup.entity.ArapAdjustmentsVO;
 import com.base.basesetup.entity.ArapDetailsVO;
 import com.base.basesetup.entity.DocumentTypeMappingDetailsVO;
+import com.base.basesetup.entity.MultipleDocIdGenerationDetailsVO;
 import com.base.basesetup.entity.PartyMasterVO;
 import com.base.basesetup.entity.PaymentInvDtlsVO;
 import com.base.basesetup.entity.PaymentVO;
@@ -36,6 +38,7 @@ import com.base.basesetup.repo.ApBillBalanceRepo;
 import com.base.basesetup.repo.ArapAdjustmentsRepo;
 import com.base.basesetup.repo.ArapDetailsRepo;
 import com.base.basesetup.repo.DocumentTypeMappingDetailsRepo;
+import com.base.basesetup.repo.MultipleDocIdGenerationDetailsRepo;
 import com.base.basesetup.repo.PartyMasterRepo;
 import com.base.basesetup.repo.PaymentInvDtlsRepo;
 import com.base.basesetup.repo.PaymentRepo;
@@ -75,6 +78,9 @@ public class APServiceImpl implements APService {
 	
 	@Autowired
 	ArapDetailsRepo arapDetailsRepo;
+	
+	@Autowired
+	MultipleDocIdGenerationDetailsRepo multipleDocIdGenerationDetailsRepo;
 
 	@Override
 	public List<PaymentVO> getAllPaymentByOrgId(Long orgId, String finYear, String branchCode) {
@@ -129,172 +135,88 @@ public class APServiceImpl implements APService {
 
 		paymentVO = paymentRepo.save(paymentVO);
 		List<PaymentInvDtlsVO> paymentInvDtlsVOs = paymentInvDtlsRepo.findByPaymentVO(paymentVO);
+
 		for (PaymentInvDtlsVO dtlsVO : paymentInvDtlsVOs) {
-			ArapAdjustmentsVO adjustmentsVO = new ArapAdjustmentsVO();
-			adjustmentsVO.setCancel(false);
-			adjustmentsVO.setActive(true);
-			adjustmentsVO.setCreatedBy(paymentVO.getCreatedBy());
-			adjustmentsVO.setUpdatedBy(paymentVO.getUpdatedBy());
-			adjustmentsVO.setFinYear(paymentVO.getFinYear());
-			adjustmentsVO.setDocId(paymentVO.getDocId());
-			adjustmentsVO.setDocDate(paymentVO.getDocDate());
-			adjustmentsVO.setRefNo(dtlsVO.getInvNo());
-			adjustmentsVO.setBranchCode(paymentVO.getBranchCode());
-			adjustmentsVO.setRefDate(dtlsVO.getInvDate());
-			adjustmentsVO.setSubLedgerCode(paymentVO.getPartyCode());
-			adjustmentsVO.setSubLedgerName(paymentVO.getPartyName());
-			adjustmentsVO.setCurrency(dtlsVO.getCurrency());
-			adjustmentsVO.setExRate(dtlsVO.getExRate());
-			adjustmentsVO.setAmount(dtlsVO.getSettled());
-			adjustmentsVO.setBaseAmt(dtlsVO.getSettled());
-			adjustmentsVO.setNativeAmt(dtlsVO.getSettled());
-			adjustmentsVO.setOrgId(paymentVO.getOrgId());
-			adjustmentsVO.setAccCurrency(dtlsVO.getCurrency());
-			adjustmentsVO.setBranch(paymentVO.getBranch());
-			adjustmentsVO.setSourceId(dtlsVO.getId());
 
-			PartyMasterVO masterVO = partyMasterRepo.findByPartyCode(paymentVO.getPartyCode());
-			adjustmentsVO.setAccountName(masterVO.getAccountType());
+		    String partyCode = paymentVO.getPartyCode();
+		    String docId = paymentVO.getDocId();
+		    LocalDate docDate = paymentVO.getDocDate();
+		    String invNo = dtlsVO.getInvNo();
+		    LocalDate invDate = dtlsVO.getInvDate();
 
-			arapAdjustmentsRepo.save(adjustmentsVO);
+		    PartyMasterVO partyMaster = partyMasterRepo.findByPartyCode(partyCode);
 
-			ArapAdjustmentsVO negativeAdjustmentsVO = new ArapAdjustmentsVO();
-			negativeAdjustmentsVO.setCancel(false);
-			negativeAdjustmentsVO.setActive(true);
-			negativeAdjustmentsVO.setBranchCode(paymentVO.getBranchCode());
-			negativeAdjustmentsVO.setCreatedBy(paymentVO.getCreatedBy());
-			negativeAdjustmentsVO.setUpdatedBy(paymentVO.getUpdatedBy());
-			negativeAdjustmentsVO.setFinYear(paymentVO.getFinYear());
-			negativeAdjustmentsVO.setDocId(dtlsVO.getInvNo());
-			negativeAdjustmentsVO.setDocDate(dtlsVO.getInvDate());
-			negativeAdjustmentsVO.setRefNo(paymentVO.getDocId());
-			negativeAdjustmentsVO.setRefDate(paymentVO.getDocDate());
-			negativeAdjustmentsVO.setSubLedgerCode(paymentVO.getPartyCode());
-			negativeAdjustmentsVO.setSubLedgerName(paymentVO.getPartyName());
-			negativeAdjustmentsVO.setCurrency(dtlsVO.getCurrency());
-			negativeAdjustmentsVO.setExRate(dtlsVO.getExRate());
-			negativeAdjustmentsVO.setAmount(dtlsVO.getSettled().negate());
-			negativeAdjustmentsVO.setBaseAmt(dtlsVO.getSettled().negate());
-			negativeAdjustmentsVO.setNativeAmt(dtlsVO.getSettled().negate());
-			negativeAdjustmentsVO.setOrgId(paymentVO.getOrgId());
-			negativeAdjustmentsVO.setAccCurrency(dtlsVO.getCurrency());
-			negativeAdjustmentsVO.setAccountName(masterVO.getAccountType());
-			negativeAdjustmentsVO.setBranch(paymentVO.getBranch());
-			negativeAdjustmentsVO.setSourceId(dtlsVO.getId());
-			arapAdjustmentsRepo.save(negativeAdjustmentsVO);
-			
-			AccountsVO accountsVO = new AccountsVO();
-			accountsVO.setDocId(paymentVO.getDocId());
-			accountsVO.setSourceScreen(paymentVO.getScreenName());
-			accountsVO.setSourceId(paymentVO.getId());
-			accountsVO.setCreatedBy(paymentVO.getCreatedBy());
-			accountsVO.setModifiedBy(paymentVO.getUpdatedBy());
-			accountsVO.setOrgId(paymentVO.getOrgId());
-			accountsVO.setBranch(paymentVO.getBranch());
-			accountsVO.setBranchCode(paymentVO.getBranchCode());
-			accountsVO.setRefNo(paymentVO.getDocId());
-			accountsVO.setRefDate(paymentVO.getDocDate());
-//			accountsVO.setVId(savedReceiptVO.getVId());
-//			accountsVO.setVDate(savedReceiptVO.getVDate());
-			accountsVO.setCurrency(paymentVO.getCurrency());
-			accountsVO.setExRate(dtlsVO.getExRate());
-			accountsVO.setRemarks(paymentVO.getCancelRemarks());
-			accountsVO.setFinYear(paymentVO.getFinYear());
+		    ArapAdjustmentsVO existingForward = arapAdjustmentsRepo.findByDocIdAndRefNoAndOrgIdAndSubledgerCode(
+		        docId, invNo, paymentVO.getOrgId(), partyCode
+		    );
+		    if (existingForward != null) {
+		        arapAdjustmentsRepo.delete(existingForward);
+		    }
 
+		    ArapAdjustmentsVO forward = new ArapAdjustmentsVO();
+		    forward.setCancel(false);
+		    forward.setActive(true);
+		    forward.setCreatedBy(paymentVO.getCreatedBy());
+		    forward.setUpdatedBy(paymentVO.getUpdatedBy());
+		    forward.setFinYear(paymentVO.getFinYear());
+		    forward.setDocId(docId);
+		    forward.setDocDate(docDate);
+		    forward.setRefNo(invNo);
+		    forward.setRefDate(invDate);
+		    forward.setSubLedgerCode(partyCode);
+		    forward.setSubLedgerName(paymentVO.getPartyName());
+		    forward.setCurrency(dtlsVO.getCurrency());
+		    forward.setExRate(dtlsVO.getExRate());
+		    forward.setAmount(dtlsVO.getSettled());
+		    forward.setBaseAmt(dtlsVO.getSettled());
+		    forward.setNativeAmt(dtlsVO.getSettled());
+		    forward.setOrgId(paymentVO.getOrgId());
+		    forward.setAccCurrency(dtlsVO.getCurrency());
+		    forward.setBranchCode(paymentVO.getBranchCode());
+		    forward.setBranch(paymentVO.getBranch());
+		    forward.setSourceId(dtlsVO.getId());
+		    forward.setAccountName(partyMaster.getAccountType());
+		    arapAdjustmentsRepo.save(forward);
 
-			accountsVO.setTotalDebitAmount(paymentVO.getPaymentAmt());
-			accountsVO.setTotalCreditAmount(paymentVO.getPaymentAmt());
-//			accountsVO.setCreditDays(taxInvoiceVO.getCreditDays());
-//			accountsVO.setAmountInWords(savedReceiptVO.getAmountInWords());
-//			accountsVO.setStTaxAmount(taxInvoiceVO.getTotalTaxableAmountLc());
-//			accountsVO.setChargeableAmount(taxInvoiceVO.getTotalChargeAmountLc());
+		    ArapAdjustmentsVO existingReverse = arapAdjustmentsRepo.findByDocIdAndRefNoAndOrgIdAndSubledgerCode(
+		        invNo,  docId, paymentVO.getOrgId(), partyCode
+		    );
+		    if (existingReverse != null) {
+		        arapAdjustmentsRepo.delete(existingReverse);
+		    }
 
-			// Create AccountsDetailsVO list and populate it
-			List<AccountsDetailsVO> accountsDetailsVOs = new ArrayList<>();
-
-			// RECEIVABLE A/C entry (Credit)
-			AccountsDetailsVO accountsDetailsVO = new AccountsDetailsVO();
-			accountsDetailsVO.setNDebitAmount(paymentVO.getPaymentAmt());
-			accountsDetailsVO.setACategory("PAYABLE A/C");
-			accountsDetailsVO.setAccountName("PAYABLE A/C");
-			accountsDetailsVO.setSubLedgerCode(paymentVO.getPartyCode());
-			accountsDetailsVO.setDebitAmount(paymentVO.getPaymentAmt());
-			accountsDetailsVO.setNCreditAmount(BigDecimal.ZERO);
-			accountsDetailsVO.setCreditAmount(BigDecimal.ZERO);
-			accountsDetailsVO.setArapFlag(true);
-			accountsDetailsVO.setArapAmount(paymentVO.getPaymentAmt().multiply(BigDecimal.valueOf(-1)));
-			accountsDetailsVO.setBDebitAmount(paymentVO.getPaymentAmt());
-			accountsDetailsVO.setBCrAmount(BigDecimal.ZERO);
-			accountsDetailsVO.setBArapAmount(paymentVO.getPaymentAmt().multiply(BigDecimal.valueOf(-1)));
-			accountsDetailsVO.setACurrency(paymentVO.getCurrency());
-			accountsDetailsVO.setSubledgerName(paymentVO.getPartyName());
-			accountsDetailsVO.setNArapAmount(paymentVO.getPaymentAmt().multiply(BigDecimal.valueOf(-1)));
-			accountsDetailsVO.setGstflag(2);
-			accountsDetailsVO.setAccountsVO(accountsVO);
-			accountsDetailsVOs.add(accountsDetailsVO);
-
-			// BANK/CASH entry (Debit)
-			AccountsDetailsVO accountsDetailsVO1 = new AccountsDetailsVO();
-			accountsDetailsVO1.setNDebitAmount(BigDecimal.ZERO);
-			accountsDetailsVO1.setAccountName(paymentVO.getBankCashAcc());
-			accountsDetailsVO1.setSubLedgerCode("None");
-			accountsDetailsVO1.setDebitAmount(BigDecimal.ZERO);
-			accountsDetailsVO1.setNCreditAmount(paymentVO.getPaymentAmt());
-			accountsDetailsVO1.setCreditAmount(paymentVO.getPaymentAmt());
-			accountsDetailsVO1.setArapFlag(false);
-			accountsDetailsVO1.setArapAmount(BigDecimal.ZERO);
-			accountsDetailsVO1.setBDebitAmount(BigDecimal.ZERO);
-			accountsDetailsVO1.setBCrAmount(paymentVO.getPaymentAmt());
-			accountsDetailsVO1.setBArapAmount(BigDecimal.ZERO);
-			accountsDetailsVO1.setACurrency(paymentVO.getCurrency());
-			accountsDetailsVO1.setSubledgerName("None");
-			accountsDetailsVO1.setNArapAmount(BigDecimal.ZERO);
-			accountsDetailsVO1.setGstflag(3);
-			accountsDetailsVO1.setAccountsVO(accountsVO);
-			accountsDetailsVOs.add(accountsDetailsVO1); 
-		
-			accountsVO.setAccountsDetailsVO(accountsDetailsVOs);
-
-
-			// Save AccountsVO and update TaxInvoiceVO
-			AccountsVO savedAccountsVO = accountsRepo.save(accountsVO);
-			int gstflag = 2;
-
-			AccountsDetailsVO accountsDetailsVOs2 = accountsDetailsRepo.findByAccountsVOAndGstflag(savedAccountsVO,
-					gstflag);
-			ArapDetailsVO arapDetailsVO = new ArapDetailsVO();
-			arapDetailsVO.setSourceTransid(accountsDetailsVOs2.getId());
-			arapDetailsVO.setCreatedBy(savedAccountsVO.getCreatedBy());
-			arapDetailsVO.setUpdatedBy(savedAccountsVO.getModifiedBy());
-			arapDetailsVO.setBranch(savedAccountsVO.getBranch());
-			arapDetailsVO.setBranchCode(savedAccountsVO.getBranchCode());
-			arapDetailsVO.setFinYear(savedAccountsVO.getFinYear());
-			arapDetailsVO.setRefNo(savedAccountsVO.getRefNo());
-			arapDetailsVO.setOrgId(savedAccountsVO.getOrgId());
-			arapDetailsVO.setRefDate(savedAccountsVO.getRefDate());
-			arapDetailsVO.setSubLedgerCode(accountsDetailsVOs2.getSubLedgerCode());
-			arapDetailsVO.setCurrency(accountsDetailsVOs2.getACurrency());
-			arapDetailsVO.setExRate(accountsDetailsVOs2.getAExRate());
-			arapDetailsVO.setAmount(accountsDetailsVOs2.getArapAmount());
-			arapDetailsVO.setBaseAmt(accountsDetailsVOs2.getArapAmount());
-			arapDetailsVO.setDueDate(savedAccountsVO.getDueDate());
-			arapDetailsVO.setCreditDays(savedAccountsVO.getCreditDays());
-			arapDetailsVO.setDocId(savedAccountsVO.getDocId());
-			arapDetailsVO.setDocDate(savedAccountsVO.getDocDate());
-			arapDetailsVO.setAccCurrency(savedAccountsVO.getCurrency());
-			arapDetailsVO.setExRate(savedAccountsVO.getExRate());
-			arapDetailsVO.setAccName(accountsDetailsVOs2.getAccountName());
-			arapDetailsVO.setGstFlag(accountsDetailsVOs2.getGstflag());
-			arapDetailsVO.setSubLedgerName(accountsDetailsVOs2.getSubledgerName());
-			arapDetailsVO.setSalesType(savedAccountsVO.getSalesType());
-			arapDetailsVO.setNativeAmt(accountsDetailsVOs2.getArapAmount());
-			arapDetailsRepo.save(arapDetailsVO);
+		    ArapAdjustmentsVO reverse = new ArapAdjustmentsVO();
+		    reverse.setCancel(false);
+		    reverse.setActive(true);
+		    reverse.setCreatedBy(paymentVO.getCreatedBy());
+		    reverse.setUpdatedBy(paymentVO.getUpdatedBy());
+		    reverse.setFinYear(paymentVO.getFinYear());
+		    reverse.setDocId(invNo);
+		    reverse.setDocDate(invDate);
+		    reverse.setRefNo(docId);
+		    reverse.setRefDate(docDate);
+		    reverse.setSubLedgerCode(partyCode);
+		    reverse.setSubLedgerName(paymentVO.getPartyName());
+		    reverse.setCurrency(dtlsVO.getCurrency());
+		    reverse.setExRate(dtlsVO.getExRate());
+		    reverse.setAmount(dtlsVO.getSettled().negate());
+		    reverse.setBaseAmt(dtlsVO.getSettled().negate());
+		    reverse.setNativeAmt(dtlsVO.getSettled().negate());
+		    reverse.setOrgId(paymentVO.getOrgId());
+		    reverse.setAccCurrency(dtlsVO.getCurrency());
+		    reverse.setAccountName(partyMaster.getAccountType());
+		    reverse.setBranchCode(paymentVO.getBranchCode());
+		    reverse.setBranch(paymentVO.getBranch());
+		    reverse.setSourceId(dtlsVO.getId());
+		    arapAdjustmentsRepo.save(reverse);
 		}
+
 		Map<String, Object> response = new HashMap<>();
 		response.put("paymentVO", paymentVO);
 		response.put("message", message);
 		return response;
-	}
+	
+}
 
 	private PaymentVO getPaymentVOFromPaymentDTO(PaymentDTO paymentDTO, PaymentVO paymentVO) throws ApplicationException {
 
@@ -800,90 +722,30 @@ public class APServiceImpl implements APService {
 //		return arapoffsetfill;
 //	}
 	
-//	@Override
-//	public PaymentVO approvePayment(Long orgId, Long id, String docId, String action, String actionBy)
-//	        throws ApplicationException {
-//
-//	    PaymentVO paymentVO = paymentRepo.findByOrgIdAndIdAndDocId(orgId, id, docId);
-//
-//	    if (paymentVO == null) {
-//	        throw new ApplicationException("Payment not found for the given details.");
-//	    }
-//
-//	    if ("Approved".equalsIgnoreCase(paymentVO.getApproveStatus())) {
-//	        throw new ApplicationException("This Payment Already Approved");
-//	    } else if ("Rejected".equals(paymentVO.getApproveStatus())) {
-//	        throw new ApplicationException("This Payment Already Rejected");
-//	    }
-//
-//	    if (!"SETTLED".equals(paymentVO.getStatus())) {
-//	        throw new ApplicationException("Only SETTLED payments can be approved or rejected.");
-//	    }
-//
-//	    if (paymentVO.getApproveStatus() == null || 
-//	        (!"Approved".equals(paymentVO.getApproveStatus()) && !"Rejected".equals(paymentVO.getApproveStatus()))) {
-//
-////	        List<PaymentInvDtlsVO> paymentInvDtlsVOs = paymentVO.getPaymentInvDtlsVO();
-////
-////	        for (PaymentInvDtlsVO dtlsVO : paymentInvDtlsVOs) {
-////
-////	            // Create positive adjustment
-////	            ArapAdjustmentsVO adjustmentsVO = new ArapAdjustmentsVO();
-////	            adjustmentsVO.setCancel(false);
-////	            adjustmentsVO.setActive(true);
-////	            adjustmentsVO.setCreatedBy(paymentVO.getCreatedBy());
-////	            adjustmentsVO.setUpdatedBy(paymentVO.getUpdatedBy());
-////	            adjustmentsVO.setFinYear(paymentVO.getFinYear());
-////	            adjustmentsVO.setDocId(paymentVO.getDocId());
-////	            adjustmentsVO.setDocDate(paymentVO.getDocDate());
-////	            adjustmentsVO.setRefNo(dtlsVO.getInvNo());
-////	            adjustmentsVO.setRefDate(dtlsVO.getInvDate());
-////	            adjustmentsVO.setSubLedgerCode(paymentVO.getPartyCode());
-////	            adjustmentsVO.setSubLedgerName(paymentVO.getPartyName());
-////	            adjustmentsVO.setCurrency(dtlsVO.getCurrency());
-////	            adjustmentsVO.setExRate(dtlsVO.getExRate());
-////	            adjustmentsVO.setAmount(dtlsVO.getSettled());
-////	            adjustmentsVO.setBaseAmt(dtlsVO.getSettled());
-////	            adjustmentsVO.setNativeAmt(dtlsVO.getSettled());
-////	            adjustmentsVO.setOrgId(paymentVO.getOrgId());
-////	            adjustmentsVO.setAccCurrency(dtlsVO.getCurrency());
-////	            adjustmentsVO.setBranch(paymentVO.getBranch());
-////	            adjustmentsVO.setBranchCode(paymentVO.getBranchCode());
-////	            adjustmentsVO.setSourceId(dtlsVO.getId());
-////
-////	            PartyMasterVO masterVO = partyMasterRepo.findByPartyCode(paymentVO.getPartyCode());
-////	            adjustmentsVO.setAccountName(masterVO.getAccountType());
-////
-////	            arapAdjustmentsRepo.save(adjustmentsVO);
-////
-////	            // Create negative adjustment
-////	            ArapAdjustmentsVO negativeAdjustmentsVO = new ArapAdjustmentsVO();
-////	            negativeAdjustmentsVO.setCancel(false);
-////	            negativeAdjustmentsVO.setActive(true);
-////	            negativeAdjustmentsVO.setCreatedBy(paymentVO.getCreatedBy());
-////	            negativeAdjustmentsVO.setUpdatedBy(paymentVO.getUpdatedBy());
-////	            negativeAdjustmentsVO.setFinYear(paymentVO.getFinYear());
-////	            negativeAdjustmentsVO.setDocId(dtlsVO.getInvNo());
-////	            negativeAdjustmentsVO.setDocDate(dtlsVO.getInvDate());
-////	            negativeAdjustmentsVO.setRefNo(paymentVO.getDocId());
-////	            negativeAdjustmentsVO.setRefDate(paymentVO.getDocDate());
-////	            negativeAdjustmentsVO.setSubLedgerCode(paymentVO.getPartyCode());
-////	            negativeAdjustmentsVO.setSubLedgerName(paymentVO.getPartyName());
-////	            negativeAdjustmentsVO.setCurrency(dtlsVO.getCurrency());
-////	            negativeAdjustmentsVO.setExRate(dtlsVO.getExRate());
-////	            negativeAdjustmentsVO.setAmount(dtlsVO.getSettled().negate());
-////	            negativeAdjustmentsVO.setBaseAmt(dtlsVO.getSettled().negate());
-////	            negativeAdjustmentsVO.setNativeAmt(dtlsVO.getSettled().negate());
-////	            negativeAdjustmentsVO.setOrgId(paymentVO.getOrgId());
-////	            negativeAdjustmentsVO.setAccCurrency(dtlsVO.getCurrency());
-////	            negativeAdjustmentsVO.setAccountName(masterVO.getAccountType());
-////	            negativeAdjustmentsVO.setBranch(paymentVO.getBranch());
-////	            negativeAdjustmentsVO.setBranchCode(paymentVO.getBranchCode());
-////	            negativeAdjustmentsVO.setSourceId(dtlsVO.getId());
-////
-////	            arapAdjustmentsRepo.save(negativeAdjustmentsVO);
-////	        }
-//
+	@Override
+	public PaymentVO approvePayment(Long orgId, Long id, String docId, String action, String actionBy)
+	        throws ApplicationException {
+
+	    PaymentVO paymentVO = paymentRepo.findByOrgIdAndIdAndDocId(orgId, id, docId);
+
+	    if (paymentVO == null) {
+	        throw new ApplicationException("Payment not found for the given details.");
+	    }
+
+	    if ("Approved".equalsIgnoreCase(paymentVO.getApproveStatus())) {
+	        throw new ApplicationException("This Payment Already Approved");
+	    } else if ("Rejected".equals(paymentVO.getApproveStatus())) {
+	        throw new ApplicationException("This Payment Already Rejected");
+	    }
+
+	    if (!"SUBMIT".equalsIgnoreCase(paymentVO.getStatus())) {
+	        throw new ApplicationException("Only SETTLED payments can be approved or rejected.");
+	    }
+
+	    if (paymentVO.getApproveStatus() == null || 
+	        (!"Approved".equals(paymentVO.getApproveStatus()) && !"Rejected".equals(paymentVO.getApproveStatus()))) {
+
+
 //	        // Create AccountsVO and related details
 //	        AccountsVO accountsVO = new AccountsVO();
 //	        accountsVO.setDocId(paymentVO.getDocId());
@@ -984,19 +846,141 @@ public class APServiceImpl implements APService {
 //	        arapDetailsVO.setSalesType(savedAccountsVO.getSalesType());
 //
 //	        arapDetailsRepo.save(arapDetailsVO);
-//
-//	        // Update approval status
-//	        paymentVO.setApproveStatus(action);
-////	        paymentVO.setApproveBy(actionBy);
-//	        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy hh:mm:ss a");
-//	        paymentVO.setApproveOn(LocalDateTime.now().format(formatter).toUpperCase());
-//
-//	        return paymentRepo.save(paymentVO);
-//	    }
-//
-//	    return paymentVO;
-//	}
+
+	    	String screenCode1 = "AC";
+			String sourceScreenCode = paymentVO.getScreenCode();
+
+			String accountsDocId = accountsRepo.getApproveDocId(paymentVO.getOrgId(),paymentVO.getFinYear(),paymentVO.getBranchCode(),sourceScreenCode,screenCode1);
+
+			MultipleDocIdGenerationDetailsVO multipleDocIdGenerationDetailsVO = multipleDocIdGenerationDetailsRepo
+			        .findByOrgIdAndFinYearAndBranchCodeAndSourceScreenCodeAndScreenCode(paymentVO.getOrgId(),paymentVO.getFinYear(),paymentVO.getBranchCode(),sourceScreenCode,
+			                screenCode1
+			        );
+			multipleDocIdGenerationDetailsVO.setLastno(multipleDocIdGenerationDetailsVO.getLastno() + 1);
+			multipleDocIdGenerationDetailsRepo.save(multipleDocIdGenerationDetailsVO);
+
+			
+			AccountsVO accountsVO = new AccountsVO();
+			accountsVO.setDocId(accountsDocId);
+			accountsVO.setSourceScreen(paymentVO.getScreenName());
+			accountsVO.setSourceId(paymentVO.getId());
+			accountsVO.setCreatedBy(paymentVO.getCreatedBy());
+			accountsVO.setModifiedBy(paymentVO.getUpdatedBy());
+			accountsVO.setOrgId(paymentVO.getOrgId());
+			accountsVO.setBranch(paymentVO.getBranch());
+			accountsVO.setBranchCode(paymentVO.getBranchCode());
+			accountsVO.setRefNo(paymentVO.getDocId());
+			accountsVO.setRefDate(paymentVO.getDocDate());
+//			accountsVO.setVId(savedReceiptVO.getVId());
+//			accountsVO.setVDate(savedReceiptVO.getVDate());
+			accountsVO.setCurrency(paymentVO.getCurrency());
+//			accountsVO.setExRate(dtlsVO.getExRate());
+			accountsVO.setRemarks(paymentVO.getCancelRemarks());
+			accountsVO.setFinYear(paymentVO.getFinYear());
 
 
+			accountsVO.setTotalDebitAmount(paymentVO.getPaymentAmt());
+			accountsVO.setTotalCreditAmount(paymentVO.getPaymentAmt());
+//			accountsVO.setCreditDays(taxInvoiceVO.getCreditDays());
+//			accountsVO.setAmountInWords(savedReceiptVO.getAmountInWords());
+//			accountsVO.setStTaxAmount(taxInvoiceVO.getTotalTaxableAmountLc());
+//			accountsVO.setChargeableAmount(taxInvoiceVO.getTotalChargeAmountLc());
+
+			// Create AccountsDetailsVO list and populate it
+			List<AccountsDetailsVO> accountsDetailsVOs = new ArrayList<>();
+
+			// RECEIVABLE A/C entry (Credit)
+			AccountsDetailsVO accountsDetailsVO = new AccountsDetailsVO();
+			accountsDetailsVO.setNDebitAmount(paymentVO.getPaymentAmt());
+			accountsDetailsVO.setACategory("PAYABLE A/C");
+			accountsDetailsVO.setAccountName("PAYABLE A/C");
+			accountsDetailsVO.setSubLedgerCode(paymentVO.getPartyCode());
+			accountsDetailsVO.setDebitAmount(paymentVO.getPaymentAmt());
+			accountsDetailsVO.setNCreditAmount(BigDecimal.ZERO);
+			accountsDetailsVO.setCreditAmount(BigDecimal.ZERO);
+			accountsDetailsVO.setArapFlag(true);
+			accountsDetailsVO.setArapAmount(paymentVO.getPaymentAmt().multiply(BigDecimal.valueOf(-1)));
+			accountsDetailsVO.setBDebitAmount(paymentVO.getPaymentAmt());
+			accountsDetailsVO.setBCrAmount(BigDecimal.ZERO);
+			accountsDetailsVO.setBArapAmount(paymentVO.getPaymentAmt().multiply(BigDecimal.valueOf(-1)));
+			accountsDetailsVO.setACurrency(paymentVO.getCurrency());
+			accountsDetailsVO.setSubledgerName(paymentVO.getPartyName());
+			accountsDetailsVO.setNArapAmount(paymentVO.getPaymentAmt().multiply(BigDecimal.valueOf(-1)));
+			accountsDetailsVO.setGstflag(2);
+			accountsDetailsVO.setAccountsVO(accountsVO);
+			accountsDetailsVOs.add(accountsDetailsVO);
+
+			// BANK/CASH entry (Debit)
+			AccountsDetailsVO accountsDetailsVO1 = new AccountsDetailsVO();
+			accountsDetailsVO1.setNDebitAmount(BigDecimal.ZERO);
+			accountsDetailsVO1.setAccountName(paymentVO.getBankCashAcc());
+			accountsDetailsVO1.setSubLedgerCode("None");
+			accountsDetailsVO1.setDebitAmount(BigDecimal.ZERO);
+			accountsDetailsVO1.setNCreditAmount(paymentVO.getPaymentAmt());
+			accountsDetailsVO1.setCreditAmount(paymentVO.getPaymentAmt());
+			accountsDetailsVO1.setArapFlag(false);
+			accountsDetailsVO1.setArapAmount(BigDecimal.ZERO);
+			accountsDetailsVO1.setBDebitAmount(BigDecimal.ZERO);
+			accountsDetailsVO1.setBCrAmount(paymentVO.getPaymentAmt());
+			accountsDetailsVO1.setBArapAmount(BigDecimal.ZERO);
+			accountsDetailsVO1.setACurrency(paymentVO.getCurrency());
+			accountsDetailsVO1.setSubledgerName("None");
+			accountsDetailsVO1.setNArapAmount(BigDecimal.ZERO);
+			accountsDetailsVO1.setGstflag(3);
+			accountsDetailsVO1.setAccountsVO(accountsVO);
+			accountsDetailsVOs.add(accountsDetailsVO1); 
+		
+			accountsVO.setAccountsDetailsVO(accountsDetailsVOs);
+
+
+			// Save AccountsVO and update TaxInvoiceVO
+			AccountsVO savedAccountsVO = accountsRepo.save(accountsVO);
+			int gstflag = 2;
+
+			AccountsDetailsVO accountsDetailsVOs2 = accountsDetailsRepo.findByAccountsVOAndGstflag(savedAccountsVO,
+					gstflag);
+			ArapDetailsVO arapDetailsVO = new ArapDetailsVO();
+			arapDetailsVO.setSourceTransid(accountsDetailsVOs2.getId());
+			arapDetailsVO.setCreatedBy(savedAccountsVO.getCreatedBy());
+			arapDetailsVO.setUpdatedBy(savedAccountsVO.getModifiedBy());
+			arapDetailsVO.setBranch(savedAccountsVO.getBranch());
+			arapDetailsVO.setBranchCode(savedAccountsVO.getBranchCode());
+			arapDetailsVO.setFinYear(savedAccountsVO.getFinYear());
+			arapDetailsVO.setRefNo(savedAccountsVO.getRefNo());
+			arapDetailsVO.setOrgId(savedAccountsVO.getOrgId());
+			arapDetailsVO.setRefDate(savedAccountsVO.getRefDate());
+			arapDetailsVO.setSubLedgerCode(accountsDetailsVOs2.getSubLedgerCode());
+			arapDetailsVO.setCurrency(accountsDetailsVOs2.getACurrency());
+			arapDetailsVO.setExRate(accountsDetailsVOs2.getAExRate());
+			arapDetailsVO.setAmount(accountsDetailsVOs2.getArapAmount());
+			arapDetailsVO.setBaseAmt(accountsDetailsVOs2.getArapAmount());
+			arapDetailsVO.setDueDate(savedAccountsVO.getDueDate());
+			arapDetailsVO.setCreditDays(savedAccountsVO.getCreditDays());
+			arapDetailsVO.setDocId(savedAccountsVO.getDocId());
+			arapDetailsVO.setDocDate(savedAccountsVO.getDocDate());
+			arapDetailsVO.setAccCurrency(savedAccountsVO.getCurrency());
+			arapDetailsVO.setExRate(savedAccountsVO.getExRate());
+			arapDetailsVO.setAccName(accountsDetailsVOs2.getAccountName());
+			arapDetailsVO.setGstFlag(accountsDetailsVOs2.getGstflag());
+			arapDetailsVO.setSubLedgerName(accountsDetailsVOs2.getSubledgerName());
+			arapDetailsVO.setSalesType(savedAccountsVO.getSalesType());
+			arapDetailsVO.setNativeAmt(accountsDetailsVOs2.getArapAmount());
+			arapDetailsRepo.save(arapDetailsVO);
+	    	
+	    	
+	    	
+	    	
+	        // Update approval status
+	        paymentVO.setApproveStatus(action);
+	        paymentVO.setApproveBy(actionBy);
+	        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy hh:mm:ss a");
+	        paymentVO.setApproveOn(LocalDateTime.now().format(formatter).toUpperCase());
+
+	        return paymentRepo.save(paymentVO);
+	    }
+
+	    return paymentVO;
+
+	}
 }
 
