@@ -151,10 +151,10 @@ public class MasterServiceImpl implements MasterService {
 
 	@Autowired
 	ItemMasterRepo itemMasterRepo;
-	
+
 	@Autowired
 	UomRepo uomRepo;
-	
+
 	@Autowired
 	EmployeeRepo employeeRepo;
 
@@ -326,8 +326,8 @@ public class MasterServiceImpl implements MasterService {
 			message = "Branch Updated Successfully";
 		}
 
-		getBranchVOFromBranchDTO(branchVO, branchDTO);
 		branchRepo.save(branchVO);
+		getBranchVOFromBranchDTO(branchVO, branchDTO);
 
 		Map<String, Object> response = new HashMap<>();
 		response.put("message", message);
@@ -2571,18 +2571,18 @@ public class MasterServiceImpl implements MasterService {
 					.orElseThrow(() -> new ApplicationException("Item master not found"));
 			itemMasterVO.setModifiedBy(itemMasterDTO.getCreatedBy());
 
-
 			createUpdateItemMasterVOByItemMasterDTO(itemMasterDTO, itemMasterVO);
 			message = "Item Master Updated Successfully";
-			
+
 		} else {
-			
+
 			// Check for duplicate dupChk before creating
-		    boolean isDupChkExists = itemMasterRepo.existsByDupChk(itemMasterDTO.getDupChk());
-		    if (isDupChkExists) {
-		        throw new ApplicationException("Duplicate value found item for the customer: " + itemMasterDTO.getDupChk());
-		    }
-		    
+			boolean isDupChkExists = itemMasterRepo.existsByDupChk(itemMasterDTO.getDupChk());
+			if (isDupChkExists) {
+				throw new ApplicationException(
+						"Duplicate value found item for the customer: " + itemMasterDTO.getDupChk());
+			}
+
 			// Create new ItemVO
 			itemMasterVO.setCreatedBy(itemMasterDTO.getCreatedBy());
 			itemMasterVO.setModifiedBy(itemMasterDTO.getCreatedBy());
@@ -2600,9 +2600,10 @@ public class MasterServiceImpl implements MasterService {
 		return response;
 	}
 
-	private void createUpdateItemMasterVOByItemMasterDTO(@Valid ItemMasterDTO itemMasterDTO, ItemMasterVO itemMasterVO) {
+	private void createUpdateItemMasterVOByItemMasterDTO(@Valid ItemMasterDTO itemMasterDTO,
+			ItemMasterVO itemMasterVO) {
 		itemMasterVO.setPartNo(itemMasterDTO.getPartNo());
-	//	itemMasterVO.setId(itemMasterDTO.getId());
+		// itemMasterVO.setId(itemMasterDTO.getId());
 		itemMasterVO.setOrgId(itemMasterDTO.getOrgId());
 		itemMasterVO.setBranch(itemMasterDTO.getBranch());
 		itemMasterVO.setBranchCode(itemMasterDTO.getBranchCode());
@@ -2616,8 +2617,8 @@ public class MasterServiceImpl implements MasterService {
 		// itemMasterVO.setDupChk(itemMasterDTO.getDupChk());
 		String partNo = itemMasterDTO.getPartNo() != null ? itemMasterDTO.getPartNo().trim() : "";
 		String customer = itemMasterDTO.getCustomer() != null ? itemMasterDTO.getCustomer().trim() : "";
-		itemMasterVO.setDupChk(partNo+customer);
-		
+		itemMasterVO.setDupChk(partNo + customer);
+
 		itemMasterVO.setHsnCode(itemMasterDTO.getHsnCode());
 		itemMasterVO.setItemType(itemMasterDTO.getItemType());
 		itemMasterVO.setPartDesc(itemMasterDTO.getPartDesc());
@@ -2644,8 +2645,7 @@ public class MasterServiceImpl implements MasterService {
 	}
 
 	// uom
-	
-	
+
 	@Override
 	public List<UomVO> getUomByOrgId(Long orgId) {
 		List<UomVO> uomVO = new ArrayList<>();
@@ -2712,5 +2712,5 @@ public class MasterServiceImpl implements MasterService {
 		uomVO.setActive(uomDTO.isActive());
 
 	}
-	
+
 }
