@@ -15,7 +15,7 @@ public interface KitRepo extends JpaRepository<KitVO, Long>{
 
 	boolean existsByKitDescAndOrgId(String kitDesc, Long orgId);
 
-	@Query(nativeQuery =true,value = "select a.* from kit where orgid=?1")
+	@Query(nativeQuery =true,value = "select a.* from kit a where a.orgid=?1")
 	List<KitVO> findAllKit(Long orgid);
 
 

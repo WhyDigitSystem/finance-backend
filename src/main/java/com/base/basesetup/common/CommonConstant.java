@@ -17,4 +17,5 @@ public class CommonConstant {
 	public static final String STR_DATE_FORMAT_YYYY_MM_DD_HH_MM_SS = "yyyy-MM-dd'T'HH:mm:ss";
 	public static final String STR_DATE_FORMAt_YYYY_MM_DD_HH_MM_SS = " yyyy mm dd 'T'HH:MM: SS";
 	public static final String REFRESH_TOKEN = "refreshToken";
+	public static final String EXCEPTION_OCCURRED = "Exception occurred in method: {}";
 }
