@@ -19,7 +19,7 @@ public interface AssetCategoryRepo extends JpaRepository<AssetCategoryVO, Long> 
 
 	boolean existsByCategoryCodeAndOrgId(String categoryCode, Long orgId);
 
-	@Query(nativeQuery = true,value = "select a.category,a.categorycode from assetcategory a where a.category=?2 and a.orgid=?1  and a.active=1 and a.cancel=0")
+	@Query(nativeQuery = true,value = "select a.category,a.categorycode from assetcategory a where a.assettype=?2 and a.orgid=?1  and a.active=1 and a.cancel=0")
 	Set<Object[]> getAssetData(Long orgId, String assetType);
 
 }

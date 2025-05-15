@@ -275,7 +275,7 @@ public class KitController extends BaseController {
 		ResponseDTO responseDTO = null;
 		try {
 			Map<String, Object> kitVO = kitControllerService.updateCreateKit(kitDTO);
-			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, kitVO.get("message"));
+			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, kitVO.get("message"));   
 			responseObjectsMap.put("kitVO", kitVO.get("kitVO"));
 			responseDTO = createServiceResponse(responseObjectsMap);
 		} catch (Exception e) {
@@ -369,7 +369,8 @@ public class KitController extends BaseController {
 	}
 	
 	@GetMapping("/getAssetDescriptionByAssetCode")
-	public ResponseEntity<ResponseDTO> getAssetDescriptionByAssetCode(@RequestParam(required = true) Long orgId,@RequestParam(required = false) String assetCode) {
+	public ResponseEntity<ResponseDTO> getAssetDescriptionByAssetCode(@RequestParam(required = true) Long orgId,@RequestParam(required = false) String assetCategory
+			,@RequestParam(required = true) String assetType) {
 		String methodName = "getAssetDescriptionByAssetCode()";
 		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
 		String errorMsg = null;
@@ -378,7 +379,7 @@ public class KitController extends BaseController {
 		List<Map<String, Object>> mapp = new ArrayList<>();
 
 		try {
-			mapp = kitControllerService.getAssetDescriptionByAssetCode(orgId,assetCode);
+			mapp = kitControllerService.getAssetDescriptionByAssetCode(orgId,assetCategory,assetType);
 		} catch (Exception e) {
 			errorMsg = e.getMessage();
 			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);

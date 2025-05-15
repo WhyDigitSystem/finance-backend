@@ -55,6 +55,6 @@ public interface KitControllerService {
 
 	List<Map<String, Object>> getAssetCategoeyByAsset(Long orgId, String category);
 
-	List<Map<String, Object>> getAssetDescriptionByAssetCode(Long orgId, String assetCode);
+	List<Map<String, Object>> getAssetDescriptionByAssetCode(Long orgId, String assetCategory, String assetType);
 
 }

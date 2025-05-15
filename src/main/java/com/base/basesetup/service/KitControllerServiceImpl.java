@@ -447,7 +447,7 @@ public class KitControllerServiceImpl implements KitControllerService {
 		kitRepo.save(kitVO);
 
 		Map<String, Object> response = new HashMap<>();
-		response.put("assetVO", kitVO);
+		response.put("kitVO", kitVO);
 		response.put("message", message);
 		return response;
 
@@ -530,8 +530,8 @@ public class KitControllerServiceImpl implements KitControllerService {
 	}
 
 	@Override
-	public List<Map<String, Object>> getAssetDescriptionByAssetCode(Long orgId, String assetCode) {
-		Set<Object[]> chType = assetRepo.getAssetDescriptionByAsset(orgId, assetCode);
+	public List<Map<String, Object>> getAssetDescriptionByAssetCode(Long orgId, String assetCategory,String assetType) {
+		Set<Object[]> chType = assetRepo.getAssetDescriptionByAsset(orgId, assetCategory,assetType);
 		return getAssetDescription(chType);
 	}
 
@@ -539,7 +539,8 @@ public class KitControllerServiceImpl implements KitControllerService {
 		List<Map<String, Object>> List1 = new ArrayList<>();
 		for (Object[] ch : chType) {
 			Map<String, Object> map = new HashMap<>();
-			map.put("assetDescription", ch[0] != null ? ch[0].toString() : "");
+			map.put("asset", ch[0] != null ? ch[0].toString() : "");
+			map.put("assetCode", ch[1] != null ? ch[1].toString() : "");
 			List1.add(map);
 		}
 		return List1;
