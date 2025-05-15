@@ -10,6 +10,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.base.basesetup.dto.StockBranchDTO;
 import com.base.basesetup.dto.WarehouseDTO;
+import com.base.basesetup.entity.CityVO;
+import com.base.basesetup.entity.StateVO;
 import com.base.basesetup.entity.StockBranchVO;
 import com.base.basesetup.entity.WarehouseVO;
 import com.base.basesetup.exception.ApplicationException;
@@ -40,6 +42,13 @@ public interface WareHouseService {
 
 	int getTotalRows();
 	int getSuccessfulUploads();
+
+	List<CityVO> getAllCitiesByStateAndCountry(String state, String country, Long orgId);
+
+	List<StateVO> getAllStatesByCountry(String Country, Long orgId);
+
+	void excelUploadForAsset(MultipartFile[] files, String createdBy, Long orgId)
+			throws EncryptedDocumentException, ApplicationException, IOException;
 
 
 }
