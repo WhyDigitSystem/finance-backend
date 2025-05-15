@@ -68,7 +68,7 @@ public class WareHouseServiceImpl implements WareHouseService {
 		if (ObjectUtils.isEmpty(stockBranchDTO.getId())) {
 			if (stockBranchRepo.existsByBranchAndOrgId(stockBranchDTO.getBranch(), stockBranchDTO.getOrgId())) {
 				String errorMessage = String.format("The StockBranch: %s already exists in this organization.",
-						stockBranchDTO.getBranch());
+						stockBranchDTO.getBranch());  
 				throw new ApplicationException(errorMessage);
 			}
 			if (stockBranchRepo.existsBybranchCodeAndOrgId(stockBranchDTO.getBranchCode(), stockBranchDTO.getOrgId())) {
