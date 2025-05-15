@@ -37,7 +37,7 @@ public class SecurityConfig {
 						"/swagger-ui.html", "/swagger-ui/*", "/api/auth/signup", "/api/auth/login", "/api/auth/logout",
 						"/api/auth/getRefreshToken", "/api/auth/**", "/api/commonmaster/**", "/api/master/**",
 						"/api/user/**", "/images/**", "/api/transaction/**", "/api/GlobalParam/**","/api/dashboard/**",
-						"/api/arreceivable/**", "/api/transaction/**", "/api/GlobalParam/**", "/api/payable/**",
+						"/api/arreceivable/**", "/api/transaction/**", "/api/GlobalParam/**", "/api/payable/**","/api/kitController/**",
 						"/api/documentType/**", "/api/taxInvoice/**", "/api/arapAdjustments/**","/api/reportController/**",
 						"/api/costdebitnote/**", "/api/costInvoice/**","/api/irnCreditNote/**","/api/multipleDocIdGeneration/**","/api/sampleExcel/**"
 						,"/api/rCostInvoiceGna/**","/api/UrCostInvoiceGna/**","/api/offSetcontroller/**","/api/aradjustmentoffset/**","/api/warehouser/**")
