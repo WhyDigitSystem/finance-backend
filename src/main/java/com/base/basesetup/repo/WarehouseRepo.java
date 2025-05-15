@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import com.base.basesetup.entity.CityVO;
 import com.base.basesetup.entity.StockBranchVO;
 import com.base.basesetup.entity.WarehouseVO;
 
@@ -18,7 +19,7 @@ public interface WarehouseRepo extends JpaRepository<WarehouseVO, Long> {
 	@Query(value = "select a from WarehouseVO a where a.id=?1")
 	WarehouseVO getWarehouseById(Long id);
 
-	boolean existsByLocationNameAndLocationUnitAndOrgId(String locationName, String locationUnit, Long orgId);
+//	boolean existsByLocationNameAndLocationUnitAndOrgId(String locationName, String locationUnit, Long orgId);
 
 	boolean existsByNameAndOrgId(String concatName, Long orgId);
 	
@@ -26,6 +27,7 @@ public interface WarehouseRepo extends JpaRepository<WarehouseVO, Long> {
 	List<StockBranchVO> getStockBranchName(Long orgId);
 
 	boolean existsByLocationUnitAndOrgId(String locationUnit, Long orgId);
+	
 
 //	@Query(value = "select w.warehouseLocation,w.warehouseId  from WarehouseVO w where w.orgId=?1")
 //	Set<Object[]> getWarehouseLocationByOrgID(Long orgId);
