@@ -270,7 +270,7 @@ public class WareHouseServiceImpl implements WareHouseService {
 		                String state = getStringCellValue(row.getCell(5));
 		                String city = getStringCellValue(row.getCell(6));
 		                Long pincode = getLongCellValue(row.getCell(7));
-		                BigDecimal gst = getBigDecimalValue(row.getCell(8));
+		                String gst = getStringCellValue(row.getCell(8));
 		                String stockBranch = getStringCellValue(row.getCell(9));
 		                boolean active = getActiveBooleanValue(row.getCell(10), row.getRowNum() + 1);
 

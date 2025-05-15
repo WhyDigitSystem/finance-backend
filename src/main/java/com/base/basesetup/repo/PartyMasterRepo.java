@@ -397,4 +397,7 @@ public interface PartyMasterRepo extends JpaRepository<PartyMasterVO, Long> {
 			+ "GROUP BY j.product, t.orgid")
 	Set<Object[]> getSalesDistributionData(Long orgId, String month, String finYear,String branchCode);
 
+	@Query(nativeQuery = true, value = "select partycode,partyname from partymaster where orgid=?1 and bussinesscate='TRANSPORTERS'")
+	Set<Object[]> getAllTransprtersReport(Long orgId);
+
 }

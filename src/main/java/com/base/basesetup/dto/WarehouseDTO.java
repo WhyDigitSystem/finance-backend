@@ -1,7 +1,5 @@
 package com.base.basesetup.dto;
 
-import java.math.BigDecimal;
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -21,7 +19,7 @@ public class WarehouseDTO {
 	private Long pincode;
 	private String city;
 	private String country;
-	private BigDecimal gst;
+	private String gst;
 	private boolean active;
 	private boolean cancel;
 	private String createdBy;

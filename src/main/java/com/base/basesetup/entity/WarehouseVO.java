@@ -50,8 +50,8 @@ public class WarehouseVO {
 	private String city;
 	@Column(name="country")
 	private String country;
-	@Column(name="gst",precision = 10,length = 2)
-	private BigDecimal gst;
+	@Column(name="gst")
+	private String gst;
 	@Column(name="active")
 	private boolean active;
 	@Column(name="cancel")

@@ -40,6 +40,8 @@ public interface PartyTypeService {
 	Optional<PartyMasterVO> getCustomersById(Long id);
 
 	List<PartyMasterVO> getAllCustomers(Long orgId);
+	
+	List<Map<String, Object>> getAllTransporters(Long orgId);
 
 	// VENDORS
 
@@ -62,4 +64,6 @@ public interface PartyTypeService {
 	List<Map<String, Object>> getMonthlyAndYearWiseData(Long orgId, String month,String finYear,String branchCode);
 
 	List<Map<String, Object>> getSalesDistributionData(Long orgId, String month, String finYear, String branchCode);
+
+	
 }
