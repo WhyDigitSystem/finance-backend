@@ -934,6 +934,44 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 	}
 
 	@Override
+	public List<Map<String, Object>> getAllTransporters(Long orgId) {
+	    Set<Object[]> chType = partyMasterRepo.getAllTransprtersReport(orgId);
+	    return getAllTransporterData(chType);
+	}
+
+	private List<Map<String, Object>> getAllTransporterData(Set<Object[]> chType) {
+	    List<Map<String, Object>> resultList = new ArrayList<>();
+	    for (Object[] ch : chType) {
+	        Map<String, Object> map = new HashMap<>();
+	        map.put("partyCode", ch[0] != null ? ch[0].toString() : "");
+	        map.put("partyName", ch[1] != null ? ch[1].toString() : "");
+	        resultList.add(map);
+	    }
+	    return resultList;
+	}
+
+	
+	
+//	@Override
+//	public List<PartyMasterVO> getAllTransporters(Long orgId) {
+//		Set<Object[]> chType = partyMasterRepo.getAllTransprtersReport(orgId);
+//		return getAllTransprters(chType);
+//	}
+//
+//	private List<PartyMasterVO> getAllTransprters(Set<Object[]> chType) {
+//		Map<String, Object> list1 = new ArrayList<>();
+//	    for (Object[] ch : chType) {
+//	        PartyMasterVO vo = new PartyMasterVO();
+//	        vo.put("partyName", ch[0].toString());
+//			vo.put("amt", ch[1] != null ? ch[1].toString() : "");
+//	        list1.add(vo);
+//	    }
+//	    return list1;
+//	}
+
+	
+	
+	@Override
 	public List<Map<String, Object>> getAccountNameFromGroup(Long orgId) {
 		Set<Object[]> chType = partyMasterRepo.getAccountNameFromGroup(orgId);
 		return getAccountName(chType);
@@ -989,5 +1027,7 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 		return List1;
 
 	}
+
+	
 
 }
