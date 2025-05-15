@@ -945,6 +945,7 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 	        Map<String, Object> map = new HashMap<>();
 	        map.put("partyCode", ch[0] != null ? ch[0].toString() : "");
 	        map.put("partyName", ch[1] != null ? ch[1].toString() : "");
+	        map.put("partyShortName", ch[2] != null ? ch[2].toString() : "");
 	        resultList.add(map);
 	    }
 	    return resultList;
