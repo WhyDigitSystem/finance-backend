@@ -580,35 +580,33 @@ public class APServiceImpl implements APService {
 		List<Map<String, Object>> apage = new ArrayList<>();
 		for (Object[] sup : customer) {
 			Map<String, Object> apageing = new HashMap<>();
-			apageing.put("partyName", sup[0] != null ? sup[0].toString() : "");
-			apageing.put("partyCode", sup[1] != null ? sup[1].toString() : "");
+			apageing.put("orgid",           sup[0]  != null ? sup[0].toString()  : "");
+			apageing.put("arapdetailsid",   sup[1]  != null ? sup[1].toString()  : "");
+			apageing.put("doctypecode",     sup[2]  != null ? sup[2].toString()  : "");
+			apageing.put("branch",          sup[3]  != null ? sup[3].toString()  : "");
+			apageing.put("subledgercode",   sup[4]  != null ? sup[4].toString()  : "");
+			apageing.put("subledgername",   sup[5]  != null ? sup[5].toString()  : "");
+			apageing.put("partytype",       sup[6]  != null ? sup[6].toString()  : "");
+			apageing.put("subledgerdivision", sup[7]!= null ? sup[7].toString()  : "");
+			apageing.put("currency",        sup[8]  != null ? sup[8].toString()  : "");
+			apageing.put("docid",           sup[9]  != null ? sup[9].toString()  : "");
+			apageing.put("docdate",         sup[10] != null ? sup[10].toString() : "");
+			apageing.put("supprefno",       sup[11] != null ? sup[11].toString() : "");
+			apageing.put("duedate",         sup[12] != null ? sup[12].toString() : "");
+			apageing.put("refno",           sup[13] != null ? sup[13].toString() : "");
+			apageing.put("refdate",         sup[14] != null ? sup[14].toString() : "");
+			apageing.put("amount",          sup[15] != null ? sup[15].toString() : "");
+			apageing.put("outstanding",     sup[16] != null ? sup[16].toString() : "");
+			apageing.put("totaldue",        sup[17] != null ? sup[17].toString() : "");
+			apageing.put("unadjusted",      sup[18] != null ? sup[18].toString() : "");
+			apageing.put("ddays",           sup[19] != null ? sup[19].toString() : "");
+			apageing.put("mslab1",          sup[20] != null ? sup[20].toString() : "");
+			apageing.put("mslab2",          sup[21] != null ? sup[21].toString() : "");
+			apageing.put("mslab3",          sup[22] != null ? sup[22].toString() : "");
+			apageing.put("mslab4",          sup[23] != null ? sup[23].toString() : "");
+			apageing.put("mslab5",          sup[24] != null ? sup[24].toString() : "");
+			apageing.put("name",            sup[25] != null ? sup[25].toString() : "");
 
-			apageing.put("orgid", sup[2] != null ? sup[2].toString() : "");
-			apageing.put("arapdetailsid", sup[3] != null ? sup[3].toString() : "");
-			apageing.put("doctypecode", sup[4] != null ? sup[4].toString() : "");
-			apageing.put("branch", sup[5] != null ? sup[5].toString() : "");
-			apageing.put("subledgercode", sup[6] != null ? sup[6].toString() : "");
-			apageing.put("subledgername", sup[7] != null ? sup[7].toString() : "");
-			apageing.put("partytype", sup[8] != null ? sup[8].toString() : "");
-			apageing.put("subledgerdivision", sup[9] != null ? sup[9].toString() : "");
-			apageing.put("currency", sup[10] != null ? sup[10].toString() : "");
-			apageing.put("docid", sup[11] != null ? sup[11].toString() : "");
-			apageing.put("docdate", sup[12] != null ? sup[12].toString() : "");
-			apageing.put("supprefno", sup[13] != null ? sup[13].toString() : "");
-			apageing.put("duedate", sup[14] != null ? sup[14].toString() : "");
-			apageing.put("refno", sup[15] != null ? sup[15].toString() : "");
-			apageing.put("refdate", sup[16] != null ? sup[16].toString() : "");
-			apageing.put("amount", sup[17] != null ? sup[17].toString() : "");
-			apageing.put("outstanding", sup[18] != null ? sup[18].toString() : "");
-			apageing.put("totaldue", sup[19] != null ? sup[19].toString() : "");
-			apageing.put("unadjusted", sup[20] != null ? sup[20].toString() : "");
-			apageing.put("ddays", sup[21] != null ? sup[21].toString() : "");
-			apageing.put("mslab1", sup[22] != null ? sup[22].toString() : "");
-			apageing.put("mslab2", sup[23] != null ? sup[23].toString() : "");
-			apageing.put("mslab3", sup[24] != null ? sup[24].toString() : "");
-			apageing.put("mslab4", sup[25] != null ? sup[25].toString() : "");
-			apageing.put("mslab5", sup[26] != null ? sup[26].toString() : "");
-			apageing.put("name", sup[27] != null ? sup[27].toString() : "");
 
 			apage.add(apageing);
 		}
@@ -744,108 +742,6 @@ public class APServiceImpl implements APService {
 
 	    if (paymentVO.getApproveStatus() == null || 
 	        (!"Approved".equals(paymentVO.getApproveStatus()) && !"Rejected".equals(paymentVO.getApproveStatus()))) {
-
-
-//	        // Create AccountsVO and related details
-//	        AccountsVO accountsVO = new AccountsVO();
-//	        accountsVO.setDocId(paymentVO.getDocId());
-//	        accountsVO.setSourceScreen(paymentVO.getScreenName());
-//	        accountsVO.setSourceId(paymentVO.getId());
-//	        accountsVO.setCreatedBy(paymentVO.getCreatedBy());
-//	        accountsVO.setModifiedBy(paymentVO.getUpdatedBy());
-//	        accountsVO.setOrgId(paymentVO.getOrgId());
-//	        accountsVO.setBranch(paymentVO.getBranch());
-//	        accountsVO.setBranchCode(paymentVO.getBranchCode());
-//	        accountsVO.setRefNo(paymentVO.getDocId());
-//	        accountsVO.setRefDate(paymentVO.getDocDate());
-//	        accountsVO.setCurrency(paymentVO.getCurrency());
-//	        accountsVO.setExRate(BigDecimal.ONE); // Replace if necessary
-//	        accountsVO.setRemarks(paymentVO.getCancelRemarks());
-//	        accountsVO.setFinYear(paymentVO.getFinYear());
-//	        accountsVO.setTotalDebitAmount(paymentVO.getPaymentAmt());
-//	        accountsVO.setTotalCreditAmount(paymentVO.getPaymentAmt());
-//
-//	        List<AccountsDetailsVO> accountsDetailsVOs = new ArrayList<>();
-//
-//	        // Payable Entry
-//	        AccountsDetailsVO payable = new AccountsDetailsVO();
-//	        payable.setNDebitAmount(paymentVO.getPaymentAmt());
-//	        payable.setDebitAmount(paymentVO.getPaymentAmt());
-//	        payable.setNCreditAmount(BigDecimal.ZERO);
-//	        payable.setCreditAmount(BigDecimal.ZERO);
-//	        payable.setArapFlag(true);
-//	        payable.setArapAmount(paymentVO.getPaymentAmt().negate());
-//	        payable.setBDebitAmount(paymentVO.getPaymentAmt());
-//	        payable.setBCrAmount(BigDecimal.ZERO);
-//	        payable.setBArapAmount(paymentVO.getPaymentAmt().negate());
-//	        payable.setACurrency(paymentVO.getCurrency());
-//	        payable.setAccountName("PAYABLE A/C");
-//	        payable.setACategory("PAYABLE A/C");
-//	        payable.setSubLedgerCode(paymentVO.getPartyCode());
-//	        payable.setSubledgerName(paymentVO.getPartyName());
-//	        payable.setNArapAmount(paymentVO.getPaymentAmt().negate());
-//	        payable.setGstflag(2);
-//	        payable.setAccountsVO(accountsVO);
-//
-//	        accountsDetailsVOs.add(payable);
-//
-//	        // Bank/Cash Entry
-//	        AccountsDetailsVO bank = new AccountsDetailsVO();
-//	        bank.setNDebitAmount(BigDecimal.ZERO);
-//	        bank.setDebitAmount(BigDecimal.ZERO);
-//	        bank.setNCreditAmount(paymentVO.getPaymentAmt());
-//	        bank.setCreditAmount(paymentVO.getPaymentAmt());
-//	        bank.setArapFlag(false);
-//	        bank.setArapAmount(BigDecimal.ZERO);
-//	        bank.setBDebitAmount(BigDecimal.ZERO);
-//	        bank.setBCrAmount(paymentVO.getPaymentAmt());
-//	        bank.setBArapAmount(BigDecimal.ZERO);
-//	        bank.setACurrency(paymentVO.getCurrency());
-//	        bank.setAccountName(paymentVO.getBankCashAcc());
-//	        bank.setSubLedgerCode("None");
-//	        bank.setSubledgerName("None");
-//	        bank.setNArapAmount(BigDecimal.ZERO);
-//	        bank.setGstflag(3);
-//	        bank.setAccountsVO(accountsVO);
-//
-//	        accountsDetailsVOs.add(bank);
-//
-//	        accountsVO.setAccountsDetailsVO(accountsDetailsVOs);
-//
-//	        // Save AccountsVO and get saved instance
-//	        AccountsVO savedAccountsVO = accountsRepo.save(accountsVO);
-//
-//	        // Link to ARAP
-//	        AccountsDetailsVO arapDetailsSrc = accountsDetailsRepo.findByAccountsVOAndGstflag(savedAccountsVO, 2);
-//
-//	        ArapDetailsVO arapDetailsVO = new ArapDetailsVO();
-//	        arapDetailsVO.setSourceTransid(arapDetailsSrc.getId());
-//	        arapDetailsVO.setCreatedBy(savedAccountsVO.getCreatedBy());
-//	        arapDetailsVO.setUpdatedBy(savedAccountsVO.getModifiedBy());
-//	        arapDetailsVO.setBranch(savedAccountsVO.getBranch());
-//	        arapDetailsVO.setBranchCode(savedAccountsVO.getBranchCode());
-//	        arapDetailsVO.setFinYear(savedAccountsVO.getFinYear());
-//	        arapDetailsVO.setRefNo(savedAccountsVO.getRefNo());
-//	        arapDetailsVO.setRefDate(savedAccountsVO.getRefDate());
-//	        arapDetailsVO.setOrgId(savedAccountsVO.getOrgId());
-//	        arapDetailsVO.setSubLedgerCode(arapDetailsSrc.getSubLedgerCode());
-//	        arapDetailsVO.setCurrency(arapDetailsSrc.getACurrency());
-//	        arapDetailsVO.setExRate(arapDetailsSrc.getAExRate());
-//	        arapDetailsVO.setAmount(arapDetailsSrc.getArapAmount());
-//	        arapDetailsVO.setBaseAmt(arapDetailsSrc.getArapAmount());
-//	        arapDetailsVO.setNativeAmt(arapDetailsSrc.getArapAmount());
-//	        arapDetailsVO.setDueDate(savedAccountsVO.getDueDate());
-//	        arapDetailsVO.setCreditDays(savedAccountsVO.getCreditDays());
-//	        arapDetailsVO.setDocId(savedAccountsVO.getDocId());
-//	        arapDetailsVO.setDocDate(savedAccountsVO.getDocDate());
-//	        arapDetailsVO.setAccCurrency(savedAccountsVO.getCurrency());
-//	        arapDetailsVO.setAccName(arapDetailsSrc.getAccountName());
-//	        arapDetailsVO.setGstFlag(arapDetailsSrc.getGstflag());
-//	        arapDetailsVO.setActive(true);
-//	        arapDetailsVO.setSubLedgerName(arapDetailsSrc.getSubledgerName());
-//	        arapDetailsVO.setSalesType(savedAccountsVO.getSalesType());
-//
-//	        arapDetailsRepo.save(arapDetailsVO);
 
 	    	String screenCode1 = "AC";
 			String sourceScreenCode = paymentVO.getScreenCode();
