@@ -7,6 +7,7 @@ import java.util.Optional;
 import javax.validation.Valid;
 
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.base.basesetup.dto.AssetCategoryDTO;
 import com.base.basesetup.dto.AssetDTO;
@@ -36,6 +37,13 @@ public interface KitControllerService {
 	List<AssetCategoryVO> getAssetCategoryByOrgId(Long orgid);
 
 	Optional<AssetCategoryVO> getAssetCategoryById(Long id);
+	
+	int getTotalRows();
+
+	int getSuccessfulUploads();
+
+	void ExcelUploadForAssetCategory(MultipartFile[] files, Long orgId, String createdBy) throws ApplicationException;
+
 
 	//ASSETS
 	
@@ -57,4 +65,5 @@ public interface KitControllerService {
 
 	List<Map<String, Object>> getAssetDescriptionByAssetCode(Long orgId, String assetCategory, String assetType);
 
+	
 }
