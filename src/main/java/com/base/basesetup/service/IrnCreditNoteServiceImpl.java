@@ -434,7 +434,23 @@ public class IrnCreditNoteServiceImpl implements IrnCreditNoteService {
 
 	@Override
 	public List<TaxInvoiceVO> getOriginBillNofromTaxInvoiceByParty(Long orgId, String party,String branchCode) {
-		return taxInvoiceRepo.findPartyInvoiceDetails(orgId,party,branchCode);
+	    List<TaxInvoiceVO> allInvoices = taxInvoiceRepo.findPartyInvoiceDetails(orgId, party, branchCode);
+	    List<TaxInvoiceVO> filteredInvoices = new ArrayList<>();
+
+	    for (TaxInvoiceVO invoice : allInvoices) {
+	        boolean alreadyUsed = taxInvoiceRepo.isAlreadyUsedInApprovedCreditNote(
+	            orgId,
+	            invoice.getDocId(),
+	            invoice.getPartyCode(),
+	            invoice.getJobOrderNo()
+	        );
+
+	        if (!alreadyUsed) {
+	            filteredInvoices.add(invoice);
+	        }
+	    }
+
+	    return filteredInvoices;
 	}
 
 	@Override
