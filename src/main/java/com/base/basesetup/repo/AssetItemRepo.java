@@ -8,4 +8,6 @@ import com.base.basesetup.entity.AssetItemVO;
 @Repository
 public interface AssetItemRepo extends JpaRepository<AssetItemVO, Long>{
 
+	boolean existsBySkuId(String skuId);
+
 }

@@ -42,13 +42,13 @@ public class AssetDTO {
 
 	private int quantity;
 
-	private String dimUnit;
+	// private String dimUnit;
 
 	private String manufacturer;
 
 	private String chargableWeight;
 
-	private String brand;
+	// private String brand;
 
 	private String eanUpc;
 
@@ -74,7 +74,7 @@ public class AssetDTO {
 
 	private String scrapValue;
 
-	private boolean cancel;
+	// private boolean cancel;
 
 	private String createdBy;
 
@@ -86,6 +86,6 @@ public class AssetDTO {
 
 	private boolean active;
 
-	private List<AssetItemDTO> assetItemDTO;
+	// private List<AssetItemDTO> assetItemDTO;
 
 }

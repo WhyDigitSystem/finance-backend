@@ -146,9 +146,9 @@ public class AssetVO {
 
 	private boolean eflag = false;
 
-	@OneToMany(mappedBy = "assetVO", cascade = CascadeType.ALL)
-	@JsonManagedReference
-	private List<AssetItemVO> assetItemVO;
+//	@OneToMany(mappedBy = "assetVO", cascade = CascadeType.ALL)
+//	@JsonManagedReference
+//	private List<AssetItemVO> assetItemVO;
 
 	@JsonGetter("active")
 	public String getActive() {

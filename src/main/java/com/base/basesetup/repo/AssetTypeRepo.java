@@ -15,7 +15,7 @@ public interface AssetTypeRepo extends JpaRepository<AssetTypeVO, Long> {
 
 	boolean existsByTypeCode(String typeCode);
 
-	@Query(value = "select a.* from assettype a where a.orgid=?1 ", nativeQuery = true)
+	@Query(value = "select a.* from assettype a where a.orgid=?1", nativeQuery = true)
 	List<AssetTypeVO> findByOrgId(Long orgid);
 
 }

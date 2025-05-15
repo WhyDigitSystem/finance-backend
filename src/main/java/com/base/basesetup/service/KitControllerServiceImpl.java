@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 import javax.validation.Valid;
 
@@ -16,18 +17,21 @@ import org.springframework.stereotype.Service;
 
 import com.base.basesetup.dto.AssetCategoryDTO;
 import com.base.basesetup.dto.AssetDTO;
-import com.base.basesetup.dto.AssetItemDTO;
-import com.base.basesetup.dto.DailyMonthlyExRatesDtlDTO;
+import com.base.basesetup.dto.KitAssetDTO;
+import com.base.basesetup.dto.KitDTO;
 import com.base.basesetup.entity.AssetCategoryVO;
-import com.base.basesetup.entity.AssetItemVO;
 import com.base.basesetup.entity.AssetTypeDTO;
 import com.base.basesetup.entity.AssetTypeVO;
 import com.base.basesetup.entity.AssetVO;
-import com.base.basesetup.entity.DailyMonthlyExRatesDtlVO;
+import com.base.basesetup.entity.KitAssetVO;
+import com.base.basesetup.entity.KitVO;
 import com.base.basesetup.exception.ApplicationException;
 import com.base.basesetup.repo.AssetCategoryRepo;
+import com.base.basesetup.repo.AssetItemRepo;
 import com.base.basesetup.repo.AssetRepo;
 import com.base.basesetup.repo.AssetTypeRepo;
+import com.base.basesetup.repo.KitAssetRepo;
+import com.base.basesetup.repo.KitRepo;
 
 @Service
 public class KitControllerServiceImpl implements KitControllerService {
@@ -42,6 +46,15 @@ public class KitControllerServiceImpl implements KitControllerService {
 
 	@Autowired
 	AssetRepo assetRepo;
+
+	@Autowired
+	AssetItemRepo assetItemRepo;
+
+	@Autowired
+	KitRepo kitRepo;
+
+	@Autowired
+	KitAssetRepo kitAssetRepo;
 
 	@Override
 	public Map<String, Object> updateCreateAssetType(@Valid AssetTypeDTO assetTypeDTO) throws ApplicationException {
@@ -78,7 +91,7 @@ public class KitControllerServiceImpl implements KitControllerService {
 					throw new ApplicationException(
 							"This Asset Type already exists in this organization: " + assetTypeDTO.getAssetType());
 				}
-				assetTypeVO.setAssetType(assetTypeDTO.getAssetType());
+				assetTypeVO.setAssetType(assetTypeDTO.getAssetType().toUpperCase());
 			}
 
 			if (!assetTypeVO.getTypeCode().equalsIgnoreCase(assetTypeDTO.getTypeCode())) {
@@ -86,7 +99,7 @@ public class KitControllerServiceImpl implements KitControllerService {
 					throw new ApplicationException(
 							"This Asset Type Code already exists in this organization: " + assetTypeDTO.getTypeCode());
 				}
-				assetTypeVO.setTypeCode(assetTypeDTO.getTypeCode());
+				assetTypeVO.setTypeCode(assetTypeDTO.getTypeCode().toUpperCase());
 			}
 
 			assetTypeVO.setUpdatedBy(assetTypeDTO.getCreatedBy());
@@ -105,8 +118,8 @@ public class KitControllerServiceImpl implements KitControllerService {
 
 	private AssetTypeVO getAssetTypeVOFromDTO(AssetTypeVO assetTypeVO, @Valid AssetTypeDTO assetTypeDTO) {
 		assetTypeVO.setOrgId(assetTypeDTO.getOrgId());
-		assetTypeVO.setAssetType(assetTypeDTO.getAssetType());
-		assetTypeVO.setTypeCode(assetTypeDTO.getTypeCode());
+		assetTypeVO.setAssetType(assetTypeDTO.getAssetType().toUpperCase());
+		assetTypeVO.setTypeCode(assetTypeDTO.getTypeCode().toUpperCase());
 		assetTypeVO.setCancelremarks(assetTypeDTO.getCancelremarks());
 		assetTypeVO.setCancel(assetTypeDTO.isCancel());
 		assetTypeVO.setActive(assetTypeDTO.isActive());
@@ -157,18 +170,29 @@ public class KitControllerServiceImpl implements KitControllerService {
 
 			assetCategoryVO = assetCategoryRepo.findById(assetCategoryDTO.getId())
 					.orElseThrow(() -> new ApplicationException("The ID was not found. Please provide a valid one."));
-			if (assetCategoryRepo.existsByCategoryAndOrgId(assetCategoryDTO.getCategory(),
-					assetCategoryDTO.getOrgId())) {
-				throw new ApplicationException(
-						"This Category already exists in this organization: " + assetCategoryDTO.getCategoryCode());
+			if (!assetCategoryVO.getCategory().equalsIgnoreCase(assetCategoryDTO.getCategory())) {
+
+				if (assetCategoryRepo.existsByCategoryAndOrgId(assetCategoryDTO.getCategory(),
+						assetCategoryDTO.getOrgId())) {
+					throw new ApplicationException(
+							"This Category already exists in this organization: " + assetCategoryDTO.getCategoryCode());
+				}
+
+				assetCategoryVO.setCategory(assetCategoryDTO.getCategory().toUpperCase());
+
 			}
 
-			if (assetCategoryRepo.existsByCategoryCodeAndOrgId(assetCategoryDTO.getCategoryCode(),
-					assetCategoryDTO.getOrgId())) {
-				throw new ApplicationException("This Category Code already exists in this organization: "
-						+ assetCategoryDTO.getCategoryCode());
-			}
+			if (!assetCategoryVO.getCategoryCode().equalsIgnoreCase(assetCategoryDTO.getCategoryCode())) {
 
+				if (assetCategoryRepo.existsByCategoryCodeAndOrgId(assetCategoryDTO.getCategoryCode(),
+						assetCategoryDTO.getOrgId())) {
+					throw new ApplicationException("This Category Code already exists in this organization: "
+							+ assetCategoryDTO.getCategoryCode());
+				}
+
+				assetCategoryVO.setCategoryCode(assetCategoryDTO.getCategoryCode().toUpperCase());
+
+			}
 			assetCategoryVO.setUpdatedBy(assetCategoryDTO.getCreatedBy());
 
 			message = "AssetCategory updated successfully";
@@ -186,9 +210,9 @@ public class KitControllerServiceImpl implements KitControllerService {
 	private AssetCategoryVO getAssetCategoryVOFromAssetCategoryDTO(AssetCategoryVO assetCategoryVO,
 			@Valid AssetCategoryDTO assetCategoryDTO) {
 
-		assetCategoryVO.setAssetType(assetCategoryDTO.getAssetType());
-		assetCategoryVO.setCategory(assetCategoryDTO.getCategory());
-		assetCategoryVO.setCategoryCode(assetCategoryDTO.getCategoryCode());
+		assetCategoryVO.setAssetType(assetCategoryDTO.getAssetType().toUpperCase());
+		assetCategoryVO.setCategory(assetCategoryDTO.getCategory().toUpperCase());
+		assetCategoryVO.setCategoryCode(assetCategoryDTO.getCategoryCode().toUpperCase());
 		assetCategoryVO.setActive(assetCategoryDTO.isActive());
 		assetCategoryVO.setLength(assetCategoryDTO.getLength());
 		assetCategoryVO.setBreath(assetCategoryDTO.getBreath());
@@ -224,7 +248,7 @@ public class KitControllerServiceImpl implements KitControllerService {
 
 			if (assetRepo.existsByAssetNameAndOrgId(assetDTO.getAssetName(), assetDTO.getOrgId())) {
 				throw new ApplicationException(
-						"This Asset already exists in this organization: " + assetDTO.getAssetCodeId());
+						"This Asset already exists in this organization: " + assetDTO.getAssetName());
 			}
 
 			if (assetRepo.existsByAssetCodeIdAndOrgId(assetDTO.getAssetCodeId(), assetDTO.getOrgId())) {
@@ -244,19 +268,30 @@ public class KitControllerServiceImpl implements KitControllerService {
 
 			assetVO = assetRepo.findById(assetDTO.getId())
 					.orElseThrow(() -> new ApplicationException("The ID was not found. Please provide a valid one."));
-			if (assetRepo.existsByAssetNameAndOrgId(assetDTO.getAssetName(), assetDTO.getOrgId())) {
-				throw new ApplicationException(
-						"This Asset already exists in this organization: " + assetDTO.getAssetCodeId());
+
+			if (!assetVO.getAssetName().equalsIgnoreCase(assetDTO.getAssetName())) {
+
+				if (assetRepo.existsByAssetNameAndOrgId(assetDTO.getAssetName(), assetDTO.getOrgId())) {
+					throw new ApplicationException(
+							"This Asset already exists in this organization: " + assetDTO.getAssetName());
+				}
+
+				assetVO.setAssetName(assetDTO.getAssetName().toUpperCase());
+
 			}
 
-			if (assetRepo.existsByAssetCodeIdAndOrgId(assetDTO.getAssetCodeId(), assetDTO.getOrgId())) {
-				throw new ApplicationException(
-						"This AssetCode already exists in this organization: " + assetDTO.getAssetCodeId());
-			}
+			if (!assetVO.getAssetCodeId().equalsIgnoreCase(assetDTO.getAssetCodeId())) {
 
+				if (assetRepo.existsByAssetCodeIdAndOrgId(assetDTO.getAssetCodeId(), assetDTO.getOrgId())) {
+					throw new ApplicationException(
+							"This AssetCode already exists in this organization: " + assetDTO.getAssetCodeId());
+				}
+
+				assetVO.setAssetCodeId(assetDTO.getAssetCodeId().toUpperCase());
+			}
 			assetVO.setUpdatedBy(assetDTO.getCreatedBy());
 
-			message = "AssetCategory updated successfully";
+			message = "Asset updated successfully";
 		}
 
 		assetVO = getAssetVOFromAssetDTO(assetVO, assetDTO);
@@ -269,13 +304,13 @@ public class KitControllerServiceImpl implements KitControllerService {
 
 	}
 
-	private AssetVO getAssetVOFromAssetDTO(AssetVO assetVO, @Valid AssetDTO assetDTO) {
+	private AssetVO getAssetVOFromAssetDTO(AssetVO assetVO, @Valid AssetDTO assetDTO) throws ApplicationException {
 
 		assetVO.setOrgId(assetDTO.getOrgId());
-		assetVO.setCategory(assetDTO.getCategory());
-		assetVO.setCategoryCode(assetDTO.getCategoryCode());
-		assetVO.setAssetCodeId(assetDTO.getAssetCodeId());
-		assetVO.setAssetName(assetDTO.getAssetName());
+		assetVO.setCategory(assetDTO.getCategory().toUpperCase());
+		assetVO.setCategoryCode(assetDTO.getCategoryCode().toUpperCase());
+		assetVO.setAssetCodeId(assetDTO.getAssetCodeId().toUpperCase());
+		assetVO.setAssetName(assetDTO.getAssetName().toUpperCase());
 		assetVO.setBelongsTo(assetDTO.getBelongsTo());
 		assetVO.setMaterialIdentification(assetDTO.getMaterialIdentification());
 		assetVO.setManufacturePartCode(assetDTO.getManufacturePartCode());
@@ -285,10 +320,10 @@ public class KitControllerServiceImpl implements KitControllerService {
 		assetVO.setHeight(assetDTO.getHeight());
 		assetVO.setWeight(assetDTO.getWeight());
 		assetVO.setQuantity(assetDTO.getQuantity());
-		assetVO.setDimUnit(assetDTO.getDimUnit());
+		// assetVO.setDimUnit(assetDTO.getDimUnit());
 		assetVO.setManufacturer(assetDTO.getManufacturer());
 		assetVO.setChargableWeight(assetDTO.getChargableWeight());
-		assetVO.setBrand(assetDTO.getBrand());
+		// assetVO.setBrand(assetDTO.getBrand());
 		assetVO.setEanUpc(assetDTO.getEanUpc());
 		assetVO.setAssetType(assetDTO.getAssetType());
 		assetVO.setExpectedLife(assetDTO.getExpectedLife());
@@ -301,44 +336,213 @@ public class KitControllerServiceImpl implements KitControllerService {
 		assetVO.setCostPrice(assetDTO.getCostPrice());
 		assetVO.setSellPrice(assetDTO.getSellPrice());
 		assetVO.setScrapValue(assetDTO.getScrapValue());
-		assetVO.setCancel(assetDTO.isCancel());
+		//assetVO.setCancel(assetDTO.isCancel());
 		assetVO.setCancelremarks(assetDTO.getCancelremarks());
 		assetVO.setPoNo(assetDTO.getPoNo());
 		assetVO.setPoDate(assetDTO.getPoDate());
 		assetVO.setActive(assetDTO.isActive());
 
-		List<AssetItemVO> assetItemVOs = new ArrayList<>();
-		long skuId = assetVO.getSkuFrom();
-
-		if (assetDTO.getAssetItemDTO() != null) {
-		    for (AssetItemDTO assetItemDTO : assetDTO.getAssetItemDTO()) {
-		        AssetItemVO assetItemVO = new AssetItemVO();
-
-		        // Set AssetVO association
-		        assetItemVO.setAssetVO(assetVO);
-
-		        // SKU: generate with increment
-		        assetItemVO.setSkuId(new StringBuilder(assetDTO.getAssetCodeId())
-		            .append("-")
-		            .append(skuId)
-		            .toString());
-
-		        // Set asset name from VO or DTO
-		        assetItemVO.setAssetName(assetVO.getAssetName());
-
-		        // Set status (if available from DTO, use that instead)
-		        assetItemVO.setStatus(MasterConstant.ASSET_ITEM_STATUS_INSTOCK);
-
-		        // Add to list
-		        assetItemVO.setAssetVO(assetVO);
-		        assetItemVOs.add(assetItemVO);
-
-		        skuId++;
-		    }
-		}
-		assetVO.setAssetItemVO(assetItemVOs);
-
+//		Set<String> skuIdSet = new HashSet<>();
+//		List<AssetItemVO> assetItemVOs = new ArrayList<>();
+//
+//		if (assetDTO.getAssetItemDTO() != null) {
+//			for (AssetItemDTO assetDTO1 : assetDTO.getAssetItemDTO()) {
+//				String skuId = new StringBuilder(assetDTO.getAssetCodeId()).append("-").append(assetDTO1.getSkuId())
+//						.toString();
+//
+//				AssetItemVO assetItemVO = new AssetItemVO();
+//
+//				if (!assetItemVO.getSkuId().equalsIgnoreCase(skuId)) {
+//
+//					// Optional: Check for duplicates in database
+//					if (assetItemRepo.existsBySkuId(skuId)) {
+//						throw new ApplicationException("SKU ID already exists in database: " + skuId);
+//					}
+//				}
+//
+//				// Check for duplicates in current request
+//				if (!skuIdSet.add(skuId)) {
+//					throw new ApplicationException("Duplicate SKU ID in request: " + skuId);
+//				}
+//
+//				assetItemVO.setSkuId(skuId);
+//				assetItemVO.setAssetName(assetDTO1.getAssetName());
+//				assetItemVO.setStatus(assetDTO1.getStatus());
+//				assetItemVO.setAssetVO(assetVO);
+//				assetItemVOs.add(assetItemVO);
+//			}
+//		}
+//
+//		assetVO.setAssetItemVO(assetItemVOs);
 
 		return assetVO;
+	}
+
+	@Override
+	public List<AssetVO> getAssetByOrgId(Long orgid) {
+		return assetRepo.findByOrgId(orgid);
+	}
+
+	@Override
+	public Optional<AssetVO> getAssetById(Long id) {
+		return assetRepo.findById(id);
+	}
+
+	@Override
+	public Map<String, Object> updateCreateKit(@Valid KitDTO kitDTO) throws ApplicationException {
+
+		KitVO kitVO;
+
+		String message;
+		if (ObjectUtils.isEmpty(kitDTO.getId())) {
+
+			if (kitRepo.existsByKitNoAndOrgId(kitDTO.getKitNo(), kitDTO.getOrgId())) {
+				throw new ApplicationException("This KitId already exists in this organization: " + kitDTO.getKitNo());
+			}
+
+			if (kitRepo.existsByKitDescAndOrgId(kitDTO.getKitDesc(), kitDTO.getOrgId())) {
+				throw new ApplicationException(
+						"This KitDEsc already exists in this organization: " + kitDTO.getKitDesc());
+			}
+
+			kitVO = new KitVO();
+
+			kitVO.setCreatedBy(kitDTO.getCreatedBy());
+			kitVO.setUpdatedBy(kitDTO.getCreatedBy());
+
+			message = "Kit Creation SuccessFully";
+
+		} else {
+			// Update flow
+
+			kitVO = kitRepo.findById(kitDTO.getId())
+					.orElseThrow(() -> new ApplicationException("The ID was not found. Please provide a valid one."));
+
+			if (!kitVO.getKitNo().equalsIgnoreCase(kitDTO.getKitNo())) {
+
+				if (kitRepo.existsByKitNoAndOrgId(kitDTO.getKitNo(), kitDTO.getOrgId())) {
+					throw new ApplicationException(
+							"This KitId already exists in this organization: " + kitDTO.getKitNo());
+				}
+
+				kitVO.setKitNo(kitDTO.getKitNo().toUpperCase());
+
+			}
+
+			if (!kitVO.getKitDesc().equalsIgnoreCase(kitDTO.getKitDesc())) {
+
+				if (kitRepo.existsByKitDescAndOrgId(kitDTO.getKitDesc(), kitDTO.getOrgId())) {
+					throw new ApplicationException(
+							"This KitDEsc already exists in this organization: " + kitDTO.getKitDesc());
+				}
+
+				kitVO.setKitDesc(kitDTO.getKitDesc().toUpperCase());
+			}
+			kitVO.setUpdatedBy(kitDTO.getCreatedBy());
+
+			message = "Kit updated successfully";
+		}
+
+		kitVO = getKitVOFromKitDTO(kitVO, kitDTO);
+		kitRepo.save(kitVO);
+
+		Map<String, Object> response = new HashMap<>();
+		response.put("assetVO", kitVO);
+		response.put("message", message);
+		return response;
+
+	}
+
+	private KitVO getKitVOFromKitDTO(KitVO kitVO, @Valid KitDTO kitDTO) {
+
+		kitVO.setOrgId(kitDTO.getOrgId());
+		kitVO.setActive(kitDTO.isActive());
+		kitVO.setKitNo(kitDTO.getKitNo());
+		kitVO.setKitDesc(kitDTO.getKitDesc());
+		kitVO.setCancel(kitDTO.isCancel());
+		kitVO.setFinyr(kitDTO.getFinyr());
+		kitVO.setCreatedBy(kitDTO.getCreatedBy());
+		kitVO.setCancelRemarks(kitDTO.getCancelRemarks());
+		kitVO.setPartQty(kitDTO.getPartQty());
+		kitVO.setBlock(kitDTO.isBlock());
+		kitVO.setEflag(kitDTO.isEflag());
+
+		if (ObjectUtils.isNotEmpty(kitVO.getId())) {
+			List<KitAssetVO> kitAssetVOs = kitAssetRepo.findByKitVO(kitVO);
+			kitAssetRepo.deleteAll(kitAssetVOs);
+
+		}
+
+		List<KitAssetVO> kitAssetVOs = new ArrayList<KitAssetVO>();
+
+		if (kitVO != null) {
+
+			for (KitAssetDTO kitAssetDTO : kitDTO.getKitAssetDTO()) {
+
+				KitAssetVO kitAssetVO = new KitAssetVO();
+
+				kitAssetVO.setAssetType(kitAssetDTO.getAssetType());
+				kitAssetVO.setBelongsTo(kitAssetDTO.getBelongsTo());
+				kitAssetVO.setManufacturePartCode(kitAssetDTO.getManufacturePartCode());
+				kitAssetVO.setAssetCategory(kitAssetDTO.getAssetCategory());
+				kitAssetVO.setCategoryCode(kitAssetDTO.getCategoryCode());
+				kitAssetVO.setAssetCodeId(kitAssetDTO.getAssetCodeId());
+				kitAssetVO.setAssetName(kitAssetDTO.getAssetName());
+				kitAssetVO.setQuantity(kitAssetDTO.getQuantity());
+
+				kitAssetVO.setKitVO(kitVO);
+				kitAssetVOs.add(kitAssetVO);
+
+			}
+
+			kitVO.setKitAssetVO(kitAssetVOs);
+		}
+
+		return kitVO;
+	}
+
+	@Override
+	public List<KitVO> getKitByOrgId(Long orgid) {
+		return kitRepo.findAllKit(orgid);
+	}
+
+	@Override
+	public Optional<KitVO> getKitById(Long id) {
+		return kitRepo.findById(id);
+	}
+
+	@Override
+	public List<Map<String, Object>> getAssetCategoeyByAsset(Long orgId,String assetType) {
+		Set<Object[]> chType = assetCategoryRepo.getAssetData(orgId,assetType);
+		return getAssetCategoey(chType);
+	}
+
+	private List<Map<String, Object>> getAssetCategoey(Set<Object[]> chType) {
+		List<Map<String, Object>> List1 = new ArrayList<>();
+		for (Object[] ch : chType) {
+			Map<String, Object> map = new HashMap<>();
+			map.put("category", ch[0] != null ? ch[0].toString() : "");
+			map.put("categoryCode", ch[1] != null ? ch[1].toString() : "");
+			List1.add(map);
+		}
+		return List1;
+
+	}
+
+	@Override
+	public List<Map<String, Object>> getAssetDescriptionByAssetCode(Long orgId, String assetCode) {
+		Set<Object[]> chType = assetRepo.getAssetDescriptionByAsset(orgId, assetCode);
+		return getAssetDescription(chType);
+	}
+
+	private List<Map<String, Object>> getAssetDescription(Set<Object[]> chType) {
+		List<Map<String, Object>> List1 = new ArrayList<>();
+		for (Object[] ch : chType) {
+			Map<String, Object> map = new HashMap<>();
+			map.put("assetDescription", ch[0] != null ? ch[0].toString() : "");
+			List1.add(map);
+		}
+		return List1;
+
 	}
 }

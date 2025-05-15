@@ -40,10 +40,10 @@ public class AssetItemVO {
 	@Column(name="status")
 	private int status;
 	
-	@ManyToOne
-	@JsonBackReference
-	@JoinColumn(name = "assetid")
-	private AssetVO assetVO;
+//	@ManyToOne
+//	@JsonBackReference
+//	@JoinColumn(name = "assetid")
+//	private AssetVO assetVO;
 
 	@Embedded
 	private CreatedUpdatedDate commonDate = new CreatedUpdatedDate();
