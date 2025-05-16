@@ -470,12 +470,10 @@ public interface TaxInvoiceRepo extends JpaRepository<TaxInvoiceVO, Long> {
 			+ ")a  where monthname =?3")
 	Set<Object[]> getRevenueMonthWisePayment(Long orgId, Long finYear, String monthName);	
 	
-	@Query(value = "SELECT COUNT(*) > 0 FROM irncreditnote a1 " +
-            "WHERE a1.orgid = ?1 AND a1.originbillno = ?2 " +
-            "AND a1.partycode = ?3 AND a1.jobno = ?4 " +
-            "AND a1.approvestatus = 'Approved'", nativeQuery = true)
-boolean isAlreadyUsedInApprovedCreditNote(Long orgId, String docId, String partyCode, String jobNo);
 
+	@Query(nativeQuery = true,value="select * from taxinvoice a,irncreditnote a1  where a.orgid=a1.orgid and a.partycode=a1.partycode and a.docid=a1.originbillno\r\n"
+			+ " and a.approvestatus=a1.approvestatus and a.orgid=?1 and a.partyname=?2")
+	List<TaxInvoiceVO> getCheck(Long orgId, String party);
  
 
 
