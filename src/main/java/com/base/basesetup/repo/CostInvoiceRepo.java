@@ -411,7 +411,7 @@ public interface CostInvoiceRepo extends JpaRepository<CostInvoiceVO, Long> {
 	
 
 	@Query(nativeQuery = true,value="select * from costinvoice a,costdebitnote a1  where a.orgid=a1.orgid and a.suppliercode=a1.suppliercode and a.docid=a1.orginbill\r\n"
-			+ " and a.orgid=?1 and a.suppliername=?2")
+			+ " and a.approvestatus=a1.approvestatus and a.orgid=?1 and a.suppliername=?2")
 	List<CostInvoiceVO> getCheck(Long orgId, String party);
 
 
