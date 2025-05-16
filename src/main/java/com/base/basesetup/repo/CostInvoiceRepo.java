@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 
 import com.base.basesetup.entity.CostInvoiceVO;
 import com.base.basesetup.entity.PartyMasterVO;
+import com.base.basesetup.entity.TaxInvoiceVO;
 
 public interface CostInvoiceRepo extends JpaRepository<CostInvoiceVO, Long> {
 
@@ -407,6 +408,11 @@ public interface CostInvoiceRepo extends JpaRepository<CostInvoiceVO, Long> {
 			+ "and c.finyear=?2 and c.orgid=?1 and c.branchcode=?3 \r\n"
 			+ "group by c.vid,c.vdate, c.suppliername,p.partyshortname,d.totaltds,c.finyear")
 	Set<Object[]> getTotaltdsFromCustomerBillWise(Long orgId, Long finYear, String branchCode, String partyName);
+	
+
+	@Query(nativeQuery = true,value="select * from costinvoice a,costdebitnote a1  where a.orgid=a1.orgid and a.suppliercode=a1.suppliercode and a.docid=a1.orginbill\r\n"
+			+ " and a.orgid=?1 and a.suppliername=?2")
+	List<CostInvoiceVO> getCheck(Long orgId, String party);
 
 
 

@@ -310,6 +310,7 @@ public class WareHouseServiceImpl implements WareHouseService {
 		                warehouseVO.setActive(active);
 		                warehouseVO.setOrgId(orgId);
 		                warehouseVO.setCreatedBy(createdBy);
+		                System.out.println(createdBy);
 		                warehouseVO.setUpdatedBy(createdBy);
 
 		                validWarehouseList.add(warehouseVO);

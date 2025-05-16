@@ -8,6 +8,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.ObjectUtils;
 import org.slf4j.Logger;
@@ -434,23 +436,20 @@ public class IrnCreditNoteServiceImpl implements IrnCreditNoteService {
 
 	@Override
 	public List<TaxInvoiceVO> getOriginBillNofromTaxInvoiceByParty(Long orgId, String party,String branchCode) {
-	    List<TaxInvoiceVO> allInvoices = taxInvoiceRepo.findPartyInvoiceDetails(orgId, party, branchCode);
-	    List<TaxInvoiceVO> filteredInvoices = new ArrayList<>();
+		 List<TaxInvoiceVO> existingInvoices = taxInvoiceRepo.getCheck(orgId, party);
+		    List<TaxInvoiceVO> allPartyInvoices = taxInvoiceRepo.findPartyInvoiceDetails(orgId, party, branchCode);
 
-	    for (TaxInvoiceVO invoice : allInvoices) {
-	        boolean alreadyUsed = taxInvoiceRepo.isAlreadyUsedInApprovedCreditNote(
-	            orgId,
-	            invoice.getDocId(),
-	            invoice.getPartyCode(),
-	            invoice.getJobOrderNo()
-	        );
+		    if (existingInvoices == null || existingInvoices.isEmpty()) {
+		        return allPartyInvoices; // No existing invoices, return all
+		    }
 
-	        if (!alreadyUsed) {
-	            filteredInvoices.add(invoice);
-	        }
-	    }
+		    Set<String> existingInvoiceNumbers = existingInvoices.stream()
+		            .map(TaxInvoiceVO::getDocId) // Change this to the correct unique field
+		            .collect(Collectors.toSet());
 
-	    return filteredInvoices;
+		    return allPartyInvoices.stream()
+		            .filter(invoice -> !existingInvoiceNumbers.contains(invoice.getDocId())) // Change field if needed
+		            .collect(Collectors.toList());
 	}
 
 	@Override
