@@ -43,6 +43,10 @@ public class IssueManifestProviderVO {
 	private LocalDate dispatchDate;
 	@Column(name = "transactiontype")
 	private String transactionType;
+	@Column(name = "fromwarehouse")
+	private String fromWarehouse;
+	@Column(name = "warehouseaddress")
+	private String warehouseAddress;
 	@Column(name = "sender")
 	private String sender;
 	@Column(name = "senderaddress")
