@@ -31,6 +31,7 @@ import com.base.basesetup.entity.QuotationDetailsVO;
 import com.base.basesetup.entity.QuotationVO;
 import com.base.basesetup.entity.RetrievalManifestProviderDetailsVO;
 import com.base.basesetup.entity.RetrievalManifestProviderVO;
+import com.base.basesetup.entity.TaxInvoiceVO;
 import com.base.basesetup.exception.ApplicationException;
 import com.base.basesetup.repo.InvoiceProductLinesRepo;
 import com.base.basesetup.repo.InvoiceRepo;
@@ -41,6 +42,7 @@ import com.base.basesetup.repo.QuotationRepo;
 import com.base.basesetup.repo.ReceiptRepo;
 import com.base.basesetup.repo.RetrievalManifestProviderDetailsRepo;
 import com.base.basesetup.repo.RetrievalManifestProviderRepo;
+import com.base.basesetup.repo.TaxInvoiceRepo;
 
 @Service
 public class ReportServiceImpl implements ReportService{
@@ -49,6 +51,9 @@ public class ReportServiceImpl implements ReportService{
 	
 	@Autowired
 	InvoiceRepo invoiceRepo;
+	
+	@Autowired
+	TaxInvoiceRepo taxInvoiceRepo;
 	
 	@Autowired
 	InvoiceProductLinesRepo invoiceProductLinesRepo;
@@ -603,6 +608,109 @@ public class ReportServiceImpl implements ReportService{
 		public Optional<QuotationVO> getQutationById(Long id) {
 			return quotationRepo.findById(id);
 		}
+
+		
+//		@Override
+//		public List<IssueManifestProviderVO> getFillGridForTaxInvoice(Long orgId) {
+//				List<TaxInvoiceVO> result = taxInvoiceRepo.getFillGridForTaxInvoice(orgId);
+//				return getFillGridForTaxInvoice(result);
+//			}
+//
+//			private List<Map<String, Object>> getFillGridForTaxInvoice(Set<Object[]> result) {
+//				List<Map<String, Object>> details = new ArrayList<>();
+//				for (Object[] fs : result) {
+//					Map<String, Object> object = new HashMap<>();
+//					object.put("transactionno", fs[0] != null ? fs[0].toString() : "");
+//					object.put("transactiondate", fs[1] != null ? fs[1].toString() : "");
+//					object.put("kitid", fs[2] != null ? fs[2].toString() : "");
+//					object.put("kitname", fs[3] != null ? fs[3].toString() : "");
+//					object.put("kitqty", fs[4] != null ? fs[4].toString() : "");
+//					
+//					details.add(object); // Add the map to the list
+//
+//				}
+//				return details;
+//			}
+
+		@Override
+		public List<Map<String, Object>> getFillGridForTaxInvoice(Long orgId) {
+			Set<Object[]> result = taxInvoiceRepo.getFillGridForTaxInvoice(orgId);
+			return getFillGridForTaxInvoice(result);
+		}
+
+		private List<Map<String, Object>> getFillGridForTaxInvoice(Set<Object[]> result) {
+			List<Map<String, Object>> details = new ArrayList<>();
+			for (Object[] fs : result) {
+				Map<String, Object> object = new HashMap<>();
+				object.put("setTransactionNo", fs[0] != null ? fs[0].toString() : "");
+				object.put("setTransactionDate", fs[1] != null ? fs[1].toString() : "");
+				object.put("setKitId", fs[2] != null ? fs[2].toString() : "");
+				object.put("setKitName", fs[3] != null ? fs[3].toString() : "");
+				object.put("setKitQty", fs[4] != null ? fs[4].toString() : "");
+				details.add(object); // Add the map to the list
+
+			}
+			return details;
+		}
+
+		@Override
+		public List<Map<String, Object>> getMimFillGridgettransaction(Long orgId) {
+			Set<Object[]> requestedByDetails = taxInvoiceRepo.getMimFillGridgettransaction(orgId);
+			return getMimFillGridgettransaction(requestedByDetails);
+		}
+
+		private List<Map<String, Object>> getMimFillGridgettransaction(Set<Object[]> chCode) {
+			List<Map<String, Object>> List1 = new ArrayList<>();
+			for (Object[] ch : chCode) {
+				Map<String, Object> map = new HashMap<>();
+//				map.put("employeeId", ch[0] != null ? Integer.parseInt(ch[0].toString()) : 0);
+				map.put("transactionno", ch[0] != null ? ch[0].toString() : "");
+				List1.add(map);
+			}
+			return List1;
+		}
+
+		@Override
+		public List<Map<String, Object>> getMimFillGridgetKitDetails(Long orgId, String TransactionNo) {
+			Set<Object[]> requestedByDetails = taxInvoiceRepo.getMimFillGridgetKitDetails(orgId,TransactionNo);
+			return getMimFillGridgetKitDetails(requestedByDetails);
+		}
+
+		private List<Map<String, Object>> getMimFillGridgetKitDetails(Set<Object[]> chCode) {
+			List<Map<String, Object>> List1 = new ArrayList<>();
+			for (Object[] ch : chCode) {
+				Map<String, Object> map = new HashMap<>();
+//				map.put("employeeId", ch[0] != null ? Integer.parseInt(ch[0].toString()) : 0);
+				map.put("transactionno", ch[0] != null ? ch[0].toString() : "");
+				map.put("transactiondate", ch[1] != null ? ch[1].toString() : "");
+				map.put("kitid", ch[2] != null ? ch[2].toString() : "");
+				map.put("kitname", ch[3] != null ? ch[3].toString() : "");
+				map.put("kitqty", ch[4] != null ? ch[4].toString() : "");
+				List1.add(map);
+			}
+			return List1;
+		}
+		
+//		@Override
+//		public List<IssueManifestProviderVO> getFillGridForTaxInvoice(Long orgId) {
+//		    Set<Object[]> result = taxInvoiceRepo.getFillGridForTaxInvoice(orgId);
+//		    return (List<IssueManifestProviderVO>) getFillGridForTaxInvoice(result);
+//		}
+//
+//		private List<Map<String, Object> getFillGridForTaxInvoice(Set<Object[]> result) {
+//		    List<IssueManifestProviderVO> list = new ArrayList<>();
+//		    for (Object[] fs : result) {
+//		        IssueManifestProviderVO vo = new IssueManifestProviderVO();
+//		        vo.setTransactionNo(fs[0] != null ? fs[0].toString() : null);
+//		        vo.setTransactionDate(fs[1] != null ? fs[1].toString() : null);
+//		        vo.setKitId(fs[2] != null ? fs[2].toString() : null);
+//		        vo.setKitName(fs[3] != null ? fs[3].toString() : null);
+//		        vo.setKitQty(fs[4] != null ? Integer.parseInt(fs[4].toString()) : 0);
+//
+//		        list.add(vo);
+//		    }
+//		    return list;
+//		}
 
 		
 		

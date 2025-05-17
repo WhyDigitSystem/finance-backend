@@ -37,6 +37,12 @@ public interface ReportService {
 
 		List<IssueManifestProviderVO> getAllIssueManifestProviderForPendingIssueRequest(Long orgId);
 		
+		List<Map<String, Object>> getFillGridForTaxInvoice(Long orgId);
+		
+		List<Map<String, Object>> getMimFillGridgettransaction(Long orgId);
+		
+		List<Map<String, Object>> getMimFillGridgetKitDetails(Long orgId, String TransactionNo);
+		
 		//RETERIVELMANIFEST
 		
 	    Map<String, Object> createUpdateRetrievalManifest(RetrievalManifestProviderDTO retrievalManifestProviderDTO) throws ApplicationException;

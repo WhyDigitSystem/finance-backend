@@ -474,6 +474,44 @@ public interface TaxInvoiceRepo extends JpaRepository<TaxInvoiceVO, Long> {
 	@Query(nativeQuery = true,value="select * from taxinvoice a,irncreditnote a1  where a.orgid=a1.orgid and a.partycode=a1.partycode and a.docid=a1.originbillno\r\n"
 			+ " and a.approvestatus=a1.approvestatus and a.orgid=?1 and a.partyname=?2")
 	List<TaxInvoiceVO> getCheck(Long orgId, String party);
+
+	
+	@Query(nativeQuery = true, value = "SELECT \r\n"
+			+ "    a.transactionno,\r\n"
+			+ "    a.transactiondate,\r\n"
+			+ "    m.kitid,\r\n"
+			+ "    m.kitname,\r\n"
+			+ "    m.kitqty\r\n"
+			+ "FROM \r\n"
+			+ "    mim a\r\n"
+			+ "LEFT JOIN \r\n"
+			+ "    mimdetails m ON a.mimid = m.mimid\r\n"
+			+ "WHERE \r\n"
+			+ "    a.transactionno NOT IN (\r\n"
+			+ "        SELECT transno FROM taxinvoiceannexure\r\n"
+			+ "    )\r\n"
+			+ "    AND a.cancel = 0\r\n"
+			+ "    AND a.orgid = ?1\r\n"
+			+ "")
+		Set<Object[]> getFillGridForTaxInvoice(Long orgId);
+		
+		
+		@Query(nativeQuery = true, value = "select transactionno from mim a \r\n"
+				+ "where transactionno not in (select  transno from taxinvoiceannexure )\r\n"
+				+ "and a.cancel =0\r\n"
+				+ "and a.orgid=?1")
+	Set<Object[]> getMimFillGridgettransaction(Long orgId);
+
+
+@Query(nativeQuery = true, value = "SELECT a.transactionno, a.transactiondate, m.kitid, m.kitname, m.kitqty \r\n"
+		+ "FROM mim a\r\n"
+		+ "LEFT JOIN mimdetails m ON a.mimid = m.mimid\r\n"
+		+ "WHERE a.transactionno NOT IN (SELECT transno FROM taxinvoiceannexure)\r\n"
+		+ "AND a.cancel = 0\r\n"
+		+ "AND a.orgid = ?1\r\n"
+		+ "AND FIND_IN_SET(a.transactionno, ?2)\r\n"
+		+ "")
+Set<Object[]> getMimFillGridgetKitDetails(Long orgId, String transactionNo);
  
 
 
