@@ -485,4 +485,84 @@ public class ReportController extends BaseController{
 					return ResponseEntity.ok().body(responseDTO);
 				}
 				
+				@GetMapping("/getFillGridForTaxInvoice")
+				public ResponseEntity<ResponseDTO> getFillGridForTaxInvoice(@RequestParam(required = true) Long orgId) {
+					String methodName = "getFillGridForTaxInvoice()";
+					LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+					String errorMsg = null;
+					Map<String, Object> responseObjectsMap = new HashMap<>();
+					ResponseDTO responseDTO = null;
+					List<Map<String, Object>> quotationVO = new ArrayList<>();
+					try {
+						quotationVO = reportService.getFillGridForTaxInvoice(orgId);
+					} catch (Exception e) {
+						errorMsg = e.getMessage();
+						LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+					}
+					if (StringUtils.isEmpty(errorMsg)) {
+						responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "quotation found by ID");
+						responseObjectsMap.put("issueDetails", quotationVO);
+						responseDTO = createServiceResponse(responseObjectsMap);
+					} else {
+						errorMsg = "issueDetails fillgrid not found for ID: " + orgId;
+						responseDTO = createServiceResponseError(responseObjectsMap, "issueDetails not found", errorMsg);
+					}
+					LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+					return ResponseEntity.ok().body(responseDTO);
+				}
+				
+				@GetMapping("/getMimFillGridgettransaction")
+				public ResponseEntity<ResponseDTO> getMimFillGridgettransaction(@RequestParam Long orgId) {
+					String methodName = "getMimFillGridgettransaction()";
+					LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+					String errorMsg = null;
+					Map<String, Object> responseObjectsMap = new HashMap<>();
+					ResponseDTO responseDTO = null;
+					List<Map<String, Object>> department = new ArrayList<>();
+					try {
+						department = reportService.getMimFillGridgettransaction(orgId);
+					} catch (Exception e) {
+						errorMsg = e.getMessage();
+						LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+					}
+					if (StringUtils.isBlank(errorMsg)) {
+						responseObjectsMap.put(CommonConstant.STRING_MESSAGE, " TransactionNo get successfully");
+						responseObjectsMap.put("TransactionNo", department);
+						responseDTO = createServiceResponse(responseObjectsMap);
+					} else {
+						responseDTO = createServiceResponseError(responseObjectsMap,
+								"TransactionNo receive failed", errorMsg);
+					}
+					LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+					return ResponseEntity.ok().body(responseDTO);
+
+				}
+				
+				@GetMapping("/getMimFillGridgetKitDetails")
+				public ResponseEntity<ResponseDTO> getMimFillGridgetKitDetails(@RequestParam Long orgId,String TransactionNo) {
+					String methodName = "getMimFillGridgetKitDetails()";
+					LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+					String errorMsg = null;
+					Map<String, Object> responseObjectsMap = new HashMap<>();
+					ResponseDTO responseDTO = null;
+					List<Map<String, Object>> department = new ArrayList<>();
+					try {
+						department = reportService.getMimFillGridgetKitDetails(orgId,TransactionNo);
+					} catch (Exception e) {
+						errorMsg = e.getMessage();
+						LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+					}
+					if (StringUtils.isBlank(errorMsg)) {
+						responseObjectsMap.put(CommonConstant.STRING_MESSAGE, " MIM Fillgrid get successfully");
+						responseObjectsMap.put("MIM Fillgrid", department);
+						responseDTO = createServiceResponse(responseObjectsMap);
+					} else {
+						responseDTO = createServiceResponseError(responseObjectsMap,
+								"MIM Fillgrid  receive failed", errorMsg);
+					}
+					LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+					return ResponseEntity.ok().body(responseDTO);
+
+				}
+				
 }
