@@ -696,6 +696,7 @@ public class ArAdjustmentOffSetServiceImpl implements ArAdjustmentOffSetService 
 			vo.setRefDate(dto.getRefDate());
 			vo.setCurr(dto.getCurr());
 			vo.setExRate(dto.getExRate());
+			vo.setGstAmount(dto.getGstAmount());
 			vo.setInvAmount(dto.getInvAmount());
 			vo.setOutStanding(dto.getChargeAmt().subtract(dto.getSettled()));
 			vo.setSettled(dto.getSettled());
