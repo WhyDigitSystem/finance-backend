@@ -628,6 +628,7 @@ public class ArAdjustmentOffSetServiceImpl implements ArAdjustmentOffSetService 
 	        vo.setInvAmount(dto.getInvAmount());
 	        vo.setOutStanding(dto.getOutStanding());
 	        vo.setSettled(dto.getSettled());
+	        vo.setGstAmount(dto.getGstAmount());    
 	        vo.setSetExRate(dto.getSetExRate());
 	        vo.setTnxSettled(dto.getTnxSettled());
 	        vo.setGainOrLoss(dto.getGainOrLoss());
