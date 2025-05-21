@@ -32,5 +32,7 @@ public class ArOffSetInvoiceDetailsDTO {
 	private BigDecimal tnxSettled;
 	private BigDecimal gainOrLoss;
 	private String remarks;
+	private BigDecimal gstAmt;
+	private BigDecimal chargeAmt;
 
 }

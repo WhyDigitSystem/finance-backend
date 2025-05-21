@@ -75,6 +75,9 @@ public class ArAdjustmentOffSetVO {
 	@Column(name = "narration",length = 150)
 	private String narration;
 	
+	@Column(name = "netamount", precision = 10, scale = 2)
+	private BigDecimal netAmount;
+	
 	@Column(name="approvestatus",length = 20)
 	private String approveStatus;
 	

@@ -291,9 +291,9 @@ public class APServiceImpl implements APService {
 							"Settled amount (" + dto.getSettled() + ") cannot be greater than charge amount ("
 									+ dto.getAmount() + ") for invoice: " + dto.getInvNo());
 				}
-
-				BigDecimal outstanding = dto.getOutStanding();
-				vo.setOutstanding(outstanding);
+//
+//				BigDecimal outstanding = dto.getOutStanding();
+				vo.setOutstanding(dto.getChargeAmount().subtract(dto.getSettled()));
 
 				totalOutstanding = totalOutstanding.add(vo.getOutstanding());
 
@@ -870,6 +870,7 @@ public class APServiceImpl implements APService {
 			arapDetailsVO.setDocDate(savedAccountsVO.getDocDate());
 			arapDetailsVO.setAccCurrency(savedAccountsVO.getCurrency());
 			arapDetailsVO.setExRate(savedAccountsVO.getExRate());
+			arapDetailsVO.setActive(savedAccountsVO.isActive());
 			arapDetailsVO.setAccName(accountsDetailsVOs2.getAccountName());
 			arapDetailsVO.setGstFlag(accountsDetailsVOs2.getGstflag());
 			arapDetailsVO.setSubLedgerName(accountsDetailsVOs2.getSubledgerName());
