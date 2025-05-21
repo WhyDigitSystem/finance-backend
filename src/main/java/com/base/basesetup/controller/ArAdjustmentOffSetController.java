@@ -28,7 +28,6 @@ import com.base.basesetup.dto.ResponseDTO;
 import com.base.basesetup.entity.ApAdjustmentOffSetVO;
 import com.base.basesetup.entity.ArAdjustmentOffSetVO;
 import com.base.basesetup.entity.PaymentVO;
-import com.base.basesetup.entity.ReceiptVO;
 import com.base.basesetup.service.ArAdjustmentOffSetService;
 
 @CrossOrigin
@@ -161,7 +160,7 @@ public class ArAdjustmentOffSetController extends BaseController {
 		String errorMsg = null;
 		Map<String, Object> responseObjectsMap = new HashMap<>();
 		ResponseDTO responseDTO = null;
-		List<ReceiptVO> receiptVO = new ArrayList<>();
+		List<Map<String, Object>> receiptVO = new ArrayList<>();
 		try {
 			receiptVO = arAdjustmentOffSetService.getAllCustomerReceiptByOrgIdAndBranchCode(orgId,branchCode,customerName);
 		} catch (Exception e) {
@@ -349,5 +348,48 @@ public class ArAdjustmentOffSetController extends BaseController {
 			LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
 			return ResponseEntity.ok().body(responseDTO);
 		}
+		
+		
+		@PutMapping("/approveApAdjustmentOffSet")
+		public ResponseEntity<ResponseDTO> approveApAdjustmentOffSet(@RequestParam Long orgId, @RequestParam Long id,
+				@RequestParam String docId, @RequestParam String action, @RequestParam String actionBy) {
+			String methodName = "approveApAdjustmentOffSet()";
+			LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+			String errorMsg = null;
+			Map<String, Object> responseObjectsMap = new HashMap<>();
+			ResponseDTO responseDTO = null;
+			try {
+				ApAdjustmentOffSetVO taxInvoiceVO = arAdjustmentOffSetService.approveApAdjustmentOffSet(orgId, id, docId, action, actionBy);
+				responseObjectsMap.put("taxInvoiceVO", taxInvoiceVO);
+				responseDTO = createServiceResponse(responseObjectsMap);
+			} catch (Exception e) {
+				errorMsg = e.getMessage();
+				LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+				responseDTO = createServiceResponseError(responseObjectsMap, errorMsg, errorMsg);
+			}
+			LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+			return ResponseEntity.ok().body(responseDTO);
+		}
+		
+//		@PutMapping("/approveArAdjustmentOffSet")
+//		public ResponseEntity<ResponseDTO> approveArAdjustmentOffSet(@RequestParam Long orgId, @RequestParam Long id,
+//				@RequestParam String docId, @RequestParam String action, @RequestParam String actionBy) {
+//			String methodName = "approveArAdjustmentOffSet()";
+//			LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+//			String errorMsg = null;
+//			Map<String, Object> responseObjectsMap = new HashMap<>();
+//			ResponseDTO responseDTO = null;
+//			try {
+//				ArAdjustmentOffSetVO taxInvoiceVO = arAdjustmentOffSetService.approveArAdjustmentOffSet(orgId, id, docId, action, actionBy);
+//				responseObjectsMap.put("taxInvoiceVO", taxInvoiceVO);
+//				responseDTO = createServiceResponse(responseObjectsMap);
+//			} catch (Exception e) {
+//				errorMsg = e.getMessage();
+//				LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+//				responseDTO = createServiceResponseError(responseObjectsMap, errorMsg, errorMsg);
+//			}
+//			LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+//			return ResponseEntity.ok().body(responseDTO);
+//		}
 
 }

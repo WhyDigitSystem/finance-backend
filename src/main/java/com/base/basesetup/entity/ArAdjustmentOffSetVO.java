@@ -15,6 +15,8 @@ import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
+import org.springframework.format.annotation.DateTimeFormat;
+
 import com.base.basesetup.dto.CreatedUpdatedDate;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
@@ -72,6 +74,19 @@ public class ArAdjustmentOffSetVO {
 	private BigDecimal onAccount;
 	@Column(name = "narration",length = 150)
 	private String narration;
+	
+	@Column(name="approvestatus",length = 20)
+	private String approveStatus;
+	
+	@Column(name="approveby",length = 20)
+	private String approveBy;
+	
+	@Column(name = "status",length = 30)
+	private String status;
+    
+	@DateTimeFormat(pattern = "dd-MM-yyyy hh:mm:ss a")
+	@Column(name="approveon")
+	private String approveOn;
 	
 	//Default Fields
 	@Column(name = "screencode",length = 5)

@@ -27,5 +27,7 @@ public class ApOffSetInvoiceDetailsDTO {
 	private BigDecimal tnxSettled;
 	private BigDecimal gainOrLoss;
 	private String remarks;
+	private BigDecimal gstAmount;
+	private BigDecimal chargeAmt;
 
 }

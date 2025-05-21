@@ -102,8 +102,11 @@ public interface ReceiptRepo extends JpaRepository<ReceiptVO, Long> {
 	Set<Object[]> findReciptFillGrid(Long orgId, String partyCode,String branchCode);
 
 
-	@Query(nativeQuery = true, value = "select * from receipt where orgid=?1 and branchcode=?2 and cancel=0 and customerName=?3 and  onaccount > 0")
-	List<ReceiptVO> getAllReceiptByOrgIdAndBranchCode(Long orgId, String branchCode,String customerName);
+	@Query(nativeQuery = true, value = "SELECT p.onaccount - COALESCE(SUM(a2.settled), 0) AS netAmount,p.docid,p.docdate FROM receipt p LEFT JOIN aradjustmentoffset a1 ON p.docid = a1.receiptdocid \r\n"
+			+ "	LEFT JOIN aroffsetinvoicedetails a2 ON a1.aradjustmentoffsetid = a2.aradjustmentoffsetid\r\n"
+			+ "		WHERE p.orgid =?1 AND p.branchcode =?2 AND p.cancel = 0 AND p.customername =?3 AND p.approvestatus = 'Approved' AND \r\n"
+			+ "p.onaccount > 0 GROUP BY p.onaccount,  p.docid,p.docdate HAVING p.onaccount - COALESCE(SUM(a2.settled), 0) > 0")
+	Set<Object[]> getAllReceiptByOrgIdAndBranchCode(Long orgId, String branchCode,String customerName);
 
 	@Query(nativeQuery =true,value ="SELECT r.orgid, r.branchcode, r.finyear, \r\n"
 

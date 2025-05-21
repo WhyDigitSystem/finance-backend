@@ -25,6 +25,7 @@ public class ApAdjustmentOffSetDTO {
 	private BigDecimal exRate;
 	private BigDecimal amount;
 	private String supplierRefNo;
+	private String status;
 
 	// SUMMARY
 	private String narration;

@@ -681,9 +681,23 @@ public class APServiceImpl implements APService {
 	}
 
 	@Override
-	public List<PaymentVO> getAllPaymentByOrgIdAndBranchCode(Long orgId, String branchCode, String partyName) {
+	public List<Map<String, Object>>  getAllPaymentByOrgIdAndBranchCode(Long orgId, String branchCode, String partyName) {
+		Set<Object[]> group = paymentRepo.getAllPaymentByOrgIdAndBranchCode(orgId,branchCode,partyName);
 
-		return paymentRepo.getAllPaymentByOrgIdAndBranchCode(orgId,branchCode,partyName);
+		return getAllPaymentByOrgIdAnd(group);
+	}
+
+	private List<Map<String, Object>> getAllPaymentByOrgIdAnd(Set<Object[]> customer) {
+		List<Map<String, Object>> payfill = new ArrayList<>();
+		for (Object[] sup : customer) {
+			Map<String, Object> doctype = new HashMap<>();
+			doctype.put("netAmount", sup[0] != null ? new BigDecimal(sup[0].toString()) : BigDecimal.ZERO);
+			doctype.put("docId", sup[1] != null ? sup[1].toString() : "");
+			doctype.put("docDate", sup[2] != null ? sup[2].toString() : "");
+			payfill.add(doctype);
+		}
+		return payfill;
+		
 	}
 
 //	@Override

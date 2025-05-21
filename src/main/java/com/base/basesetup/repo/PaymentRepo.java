@@ -115,8 +115,11 @@ public interface PaymentRepo extends JpaRepository<PaymentVO, Long> {
 			+ "    a.tdsamt,n.settamt having SUM(d.actbillcurramt - COALESCE(h.actbillcurramt, 0)) - COALESCE(n.settamt, 0)>0")
 	Set<Object[]> getPaymentFillGrid(Long orgId, String partyCode,String branchCode);
 	
-	@Query(nativeQuery = true, value = "select * from payment where orgid=?1 and branchcode=?2 and cancel=0 and partyname=?3 and  onaccount > 0")
-	List<PaymentVO> getAllPaymentByOrgIdAndBranchCode(Long orgId, String branchCode,String partyName);
+	@Query(nativeQuery = true, value = "SELECT p.onaccount - COALESCE(SUM(a2.settled), 0) AS netAmount,p.docid,p.docdate FROM payment p LEFT JOIN apadjustmentoffset a1 ON p.docid = a1.paymentdocid \r\n"
+			+ "LEFT JOIN apoffsetinvoicedetails a2 ON a2.apadjustmentoffsetid = a1.apadjustmentoffsetid\r\n"
+			+ "		WHERE p.orgid =?1 AND p.branchcode =?2 AND p.cancel = 0 AND p.partyname =?3 AND p.approvestatus = 'Approved' AND \r\n"
+			+ "		p.onaccount > 0 GROUP BY p.onaccount,  p.docid,p.docdate  HAVING p.onaccount - COALESCE(SUM(a2.settled), 0) > 0")
+	Set<Object[]> getAllPaymentByOrgIdAndBranchCode(Long orgId, String branchCode,String partyName);
 
 	PaymentVO findByOrgIdAndIdAndDocId(Long orgId, Long id, String docId);
 
