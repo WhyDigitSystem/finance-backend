@@ -566,17 +566,17 @@ public class ARServiceImpl implements ARService {
 		ReceiptVO receiptVO = receiptRepo.findByOrgIdAndIdAndDocId(orgId, id, docId);
 
 	    if (receiptVO == null) {
-	        throw new ApplicationException("Payment not found for the given details.");
+	        throw new ApplicationException("Receipt not found for the given details.");
 	    }
 
 	    if ("Approved".equalsIgnoreCase(receiptVO.getApproveStatus())) {
-	        throw new ApplicationException("This Payment Already Approved");
+	        throw new ApplicationException("This Receipt Already Approved");
 	    } else if ("Rejected".equals(receiptVO.getApproveStatus())) {
-	        throw new ApplicationException("This Payment Already Rejected");
+	        throw new ApplicationException("This Receipt Already Rejected");
 	    }
 
 	    if (!"SUBMIT".equalsIgnoreCase(receiptVO.getStatus())) {
-	        throw new ApplicationException("Only SETTLED payments can be approved or rejected.");
+	        throw new ApplicationException("Only SETTLED Receipt can be approved or rejected.");
 	    }
 
 	    if (receiptVO.getApproveStatus() == null || 

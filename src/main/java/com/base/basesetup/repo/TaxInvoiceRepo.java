@@ -471,9 +471,9 @@ public interface TaxInvoiceRepo extends JpaRepository<TaxInvoiceVO, Long> {
 	Set<Object[]> getRevenueMonthWisePayment(Long orgId, Long finYear, String monthName);	
 	
 
-	@Query(nativeQuery = true,value="select * from taxinvoice a,irncreditnote a1  where a.orgid=a1.orgid and a.partycode=a1.partycode and a.docid=a1.originbillno\r\n"
-			+ " and a.approvestatus=a1.approvestatus and a.orgid=?1 and a.partyname=?2")
-	List<TaxInvoiceVO> getCheck(Long orgId, String party);
+//	@Query(nativeQuery = true,value="select * from taxinvoice a,irncreditnote a1  where a.orgid=a1.orgid and a.partycode=a1.partycode and a.docid=a1.originbillno\r\n"
+//			+ " and a.approvestatus=a1.approvestatus and a.orgid=?1 and a.partyname=?2")
+//	List<TaxInvoiceVO> getCheck(Long orgId, String party);
 
 	
 	@Query(nativeQuery = true, value = "SELECT \r\n"
