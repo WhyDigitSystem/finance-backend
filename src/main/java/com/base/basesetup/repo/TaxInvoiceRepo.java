@@ -497,20 +497,21 @@ public interface TaxInvoiceRepo extends JpaRepository<TaxInvoiceVO, Long> {
 		
 		
 		@Query(nativeQuery = true, value = "select transactionno from mim a \r\n"
-				+ "where transactionno not in (select  transno from taxinvoiceannexure )\r\n"
+				+ "where transactionno not in (select  transno from taxinvoiceannexure a, taxinvoice b where a.taxinvoiceid = b.taxinvoiceid and approvestatus ='Approved' )\r\n"
 				+ "and a.cancel =0\r\n"
+				+ "and receiver=?2\r\n"
 				+ "and a.orgid=?1")
-	Set<Object[]> getMimFillGridgettransaction(Long orgId);
+	Set<Object[]> getMimFillGridgettransaction(Long orgId,String Receiver);
 
 
 @Query(nativeQuery = true, value = "SELECT a.transactionno, a.transactiondate, m.kitid, m.kitname, m.kitqty \r\n"
 		+ "FROM mim a\r\n"
 		+ "LEFT JOIN mimdetails m ON a.mimid = m.mimid\r\n"
-		+ "WHERE a.transactionno NOT IN (SELECT transno FROM taxinvoiceannexure)\r\n"
+		+ "WHERE a.transactionno NOT IN (select  transno from taxinvoiceannexure a, taxinvoice b where a.taxinvoiceid = b.taxinvoiceid and approvestatus ='Approved')\r\n"
 		+ "AND a.cancel = 0\r\n"
 		+ "AND a.orgid = ?1\r\n"
 		+ "AND FIND_IN_SET(a.transactionno, ?2)\r\n"
-		+ "")
+		+ "GROUP BY a.transactionno, a.transactiondate, m.kitid, m.kitname, m.kitqty, a.cancel")
 Set<Object[]> getMimFillGridgetKitDetails(Long orgId, String transactionNo);
  
 

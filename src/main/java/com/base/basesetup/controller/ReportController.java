@@ -512,7 +512,7 @@ public class ReportController extends BaseController{
 				}
 				
 				@GetMapping("/getMimFillGridgettransaction")
-				public ResponseEntity<ResponseDTO> getMimFillGridgettransaction(@RequestParam Long orgId) {
+				public ResponseEntity<ResponseDTO> getMimFillGridgettransaction(@RequestParam Long orgId,String Receiver) {
 					String methodName = "getMimFillGridgettransaction()";
 					LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
 					String errorMsg = null;
@@ -520,7 +520,7 @@ public class ReportController extends BaseController{
 					ResponseDTO responseDTO = null;
 					List<Map<String, Object>> department = new ArrayList<>();
 					try {
-						department = reportService.getMimFillGridgettransaction(orgId);
+						department = reportService.getMimFillGridgettransaction(orgId,Receiver);
 					} catch (Exception e) {
 						errorMsg = e.getMessage();
 						LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);

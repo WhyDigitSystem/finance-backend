@@ -39,7 +39,7 @@ public interface ReportService {
 		
 		List<Map<String, Object>> getFillGridForTaxInvoice(Long orgId);
 		
-		List<Map<String, Object>> getMimFillGridgettransaction(Long orgId);
+		List<Map<String, Object>> getMimFillGridgettransaction(Long orgId,String Receiver);
 		
 		List<Map<String, Object>> getMimFillGridgetKitDetails(Long orgId, String TransactionNo);
 		
