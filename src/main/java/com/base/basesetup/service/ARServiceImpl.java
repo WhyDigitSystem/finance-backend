@@ -179,8 +179,6 @@ public class ARServiceImpl implements ARService {
 				arapadjustments.setBranchCode(savedReceiptVO.getBranchCode());
 				arapadjustments.setSubLedgerName(savedReceiptVO.getCustomerName());
 				arapadjustments.setAmount(savedReceiptInvDetails.getSettled());
-				arapadjustments.setSubLedgerName(savedReceiptVO.getCustomerName());
-
 				arapadjustments.setBaseAmt(savedReceiptInvDetails.getSettled());
 
 				PartyMasterVO partyMaster = partyMasterRepo.findByPartyCode(savedReceiptVO.getCustomerCode());
@@ -294,7 +292,7 @@ public class ARServiceImpl implements ARService {
 				receiptInvDetailsVO.setCurrency(receiptInvDetailsDTO.getCurrency());
 				receiptInvDetailsVO.setExRate(receiptInvDetailsDTO.getExRate());
 				receiptInvDetailsVO.setChargeAmt(receiptInvDetailsDTO.getChargeAmt());
-				receiptInvDetailsVO.setOutstanding(receiptInvDetailsDTO.getOutstanding());
+				receiptInvDetailsVO.setOutstanding(receiptInvDetailsDTO.getChargeAmt().subtract(receiptInvDetailsDTO.getSettled()));
 				receiptInvDetailsVO.setTds(receiptInvDetailsDTO.getTds());
 				receiptInvDetailsVO.setGstAmt(receiptInvDetailsDTO.getGstAmt());
 				BigDecimal paymentAmt = receiptDTO.getReceiptAmt();
@@ -697,6 +695,7 @@ public class ARServiceImpl implements ARService {
 			arapDetailsVO.setExRate(savedAccountsVO.getExRate());
 			arapDetailsVO.setAccName(accountsDetailsVOs2.getAccountName());
 			arapDetailsVO.setGstFlag(accountsDetailsVOs2.getGstflag());
+			arapDetailsVO.setActive(savedAccountsVO.isActive());
 			arapDetailsVO.setSubLedgerName(accountsDetailsVOs2.getSubledgerName());
 			arapDetailsVO.setSalesType(savedAccountsVO.getSalesType());
 			arapDetailsVO.setNativeAmt(accountsDetailsVOs2.getArapAmount());

@@ -33,6 +33,7 @@ public class ArAdjustmentOffSetDTO {
 //	private BigDecimal roundOffAmount;
 //	private BigDecimal onAccount;
 	private String narration;
+	private String status;
 
 	// Default Fields
 	private String branch;

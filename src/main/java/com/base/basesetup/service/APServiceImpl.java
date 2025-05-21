@@ -291,9 +291,9 @@ public class APServiceImpl implements APService {
 							"Settled amount (" + dto.getSettled() + ") cannot be greater than charge amount ("
 									+ dto.getAmount() + ") for invoice: " + dto.getInvNo());
 				}
-
-				BigDecimal outstanding = dto.getOutStanding();
-				vo.setOutstanding(outstanding);
+//
+//				BigDecimal outstanding = dto.getOutStanding();
+				vo.setOutstanding(dto.getChargeAmount().subtract(dto.getSettled()));
 
 				totalOutstanding = totalOutstanding.add(vo.getOutstanding());
 
@@ -739,6 +739,9 @@ public class APServiceImpl implements APService {
 	        throws ApplicationException {
 
 	    PaymentVO paymentVO = paymentRepo.findByOrgIdAndIdAndDocId(orgId, id, docId);
+	    
+	    List<PaymentInvDtlsVO> paymentInvDtlsVOs = paymentInvDtlsRepo.findByPaymentVO(paymentVO);
+	    for (PaymentInvDtlsVO dtlsVO : paymentInvDtlsVOs) {
 
 	    if (paymentVO == null) {
 	        throw new ApplicationException("Payment not found for the given details.");
@@ -789,8 +792,8 @@ public class APServiceImpl implements APService {
 			accountsVO.setFinYear(paymentVO.getFinYear());
 
 
-			accountsVO.setTotalDebitAmount(paymentVO.getPaymentAmt());
-			accountsVO.setTotalCreditAmount(paymentVO.getPaymentAmt());
+			accountsVO.setTotalDebitAmount(dtlsVO.getSettled());
+			accountsVO.setTotalCreditAmount(dtlsVO.getSettled());
 //			accountsVO.setCreditDays(taxInvoiceVO.getCreditDays());
 //			accountsVO.setAmountInWords(savedReceiptVO.getAmountInWords());
 //			accountsVO.setStTaxAmount(taxInvoiceVO.getTotalTaxableAmountLc());
@@ -801,21 +804,21 @@ public class APServiceImpl implements APService {
 
 			// RECEIVABLE A/C entry (Credit)
 			AccountsDetailsVO accountsDetailsVO = new AccountsDetailsVO();
-			accountsDetailsVO.setNDebitAmount(paymentVO.getPaymentAmt());
+			accountsDetailsVO.setNDebitAmount(dtlsVO.getSettled());
 			accountsDetailsVO.setACategory("PAYABLE A/C");
 			accountsDetailsVO.setAccountName("PAYABLE A/C");
 			accountsDetailsVO.setSubLedgerCode(paymentVO.getPartyCode());
-			accountsDetailsVO.setDebitAmount(paymentVO.getPaymentAmt());
+			accountsDetailsVO.setDebitAmount(dtlsVO.getSettled());
 			accountsDetailsVO.setNCreditAmount(BigDecimal.ZERO);
 			accountsDetailsVO.setCreditAmount(BigDecimal.ZERO);
 			accountsDetailsVO.setArapFlag(true);
-			accountsDetailsVO.setArapAmount(paymentVO.getPaymentAmt().multiply(BigDecimal.valueOf(-1)));
-			accountsDetailsVO.setBDebitAmount(paymentVO.getPaymentAmt());
+			accountsDetailsVO.setArapAmount(dtlsVO.getSettled().multiply(BigDecimal.valueOf(-1)));
+			accountsDetailsVO.setBDebitAmount(dtlsVO.getSettled());
 			accountsDetailsVO.setBCrAmount(BigDecimal.ZERO);
-			accountsDetailsVO.setBArapAmount(paymentVO.getPaymentAmt().multiply(BigDecimal.valueOf(-1)));
+			accountsDetailsVO.setBArapAmount(dtlsVO.getSettled().multiply(BigDecimal.valueOf(-1)));
 			accountsDetailsVO.setACurrency(paymentVO.getCurrency());
 			accountsDetailsVO.setSubledgerName(paymentVO.getPartyName());
-			accountsDetailsVO.setNArapAmount(paymentVO.getPaymentAmt().multiply(BigDecimal.valueOf(-1)));
+			accountsDetailsVO.setNArapAmount(dtlsVO.getSettled().multiply(BigDecimal.valueOf(-1)));
 			accountsDetailsVO.setGstflag(2);
 			accountsDetailsVO.setAccountsVO(accountsVO);
 			accountsDetailsVOs.add(accountsDetailsVO);
@@ -826,12 +829,12 @@ public class APServiceImpl implements APService {
 			accountsDetailsVO1.setAccountName(paymentVO.getBankCashAcc());
 			accountsDetailsVO1.setSubLedgerCode("None");
 			accountsDetailsVO1.setDebitAmount(BigDecimal.ZERO);
-			accountsDetailsVO1.setNCreditAmount(paymentVO.getPaymentAmt());
-			accountsDetailsVO1.setCreditAmount(paymentVO.getPaymentAmt());
+			accountsDetailsVO1.setNCreditAmount(dtlsVO.getSettled());
+			accountsDetailsVO1.setCreditAmount(dtlsVO.getSettled());
 			accountsDetailsVO1.setArapFlag(false);
 			accountsDetailsVO1.setArapAmount(BigDecimal.ZERO);
 			accountsDetailsVO1.setBDebitAmount(BigDecimal.ZERO);
-			accountsDetailsVO1.setBCrAmount(paymentVO.getPaymentAmt());
+			accountsDetailsVO1.setBCrAmount(dtlsVO.getSettled());
 			accountsDetailsVO1.setBArapAmount(BigDecimal.ZERO);
 			accountsDetailsVO1.setACurrency(paymentVO.getCurrency());
 			accountsDetailsVO1.setSubledgerName("None");
@@ -870,6 +873,7 @@ public class APServiceImpl implements APService {
 			arapDetailsVO.setDocDate(savedAccountsVO.getDocDate());
 			arapDetailsVO.setAccCurrency(savedAccountsVO.getCurrency());
 			arapDetailsVO.setExRate(savedAccountsVO.getExRate());
+			arapDetailsVO.setActive(savedAccountsVO.isActive());
 			arapDetailsVO.setAccName(accountsDetailsVOs2.getAccountName());
 			arapDetailsVO.setGstFlag(accountsDetailsVOs2.getGstflag());
 			arapDetailsVO.setSubLedgerName(accountsDetailsVOs2.getSubledgerName());
@@ -888,7 +892,7 @@ public class APServiceImpl implements APService {
 
 	        return paymentRepo.save(paymentVO);
 	    }
-
+	    }
 	    return paymentVO;
 
 	}
