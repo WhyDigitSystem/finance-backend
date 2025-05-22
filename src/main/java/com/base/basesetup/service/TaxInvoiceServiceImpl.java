@@ -688,6 +688,7 @@ public class TaxInvoiceServiceImpl implements TaxInvoiceService {
 			arapDetailsVO.setFinYear(savedAccountsVO.getFinYear());
 			arapDetailsVO.setRefNo(savedAccountsVO.getRefNo());
 			arapDetailsVO.setOrgId(savedAccountsVO.getOrgId());
+			arapDetailsVO.setActive(savedAccountsVO.isActive());
 			arapDetailsVO.setRefDate(savedAccountsVO.getRefDate());
 			arapDetailsVO.setSubLedgerCode(accountsDetailsVOs2.getSubLedgerCode());
 			arapDetailsVO.setCurrency(accountsDetailsVOs2.getACurrency());

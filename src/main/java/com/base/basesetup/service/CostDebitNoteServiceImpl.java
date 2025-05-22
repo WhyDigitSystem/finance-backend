@@ -804,6 +804,7 @@ public class CostDebitNoteServiceImpl implements CostDebitNoteService {
 			arapDetailsVO.setAccCurrency(savedAccountsVO.getCurrency());
 			arapDetailsVO.setExRate(savedAccountsVO.getExRate());
 			arapDetailsVO.setOrgId(savedAccountsVO.getOrgId());
+			arapDetailsVO.setActive(savedAccountsVO.isActive());
 			arapDetailsVO.setAccName(accountsDetailsVOs2.getAccountName());
 			arapDetailsVO.setGstFlag(accountsDetailsVOs2.getGstflag());
 			arapDetailsVO.setSubLedgerName(accountsDetailsVOs2.getSubledgerName());

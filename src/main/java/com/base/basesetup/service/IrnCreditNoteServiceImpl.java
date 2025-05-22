@@ -599,6 +599,7 @@ public class IrnCreditNoteServiceImpl implements IrnCreditNoteService {
 			arapDetailsVO.setCreditDays(savedAccountsVO.getCreditDays());
 			arapDetailsVO.setDocId(savedAccountsVO.getDocId());
 			arapDetailsVO.setDocDate(savedAccountsVO.getDocDate());
+			arapDetailsVO.setActive(savedAccountsVO.isActive());
 			arapDetailsVO.setAccCurrency(savedAccountsVO.getCurrency());
 			arapDetailsVO.setExRate(savedAccountsVO.getExRate());
 			arapDetailsVO.setOrgId(savedAccountsVO.getOrgId());

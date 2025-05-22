@@ -2685,6 +2685,7 @@ public class TransactionServiceImpl implements TransactionService {
 		tmsJobCardVO.setClosed(tmsJobCardDTO.isClosed());
 		tmsJobCardVO.setClosedOn(tmsJobCardDTO.getClosedOn());
 		tmsJobCardVO.setBranch(tmsJobCardDTO.getBranch());
+		tmsJobCardVO.setPartyShortName(tmsJobCardDTO.getPartyShortName());
 		tmsJobCardVO.setBranchCode(tmsJobCardDTO.getBranchCode());
 		tmsJobCardVO.setCancelRemarks(tmsJobCardDTO.getCancelRemarks());
 		tmsJobCardVO.setActive(tmsJobCardDTO.isActive());
@@ -3509,6 +3510,7 @@ public class TransactionServiceImpl implements TransactionService {
 			Map<String, Object> map = new HashMap<>();
 			map.put("partyname", ch[0] != null ? ch[0].toString() : "");
 			map.put("partyCode", ch[1] != null ? ch[1].toString() : "");
+			map.put("shortName", ch[2] != null ? ch[2].toString() : "");
 
 			list1.add(map);
 		}
