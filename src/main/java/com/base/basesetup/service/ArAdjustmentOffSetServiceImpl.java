@@ -222,6 +222,7 @@ public class ArAdjustmentOffSetServiceImpl implements ArAdjustmentOffSetService 
 				negativeArapAdjustments.setOrgId(arAdjustmentOffSetVO.getOrgId());
 				negativeArapAdjustments.setActive(arAdjustmentOffSetVO.isActive());
 				negativeArapAdjustments.setCancel(arAdjustmentOffSetVO.isCancel());
+				negativeArapAdjustments.setAccCurrency(arAdjustmentOffSetVO.getCurrency());
 				negativeArapAdjustments.setCreatedBy(arAdjustmentOffSetVO.getCreatedBy());
 				negativeArapAdjustments.setUpdatedBy(arAdjustmentOffSetVO.getUpdatedBy());
 				negativeArapAdjustments.setBranchCode(arAdjustmentOffSetVO.getBranchCode());
@@ -278,7 +279,7 @@ public class ArAdjustmentOffSetServiceImpl implements ArAdjustmentOffSetService 
 			vo.setRefDate(dto.getRefDate());
 			vo.setCurr(dto.getCurr());
 			vo.setExRate(dto.getExRate());
-			vo.setChargeAmt(dto.getChargeAmt());
+			vo.setChargeAmt(dto.getInvAmount().add(dto.getGstAmt()));
 			vo.setInvAmount(dto.getInvAmount());
 			vo.setOutStanding(dto.getChargeAmt().subtract(dto.getSettled()));
 			vo.setSettled(dto.getSettled());
