@@ -34,6 +34,7 @@ public class TmsJobCardDTO {
 	private String refNo;
 	private String refDate;
 	private String service;
+	private String partyShortName;
 
 	private Long orgId;
 	private String branch;

@@ -62,7 +62,7 @@ public interface CostInvoiceRepo extends JpaRepository<CostInvoiceVO, Long> {
 			+ "group by businessplace")
 	Set<Object[]> getPlaceOfSupplyDetails(Long orgId, Long id, String stateCode);
 
-	@Query(nativeQuery = true, value = "SELECT j.jobno,j.customer FROM jobcard j WHERE orgid=?1 AND closed = 0 AND active=1 group by j.jobno,j.customer")
+	@Query(nativeQuery = true, value = "SELECT j.jobno,j.customer,j.partyshortname FROM jobcard j WHERE orgid=?1 AND closed = 0 AND active=1 group by j.jobno,j.customer,partyshortname")
 	Set<Object[]> getJobNoFromTmsJobCard(Long orgId);
 	
 	@Query(nativeQuery = true, value = "select accountgroupname,category from groupledger where orgid=?1 and gsttaxflag='NA' and category='PAYABLE A/C' and type='ACCOUNT'  and groupname='TDS'")

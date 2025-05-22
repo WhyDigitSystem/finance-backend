@@ -622,6 +622,7 @@ public class CostInvoiceServiceImpl implements CostInvoiceService {
 			Map<String, Object> map = new HashMap<>();
 			map.put("jobNo", ch[0] != null ? ch[0].toString() : ""); // Empty string if null
 			map.put("customerName", ch[1] != null ? ch[1].toString() : "");
+			map.put("shortName", ch[2] != null ? ch[2].toString() : "");
 			List1.add(map);
 		}
 		return List1;
@@ -1096,6 +1097,7 @@ public class CostInvoiceServiceImpl implements CostInvoiceService {
 	    arapDetailsVO.setAccCurrency(savedAccountsVO.getCurrency());
 	    arapDetailsVO.setExRate(savedAccountsVO.getExRate());
 	    arapDetailsVO.setAccName(payableEntry.getAccountName());
+	    arapDetailsVO.setActive(savedAccountsVO.isActive());
 	    arapDetailsVO.setGstFlag(payableEntry.getGstflag());
 	    arapDetailsVO.setSubLedgerName(payableEntry.getSubledgerName());
 	    arapDetailsVO.setSalesType(savedAccountsVO.getSalesType());
