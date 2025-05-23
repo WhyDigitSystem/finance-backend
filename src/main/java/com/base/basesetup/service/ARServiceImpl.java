@@ -28,6 +28,7 @@ import com.base.basesetup.entity.ArapDetailsVO;
 import com.base.basesetup.entity.DocumentTypeMappingDetailsVO;
 import com.base.basesetup.entity.MultipleDocIdGenerationDetailsVO;
 import com.base.basesetup.entity.PartyMasterVO;
+import com.base.basesetup.entity.PaymentInvDtlsVO;
 import com.base.basesetup.entity.ReceiptInvDetailsVO;
 import com.base.basesetup.entity.ReceiptVO;
 import com.base.basesetup.exception.ApplicationException;
@@ -552,6 +553,9 @@ public class ARServiceImpl implements ARService {
 	        throws ApplicationException {
 
 		ReceiptVO receiptVO = receiptRepo.findByOrgIdAndIdAndDocId(orgId, id, docId);
+		
+	    List<ReceiptInvDetailsVO> paymentInvDtlsVOs =receiptInvDetailsRepo.findByReceiptVO(receiptVO);
+	    for (ReceiptInvDetailsVO dtlsVO : paymentInvDtlsVOs) {
 
 	    if (receiptVO == null) {
 	        throw new ApplicationException("Receipt not found for the given details.");
@@ -602,8 +606,8 @@ public class ARServiceImpl implements ARService {
 			accountsVO.setFinYear(receiptVO.getFinYear());
 
 
-			accountsVO.setTotalDebitAmount(receiptVO.getReceiptAmt());
-			accountsVO.setTotalCreditAmount(receiptVO.getReceiptAmt());
+			accountsVO.setTotalDebitAmount(dtlsVO.getSettled());
+			accountsVO.setTotalCreditAmount(dtlsVO.getSettled());
 //			accountsVO.setCreditDays(taxInvoiceVO.getCreditDays());
 //			accountsVO.setAmountInWords(savedReceiptVO.getAmountInWords());
 //			accountsVO.setStTaxAmount(taxInvoiceVO.getTotalTaxableAmountLc());
@@ -619,31 +623,31 @@ public class ARServiceImpl implements ARService {
 			accountsDetailsVO.setAccountName("RECEIVABLE A/C");
 			accountsDetailsVO.setSubLedgerCode(receiptVO.getCustomerCode());
 			accountsDetailsVO.setDebitAmount(BigDecimal.ZERO);
-			accountsDetailsVO.setNCreditAmount(receiptVO.getReceiptAmt());
-			accountsDetailsVO.setCreditAmount(receiptVO.getReceiptAmt());
+			accountsDetailsVO.setNCreditAmount(dtlsVO.getSettled());
+			accountsDetailsVO.setCreditAmount(dtlsVO.getSettled());
 			accountsDetailsVO.setArapFlag(true);
-			accountsDetailsVO.setArapAmount(receiptVO.getReceiptAmt().multiply(BigDecimal.valueOf(-1)));
+			accountsDetailsVO.setArapAmount(dtlsVO.getSettled().multiply(BigDecimal.valueOf(-1)));
 			accountsDetailsVO.setBDebitAmount(BigDecimal.ZERO);
 			accountsDetailsVO.setBCrAmount(receiptVO.getReceiptAmt());
-			accountsDetailsVO.setBArapAmount(receiptVO.getReceiptAmt().multiply(BigDecimal.valueOf(-1)));
+			accountsDetailsVO.setBArapAmount(dtlsVO.getSettled().multiply(BigDecimal.valueOf(-1)));
 			accountsDetailsVO.setACurrency(receiptVO.getCurrency());
 			accountsDetailsVO.setSubledgerName(receiptVO.getCustomerName());
-			accountsDetailsVO.setNArapAmount(receiptVO.getReceiptAmt().multiply(BigDecimal.valueOf(-1)));
+			accountsDetailsVO.setNArapAmount(dtlsVO.getSettled().multiply(BigDecimal.valueOf(-1)));
 			accountsDetailsVO.setGstflag(1);
 			accountsDetailsVO.setAccountsVO(accountsVO);
 			accountsDetailsVOs.add(accountsDetailsVO);
 
 			// BANK/CASH entry (Debit)
 			AccountsDetailsVO accountsDetailsVO1 = new AccountsDetailsVO();
-			accountsDetailsVO1.setNDebitAmount(receiptVO.getReceiptAmt());
+			accountsDetailsVO1.setNDebitAmount(dtlsVO.getSettled());
 			accountsDetailsVO1.setAccountName(receiptVO.getBankCashAcc());
 			accountsDetailsVO1.setSubLedgerCode("None");
-			accountsDetailsVO1.setDebitAmount(receiptVO.getReceiptAmt());
+			accountsDetailsVO1.setDebitAmount(dtlsVO.getSettled());
 			accountsDetailsVO1.setNCreditAmount(BigDecimal.ZERO);
 			accountsDetailsVO1.setCreditAmount(BigDecimal.ZERO);
 			accountsDetailsVO1.setArapFlag(false);
 			accountsDetailsVO1.setArapAmount(BigDecimal.ZERO);
-			accountsDetailsVO1.setBDebitAmount(receiptVO.getReceiptAmt());
+			accountsDetailsVO1.setBDebitAmount(dtlsVO.getSettled());
 			accountsDetailsVO1.setBCrAmount(BigDecimal.ZERO);
 			accountsDetailsVO1.setBArapAmount(BigDecimal.ZERO);
 			accountsDetailsVO1.setACurrency(receiptVO.getCurrency());
@@ -702,7 +706,7 @@ public class ARServiceImpl implements ARService {
 
 	        return receiptRepo.save(receiptVO);
 	    }
-
+	    }
 	    return receiptVO;
 
 	}
