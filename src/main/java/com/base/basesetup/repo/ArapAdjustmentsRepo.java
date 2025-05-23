@@ -37,7 +37,7 @@ public interface ArapAdjustmentsRepo extends JpaRepository<ArapAdjustmentsVO, Lo
 			+ "         CONCAT(subledgername, ' , Cr. Limit - ', creditlimit, ' , Cr. Days - ', creditdays) AS subledgername,\r\n"
 			+ "         partytype,\r\n"
 			+ "         cbranch,\r\n"
-			+ "         subledgerdivision,\r\n"
+			+ "         subledgerdivision,\r\n" 
 			+ "         currency,\r\n"
 			+ "         auser,\r\n"
 			+ "         docid,\r\n"
