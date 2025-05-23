@@ -3104,7 +3104,7 @@ public class TransactionServiceImpl implements TransactionService {
 		accountsVO.setFinYear(bankingDepositVO.getFinYear());
 
 		accountsVO.setTotalDebitAmount(bankingDepositVO.getDepositAmount());
-		accountsVO.setTotalCreditAmount(BigDecimal.ZERO);
+		accountsVO.setTotalCreditAmount(bankingDepositVO.getDepositAmount());
 //		accountsVO.setCreditDays(taxInvoiceVO.getCreditDays());
 //		accountsVO.setAmountInWords(savedReceiptVO.getAmountInWords());
 //		accountsVO.setStTaxAmount(taxInvoiceVO.getTotalTaxableAmountLc());
@@ -3120,7 +3120,7 @@ public class TransactionServiceImpl implements TransactionService {
 		accountsDetailsVO.setNDebitAmount(BigDecimal.ZERO);
 		accountsDetailsVO.setACategory("RECEIVABLE A/C");
 		accountsDetailsVO.setAccountName(bankingDepositVO.getBankAccount());
-		accountsDetailsVO.setSubLedgerCode("");
+		accountsDetailsVO.setSubLedgerCode("None");
 		accountsDetailsVO.setDebitAmount(bankingDepositVO.getDepositAmount());
 		accountsDetailsVO.setNCreditAmount(BigDecimal.ZERO);
 		accountsDetailsVO.setCreditAmount(BigDecimal.ZERO);
@@ -3130,7 +3130,7 @@ public class TransactionServiceImpl implements TransactionService {
 		accountsDetailsVO.setBCrAmount(BigDecimal.ZERO);
 		accountsDetailsVO.setBArapAmount(BigDecimal.ZERO);
 		accountsDetailsVO.setACurrency(bankingDepositVO.getCurrency());
-		accountsDetailsVO.setSubledgerName("NONE");
+		accountsDetailsVO.setSubledgerName("None");
 		accountsDetailsVO.setNArapAmount(BigDecimal.ZERO);
 		accountsDetailsVO.setGstflag(1);
 		accountsDetailsVO.setAccountsVO(accountsVO);
@@ -3150,7 +3150,7 @@ public class TransactionServiceImpl implements TransactionService {
 			accountsDetailsVO1.setBDebitAmount(BigDecimal.ZERO);
 			accountsDetailsVO1.setBCrAmount(depositParticularsVO.getCredit());
 			accountsDetailsVO1.setBArapAmount(BigDecimal.ZERO);
-			accountsDetailsVO1.setACurrency("");
+			accountsDetailsVO1.setACurrency(bankingDepositVO.getCurrency());
 			accountsDetailsVO1.setSubledgerName("None");
 			accountsDetailsVO1.setNArapAmount(BigDecimal.ZERO);
 			accountsDetailsVO1.setGstflag(1);
