@@ -15,7 +15,7 @@ import lombok.NoArgsConstructor;
 public class IssueManifestProviderDTO {
 
 	private Long id;
-
+	private String finYear;
 	private String transactionNo;
 
 	private LocalDate transactionDate;

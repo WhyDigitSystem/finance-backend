@@ -618,6 +618,8 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 		for (VendorsStateDTO vendorsStateDTO : vendorDTO.getVendorStateDTO()) {
 
 			PartyStateVO partyStateVO = new PartyStateVO();
+			
+			partyStateVO.setCountry(vendorsStateDTO.getCountry());
 
 			partyStateVO.setState(vendorsStateDTO.getState());
 			partyStateVO.setStateCode(vendorsStateDTO.getStateCode());
@@ -637,7 +639,9 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 		List<PartyAddressVO> addressVOs = new ArrayList<>();
 		for (VendorsAddressDTO vendorsAddressDTO : vendorDTO.getVendorAddressDTO()) {
 			PartyAddressVO partyAddressVO = new PartyAddressVO();
+			
 
+			partyAddressVO.setCountry(vendorsAddressDTO.getCountry());
 			partyAddressVO.setState(vendorsAddressDTO.getState());
 			partyAddressVO.setCity(vendorsAddressDTO.getCity());
 			partyAddressVO.setBusinessPlace(vendorsAddressDTO.getBussinesPlace());
@@ -1027,6 +1031,24 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 		}
 		return List1;
 
+	}
+
+	@Override
+	public List<Map<String, Object>> getVedorsAddressDetails(Long orgId) {
+		Set<Object[]> chType = partyMasterRepo.getVedorsAddressDetails(orgId);
+		return getVedorsAddressDetails(chType);
+	}
+
+	private List<Map<String, Object>> getVedorsAddressDetails(Set<Object[]> chType) {
+		List<Map<String, Object>> List1 = new ArrayList<>();
+		for (Object[] ch : chType) {
+			Map<String, Object> map = new HashMap<>();
+			map.put("partyName", ch[0] != null ? ch[0].toString() : "");
+			map.put("FullAddress", ch[1] != null ? ch[1].toString() : "");
+			map.put("gstin", ch[2] != null ? ch[2].toString() : "");
+			List1.add(map);
+		}
+		return List1;
 	}
 
 	

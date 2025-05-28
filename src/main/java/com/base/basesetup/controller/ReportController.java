@@ -139,7 +139,7 @@ public class ReportController extends BaseController{
 
 
 	@GetMapping("/getAllIssueManifestProvider")
-	public ResponseEntity<ResponseDTO> getAllIssueManifestProvider() {
+	public ResponseEntity<ResponseDTO> getAllIssueManifestProvider(@RequestParam(required = true) Long orgId,@RequestParam(required = true) Long finYear) {
 		String methodName = "getAllIssueManifestProvider()";
 		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
 		String errorMsg = null;
@@ -147,7 +147,7 @@ public class ReportController extends BaseController{
 		ResponseDTO responseDTO = null;
 		List<IssueManifestProviderVO> IssueManifestProviderVO =new ArrayList<IssueManifestProviderVO>();
 		try {
-			IssueManifestProviderVO = reportService.getAllIssueManifestProvider();
+			IssueManifestProviderVO = reportService.getAllIssueManifestProvider(orgId,finYear);
 		} catch (Exception e) {
 			errorMsg = e.getMessage();
 			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);

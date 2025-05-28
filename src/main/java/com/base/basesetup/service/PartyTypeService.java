@@ -64,6 +64,8 @@ public interface PartyTypeService {
 	List<Map<String, Object>> getMonthlyAndYearWiseData(Long orgId, String month,String finYear,String branchCode);
 
 	List<Map<String, Object>> getSalesDistributionData(Long orgId, String month, String finYear, String branchCode);
+	
+	List<Map<String, Object>> getVedorsAddressDetails(Long orgId);
 
 	
 }

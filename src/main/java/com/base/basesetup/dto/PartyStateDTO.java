@@ -8,6 +8,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PartyStateDTO {
+	
+	private String country;
 	private String state;
 	private String gstIn;
 	private Long stateNo;

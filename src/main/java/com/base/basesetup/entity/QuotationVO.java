@@ -47,6 +47,9 @@ public class QuotationVO {
 	private boolean cancel;
 	@Column(name = "orgid")
 	private Long orgId;
+	@Column(name = "finyear")
+	private String finYear;
+	
 	@Column(name = "createdby")
 	private String createdBy;
 	@Column(name = "modifiedy")

@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 public class InvoiceDTO {
 
 	private Long id;
+	private String finYear;
 	private Long orgId;
 	private String createdBy;
 	private String poDate;
