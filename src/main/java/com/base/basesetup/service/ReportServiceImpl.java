@@ -594,6 +594,7 @@ public class ReportServiceImpl implements ReportService{
 		        quotationDetailsVO.setTotal(quotationDetailsDTO.getTotal());
 
 		        // Link back to the main quotation
+		        // Link back to the main quotation
 		        quotationDetailsVO.setQuotationVO(quotationVO);
 		        quotationDetailsVOs.add(quotationDetailsVO);
 		    }
@@ -672,7 +673,7 @@ public class ReportServiceImpl implements ReportService{
 				map.put("transactionno", ch[0] != null ? ch[0].toString() : "");
 				List1.add(map);
 			}
-			return List1;
+			return List1 ;
 		}
 
 		@Override
