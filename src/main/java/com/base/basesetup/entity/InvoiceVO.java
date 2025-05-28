@@ -73,6 +73,9 @@ public class InvoiceVO {
 	@Column(name = "orgid")
 	private Long orgId;
 	
+	@Column(name = "finyear")
+	private String finYear;
+	
 	@Column(name = "createdby", columnDefinition = "TEXT")
 	private String createdBy;
 	

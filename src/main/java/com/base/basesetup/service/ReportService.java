@@ -31,7 +31,7 @@ public interface ReportService {
 	
 		Map<String, Object> createUpdateIssuemanifest(IssueManifestProviderDTO issueManifestProviderDTO) throws ApplicationException;
 		
-		List<IssueManifestProviderVO> getAllIssueManifestProvider();
+		List<IssueManifestProviderVO> getAllIssueManifestProvider(Long orgId, Long finYear);
 		
 		Optional<IssueManifestProviderVO> getAllIssueManifestProviderById(Long id);
 
@@ -73,6 +73,8 @@ public interface ReportService {
 
 		List<Map<String, Object>> getPaymentRegisterReport(Long orgId, String partyCode, String branchCode,
 				String finYear, String fromDate, String toDate);
+
+		
 
 		
 	

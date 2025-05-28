@@ -499,7 +499,7 @@ public interface TaxInvoiceRepo extends JpaRepository<TaxInvoiceVO, Long> {
 		@Query(nativeQuery = true, value = "select transactionno from mim a \r\n"
 				+ "where transactionno not in (select  transno from taxinvoiceannexure a, taxinvoice b where a.taxinvoiceid = b.taxinvoiceid and approvestatus ='Approved' )\r\n"
 				+ "and a.cancel =0\r\n"
-				+ "and receiver=?2\r\n"
+				+ "and receiver=?2 \r\n"
 				+ "and a.orgid=?1")
 	Set<Object[]> getMimFillGridgettransaction(Long orgId,String Receiver);
 

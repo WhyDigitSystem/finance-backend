@@ -32,6 +32,9 @@ public class PartyStateVO {
 	@Column(name = "partystateid")
 	private Long id;
 	
+	@Column(name = "country", length = 50)
+	private String country;
+	
 	@Column(name = "state", length = 25)
 	private String state;
 

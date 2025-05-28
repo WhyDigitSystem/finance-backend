@@ -107,6 +107,7 @@ public class ReportServiceImpl implements ReportService{
 				invoiceVO.setProductLines(invoiceProductLinesVO);
 				invoiceVO.setCreatedBy(invoiceDTO.getCreatedBy());
 				invoiceVO.setModifiedBy(invoiceDTO.getCreatedBy());
+				
 //				String base64Image = invoiceDTO.getLogo();
 //				if (base64Image != null && base64Image.startsWith("data:image/")) {
 //					base64Image = base64Image.substring(base64Image.indexOf(",") + 1);
@@ -177,6 +178,7 @@ public class ReportServiceImpl implements ReportService{
 			invoiceVO.setTotal(invoiceDTO.getTotal());
 			invoiceVO.setGstType(invoiceDTO.getGstType());
 			invoiceVO.setIgst(invoiceDTO.getIgst());
+			invoiceVO.setFinYear(invoiceDTO.getFinYear());
 
 			invoiceVO.setOrgId(invoiceDTO.getOrgId());
 		}
@@ -259,6 +261,7 @@ public class ReportServiceImpl implements ReportService{
 			issueManifestProviderVO.setActive(issueManifestProviderDTO.isActive());
 			issueManifestProviderVO.setCancel(issueManifestProviderDTO.isCancel());
 			issueManifestProviderVO.setOrgId(issueManifestProviderDTO.getOrgId());
+			issueManifestProviderVO.setFinYear(issueManifestProviderDTO.getFinYear());
 			if (issueManifestProviderDTO.getId() != null) {
 
 				List<IssueManifestProviderDetailsVO> issueManifestProviderDetailsVOs = issueManifestProviderDetailsRepo
@@ -290,9 +293,9 @@ public class ReportServiceImpl implements ReportService{
 		}
 
 		@Override
-		public List<IssueManifestProviderVO> getAllIssueManifestProvider() {
+		public List<IssueManifestProviderVO> getAllIssueManifestProvider(Long orgId,Long finYear) {
 			
-			return issueManifestProviderRepo.findAll();
+			return issueManifestProviderRepo.getAllIssueManifestProvider(orgId,finYear);
 		}
 		
 		@Override
@@ -370,6 +373,7 @@ public class ReportServiceImpl implements ReportService{
 			retrievalManifestProviderVO.setActive(retrievalManifestProviderDTO.isActive());
 			retrievalManifestProviderVO.setCancel(retrievalManifestProviderDTO.isCancel());
 			retrievalManifestProviderVO.setOrgId(retrievalManifestProviderDTO.getOrgId());
+			retrievalManifestProviderVO.setFinYear(retrievalManifestProviderDTO.getFinYear());
 			
 			if (retrievalManifestProviderDTO.getId() != null) {
 
@@ -563,6 +567,7 @@ public class ReportServiceImpl implements ReportService{
 //		    quotationVO.setFinYear(quotationDTO.getFinYear());
 		    quotationVO.setOrgId(quotationDTO.getOrgId());
 		    quotationVO.setCode(quotationDTO.getCode());
+		    quotationVO.setFinYear(quotationDTO.getFinYear());
 
 		    // Build the code using the prefix, financial year, date, and constant
 //		    String code = quotationVO.getPrefix() + quotationDTO.getFinYear() + LocalDate.now().format(DateTimeFormatter.ofPattern("ddMM")) + "-1";

@@ -19,7 +19,7 @@ public class QuotationDTO {
 	private Long orgId;
 	private String createdBy;
 	private String code;
-//	private String finYear;
+	private String finYear;
 
 	private List<QuotationDetailsDTO> quotationDetailsDTO;
 }
