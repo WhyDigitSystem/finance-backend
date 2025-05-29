@@ -18,6 +18,8 @@ public class InvoiceProductLinesDTO {
     private BigDecimal igst;
     private BigDecimal cgst;
     private BigDecimal sgst;
+    private BigDecimal igstAmount;
+    private BigDecimal baseAmount;
 	
 
 }

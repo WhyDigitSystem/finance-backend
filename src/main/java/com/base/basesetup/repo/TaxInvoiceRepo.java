@@ -513,6 +513,9 @@ public interface TaxInvoiceRepo extends JpaRepository<TaxInvoiceVO, Long> {
 		+ "AND FIND_IN_SET(a.transactionno, ?2)\r\n"
 		+ "GROUP BY a.transactionno, a.transactiondate, m.kitid, m.kitname, m.kitqty, a.cancel")
 Set<Object[]> getMimFillGridgetKitDetails(Long orgId, String transactionNo);
+
+@Query(nativeQuery = true, value = "SELECT originbillno, vid, totalinvamountlc  FROM irncreditnote WHERE orgid =?1 AND originbillno =?2 AND approvestatus is Null")
+Set<Object[]> getOrginBillNoBased(Long orgId, String orginBillNo);
  
 
 

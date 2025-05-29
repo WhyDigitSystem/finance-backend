@@ -99,7 +99,8 @@ public class ReportServiceImpl implements ReportService{
 						invoiceProductLinesVO1.setSgst(invoiceProductLinesDTO.getSgst());
 						invoiceProductLinesVO1.setCgst(invoiceProductLinesDTO.getCgst());
 						invoiceProductLinesVO1.setIgst(invoiceProductLinesDTO.getIgst());
-						
+						invoiceProductLinesVO1.setIgstAmount(invoiceProductLinesDTO.getIgstAmount());
+						invoiceProductLinesVO1.setBaseAmount(invoiceProductLinesDTO.getBaseAmount());
 						invoiceProductLinesVO1.setInvoiceVO(invoiceVO);
 						invoiceProductLinesVO.add(invoiceProductLinesVO1);
 					}
@@ -144,6 +145,8 @@ public class ReportServiceImpl implements ReportService{
 						invoiceProductLinesVO1.setSgst(invoiceProductLinesDTO.getSgst());
 						invoiceProductLinesVO1.setCgst(invoiceProductLinesDTO.getCgst());
 						invoiceProductLinesVO1.setIgst(invoiceProductLinesDTO.getIgst());
+						invoiceProductLinesVO1.setBaseAmount(invoiceProductLinesDTO.getBaseAmount());
+						invoiceProductLinesVO1.setIgstAmount(invoiceProductLinesDTO.getIgstAmount());
 						invoiceProductLinesVO1.setInvoiceVO(invoiceVO);
 						invoiceProductLinesVO.add(invoiceProductLinesVO1);
 					}
@@ -708,6 +711,25 @@ public class ReportServiceImpl implements ReportService{
 			return List1;
 		}
 		
+		@Override
+		public List<Map<String, Object>> getOrginBillNoBased(Long orgId, String orginBillNo){
+			Set<Object[]> requestedByDetails = taxInvoiceRepo.getOrginBillNoBased(orgId,orginBillNo);
+			return getOrginBillNo(requestedByDetails);
+		}
+
+		private List<Map<String, Object>> getOrginBillNo(Set<Object[]> chCode) {
+			List<Map<String, Object>> List1 = new ArrayList<>();
+			for (Object[] ch : chCode) {
+				Map<String, Object> map = new HashMap<>();
+//				map.put("employeeId", ch[0] != null ? Integer.parseInt(ch[0].toString()) : 0);
+				map.put("orginBillNo", ch[0] != null ? ch[0].toString() : "");
+				map.put("vId", ch[1] != null ? ch[1].toString() : "");
+				map.put("totalInvAmountLc", ch[2] != null ? ch[2].toString() : "");
+				List1.add(map);
+			}
+			return List1;
+		}
+		
 //		@Override
 //		public List<IssueManifestProviderVO> getFillGridForTaxInvoice(Long orgId) {
 //		    Set<Object[]> result = taxInvoiceRepo.getFillGridForTaxInvoice(orgId);
@@ -729,6 +751,7 @@ public class ReportServiceImpl implements ReportService{
 //		    return list;
 //		}
 
+		
 		
 		
 }

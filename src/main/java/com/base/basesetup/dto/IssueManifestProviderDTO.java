@@ -53,6 +53,8 @@ public class IssueManifestProviderDTO {
 	private boolean cancel;
 
 	private String createdBy;
+	
+	private String receiverName;
 
 	private Long orgId;
 	

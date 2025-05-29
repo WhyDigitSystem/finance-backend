@@ -89,6 +89,9 @@ public class IssueManifestProviderVO {
 	private String note1Bold;
 	@Column(name ="note2",length = 1000)
 	private String note2;
+	@Column(name = "receivername")
+	private String receiverName;
+
 
 	@JsonGetter("active")
 	public String getActive() {
