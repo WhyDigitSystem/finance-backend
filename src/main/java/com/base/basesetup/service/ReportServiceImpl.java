@@ -264,6 +264,7 @@ public class ReportServiceImpl implements ReportService{
 			issueManifestProviderVO.setSenderAddress(issueManifestProviderDTO.getSenderAddress());
 			issueManifestProviderVO.setReceiver(issueManifestProviderDTO.getReceiver());
 			issueManifestProviderVO.setReceiverAddress(issueManifestProviderDTO.getReceiverAddress());
+			issueManifestProviderVO.setReceiverName(issueManifestProviderDTO.getReceiverName());
 			issueManifestProviderVO.setReceiverGst(issueManifestProviderDTO.getReceiverGst());
 			issueManifestProviderVO.setAmountInWords(issueManifestProviderDTO.getAmountInWords());
 			issueManifestProviderVO.setAmount(issueManifestProviderDTO.getAmount());
