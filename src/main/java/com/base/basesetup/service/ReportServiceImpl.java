@@ -96,6 +96,10 @@ public class ReportServiceImpl implements ReportService{
 						invoiceProductLinesVO1.setQuantity(invoiceProductLinesDTO.getQuantity());
 						invoiceProductLinesVO1.setRate(invoiceProductLinesDTO.getRate());
 						invoiceProductLinesVO1.setAmount(invoiceProductLinesDTO.getAmount());
+						invoiceProductLinesVO1.setSgst(invoiceProductLinesDTO.getSgst());
+						invoiceProductLinesVO1.setCgst(invoiceProductLinesDTO.getCgst());
+						invoiceProductLinesVO1.setIgst(invoiceProductLinesDTO.getIgst());
+						
 						invoiceProductLinesVO1.setInvoiceVO(invoiceVO);
 						invoiceProductLinesVO.add(invoiceProductLinesVO1);
 					}
@@ -137,6 +141,9 @@ public class ReportServiceImpl implements ReportService{
 						invoiceProductLinesVO1.setQuantity(invoiceProductLinesDTO.getQuantity());
 						invoiceProductLinesVO1.setRate(invoiceProductLinesDTO.getRate());
 						invoiceProductLinesVO1.setAmount(invoiceProductLinesDTO.getAmount());
+						invoiceProductLinesVO1.setSgst(invoiceProductLinesDTO.getSgst());
+						invoiceProductLinesVO1.setCgst(invoiceProductLinesDTO.getCgst());
+						invoiceProductLinesVO1.setIgst(invoiceProductLinesDTO.getIgst());
 						invoiceProductLinesVO1.setInvoiceVO(invoiceVO);
 						invoiceProductLinesVO.add(invoiceProductLinesVO1);
 					}
@@ -171,13 +178,15 @@ public class ReportServiceImpl implements ReportService{
 			invoiceVO.setCompanyAddress(invoiceDTO.getCompanyAddress());
 			invoiceVO.setVendorAddress(invoiceDTO.getVendorAddress());
 			invoiceVO.setDeliveryAddress(invoiceDTO.getDeliveryAddress());
+			invoiceVO.setVendorName(invoiceDTO.getVendorName());
+			invoiceVO.setGstIn(invoiceDTO.getGstIn());
 			invoiceVO.setTermsAndConditions(invoiceDTO.getTermsAndConditions());
 			invoiceVO.setSubtotal(invoiceDTO.getSubtotal());
-			invoiceVO.setSgst(invoiceDTO.getSgst());
-			invoiceVO.setCgst(invoiceDTO.getCgst());
+//			invoiceVO.setSgst(invoiceDTO.getSgst());
+//			invoiceVO.setCgst(invoiceDTO.getCgst());
 			invoiceVO.setTotal(invoiceDTO.getTotal());
 			invoiceVO.setGstType(invoiceDTO.getGstType());
-			invoiceVO.setIgst(invoiceDTO.getIgst());
+//			invoiceVO.setIgst(invoiceDTO.getIgst());
 			invoiceVO.setFinYear(invoiceDTO.getFinYear());
 
 			invoiceVO.setOrgId(invoiceDTO.getOrgId());
@@ -279,6 +288,8 @@ public class ReportServiceImpl implements ReportService{
 				issueManifestProviderDetailsVO.setAsset(detailsDTO.getAsset());
 				issueManifestProviderDetailsVO.setAssetCode(detailsDTO.getAssetCode());
 				issueManifestProviderDetailsVO.setAssetQty(detailsDTO.getAssetQty());
+				issueManifestProviderDetailsVO.setActualQty(detailsDTO.getActualQty());
+				issueManifestProviderDetailsVO.setShortTageQty(detailsDTO.getAssetQty()-detailsDTO.getActualQty());
 				issueManifestProviderDetailsVO.setKitId(detailsDTO.getKitId());
 				issueManifestProviderDetailsVO.setKitName(detailsDTO.getKitName());
 				issueManifestProviderDetailsVO.setKitQty(detailsDTO.getKitQty());

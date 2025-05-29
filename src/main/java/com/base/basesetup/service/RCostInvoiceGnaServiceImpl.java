@@ -323,8 +323,10 @@ public class RCostInvoiceGnaServiceImpl implements RCostInvoiceGnaService {
 		BigDecimal exrate = BigDecimal.ZERO;
 		BigDecimal sumOfRate = BigDecimal.ZERO;
 		BigDecimal lcAmt = BigDecimal.ZERO;
-		BigDecimal billAmt = BigDecimal.ZERO;
+		BigDecimal gstAmount1 = BigDecimal.ZERO;
+		BigDecimal gstAmount2 = BigDecimal.ZERO;
 		BigDecimal gstPer = BigDecimal.ZERO;
+		BigDecimal gtaAmount = BigDecimal.ZERO;
 
 		String Currency = "";
 
@@ -343,16 +345,23 @@ public class RCostInvoiceGnaServiceImpl implements RCostInvoiceGnaService {
 			chargeRCostInvoiceGnaVO.setRate(chargeRCostInvoiceGnaDTO.getRate());
 			chargeRCostInvoiceGnaVO.setGstPer(chargeRCostInvoiceGnaDTO.getGstPer());
 			gstPer = BigDecimal.valueOf(chargeRCostInvoiceGnaDTO.getGstPer());
-//			chargeRCostInvoiceGnaVO.setGtaamount(chargeRCostInvoiceGnaDTO.getGtaamount());
+			chargeRCostInvoiceGnaVO.setGtaAmount(chargeRCostInvoiceGnaDTO.getGtaAmount());
+			gtaAmount=gtaAmount.add(chargeRCostInvoiceGnaDTO.getGtaAmount());			
 
 			BigDecimal fcAmount;
+			BigDecimal billAmount;
 			rate = chargeRCostInvoiceGnaDTO.getRate();
 			sumOfRate = sumOfRate.add(rate);
 			if (!chargeRCostInvoiceGnaDTO.getCurrency().equals("INR")) {
 				fcAmount = rate;
+				billAmount= rate;
+				
 
 			} else {
 				fcAmount = BigDecimal.valueOf(0.00);
+				
+				billAmount = chargeRCostInvoiceGnaDTO.getExRate().multiply(chargeRCostInvoiceGnaDTO.getRate());
+			chargeRCostInvoiceGnaVO.setBillAmt(billAmount);	
 
 			}
 			exrate = chargeRCostInvoiceGnaDTO.getExRate();
@@ -362,15 +371,19 @@ public class RCostInvoiceGnaServiceImpl implements RCostInvoiceGnaService {
 			gstAmt = lcAmt.multiply(BigDecimal.valueOf(chargeRCostInvoiceGnaDTO.getGstPer()))
 					.divide(BigDecimal.valueOf(100), RoundingMode.HALF_UP);
 			chargeRCostInvoiceGnaVO.setGstAmt(gstAmt);
-
+			gstAmount1=billAmount.multiply(BigDecimal.valueOf(chargeRCostInvoiceGnaDTO.getGstPer()))
+					.divide(BigDecimal.valueOf(100));
+			
+			System.out.println(gstAmount1);
 			totalGstAmt = totalGstAmt.add(gstAmt);
+			gstAmount2=gstAmount2.add(gstAmount1);
 			chargeRCostInvoiceGnaVO.setFcAmt(fcAmount);
 			chargeRCostInvoiceGnaVO.setLcAmt(lcAmt);
-			billAmt = chargeRCostInvoiceGnaDTO.getExRate().multiply(chargeRCostInvoiceGnaDTO.getRate());
-			chargeRCostInvoiceGnaVO.setBillAmt(billAmt);
+////			billAmt = chargeRCostInvoiceGnaDTO.getExRate().multiply(chargeRCostInvoiceGnaDTO.getRate());
+			chargeRCostInvoiceGnaVO.setBillAmt(billAmount);
 
 			sumOfLcAmount = sumOfLcAmount.add(lcAmt);
-			sumOfBillAmount = sumOfBillAmount.add(billAmt);
+			sumOfBillAmount = sumOfBillAmount.add(billAmount);
 
 //			AGGREGATE IGST SUMS BY GST PERCENTAGE
 			if (rCostInvoiceGnaDTO.getGstType().equalsIgnoreCase("INTER") && gstPer.compareTo(BigDecimal.ZERO) > 0) {
@@ -509,38 +522,49 @@ public class RCostInvoiceGnaServiceImpl implements RCostInvoiceGnaService {
 		rCostInvoiceGnaVO.setTdsRCostInvoiceGnaVO(tdsRCostInvoiceGnaVOs);
 		totaltdsAmount = totaltdsAmount.add(tdsAmount);
 
-		BigDecimal actBillAmtBC = sumOfBillAmount;
-		BigDecimal netAmtBillCurr = BigDecimal.ZERO;
-		if (Currency.equals("INR")) {
-			netAmtBillCurr = sumOfLcAmount.subtract(totaltdsAmount);
+		// Determine the net amount in the currency of the bill (netAmtBillCurr)
+		BigDecimal netAmtBillCurr;
+		if ("INR".equalsIgnoreCase(Currency)) {
+		    netAmtBillCurr = sumOfLcAmount.subtract(totaltdsAmount);  
+		    rCostInvoiceGnaVO.setActBillAmtLc(netAmtBillCurr);  
+//		    rCostInvoiceGnaVO.setActBillAmtBc(sumOfBillAmount.subtract(totaltdsAmount));
 		} else {
-			netAmtBillCurr = sumOfBillAmount;
+		    netAmtBillCurr = sumOfLcAmount.subtract(totaltdsAmount); 
+			rCostInvoiceGnaVO.setActBillAmtLc(sumOfLcAmount);  
+		
 		}
 
-		// Summary
-
+		// Compute net and actual bill amounts in Local Currency (LC)
 		BigDecimal netAmtBillLc = netAmtBillCurr.add(totalGstAmt);
+		BigDecimal actBillAmtLc = netAmtBillLc.add(totaltdsAmount);  // Re-adding TDS to get actual LC value
 
-		BigDecimal actBillAmtLc = netAmtBillCurr.add(totalGstAmt).add(totaltdsAmount);
+		// Set values in VO
+//		rCostInvoiceGnaVO.setActBillAmtBc(sumOfBillAmount);  // Actual bill in bill currency
+//		rCostInvoiceGnaVO.setActBillAmtLc(sumOfLcAmount);     // Actual bill in local currency
+		rCostInvoiceGnaVO.setNetAmtBc(sumOfBillAmount.add(gstAmount2));  
+		rCostInvoiceGnaVO.setActBillAmtBc(sumOfBillAmount);
+		BigDecimal unroundedNetAmtLc = netAmtBillLc.add(gtaAmount);
 
-//		BigDecimal roundedValue = netAmtBillLc.setScale(0, RoundingMode.HALF_UP);
-//		BigDecimal roundOff = roundedValue.subtract(netAmtBillLc);
-		rCostInvoiceGnaVO.setActBillAmtBc(actBillAmtLc);
-		rCostInvoiceGnaVO.setActBillAmtLc(actBillAmtLc);
-		rCostInvoiceGnaVO.setNetAmtBc(netAmtBillLc);
-		rCostInvoiceGnaVO.setNetAmtLc(netAmtBillLc);
-//		rCostInvoiceGnaVO.setRoundOff(roundOff);
-		System.out.println(sumOfLcAmount);
-		System.out.println(totalGstAmt);
-		BigDecimal gstcal = sumOfLcAmount.subtract(totalGstAmt);
-//		rCostInvoiceGnaVO.setGstAmtLc(sumOfLcAmount.subtract(totalGstAmt));
-		rCostInvoiceGnaVO.setGstAmtLc(totalGstAmt);
-		rCostInvoiceGnaVO.setTotalTdsAmt(totaltdsAmount);
-		rCostInvoiceGnaVO.setSumLcAmt(sumOfLcAmount);
-		rCostInvoiceGnaVO.setSumBillAmt(sumOfBillAmount);
-		rCostInvoiceGnaVO.setAmountInWords(amountInWordsConverterService.convert(rCostInvoiceGnaVO.getActBillAmtLc()));
+		BigDecimal netAmtLc = unroundedNetAmtLc.setScale(0, RoundingMode.HALF_UP);
+
+		BigDecimal roundOff =unroundedNetAmtLc.subtract(netAmtLc).abs().setScale(2, RoundingMode.HALF_UP);
+
+		rCostInvoiceGnaVO.setNetAmtLc(netAmtLc);
+		rCostInvoiceGnaVO.setRoundOff(roundOff);
+
+		// Set GST, TDS, sum amounts
+		rCostInvoiceGnaVO.setGstAmtLc(totalGstAmt);          
+		rCostInvoiceGnaVO.setTotalTdsAmt(totaltdsAmount);    
+		rCostInvoiceGnaVO.setSumLcAmt(sumOfLcAmount);        
+		rCostInvoiceGnaVO.setSumBillAmt(sumOfBillAmount);    
+
+		rCostInvoiceGnaVO.setAmountInWords(
+		    amountInWordsConverterService.convert(netAmtLc)
+		);
+
 
 		return rCostInvoiceGnaVO;
+
 
 	}
 

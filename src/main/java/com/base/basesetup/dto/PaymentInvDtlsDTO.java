@@ -29,7 +29,7 @@ public class PaymentInvDtlsDTO {
 
 	private BigDecimal exRate;
 	
-	private BigDecimal chargeAmount;
+	private BigDecimal chargeAmt;
 	
 	 private BigDecimal gstAmount;
 
