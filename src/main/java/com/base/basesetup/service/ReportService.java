@@ -76,6 +76,9 @@ public interface ReportService {
 
 		List<Map<String, Object>> getOrginBillNoBased(Long orgId, String orginBillNo);
 
+		List<Map<String, Object>> getMimReportDetails(String type, Long orgId, String customerName, String finYear,
+				String toDate, String fromDate);
+
 		
 
 		

@@ -57,6 +57,8 @@ public class IssueManifestProviderDTO {
 	private String receiverName;
 
 	private Long orgId;
+
+	private String locationUnit;
 	
 	private List<IssueManifestProviderDetailsDTO> issueManifestProviderDetailsDTO;
 	

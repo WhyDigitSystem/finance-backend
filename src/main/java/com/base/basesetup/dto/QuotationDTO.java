@@ -1,5 +1,6 @@
 package com.base.basesetup.dto;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import lombok.AllArgsConstructor;
@@ -13,13 +14,16 @@ public class QuotationDTO {
 
 	private Long id;
 
-	private String quotationTo;
-	private String shippingAddress;
+	private String quotationNo;
+	private LocalDate quotationDate;
+	private String deliveryAddress;
 	private String customerAddress;
 	private Long orgId;
 	private String createdBy;
 	private String code;
 	private String finYear;
+	private String companyAddress;	
+	private String customerName;
 
 	private List<QuotationDetailsDTO> quotationDetailsDTO;
 }

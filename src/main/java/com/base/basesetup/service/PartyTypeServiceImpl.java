@@ -1051,6 +1051,22 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 		return List1;
 	}
 
-	
+	@Override
+	public List<Map<String, Object>> getCustomersAddressDetails(Long orgId) {
+		Set<Object[]> chType = partyMasterRepo.getCustomersAddressDetails(orgId);
+		return getCustomersAddressDetails(chType);
+	}
+
+	private List<Map<String, Object>> getCustomersAddressDetails(Set<Object[]> chType) {
+		List<Map<String, Object>> List1 = new ArrayList<>();
+		for (Object[] ch : chType) {
+			Map<String, Object> map = new HashMap<>();
+			map.put("partyName", ch[0] != null ? ch[0].toString() : "");
+			map.put("FullAddress", ch[1] != null ? ch[1].toString() : "");
+			map.put("gstin", ch[2] != null ? ch[2].toString() : "");
+			List1.add(map);
+		}
+		return List1;
+	}
 
 }

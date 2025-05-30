@@ -46,8 +46,14 @@ public class InvoiceProductLinesVO {
     private BigDecimal sgst;
 	@Column(name="igstamount",precision = 10, scale = 2)
     private BigDecimal igstAmount;
+	@Column(name="cgstamount",precision = 10, scale = 2)
+    private BigDecimal cgstAmount;
+	@Column(name="sgstamount",precision = 10, scale = 2)
+    private BigDecimal sgstAmount;
 	@Column(name="baseamount",precision = 10, scale = 2)
     private BigDecimal baseAmount;
+	@Column(name="taxvalue",precision = 10, scale = 2)
+    private BigDecimal taxValue;
 	
 	
 	@ManyToOne

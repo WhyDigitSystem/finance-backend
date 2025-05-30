@@ -292,9 +292,10 @@ public class ARServiceImpl implements ARService {
 		        receiptInvDetailsVO.setHouseRef(receiptInvDetailsDTO.getHouseRef());
 		        receiptInvDetailsVO.setCurrency(receiptInvDetailsDTO.getCurrency());
 		        receiptInvDetailsVO.setExRate(receiptInvDetailsDTO.getExRate());
-		        receiptInvDetailsVO.setChargeAmt(receiptInvDetailsDTO.getAmount().add(receiptInvDetailsDTO.getGstAmt()));
-		        receiptInvDetailsVO.setOutstanding(receiptInvDetailsDTO.getChargeAmt().subtract(receiptInvDetailsDTO.getSettled()));
 		        receiptInvDetailsVO.setTds(receiptInvDetailsDTO.getTds());
+		        receiptInvDetailsVO.setChargeAmt(receiptInvDetailsDTO.getAmount().add(receiptInvDetailsDTO.getGstAmt()));
+		        receiptInvDetailsVO.setOutstanding(receiptInvDetailsDTO.getChargeAmt().subtract(receiptInvDetailsDTO.getSettled()).subtract( receiptInvDetailsDTO.getAmount().multiply(receiptInvDetailsDTO.getTds()).divide(BigDecimal.valueOf(100))));
+		       
 		        receiptInvDetailsVO.setGstAmt(receiptInvDetailsDTO.getGstAmt());
 		        receiptInvDetailsVO.setAmount(receiptInvDetailsDTO.getAmount());
 
