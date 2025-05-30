@@ -45,6 +45,12 @@ public class InvoiceVO {
 
 	@Column(name = "vendoraddress", columnDefinition = "TEXT")
 	private String vendorAddress;
+	
+	@Column(name = "vendorname")
+	private String vendorName;
+	
+	@Column(name = "gstin")
+	private String gstIn;
 
 	@Column(name = "deliveryaddress", columnDefinition = "TEXT")
 	private String deliveryAddress;
@@ -55,20 +61,20 @@ public class InvoiceVO {
 	@Column(name = "subtotal")
 	private Long subtotal;
 
-	@Column(name = "sgst")
-	private Integer sgst;
-
-	@Column(name = "cgst")
-	private Integer cgst;
+//	@Column(name = "sgst")
+//	private Integer sgst;
+//
+//	@Column(name = "cgst")
+//	private Integer cgst;
 
 	@Column(name = "total")
 	private Long total;
 
 	@Column(name = "gsttype", length = 1000, columnDefinition = "TEXT")
 	private String gstType;
-
-	@Column(name = "igst")
-	private Integer igst;
+//
+//	@Column(name = "igst")
+//	private Integer igst;
 
 	@Column(name = "orgid")
 	private Long orgId;

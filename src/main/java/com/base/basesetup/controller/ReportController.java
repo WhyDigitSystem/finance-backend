@@ -565,4 +565,31 @@ public class ReportController extends BaseController{
 
 				}
 				
+				@GetMapping("/getOrginBillNoBased")
+				public ResponseEntity<ResponseDTO> getOrginBillNoBased(@RequestParam Long orgId,String orginBillNo) {
+					String methodName = "getOrginBillNoBased()";
+					LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+					String errorMsg = null;
+					Map<String, Object> responseObjectsMap = new HashMap<>();
+					ResponseDTO responseDTO = null;
+					List<Map<String, Object>> department = new ArrayList<>();
+					try {
+						department = reportService.getOrginBillNoBased(orgId,orginBillNo);
+					} catch (Exception e) {
+						errorMsg = e.getMessage();
+						LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+					}
+					if (StringUtils.isBlank(errorMsg)) {
+						responseObjectsMap.put(CommonConstant.STRING_MESSAGE, " IrnCreditNote successfully");
+						responseObjectsMap.put("MIM Fillgrid", department);
+						responseDTO = createServiceResponse(responseObjectsMap);
+					} else {
+						responseDTO = createServiceResponseError(responseObjectsMap,
+								"IrnCreditNot  receive failed", errorMsg);
+					}
+					LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+					return ResponseEntity.ok().body(responseDTO);
+
+				}	
+				
 }

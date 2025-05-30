@@ -74,6 +74,8 @@ public interface ReportService {
 		List<Map<String, Object>> getPaymentRegisterReport(Long orgId, String partyCode, String branchCode,
 				String finYear, String fromDate, String toDate);
 
+		List<Map<String, Object>> getOrginBillNoBased(Long orgId, String orginBillNo);
+
 		
 
 		

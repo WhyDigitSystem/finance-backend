@@ -401,13 +401,30 @@ public class IrnCreditNoteServiceImpl implements IrnCreditNoteService {
 
 //		System.out.println(totalInvAmountLc);
 //		System.out.println(roundedTotalInvAmountLC);
+		
+		// Step 3: Fetch total previously credited amount from multiple sources
+				Set<Object[]> byAmount = irnCreditRepo.getByAmount(irnCreditNoteDTO.getOriginBillNo());
 
+				BigDecimal previouslyCreditedAmount = BigDecimal.ZERO;
+				for (Object[] row : byAmount) {
+				    if (row[0] != null) {
+				        previouslyCreditedAmount = previouslyCreditedAmount.add(new BigDecimal(row[0].toString()));
+				    }
+				}
+				
+				System.out.println(previouslyCreditedAmount);
+		
+   if(totalInvAmountLC.compareTo(previouslyCreditedAmount) <= 0) {
 		if (totalInvAmountLC.compareTo(totalInvAmountLc1) <= 0) {  
 			irnCreditNoteVO.setTotalInvAmountLc(totalInvAmountLC);
 
 		} else {
 		    throw new IllegalArgumentException("CREDIT NOTE " + totalInvAmountLC + " must be less than or equal to TAXINVOICE "+ totalInvAmountLc1);
 		}
+   }else {
+	   
+	   throw new IllegalArgumentException("CREDIT NOTE " + totalInvAmountLC + " must be less than or equal to Amount "+ previouslyCreditedAmount);
+   }
 
 		
 		irnCreditNoteVO.setAmountInWords(amountInWordsConverterService.convert(irnCreditNoteVO.getTotalInvAmountLc()));

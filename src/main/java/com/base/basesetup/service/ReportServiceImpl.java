@@ -96,6 +96,11 @@ public class ReportServiceImpl implements ReportService{
 						invoiceProductLinesVO1.setQuantity(invoiceProductLinesDTO.getQuantity());
 						invoiceProductLinesVO1.setRate(invoiceProductLinesDTO.getRate());
 						invoiceProductLinesVO1.setAmount(invoiceProductLinesDTO.getAmount());
+						invoiceProductLinesVO1.setSgst(invoiceProductLinesDTO.getSgst());
+						invoiceProductLinesVO1.setCgst(invoiceProductLinesDTO.getCgst());
+						invoiceProductLinesVO1.setIgst(invoiceProductLinesDTO.getIgst());
+						invoiceProductLinesVO1.setIgstAmount(invoiceProductLinesDTO.getIgstAmount());
+						invoiceProductLinesVO1.setBaseAmount(invoiceProductLinesDTO.getBaseAmount());
 						invoiceProductLinesVO1.setInvoiceVO(invoiceVO);
 						invoiceProductLinesVO.add(invoiceProductLinesVO1);
 					}
@@ -137,6 +142,11 @@ public class ReportServiceImpl implements ReportService{
 						invoiceProductLinesVO1.setQuantity(invoiceProductLinesDTO.getQuantity());
 						invoiceProductLinesVO1.setRate(invoiceProductLinesDTO.getRate());
 						invoiceProductLinesVO1.setAmount(invoiceProductLinesDTO.getAmount());
+						invoiceProductLinesVO1.setSgst(invoiceProductLinesDTO.getSgst());
+						invoiceProductLinesVO1.setCgst(invoiceProductLinesDTO.getCgst());
+						invoiceProductLinesVO1.setIgst(invoiceProductLinesDTO.getIgst());
+						invoiceProductLinesVO1.setBaseAmount(invoiceProductLinesDTO.getBaseAmount());
+						invoiceProductLinesVO1.setIgstAmount(invoiceProductLinesDTO.getIgstAmount());
 						invoiceProductLinesVO1.setInvoiceVO(invoiceVO);
 						invoiceProductLinesVO.add(invoiceProductLinesVO1);
 					}
@@ -171,13 +181,15 @@ public class ReportServiceImpl implements ReportService{
 			invoiceVO.setCompanyAddress(invoiceDTO.getCompanyAddress());
 			invoiceVO.setVendorAddress(invoiceDTO.getVendorAddress());
 			invoiceVO.setDeliveryAddress(invoiceDTO.getDeliveryAddress());
+			invoiceVO.setVendorName(invoiceDTO.getVendorName());
+			invoiceVO.setGstIn(invoiceDTO.getGstIn());
 			invoiceVO.setTermsAndConditions(invoiceDTO.getTermsAndConditions());
 			invoiceVO.setSubtotal(invoiceDTO.getSubtotal());
-			invoiceVO.setSgst(invoiceDTO.getSgst());
-			invoiceVO.setCgst(invoiceDTO.getCgst());
+//			invoiceVO.setSgst(invoiceDTO.getSgst());
+//			invoiceVO.setCgst(invoiceDTO.getCgst());
 			invoiceVO.setTotal(invoiceDTO.getTotal());
 			invoiceVO.setGstType(invoiceDTO.getGstType());
-			invoiceVO.setIgst(invoiceDTO.getIgst());
+//			invoiceVO.setIgst(invoiceDTO.getIgst());
 			invoiceVO.setFinYear(invoiceDTO.getFinYear());
 
 			invoiceVO.setOrgId(invoiceDTO.getOrgId());
@@ -252,6 +264,7 @@ public class ReportServiceImpl implements ReportService{
 			issueManifestProviderVO.setSenderAddress(issueManifestProviderDTO.getSenderAddress());
 			issueManifestProviderVO.setReceiver(issueManifestProviderDTO.getReceiver());
 			issueManifestProviderVO.setReceiverAddress(issueManifestProviderDTO.getReceiverAddress());
+			issueManifestProviderVO.setReceiverName(issueManifestProviderDTO.getReceiverName());
 			issueManifestProviderVO.setReceiverGst(issueManifestProviderDTO.getReceiverGst());
 			issueManifestProviderVO.setAmountInWords(issueManifestProviderDTO.getAmountInWords());
 			issueManifestProviderVO.setAmount(issueManifestProviderDTO.getAmount());
@@ -279,6 +292,8 @@ public class ReportServiceImpl implements ReportService{
 				issueManifestProviderDetailsVO.setAsset(detailsDTO.getAsset());
 				issueManifestProviderDetailsVO.setAssetCode(detailsDTO.getAssetCode());
 				issueManifestProviderDetailsVO.setAssetQty(detailsDTO.getAssetQty());
+				issueManifestProviderDetailsVO.setActualQty(detailsDTO.getActualQty());
+				issueManifestProviderDetailsVO.setShortTageQty(detailsDTO.getAssetQty()-detailsDTO.getActualQty());
 				issueManifestProviderDetailsVO.setKitId(detailsDTO.getKitId());
 				issueManifestProviderDetailsVO.setKitName(detailsDTO.getKitName());
 				issueManifestProviderDetailsVO.setKitQty(detailsDTO.getKitQty());
@@ -697,6 +712,25 @@ public class ReportServiceImpl implements ReportService{
 			return List1;
 		}
 		
+		@Override
+		public List<Map<String, Object>> getOrginBillNoBased(Long orgId, String orginBillNo){
+			Set<Object[]> requestedByDetails = taxInvoiceRepo.getOrginBillNoBased(orgId,orginBillNo);
+			return getOrginBillNo(requestedByDetails);
+		}
+
+		private List<Map<String, Object>> getOrginBillNo(Set<Object[]> chCode) {
+			List<Map<String, Object>> List1 = new ArrayList<>();
+			for (Object[] ch : chCode) {
+				Map<String, Object> map = new HashMap<>();
+//				map.put("employeeId", ch[0] != null ? Integer.parseInt(ch[0].toString()) : 0);
+				map.put("orginBillNo", ch[0] != null ? ch[0].toString() : "");
+				map.put("vId", ch[1] != null ? ch[1].toString() : "");
+				map.put("totalInvAmountLc", ch[2] != null ? ch[2].toString() : "");
+				List1.add(map);
+			}
+			return List1;
+		}
+		
 //		@Override
 //		public List<IssueManifestProviderVO> getFillGridForTaxInvoice(Long orgId) {
 //		    Set<Object[]> result = taxInvoiceRepo.getFillGridForTaxInvoice(orgId);
@@ -718,6 +752,7 @@ public class ReportServiceImpl implements ReportService{
 //		    return list;
 //		}
 
+		
 		
 		
 }

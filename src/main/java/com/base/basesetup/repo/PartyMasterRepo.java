@@ -204,7 +204,7 @@ public interface PartyMasterRepo extends JpaRepository<PartyMasterVO, Long> {
 			+ "    p.stategstin \r\n"
 			+ "FROM partymaster a\r\n"
 			+ "JOIN partyaddress p ON a.partymasterid = p.partymasterid\r\n"
-			+ "WHERE a.partytype = 'VENDOR' and a.orgid =?1 ")
+			+ "WHERE a.partytype = 'VENDOR' and a.orgid =?1  group by a.partyname,addressline1 ,addressline2,addressline3 ,stategstin  ")
 	Set<Object[]> getVedorsAddressDetails(Long orgId );
 
 }

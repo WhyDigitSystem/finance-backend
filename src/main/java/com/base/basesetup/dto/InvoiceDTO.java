@@ -22,12 +22,14 @@ public class InvoiceDTO {
 	private String deliveryAddress;
 	private String termsAndConditions;
 	private Long subtotal;
-	private Integer sgst;
-	private Integer cgst;
+//	private Integer sgst;
+//	private Integer cgst;
 	private Long total;
 	private String gstType;
-	private Integer igst;
+//	private Integer igst;
 	private String modifiedBy;
+	private String vendorName;
+	private String gstIn;
 
 
 	
