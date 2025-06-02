@@ -23,8 +23,9 @@ import com.base.basesetup.common.UserConstants;
 import com.base.basesetup.dto.ResponseDTO;
 import com.base.basesetup.dto.StockBranchDTO;
 import com.base.basesetup.dto.WarehouseDTO;
+import com.base.basesetup.entity.CityVO;
+import com.base.basesetup.entity.StateVO;
 import com.base.basesetup.entity.StockBranchVO;
-import com.base.basesetup.entity.TaxInvoiceVO;
 import com.base.basesetup.entity.WarehouseVO;
 import com.base.basesetup.service.WareHouseService;
 
@@ -192,7 +193,7 @@ public class WareHouseController extends BaseController {
 		Map<String, Object> responseObjectsMap = new HashMap<>();
 		ResponseDTO responseDTO = null;
 		List<StockBranchVO> taxInvoiceVO = new ArrayList<>();
-		try {
+		try {	
 			taxInvoiceVO = wareHouseService.getStockBranchName(orgId);
 		} catch (Exception e) {
 			errorMsg = e.getMessage();
@@ -223,6 +224,93 @@ public class WareHouseController extends BaseController {
 		try {
 
 			wareHouseService.excelUploadForWarehouse(files, createdBy, orgId);
+
+			totalRows = wareHouseService.getTotalRows(); 
+			successfulUploads = wareHouseService.getSuccessfulUploads(); 
+			responseObjectsMap.put("statusFlag", "Ok");
+			responseObjectsMap.put("status", true);
+			responseObjectsMap.put("totalRows", totalRows);
+			responseObjectsMap.put("successfulUploads", successfulUploads);
+			responseObjectsMap.put("message", "Excel Upload For Warehouse successful"); 
+			responseDTO = createServiceResponse(responseObjectsMap);
+		} catch (Exception e) {
+			String errorMsg = e.getMessage();
+			LOGGER.error(CommonConstant.EXCEPTION, methodName, e);
+			responseObjectsMap.put("statusFlag", "Error");
+			responseObjectsMap.put("status", false);
+			responseObjectsMap.put("errorMessage", errorMsg);
+			responseDTO = createServiceResponseError(responseObjectsMap, "Excel Upload For Warehouse Failed",
+					errorMsg);
+		}
+		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+		return ResponseEntity.ok().body(responseDTO);
+	}
+
+	@GetMapping("/getAllCitiesByStateAndCountry")
+	public ResponseEntity<ResponseDTO> getAllCitiesByStateAndCountry(@RequestParam String state,@RequestParam String country,@RequestParam Long orgId) {
+		String methodName = "getAllCitiesByStateAndCountry()";
+		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+		String errorMsg = null;
+		Map<String, Object> responseObjectsMap = new HashMap<>();
+		ResponseDTO responseDTO = null;
+		List<CityVO> cityVO = new ArrayList<>();
+		try {
+			cityVO = wareHouseService.getAllCitiesByStateAndCountry(state,country,orgId);
+		} catch (Exception e) {
+			errorMsg = e.getMessage();
+			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+		}
+		if (StringUtils.isBlank(errorMsg)) {
+			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "city information get successfully");
+			responseObjectsMap.put("cityVO", cityVO);
+			responseDTO = createServiceResponse(responseObjectsMap);
+		} else {
+			responseDTO = createServiceResponseError(responseObjectsMap, "city information receive failed", errorMsg);
+		}
+		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+		return ResponseEntity.ok().body(responseDTO);
+	}
+
+	@GetMapping("getAllStatesByCountry")
+	public ResponseEntity<ResponseDTO> getAllStatesByCountry(@RequestParam String country,@RequestParam Long orgId) {
+		String methodName = "getAllStatesByCountry()";
+		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+		String errorMsg = null;
+		Map<String, Object> responseObjectsMap = new HashMap<>();
+		ResponseDTO responseDTO = null;
+		List<StateVO> stateVO = new ArrayList<>();
+		try {
+			stateVO = wareHouseService.getAllStatesByCountry(country,orgId);
+		} catch (Exception e) {
+			errorMsg = e.getMessage();
+			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+		}
+		if (StringUtils.isBlank(errorMsg)) {
+			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "state information get successfully");
+			responseObjectsMap.put("stateVO", stateVO);
+			responseDTO = createServiceResponse(responseObjectsMap);
+		} else {
+			responseDTO = createServiceResponseError(responseObjectsMap, "states information receive failed", errorMsg);
+		}
+		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+		return ResponseEntity.ok().body(responseDTO);
+	}
+	
+	
+	//ASSET 
+	
+
+	@PostMapping("/excelUploadForAsset")
+	public ResponseEntity<ResponseDTO> excelUploadForAsset(@RequestParam MultipartFile[] files,
+			@RequestParam(required = false) String createdBy, @RequestParam Long orgId) {
+		String methodName = "excelUploadForWarehouse()";
+		int totalRows = 0;
+		Map<String, Object> responseObjectsMap = new HashMap<>();
+		int successfulUploads = 0;
+		ResponseDTO responseDTO = null;
+		try {
+
+			wareHouseService.excelUploadForAsset(files, createdBy, orgId);
 
 			totalRows = wareHouseService.getTotalRows(); 
 			successfulUploads = wareHouseService.getSuccessfulUploads(); 

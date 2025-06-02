@@ -1,6 +1,7 @@
 package com.base.basesetup.repo;
 
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -16,5 +17,18 @@ public interface IssueManifestProviderRepo extends JpaRepository<IssueManifestPr
 	
 	@Query(nativeQuery =true,value ="select * from mim where orgid=?1")
 	List<IssueManifestProviderVO> findAllIssueManifeasrProvider(Long orgId);
+
+	@Query(nativeQuery =true,value ="select * from mim where orgid=?1 and finyear=?2")
+	List<IssueManifestProviderVO> getAllIssueManifestProvider(Long orgId, Long finYear);
+	
+
+	@Query(nativeQuery =true,value ="select transactionno,transactiondate,transportername,sender,receiver,amount,hsncode,b.assetcode,b.asset,b.assetqty,kitid,kitname,kitqty from \r\n"
+			+ "finance_aip.mim a,finance_aip.mimdetails b where a.mimid = b.mimid and 'MIM' =?1 and a.orgid =?2 and (a.receiver=?3 or 'ALL'=?3) and a.finyear=?4 and (?5 is null or a.transactiondate >= ?5)  and (?6 is null or a.transactiondate <= ?6)\r\n"
+			+ "union all \r\n"
+			+ "select transactionno,transactiondate,transportername,sender,receiver,0 amount,hsncode,b.assetcode,b.asset,b.assetqty,kitid,kitname,kitqty from \r\n"
+			+ "finance_aip.rim a,finance_aip.rimdetails b where a.rimid = b.rimid and  'RIM' =?1 and a.orgid =?2 and (a.sender=?3  or 'ALL'=?3) and a.finyear=?4\r\n"
+			+ "and (?5 is null or a.transactiondate >= ?5)  and (?6 is null or a.transactiondate <= ?6)\r\n"
+			+ "order by transactiondate")
+	Set<Object[]> getMimReportDetails(String type,Long orgId,String customerName, String finYear,String toDate,String fromDate);
 
 }

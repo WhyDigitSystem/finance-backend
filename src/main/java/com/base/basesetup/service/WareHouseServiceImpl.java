@@ -26,10 +26,15 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.base.basesetup.dto.StockBranchDTO;
 import com.base.basesetup.dto.WarehouseDTO;
+import com.base.basesetup.entity.AssetVO;
+import com.base.basesetup.entity.CityVO;
+import com.base.basesetup.entity.StateVO;
 import com.base.basesetup.entity.StockBranchVO;
-import com.base.basesetup.entity.TaxInvoiceVO;
 import com.base.basesetup.entity.WarehouseVO;
 import com.base.basesetup.exception.ApplicationException;
+import com.base.basesetup.repo.AssetRepo;
+import com.base.basesetup.repo.CityRepo;
+import com.base.basesetup.repo.StateRepo;
 import com.base.basesetup.repo.StockBranchRepo;
 import com.base.basesetup.repo.WarehouseRepo;
 
@@ -45,6 +50,15 @@ public class WareHouseServiceImpl implements WareHouseService {
 
 	@Autowired
 	WarehouseRepo warehouseRepo;
+	
+	@Autowired
+	CityRepo cityRepo;
+	
+	@Autowired
+	StateRepo stateRepo;
+	
+	@Autowired
+	AssetRepo assetRepo;
 
 	@Override
 	public Map<String, Object> createupdateStockBranch(StockBranchDTO stockBranchDTO) throws ApplicationException {
@@ -54,7 +68,7 @@ public class WareHouseServiceImpl implements WareHouseService {
 		if (ObjectUtils.isEmpty(stockBranchDTO.getId())) {
 			if (stockBranchRepo.existsByBranchAndOrgId(stockBranchDTO.getBranch(), stockBranchDTO.getOrgId())) {
 				String errorMessage = String.format("The StockBranch: %s already exists in this organization.",
-						stockBranchDTO.getBranch());
+						stockBranchDTO.getBranch());  
 				throw new ApplicationException(errorMessage);
 			}
 			if (stockBranchRepo.existsBybranchCodeAndOrgId(stockBranchDTO.getBranchCode(), stockBranchDTO.getOrgId())) {
@@ -134,8 +148,7 @@ public class WareHouseServiceImpl implements WareHouseService {
 
 		if (ObjectUtils.isEmpty(warehouseDTO.getId())) {
 
-			if (warehouseRepo.existsByLocationNameAndLocationUnitAndOrgId(warehouseDTO.getLocationName(),
-					warehouseDTO.getLocationUnit(), warehouseDTO.getOrgId())) {
+			if (warehouseRepo.existsByLocationUnitAndOrgId(warehouseDTO.getLocationUnit(), warehouseDTO.getOrgId())) {
 				String errorMessage = String.format(
 						"The LocationName: %s and LocationUnit: %s already exist for this Organization",
 						warehouseDTO.getLocationName(), warehouseDTO.getLocationUnit());
@@ -156,14 +169,12 @@ public class WareHouseServiceImpl implements WareHouseService {
 					() -> new ApplicationException("StockBranch not found with id: " + warehouseDTO.getId()));
 			warehouseVO.setUpdatedBy(warehouseDTO.getCreatedBy());
 
-			boolean isLocationChanged = !warehouseVO.getLocationName().equalsIgnoreCase(warehouseDTO.getLocationName())
-					|| !warehouseVO.getLocationUnit().equalsIgnoreCase(warehouseDTO.getLocationUnit());
+			boolean isLocationChanged =!warehouseVO.getLocationUnit().equalsIgnoreCase(warehouseDTO.getLocationUnit());
 
 			if (isLocationChanged) {
-				if (warehouseRepo.existsByLocationNameAndLocationUnitAndOrgId(warehouseDTO.getLocationName(),
-						warehouseDTO.getLocationUnit(), warehouseDTO.getOrgId())) {
+				if (warehouseRepo.existsByLocationUnitAndOrgId(warehouseVO.getLocationUnit(), warehouseDTO.getOrgId())) {
 					String errorMessage = String.format(
-							"The LocationName: %s and LocationUnit: %s already exist for this Organization",
+							"The LocationUnit: %s already exist for this Organization",
 							warehouseDTO.getLocationName(), warehouseDTO.getLocationUnit());
 					throw new ApplicationException(errorMessage);
 				}
@@ -259,7 +270,7 @@ public class WareHouseServiceImpl implements WareHouseService {
 		                String state = getStringCellValue(row.getCell(5));
 		                String city = getStringCellValue(row.getCell(6));
 		                Long pincode = getLongCellValue(row.getCell(7));
-		                BigDecimal gst = getBigDecimalValue(row.getCell(8));
+		                String gst = getStringCellValue(row.getCell(8));
 		                String stockBranch = getStringCellValue(row.getCell(9));
 		                boolean active = getActiveBooleanValue(row.getCell(10), row.getRowNum() + 1);
 
@@ -276,10 +287,6 @@ public class WareHouseServiceImpl implements WareHouseService {
 		                    errorMessages.add("Row " + (row.getRowNum() + 1) + ": Duplicate LocationName + LocationUnit within Excel file");
 		                }
 
-		                // DB checks
-		                if (warehouseRepo.existsByLocationNameAndLocationUnitAndOrgId(locationName, locationUnit, orgId)) {
-		                    errorMessages.add("Row " + (row.getRowNum() + 1) + ": Duplicate LocationName + LocationUnit in DB");
-		                }
 		                if (warehouseRepo.existsByLocationUnitAndOrgId(locationUnit, orgId)) {
 		                    errorMessages.add("Row " + (row.getRowNum() + 1) + ": Duplicate LocationUnit in DB");
 		                }
@@ -302,8 +309,9 @@ public class WareHouseServiceImpl implements WareHouseService {
 		                warehouseVO.setStockBranch(stockBranch.toUpperCase());
 		                warehouseVO.setActive(active);
 		                warehouseVO.setOrgId(orgId);
-		                warehouseVO.setCreatedBy(createdBy);
-		                warehouseVO.setUpdatedBy(createdBy);
+//		                warehouseVO.setCreatedBy(createdBy);
+//		                System.out.println(createdBy);
+//		                warehouseVO.setUpdatedBy(createdBy);
 
 		                validWarehouseList.add(warehouseVO);
 
@@ -388,6 +396,100 @@ public class WareHouseServiceImpl implements WareHouseService {
 	    throw new ApplicationException("Invalid 'active' value at row " + rowNumber);
 	}
 
+	
+	@Override
+	public List<CityVO> getAllCitiesByStateAndCountry(String state, String country, Long orgId) {
+
+		return cityRepo.findAllByStateAndCountryAndOrgId(state, country, orgId);
+	}
+	
+	@Override
+	public List<StateVO> getAllStatesByCountry(String Country, Long orgId) {
+		return stateRepo.findAllStateByCountryAndOrgId(Country, orgId);
+	}
+	
+	
+	//ASSET FILEUPLOAD
+	
+	@Transactional
+	@Override
+	public void excelUploadForAsset(MultipartFile[] files, String createdBy, Long orgId)
+	        throws EncryptedDocumentException, ApplicationException, IOException, java.io.IOException {
+
+	    totalRows = 0;
+	    successfulUploads = 0;
+
+	    for (MultipartFile file : files) {
+	        try (Workbook workbook = WorkbookFactory.create(file.getInputStream())) {
+	            Sheet sheet = workbook.getSheetAt(0);
+	            List<String> errorMessages = new ArrayList<>();
+	            List<AssetVO> validAssetList = new ArrayList<>();
+
+	            for (Row row : sheet) {
+	                if (row.getRowNum() == 0 || isRowEmpty(row)) continue;
+	                totalRows++;
+
+	                try {
+	                    String type = getStringCellValue(row.getCell(0));
+	                    String category = getStringCellValue(row.getCell(1));
+	                    String categoryCode = getStringCellValue(row.getCell(2));
+	                    String assetCode = getStringCellValue(row.getCell(3));
+	                    String assetDescription = getStringCellValue(row.getCell(4));
+	                    String belongsTo = getStringCellValue(row.getCell(5));
+	                    String materialIdentification = getStringCellValue(row.getCell(6));
+	                    String design = getStringCellValue(row.getCell(7));
+	                    String hsnCode = getStringCellValue(row.getCell(8));
+	                    String costPrice = getStringCellValue(row.getCell(9));
+	                    boolean active = getActiveBooleanValue(row.getCell(10), row.getRowNum() + 1);
+
+	                    // DB duplicate checks
+	                    if (assetRepo.existsByAssetCodeIdAndOrgId(assetCode, orgId)) {
+	                        throw new ApplicationException(
+	                            String.format("Row %d: Asset Code '%s' already exists in the system.", row.getRowNum() + 1, assetCode));
+	                    }
+
+	                    if (assetRepo.existsByAssetNameAndOrgId(assetDescription, orgId)) {
+	                        throw new ApplicationException(
+	                            String.format("Row %d: Asset Name '%s' already exists in the system.", row.getRowNum() + 1, assetDescription));
+	                    }
+
+	                    // Prepare the AssetVO object
+	                    AssetVO assetVO = new AssetVO();
+	                    assetVO.setAssetType(type.toUpperCase());
+	                    assetVO.setCategory(category.toUpperCase());
+	                    assetVO.setCategoryCode(categoryCode);
+	                    assetVO.setAssetCodeId(assetCode.toUpperCase());
+	                    assetVO.setAssetName(assetDescription.toUpperCase());
+	                    assetVO.setBelongsTo(belongsTo.toUpperCase());
+	                    assetVO.setMaterialIdentification(materialIdentification);
+	                    assetVO.setDesign(design);
+	                    assetVO.setHsnCode(hsnCode);
+	                    assetVO.setCostPrice(costPrice);
+	                    assetVO.setActive(active);
+	                    assetVO.setOrgId(orgId);
+	                    assetVO.setCreatedBy(createdBy);
+	                    assetVO.setUpdatedBy(createdBy);
+
+	                    validAssetList.add(assetVO);
+
+	                } catch (Exception e) {
+	                    errorMessages.add("Row " + (row.getRowNum() + 1) + ": " + e.getMessage());
+	                }
+	            }
+
+	            if (!errorMessages.isEmpty()) {
+	                throw new ApplicationException("Excel validation errors:\n" + String.join("\n", errorMessages));
+	            }
+
+	            assetRepo.saveAll(validAssetList);
+	            successfulUploads += validAssetList.size();
+
+	        } catch (IOException e) {
+	            throw new ApplicationException("Failed to process file: " + file.getOriginalFilename() + " - " + e.getMessage());
+	        }
+	    }
+	}		
+	
 }
 	
 

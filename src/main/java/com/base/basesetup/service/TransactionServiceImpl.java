@@ -2685,6 +2685,7 @@ public class TransactionServiceImpl implements TransactionService {
 		tmsJobCardVO.setClosed(tmsJobCardDTO.isClosed());
 		tmsJobCardVO.setClosedOn(tmsJobCardDTO.getClosedOn());
 		tmsJobCardVO.setBranch(tmsJobCardDTO.getBranch());
+		tmsJobCardVO.setPartyShortName(tmsJobCardDTO.getPartyShortName());
 		tmsJobCardVO.setBranchCode(tmsJobCardDTO.getBranchCode());
 		tmsJobCardVO.setCancelRemarks(tmsJobCardDTO.getCancelRemarks());
 		tmsJobCardVO.setActive(tmsJobCardDTO.isActive());
@@ -3103,7 +3104,7 @@ public class TransactionServiceImpl implements TransactionService {
 		accountsVO.setFinYear(bankingDepositVO.getFinYear());
 
 		accountsVO.setTotalDebitAmount(bankingDepositVO.getDepositAmount());
-		accountsVO.setTotalCreditAmount(BigDecimal.ZERO);
+		accountsVO.setTotalCreditAmount(bankingDepositVO.getDepositAmount());
 //		accountsVO.setCreditDays(taxInvoiceVO.getCreditDays());
 //		accountsVO.setAmountInWords(savedReceiptVO.getAmountInWords());
 //		accountsVO.setStTaxAmount(taxInvoiceVO.getTotalTaxableAmountLc());
@@ -3119,7 +3120,7 @@ public class TransactionServiceImpl implements TransactionService {
 		accountsDetailsVO.setNDebitAmount(BigDecimal.ZERO);
 		accountsDetailsVO.setACategory("RECEIVABLE A/C");
 		accountsDetailsVO.setAccountName(bankingDepositVO.getBankAccount());
-		accountsDetailsVO.setSubLedgerCode("");
+		accountsDetailsVO.setSubLedgerCode("None");
 		accountsDetailsVO.setDebitAmount(bankingDepositVO.getDepositAmount());
 		accountsDetailsVO.setNCreditAmount(BigDecimal.ZERO);
 		accountsDetailsVO.setCreditAmount(BigDecimal.ZERO);
@@ -3129,7 +3130,7 @@ public class TransactionServiceImpl implements TransactionService {
 		accountsDetailsVO.setBCrAmount(BigDecimal.ZERO);
 		accountsDetailsVO.setBArapAmount(BigDecimal.ZERO);
 		accountsDetailsVO.setACurrency(bankingDepositVO.getCurrency());
-		accountsDetailsVO.setSubledgerName("NONE");
+		accountsDetailsVO.setSubledgerName("None");
 		accountsDetailsVO.setNArapAmount(BigDecimal.ZERO);
 		accountsDetailsVO.setGstflag(1);
 		accountsDetailsVO.setAccountsVO(accountsVO);
@@ -3149,7 +3150,7 @@ public class TransactionServiceImpl implements TransactionService {
 			accountsDetailsVO1.setBDebitAmount(BigDecimal.ZERO);
 			accountsDetailsVO1.setBCrAmount(depositParticularsVO.getCredit());
 			accountsDetailsVO1.setBArapAmount(BigDecimal.ZERO);
-			accountsDetailsVO1.setACurrency("");
+			accountsDetailsVO1.setACurrency(bankingDepositVO.getCurrency());
 			accountsDetailsVO1.setSubledgerName("None");
 			accountsDetailsVO1.setNArapAmount(BigDecimal.ZERO);
 			accountsDetailsVO1.setGstflag(1);
@@ -3509,6 +3510,7 @@ public class TransactionServiceImpl implements TransactionService {
 			Map<String, Object> map = new HashMap<>();
 			map.put("partyname", ch[0] != null ? ch[0].toString() : "");
 			map.put("partyCode", ch[1] != null ? ch[1].toString() : "");
+			map.put("shortName", ch[2] != null ? ch[2].toString() : "");
 
 			list1.add(map);
 		}

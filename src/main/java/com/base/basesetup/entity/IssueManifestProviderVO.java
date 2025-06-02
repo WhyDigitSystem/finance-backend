@@ -35,6 +35,8 @@ public class IssueManifestProviderVO {
 	private Long id;
 	@Column(name = "orgid")
 	private Long orgId;
+	@Column(name = "finyear")
+	private String finYear;
 	@Column(name = "transactionno")
 	private String transactionNo;
 	@Column(name = "transactiondate")
@@ -43,6 +45,10 @@ public class IssueManifestProviderVO {
 	private LocalDate dispatchDate;
 	@Column(name = "transactiontype")
 	private String transactionType;
+	@Column(name = "fromwarehouse")
+	private String fromWarehouse;
+	@Column(name = "warehouseaddress")
+	private String warehouseAddress;
 	@Column(name = "sender")
 	private String sender;
 	@Column(name = "senderaddress")
@@ -83,6 +89,11 @@ public class IssueManifestProviderVO {
 	private String note1Bold;
 	@Column(name ="note2",length = 1000)
 	private String note2;
+	@Column(name = "receivername")
+	private String receiverName;
+	@Column(name = "locationunit")
+	private String locationUnit;
+
 
 	@JsonGetter("active")
 	public String getActive() {

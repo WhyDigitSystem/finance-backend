@@ -470,12 +470,52 @@ public interface TaxInvoiceRepo extends JpaRepository<TaxInvoiceVO, Long> {
 			+ ")a  where monthname =?3")
 	Set<Object[]> getRevenueMonthWisePayment(Long orgId, Long finYear, String monthName);	
 	
-	@Query(value = "SELECT COUNT(*) > 0 FROM irncreditnote a1 " +
-            "WHERE a1.orgid = ?1 AND a1.originbillno = ?2 " +
-            "AND a1.partycode = ?3 AND a1.jobno = ?4 " +
-            "AND a1.approvestatus = 'Approved'", nativeQuery = true)
-boolean isAlreadyUsedInApprovedCreditNote(Long orgId, String docId, String partyCode, String jobNo);
 
+//	@Query(nativeQuery = true,value="select * from taxinvoice a,irncreditnote a1  where a.orgid=a1.orgid and a.partycode=a1.partycode and a.docid=a1.originbillno\r\n"
+//			+ " and a.approvestatus=a1.approvestatus and a.orgid=?1 and a.partyname=?2")
+//	List<TaxInvoiceVO> getCheck(Long orgId, String party);
+
+	
+	@Query(nativeQuery = true, value = "SELECT \r\n"
+			+ "    a.transactionno,\r\n"
+			+ "    a.transactiondate,\r\n"
+			+ "    m.kitid,\r\n"
+			+ "    m.kitname,\r\n"
+			+ "    m.kitqty\r\n"
+			+ "FROM \r\n"
+			+ "    mim a\r\n"
+			+ "LEFT JOIN \r\n"
+			+ "    mimdetails m ON a.mimid = m.mimid\r\n"
+			+ "WHERE \r\n"
+			+ "    a.transactionno NOT IN (\r\n"
+			+ "        SELECT transno FROM taxinvoiceannexure\r\n"
+			+ "    )\r\n"
+			+ "    AND a.cancel = 0\r\n"
+			+ "    AND a.orgid = ?1\r\n"
+			+ "")
+		Set<Object[]> getFillGridForTaxInvoice(Long orgId);
+		
+		
+		@Query(nativeQuery = true, value = "select transactionno from mim a \r\n"
+				+ "where transactionno not in (select  transno from taxinvoiceannexure a, taxinvoice b where a.taxinvoiceid = b.taxinvoiceid and approvestatus ='Approved' )\r\n"
+				+ "and a.cancel =0\r\n"
+				+ "and receiver=?2 \r\n"
+				+ "and a.orgid=?1")
+	Set<Object[]> getMimFillGridgettransaction(Long orgId,String Receiver);
+
+
+@Query(nativeQuery = true, value = "SELECT a.transactionno, a.transactiondate, m.kitid, m.kitname, m.kitqty \r\n"
+		+ "FROM mim a\r\n"
+		+ "LEFT JOIN mimdetails m ON a.mimid = m.mimid\r\n"
+		+ "WHERE a.transactionno NOT IN (select  transno from taxinvoiceannexure a, taxinvoice b where a.taxinvoiceid = b.taxinvoiceid and approvestatus ='Approved')\r\n"
+		+ "AND a.cancel = 0\r\n"
+		+ "AND a.orgid = ?1\r\n"
+		+ "AND FIND_IN_SET(a.transactionno, ?2)\r\n"
+		+ "GROUP BY a.transactionno, a.transactiondate, m.kitid, m.kitname, m.kitqty, a.cancel")
+Set<Object[]> getMimFillGridgetKitDetails(Long orgId, String transactionNo);
+
+@Query(nativeQuery = true, value = "SELECT originbillno, vid, totalinvamountlc  FROM irncreditnote WHERE orgid =?1 AND originbillno =?2 AND approvestatus is Null")
+Set<Object[]> getOrginBillNoBased(Long orgId, String orginBillNo);
  
 
 

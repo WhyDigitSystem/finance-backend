@@ -1,5 +1,7 @@
 package com.base.basesetup.entity;
 
+import java.math.BigDecimal;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -30,15 +32,23 @@ public class QuotationDetailsVO {
 	@SequenceGenerator(name = "quotationDetailsgen", sequenceName = "quotationDetailsseq", initialValue = 1000000001, allocationSize = 1)
 	@Column(name = "quotationDetailsid")
 	private Long id;
-
+	@Column(name="description")
 	private String description;
-
-	private Long unit;
-
-	private Long pricre;
-
-	private Long total;
-
+	@Column(name="quantity",precision = 10, scale = 2)
+    private BigDecimal quantity;
+	@Column(name="rate",precision = 10, scale = 2)
+    private BigDecimal rate;
+	@Column(name="amount",precision = 10, scale = 2)
+    private BigDecimal amount;
+	@Column(name="baseamount",precision = 10, scale = 2)
+    private BigDecimal baseAmount;
+	@Column(name="tax",precision = 10, scale = 2)
+    private BigDecimal tax;
+	@Column(name="taxamount",precision = 10, scale = 2)
+    private BigDecimal taxAmount;
+	@Column(name="subtotal",precision = 10, scale = 2)
+    private BigDecimal subTotal;
+	
 	@ManyToOne
 	@JsonBackReference
 	@JoinColumn(name = "quotationid")

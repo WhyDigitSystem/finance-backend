@@ -28,7 +28,7 @@ public interface ArAdjustmentOffSetService {
 
 	String getArAdjustmentOffSetDocId(Long orgId, String finYear, String branch, String branchCode);
 
-	List<ReceiptVO> getAllCustomerReceiptByOrgIdAndBranchCode(Long orgId, String branchCode,String customerName);
+	List<Map<String, Object>> getAllCustomerReceiptByOrgIdAndBranchCode(Long orgId, String branchCode,String customerName);
 
 	//AP ADJUSTMENT OFFSET
 	
@@ -44,5 +44,12 @@ public interface ArAdjustmentOffSetService {
 
 	List<Map<String, Object>> getArOffsetFillgrid(Long orgId, String subLedgerCode, String docId, String branch,
 			String docDate);
+
+
+	ArAdjustmentOffSetVO approveArAdjustmentOffSet(Long orgId, Long id, String docId, String action, String actionBy)
+			throws ApplicationException;
+
+	ApAdjustmentOffSetVO approveApAdjustmentOffSet(Long orgId, Long id, String docId, String action, String actionBy)
+			throws ApplicationException;
 
 }

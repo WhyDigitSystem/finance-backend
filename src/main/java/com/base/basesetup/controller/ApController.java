@@ -608,7 +608,7 @@ public class ApController extends BaseController {
 		String errorMsg = null;
 		Map<String, Object> responseObjectsMap = new HashMap<>();
 		ResponseDTO responseDTO = null;
-		List<PaymentVO> paymentVO = new ArrayList<>();
+		List<Map<String, Object>> paymentVO = new ArrayList<>();
 		try {
 			paymentVO = apService.getAllPaymentByOrgIdAndBranchCode(orgId, branchCode, partyName);
 		} catch (Exception e) {

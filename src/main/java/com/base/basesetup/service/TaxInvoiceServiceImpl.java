@@ -201,6 +201,7 @@ public class TaxInvoiceServiceImpl implements TaxInvoiceService {
 		taxInvoiceVO.setRemarks(taxInvoiceDTO.getRemarks());
 		taxInvoiceVO.setVId(taxInvoiceDTO.getVId());
 		taxInvoiceVO.setVDate(taxInvoiceDTO.getVDate());
+		taxInvoiceVO.setTrasactionNo(taxInvoiceDTO.getTrasactionNo());
 
 		if (ObjectUtils.isNotEmpty(taxInvoiceVO.getId())) {
 			List<TaxInvoiceDetailsVO> taxInvoiceDetailsVO1 = taxInvoiceDetailsRepo.findByTaxInvoiceVO(taxInvoiceVO);
@@ -687,6 +688,7 @@ public class TaxInvoiceServiceImpl implements TaxInvoiceService {
 			arapDetailsVO.setFinYear(savedAccountsVO.getFinYear());
 			arapDetailsVO.setRefNo(savedAccountsVO.getRefNo());
 			arapDetailsVO.setOrgId(savedAccountsVO.getOrgId());
+			arapDetailsVO.setActive(savedAccountsVO.isActive());
 			arapDetailsVO.setRefDate(savedAccountsVO.getRefDate());
 			arapDetailsVO.setSubLedgerCode(accountsDetailsVOs2.getSubLedgerCode());
 			arapDetailsVO.setCurrency(accountsDetailsVOs2.getACurrency());

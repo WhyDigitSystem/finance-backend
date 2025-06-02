@@ -1,6 +1,7 @@
 package com.base.basesetup.entity;
 
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import javax.persistence.CascadeType;
@@ -45,6 +46,12 @@ public class InvoiceVO {
 
 	@Column(name = "vendoraddress", columnDefinition = "TEXT")
 	private String vendorAddress;
+	
+	@Column(name = "vendorname")
+	private String vendorName;
+	
+	@Column(name = "gstin")
+	private String gstIn;
 
 	@Column(name = "deliveryaddress", columnDefinition = "TEXT")
 	private String deliveryAddress;
@@ -52,14 +59,10 @@ public class InvoiceVO {
 	@Column(name = "termsandconditions", length = 1000, columnDefinition = "TEXT")
 	private String termsAndConditions;
 
-	@Column(name = "subtotal")
-	private Long subtotal;
 
-	@Column(name = "sgst")
-	private Integer sgst;
+	@Column(name="subtotal",precision = 10, scale = 2)
+    private BigDecimal subTotal;
 
-	@Column(name = "cgst")
-	private Integer cgst;
 
 	@Column(name = "total")
 	private Long total;
@@ -67,11 +70,12 @@ public class InvoiceVO {
 	@Column(name = "gsttype", length = 1000, columnDefinition = "TEXT")
 	private String gstType;
 
-	@Column(name = "igst")
-	private Integer igst;
 
 	@Column(name = "orgid")
 	private Long orgId;
+	
+	@Column(name = "finyear")
+	private String finYear;
 	
 	@Column(name = "createdby", columnDefinition = "TEXT")
 	private String createdBy;

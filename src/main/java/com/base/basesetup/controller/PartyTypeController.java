@@ -132,6 +132,38 @@ public class PartyTypeController extends BaseController {
 		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
 		return ResponseEntity.ok().body(responseDTO);
 	}
+	
+	
+	@GetMapping("/getAllTransporters")
+	public ResponseEntity<ResponseDTO> getAllTransporters(@RequestParam Long orgid) {
+	    final String methodName = "getAllTransporters()";
+	    LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+
+	    ResponseDTO responseDTO;
+	    Map<String, Object> responseObjectsMap = new HashMap<>();
+
+	    try {
+	        List<Map<String, Object>> transporters = partyTypeService.getAllTransporters(orgid);
+
+	        responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "Transporter information retrieved successfully by OrgId");
+	        responseObjectsMap.put("partyTypeVO", transporters);
+
+	        responseDTO = createServiceResponse(responseObjectsMap);
+
+	    } catch (Exception e) {
+	        LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, e.getMessage(), e);
+
+	        responseDTO = createServiceResponseError(
+	                responseObjectsMap,
+	                "Failed to retrieve transporter information by OrgId",
+	                e.getMessage()
+	        );
+	    }
+
+	    LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+	    return ResponseEntity.ok(responseDTO);
+	}
+
 
 //			@GetMapping("/getPartyCodeByOrgIdAndPartyType")
 //			public ResponseEntity<ResponseDTO> getPartyCodeByOrgIdAndPartyType(@RequestParam(required = false) Long orgid,@RequestParam(required = false) String partytype) {
@@ -551,6 +583,62 @@ public class PartyTypeController extends BaseController {
 			responseDTO = createServiceResponse(responseObjectsMap);
 		} else {
 			responseDTO = createServiceResponseError(responseObjectsMap, "Sales Distribution data Reterive Failed", errorMsg);
+		}
+
+		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+		return ResponseEntity.ok().body(responseDTO);
+	}
+	
+	@GetMapping("/getVedorsAddressDetails")
+	public ResponseEntity<ResponseDTO> getVedorsAddressDetails(@RequestParam(required = true) Long orgId) {
+		String methodName = "getVedorsAddressDetails()";
+		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+		String errorMsg = null;
+		Map<String, Object> responseObjectsMap = new HashMap<>();
+		ResponseDTO responseDTO = null;
+		List<Map<String, Object>> mapp = new ArrayList<>();
+
+		try {
+			mapp = partyTypeService.getVedorsAddressDetails(orgId);
+		} catch (Exception e) {
+			errorMsg = e.getMessage();
+			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+		}
+
+		if (StringUtils.isBlank(errorMsg)) {
+			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "Vendors Address data  retrieved successfully");
+			responseObjectsMap.put("partyMasterVO", mapp);
+			responseDTO = createServiceResponse(responseObjectsMap);
+		} else {
+			responseDTO = createServiceResponseError(responseObjectsMap, "Vendors Address data Reterive Failed", errorMsg);
+		}
+
+		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+		return ResponseEntity.ok().body(responseDTO);
+	}
+	
+	@GetMapping("/getCustomersAddressDetails")
+	public ResponseEntity<ResponseDTO> getCustomersAddressDetails(@RequestParam(required = true) Long orgId) {
+		String methodName = "getCustomersAddressDetails()";
+		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+		String errorMsg = null;
+		Map<String, Object> responseObjectsMap = new HashMap<>();
+		ResponseDTO responseDTO = null;
+		List<Map<String, Object>> mapp = new ArrayList<>();
+
+		try {
+			mapp = partyTypeService.getCustomersAddressDetails(orgId);
+		} catch (Exception e) {
+			errorMsg = e.getMessage();
+			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+		}
+
+		if (StringUtils.isBlank(errorMsg)) {
+			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "Customers Address data  retrieved successfully");
+			responseObjectsMap.put("partyMasterVO", mapp);
+			responseDTO = createServiceResponse(responseObjectsMap);
+		} else {
+			responseDTO = createServiceResponseError(responseObjectsMap, "Customers Address data Reterive Failed", errorMsg);
 		}
 
 		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);

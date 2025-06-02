@@ -72,7 +72,7 @@ public interface APService {
 	
 //	List<Map<String, Object>> getarapoffsetadjustmentFillGrid(Long orgId, String partyCode,String branchCode, String docDate,String docId);
 	
-	List<PaymentVO> getAllPaymentByOrgIdAndBranchCode(Long orgId, String branchCode,String partyName);
+	List<Map<String, Object>> getAllPaymentByOrgIdAndBranchCode(Long orgId, String branchCode,String partyName);
 
 	PaymentVO approvePayment(Long orgId, Long id, String docId, String action, String actionBy)
 			throws ApplicationException;

@@ -8,6 +8,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.ObjectUtils;
 import org.slf4j.Logger;
@@ -399,13 +401,30 @@ public class IrnCreditNoteServiceImpl implements IrnCreditNoteService {
 
 //		System.out.println(totalInvAmountLc);
 //		System.out.println(roundedTotalInvAmountLC);
+		
+		// Step 3: Fetch total previously credited amount from multiple sources
+				Set<Object[]> byAmount = irnCreditRepo.getByAmount(irnCreditNoteDTO.getOriginBillNo());
 
+				BigDecimal previouslyCreditedAmount = BigDecimal.ZERO;
+				for (Object[] row : byAmount) {
+				    if (row[0] != null) {
+				        previouslyCreditedAmount = previouslyCreditedAmount.add(new BigDecimal(row[0].toString()));
+				    }
+				}
+				
+				System.out.println(previouslyCreditedAmount);
+		
+   if(totalInvAmountLC.compareTo(previouslyCreditedAmount) <= 0) {
 		if (totalInvAmountLC.compareTo(totalInvAmountLc1) <= 0) {  
 			irnCreditNoteVO.setTotalInvAmountLc(totalInvAmountLC);
 
 		} else {
 		    throw new IllegalArgumentException("CREDIT NOTE " + totalInvAmountLC + " must be less than or equal to TAXINVOICE "+ totalInvAmountLc1);
 		}
+   }else {
+	   
+	   throw new IllegalArgumentException("CREDIT NOTE " + totalInvAmountLC + " must be less than or equal to Amount "+ previouslyCreditedAmount);
+   }
 
 		
 		irnCreditNoteVO.setAmountInWords(amountInWordsConverterService.convert(irnCreditNoteVO.getTotalInvAmountLc()));
@@ -434,23 +453,22 @@ public class IrnCreditNoteServiceImpl implements IrnCreditNoteService {
 
 	@Override
 	public List<TaxInvoiceVO> getOriginBillNofromTaxInvoiceByParty(Long orgId, String party,String branchCode) {
-	    List<TaxInvoiceVO> allInvoices = taxInvoiceRepo.findPartyInvoiceDetails(orgId, party, branchCode);
-	    List<TaxInvoiceVO> filteredInvoices = new ArrayList<>();
-
-	    for (TaxInvoiceVO invoice : allInvoices) {
-	        boolean alreadyUsed = taxInvoiceRepo.isAlreadyUsedInApprovedCreditNote(
-	            orgId,
-	            invoice.getDocId(),
-	            invoice.getPartyCode(),
-	            invoice.getJobOrderNo()
-	        );
-
-	        if (!alreadyUsed) {
-	            filteredInvoices.add(invoice);
-	        }
-	    }
-
-	    return filteredInvoices;
+//		 List<TaxInvoiceVO> existingInvoices = taxInvoiceRepo.getCheck(orgId, party);
+//		    List<TaxInvoiceVO> allPartyInvoices = taxInvoiceRepo.findPartyInvoiceDetails(orgId, party, branchCode);
+//
+//		    if (existingInvoices == null || existingInvoices.isEmpty()) {
+//		        return allPartyInvoices; // No existing invoices, return all
+//		    }
+//
+//		    Set<String> existingInvoiceNumbers = existingInvoices.stream()
+//		            .map(TaxInvoiceVO::getDocId) // Change this to the correct unique field
+//		            .collect(Collectors.toSet());
+//
+//		    return allPartyInvoices.stream()
+//		            .filter(invoice -> !existingInvoiceNumbers.contains(invoice.getDocId())) // Change field if needed
+//		            .collect(Collectors.toList());
+		
+		return taxInvoiceRepo.findPartyInvoiceDetails(orgId, party, branchCode);
 	}
 
 	@Override
@@ -598,6 +616,7 @@ public class IrnCreditNoteServiceImpl implements IrnCreditNoteService {
 			arapDetailsVO.setCreditDays(savedAccountsVO.getCreditDays());
 			arapDetailsVO.setDocId(savedAccountsVO.getDocId());
 			arapDetailsVO.setDocDate(savedAccountsVO.getDocDate());
+			arapDetailsVO.setActive(savedAccountsVO.isActive());
 			arapDetailsVO.setAccCurrency(savedAccountsVO.getCurrency());
 			arapDetailsVO.setExRate(savedAccountsVO.getExRate());
 			arapDetailsVO.setOrgId(savedAccountsVO.getOrgId());

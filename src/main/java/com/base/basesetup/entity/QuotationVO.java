@@ -1,5 +1,7 @@
 package com.base.basesetup.entity;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 
 import javax.persistence.CascadeType;
@@ -36,23 +38,37 @@ public class QuotationVO {
 	@Column(name = "quotationid")
 	private Long id;
 
-	@Column(name ="quotationto")
-	private String quotationTo;
+	@Column(name ="quotationno")
+	private String quotationNo;
+	@Column(name ="quotationdate")
+	private LocalDate quotationDate;
 	private String code;
-	@Column(name = "shippingaddress")
-	private String shippingAddress;
+	@Column(name = "deliverygaddress")
+	private String deliveryAddress;
 	@Column(name = "customeraddress")
 	private String customerAddress;
 	private boolean active;
 	private boolean cancel;
 	@Column(name = "orgid")
 	private Long orgId;
+	@Column(name = "finyear")
+	private String finYear;
+	@Column(name = "companyaddress")
+	private String companyAddress;
+	
+	@Column(name = "customername")
+	private String customerName;
+	
 	@Column(name = "createdby")
 	private String createdBy;
 	@Column(name = "modifiedy")
 	private String updatedBy;
 	@Column(name = "cancelremarks")
 	private String cancelRemarks;
+	
+	@Column(name="totalamount",precision = 10, scale = 2)
+    private BigDecimal totalAmount;
+
 
 	//private String prefix="WDS";
 

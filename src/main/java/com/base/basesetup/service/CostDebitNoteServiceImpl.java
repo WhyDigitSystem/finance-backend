@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.validation.Valid;
 
@@ -574,8 +575,24 @@ public class CostDebitNoteServiceImpl implements CostDebitNoteService {
 	}
 
 	@Override
-	public List<CostInvoiceVO> getOriginBillNofromCostInvoiceByParty(Long orgId, String party, String branchCode) {
-		return costInvoiceRepo.findOrginBillNoByParty(orgId, party, branchCode);
+	public List<CostInvoiceVO> getOriginBillNofromCostInvoiceByParty(Long orgId, String party, String branchCode) {		
+//		 List<CostInvoiceVO> existingInvoices = costInvoiceRepo.getCheck(orgId, party);
+//		    List<CostInvoiceVO> allPartyInvoices = costInvoiceRepo.findOrginBillNoByParty(orgId, party, branchCode);
+//
+//		    if (existingInvoices == null || existingInvoices.isEmpty()) {
+//		        return allPartyInvoices; 
+//		    }
+//
+//		    Set<String> existingInvoiceNumbers = existingInvoices.stream()
+//		            .map(CostInvoiceVO::getDocId) 
+//		            .collect(Collectors.toSet());
+//
+//		    return allPartyInvoices.stream()
+//		            .filter(invoice -> !existingInvoiceNumbers.contains(invoice.getDocId())) 
+//		            .collect(Collectors.toList());
+		
+	return	costInvoiceRepo.findOrginBillNoByParty(orgId, party, branchCode);
+		
 	}
 
 	@Override
@@ -787,6 +804,7 @@ public class CostDebitNoteServiceImpl implements CostDebitNoteService {
 			arapDetailsVO.setAccCurrency(savedAccountsVO.getCurrency());
 			arapDetailsVO.setExRate(savedAccountsVO.getExRate());
 			arapDetailsVO.setOrgId(savedAccountsVO.getOrgId());
+			arapDetailsVO.setActive(savedAccountsVO.isActive());
 			arapDetailsVO.setAccName(accountsDetailsVOs2.getAccountName());
 			arapDetailsVO.setGstFlag(accountsDetailsVOs2.getGstflag());
 			arapDetailsVO.setSubLedgerName(accountsDetailsVOs2.getSubledgerName());

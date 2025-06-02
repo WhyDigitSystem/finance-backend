@@ -12,6 +12,8 @@ import lombok.NoArgsConstructor;
 public class RetrievalManifestProviderDTO {
 
 	private Long id;
+	
+	private String finYear;
 
 	private String transactionNo;
 

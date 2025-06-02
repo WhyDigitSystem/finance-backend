@@ -62,7 +62,7 @@ public interface CostInvoiceRepo extends JpaRepository<CostInvoiceVO, Long> {
 			+ "group by businessplace")
 	Set<Object[]> getPlaceOfSupplyDetails(Long orgId, Long id, String stateCode);
 
-	@Query(nativeQuery = true, value = "SELECT j.jobno,j.customer FROM jobcard j WHERE orgid=?1 AND closed = 0 AND active=1 group by j.jobno,j.customer")
+	@Query(nativeQuery = true, value = "SELECT j.jobno,j.customer,j.partyshortname FROM jobcard j WHERE orgid=?1 AND closed = 0 AND active=1 group by j.jobno,j.customer,partyshortname")
 	Set<Object[]> getJobNoFromTmsJobCard(Long orgId);
 	
 	@Query(nativeQuery = true, value = "select accountgroupname,category from groupledger where orgid=?1 and gsttaxflag='NA' and category='PAYABLE A/C' and type='ACCOUNT'  and groupname='TDS'")
@@ -407,6 +407,11 @@ public interface CostInvoiceRepo extends JpaRepository<CostInvoiceVO, Long> {
 			+ "and c.finyear=?2 and c.orgid=?1 and c.branchcode=?3 \r\n"
 			+ "group by c.vid,c.vdate, c.suppliername,p.partyshortname,d.totaltds,c.finyear")
 	Set<Object[]> getTotaltdsFromCustomerBillWise(Long orgId, Long finYear, String branchCode, String partyName);
+	
+//
+//	@Query(nativeQuery = true,value="select * from costinvoice a,costdebitnote a1  where a.orgid=a1.orgid and a.suppliercode=a1.suppliercode and a.docid=a1.orginbill\r\n"
+//			+ " and a.approvestatus=a1.approvestatus and a.orgid=?1 and a.suppliername=?2")
+//	List<CostInvoiceVO> getCheck(Long orgId, String party);
 
 
 

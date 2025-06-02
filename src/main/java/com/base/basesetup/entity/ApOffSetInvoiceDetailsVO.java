@@ -56,8 +56,12 @@ public class ApOffSetInvoiceDetailsVO {
 	private BigDecimal tnxSettled;
 	@Column(name = "gainorloss",precision = 10, scale = 2)
 	private BigDecimal gainOrLoss;
+	@Column(name = "gstamount",precision = 10, scale = 2)
+	private BigDecimal gstAmount;
 	@Column(name = "remarks",length=150)
 	private String remarks;
+	@Column(name = "chargeamt", precision = 10, scale = 2)
+	private BigDecimal chargeAmt;
 
 	@ManyToOne
 	@JsonBackReference

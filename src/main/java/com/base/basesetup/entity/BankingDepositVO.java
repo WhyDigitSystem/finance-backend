@@ -65,7 +65,7 @@ public class BankingDepositVO {
     @Column(name = "currency", length = 10)
     private String currency;
 
-    @Column(name = "exchangerate", precision = 10, scale = 6)
+    @Column(name = "exchangerate", precision = 10, scale = 2)
     private BigDecimal exchangeRate;
 
     @Column(name = "depositamount", precision = 10, scale = 2)

@@ -3,6 +3,8 @@ package com.base.basesetup.dto;
 import java.time.LocalDate;
 import java.util.List;
 
+import javax.persistence.Column;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -13,7 +15,7 @@ import lombok.NoArgsConstructor;
 public class IssueManifestProviderDTO {
 
 	private Long id;
-
+	private String finYear;
 	private String transactionNo;
 
 	private LocalDate transactionDate;
@@ -21,6 +23,10 @@ public class IssueManifestProviderDTO {
 	private LocalDate dispatchDate;
 
 	private String transactionType;
+	
+	private String fromWarehouse;
+
+	private String warehouseAddress;
 
 	private String sender;
 
@@ -47,8 +53,12 @@ public class IssueManifestProviderDTO {
 	private boolean cancel;
 
 	private String createdBy;
+	
+	private String receiverName;
 
 	private Long orgId;
+
+	private String locationUnit;
 	
 	private List<IssueManifestProviderDetailsDTO> issueManifestProviderDetailsDTO;
 	

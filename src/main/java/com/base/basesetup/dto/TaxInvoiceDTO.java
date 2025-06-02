@@ -52,6 +52,7 @@ public class TaxInvoiceDTO {
 	
 	private String vId;
 	private LocalDate vDate;
+	private String trasactionNo;
 
 
 	
