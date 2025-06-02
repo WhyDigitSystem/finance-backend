@@ -1,6 +1,7 @@
 package com.base.basesetup.service;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -283,7 +284,6 @@ public class ARServiceImpl implements ARService {
 		if (receiptDetailsList != null && !receiptDetailsList.isEmpty()) {
 		    for (ReceiptInvDetailsDTO receiptInvDetailsDTO : receiptDetailsList) {
 		        ReceiptInvDetailsVO receiptInvDetailsVO = new ReceiptInvDetailsVO();
-
 		        receiptInvDetailsVO.setInvNo(receiptInvDetailsDTO.getInvNo());
 		        receiptInvDetailsVO.setInvDate(receiptInvDetailsDTO.getInvDate());
 		        receiptInvDetailsVO.setRefNo(receiptInvDetailsDTO.getRefNo());
@@ -293,20 +293,31 @@ public class ARServiceImpl implements ARService {
 		        receiptInvDetailsVO.setCurrency(receiptInvDetailsDTO.getCurrency());
 		        receiptInvDetailsVO.setExRate(receiptInvDetailsDTO.getExRate());
 		        receiptInvDetailsVO.setTds(receiptInvDetailsDTO.getTds());
-		        receiptInvDetailsVO.setChargeAmt(receiptInvDetailsDTO.getAmount().add(receiptInvDetailsDTO.getGstAmt()));
-		        receiptInvDetailsVO.setOutstanding(receiptInvDetailsDTO.getChargeAmt().subtract(receiptInvDetailsDTO.getSettled()).subtract( receiptInvDetailsDTO.getAmount().multiply(receiptInvDetailsDTO.getTds()).divide(BigDecimal.valueOf(100))));
-		       
-		        receiptInvDetailsVO.setGstAmt(receiptInvDetailsDTO.getGstAmt());
-		        receiptInvDetailsVO.setAmount(receiptInvDetailsDTO.getAmount());
 
-		        totalSettled = totalSettled.add(receiptInvDetailsDTO.getSettled());
+		        BigDecimal amount = receiptInvDetailsDTO.getAmount() != null ? receiptInvDetailsDTO.getAmount() : BigDecimal.ZERO;
+		        BigDecimal gstAmt = receiptInvDetailsDTO.getGstAmt() != null ? receiptInvDetailsDTO.getGstAmt() : BigDecimal.ZERO;
+		        BigDecimal chargeAmt = amount.add(gstAmt);
+		        receiptInvDetailsVO.setChargeAmt(chargeAmt);
 
-		        receiptInvDetailsVO.setSettled(receiptInvDetailsDTO.getSettled());
+		        BigDecimal tds = receiptInvDetailsDTO.getTds() != null ? receiptInvDetailsDTO.getTds() : BigDecimal.ZERO;
+		        BigDecimal tdsValue = amount.multiply(tds).divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP);
+
+		        BigDecimal settled = receiptInvDetailsDTO.getSettled() != null ? receiptInvDetailsDTO.getSettled() : BigDecimal.ZERO;
+		        BigDecimal outstanding = chargeAmt.subtract(settled).subtract(tdsValue);
+		        receiptInvDetailsVO.setOutstanding(outstanding);
+
+		        receiptInvDetailsVO.setGstAmt(gstAmt);
+		        receiptInvDetailsVO.setAmount(amount);
+		        receiptInvDetailsVO.setSettled(settled);
 		        receiptInvDetailsVO.setRecExRate(receiptInvDetailsDTO.getRecExRate());
 		        receiptInvDetailsVO.setTxnSettled(receiptInvDetailsDTO.getTxnSettled());
 		        receiptInvDetailsVO.setGainAmt(receiptInvDetailsDTO.getGainAmt());
 		        receiptInvDetailsVO.setReceiptVO(receiptVO);
 
+		        totalSettled = totalSettled.add(settled);
+
+		        
+		        
 		        receiptInvDetailsVOs.add(receiptInvDetailsVO);
 		    }
 

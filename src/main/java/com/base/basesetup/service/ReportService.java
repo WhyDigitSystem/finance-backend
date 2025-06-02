@@ -62,7 +62,7 @@ public interface ReportService {
 		
 		//quation
 		
-		List<Map<String, Object>> getQuotationByorgId(Long orgId);
+		List<QuotationVO> getQuotationByorgId(Long orgId);
 
 		Optional<QuotationVO> getQutationById(Long id);
 
@@ -77,6 +77,12 @@ public interface ReportService {
 		List<Map<String, Object>> getOrginBillNoBased(Long orgId, String orginBillNo);
 
 		List<Map<String, Object>> getMimReportDetails(String type, Long orgId, String customerName, String finYear,
+				String toDate, String fromDate);
+
+		List<IssueManifestProviderVO> findMIMReports(String type, Long orgId, String customerName, String finYear,
+				String toDate, String fromDate);
+
+		List<RetrievalManifestProviderVO> findRIMReports(String type, Long orgId, String customerName, String finYear,
 				String toDate, String fromDate);
 
 		

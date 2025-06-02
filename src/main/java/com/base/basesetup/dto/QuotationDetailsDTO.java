@@ -18,5 +18,6 @@ public class QuotationDetailsDTO {
     private BigDecimal tax;
     private BigDecimal taxAmount;
     private BigDecimal subTotal;
+    private BigDecimal baseAmount;
 
 }

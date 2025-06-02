@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import com.base.basesetup.entity.IssueManifestProviderVO;
+import com.base.basesetup.entity.RetrievalManifestProviderVO;
 
 @Repository
 public interface IssueManifestProviderRepo extends JpaRepository<IssueManifestProviderVO, Long>{
@@ -30,5 +31,25 @@ public interface IssueManifestProviderRepo extends JpaRepository<IssueManifestPr
 			+ "and (?5 is null or a.transactiondate >= ?5)  and (?6 is null or a.transactiondate <= ?6)\r\n"
 			+ "order by transactiondate")
 	Set<Object[]> getMimReportDetails(String type,Long orgId,String customerName, String finYear,String toDate,String fromDate);
+	
+	@Query(value = "SELECT *\r\n"
+			+ "FROM  finance_aip.mim a where\r\n"
+			+ " ?1 = 'MIM'\r\n"
+			+ "  AND a.orgid = ?2\r\n"
+			+ "  AND (a.receiver = ?3 OR ?3 = 'ALL')\r\n"
+			+ "  AND a.finyear = ?4\r\n"
+			+ "  AND (?5 IS NULL OR a.transactiondate >= ?5)\r\n"
+			+ "  AND (?6 IS NULL OR a.transactiondate <= ?6)",nativeQuery =true)
+	List<IssueManifestProviderVO> findMIMReports(String type,Long orgId,String customerName, String finYear,String toDate,String fromDate);
+	
+	@Query(value = "SELECT *\r\n"
+			+ "FROM finance_aip.rim a\r\n"
+			+ "WHERE ?1 = 'RIM'\r\n"
+			+ "  AND a.orgid = ?2\r\n"
+			+ "  AND (a.sender = ?3 OR ?3 = 'ALL')\r\n"
+			+ "  AND a.finyear = ?4\r\n"
+			+ "  AND (?5 IS NULL OR a.transactiondate >= ?5)\r\n"
+			+ "  AND (?6 IS NULL OR a.transactiondate <= ?6)",nativeQuery =true)
+	List<RetrievalManifestProviderVO> findRIMReports(String type,Long orgId,String customerName, String finYear,String toDate,String fromDate);
 
 }

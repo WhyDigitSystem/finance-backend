@@ -38,6 +38,8 @@ public class InvoiceProductLinesVO {
     private BigDecimal rate;
 	@Column(name="amount",precision = 10, scale = 2)
     private BigDecimal amount;
+	@Column(name="tax",precision = 10, scale = 2)
+    private BigDecimal tax;
 	@Column(name="igst",precision = 10, scale = 2)
     private BigDecimal igst;
 	@Column(name="cgst",precision = 10, scale = 2)

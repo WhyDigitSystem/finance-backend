@@ -15,6 +15,7 @@ public class InvoiceProductLinesDTO {
     private BigDecimal quantity;
     private BigDecimal rate;
     private BigDecimal amount;
+    private BigDecimal tax;
     private BigDecimal igst;
     private BigDecimal cgst;
     private BigDecimal sgst;

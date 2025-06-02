@@ -46,8 +46,6 @@ public class QuotationDetailsVO {
     private BigDecimal tax;
 	@Column(name="taxamount",precision = 10, scale = 2)
     private BigDecimal taxAmount;
-	@Column(name="subtotal",precision = 10, scale = 2)
-    private BigDecimal subTotal;
 	
 	@ManyToOne
 	@JsonBackReference
