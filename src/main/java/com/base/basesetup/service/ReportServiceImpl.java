@@ -18,18 +18,15 @@ import com.base.basesetup.dto.InvoiceDTO;
 import com.base.basesetup.dto.InvoiceProductLinesDTO;
 import com.base.basesetup.dto.IssueManifestProviderDTO;
 import com.base.basesetup.dto.IssueManifestProviderDetailsDTO;
-import com.base.basesetup.dto.ParticularsJournalDTO;
 import com.base.basesetup.dto.QuotationDTO;
 import com.base.basesetup.dto.QuotationDetailsDTO;
 import com.base.basesetup.dto.RetrievalManifestProviderDTO;
 import com.base.basesetup.dto.RetrievalManifestProviderDetailsDTO;
-import com.base.basesetup.entity.CountryVO;
 import com.base.basesetup.entity.DeclarationAndNotesVO;
 import com.base.basesetup.entity.InvoiceProductLinesVO;
 import com.base.basesetup.entity.InvoiceVO;
 import com.base.basesetup.entity.IssueManifestProviderDetailsVO;
 import com.base.basesetup.entity.IssueManifestProviderVO;
-import com.base.basesetup.entity.ParticularsJournalVO;
 import com.base.basesetup.entity.QuotationDetailsVO;
 import com.base.basesetup.entity.QuotationVO;
 import com.base.basesetup.entity.RetrievalManifestProviderDetailsVO;
@@ -89,7 +86,7 @@ public class ReportServiceImpl implements ReportService {
 	public Map<String, Object> createUpdateInvoice(InvoiceDTO invoiceDTO) throws ApplicationException {
 		InvoiceVO invoiceVO = new InvoiceVO();
 		String message = null;
-		
+
 		if (ObjectUtils.isEmpty(invoiceDTO.getId())) {
 			if (invoiceRepo.existsByOrgIdAndPoNumber(invoiceDTO.getOrgId(), invoiceDTO.getPoNumber())) {
 				String errorMessage = String.format("The PoNumber: %s already exists This Organization.",
@@ -116,7 +113,7 @@ public class ReportServiceImpl implements ReportService {
 			message = "Invoice Update Successfully";
 		}
 
-		mapInvoiceDTOToInvoiceVO(invoiceDTO, invoiceVO);	
+		mapInvoiceDTOToInvoiceVO(invoiceDTO, invoiceVO);
 		invoiceRepo.save(invoiceVO);
 		Map<String, Object> response = new HashMap<>();
 		response.put("invoiceVO", invoiceVO);
@@ -139,71 +136,76 @@ public class ReportServiceImpl implements ReportService {
 		invoiceVO.setFinYear(invoiceDTO.getFinYear());
 
 		invoiceVO.setOrgId(invoiceDTO.getOrgId());
-		
+
 		if (ObjectUtils.isNotEmpty(invoiceDTO.getId())) {
 			List<InvoiceProductLinesVO> invoiceProductLinesVO2 = invoiceProductLinesRepo.findByInvoiceVO(invoiceVO);
 			invoiceProductLinesRepo.deleteAll(invoiceProductLinesVO2);
 		}
-			
+
 		BigDecimal subToatl = BigDecimal.ZERO;
 		List<InvoiceProductLinesVO> invoiceProductLinesVOs = new ArrayList<>();
 		if (invoiceDTO.getItems() != null) {
-		for (InvoiceProductLinesDTO invoiceProductLinesDTO : invoiceDTO.getItems()) {
-			InvoiceProductLinesVO invoiceProductLinesVO1 = new InvoiceProductLinesVO();
-			invoiceProductLinesVO1.setDescription(invoiceProductLinesDTO.getDescription());
-			invoiceProductLinesVO1.setQuantity(invoiceProductLinesDTO.getQuantity());
-			invoiceProductLinesVO1.setRate(invoiceProductLinesDTO.getRate());
-			invoiceProductLinesVO1.setSgst(invoiceProductLinesDTO.getSgst());
-			invoiceProductLinesVO1.setCgst(invoiceProductLinesDTO.getCgst());
-			invoiceProductLinesVO1.setIgst(invoiceProductLinesDTO.getIgst());
-			invoiceProductLinesVO1.setBaseAmount(
-					invoiceProductLinesDTO.getQuantity().multiply(invoiceProductLinesDTO.getRate()));
+			for (InvoiceProductLinesDTO invoiceProductLinesDTO : invoiceDTO.getItems()) {
+				InvoiceProductLinesVO invoiceProductLinesVO1 = new InvoiceProductLinesVO();
+				invoiceProductLinesVO1.setDescription(invoiceProductLinesDTO.getDescription());
+				invoiceProductLinesVO1.setQuantity(invoiceProductLinesDTO.getQuantity());
+				invoiceProductLinesVO1.setRate(invoiceProductLinesDTO.getRate());
+				invoiceProductLinesVO1.setSgst(invoiceProductLinesDTO.getSgst());
+				invoiceProductLinesVO1.setCgst(invoiceProductLinesDTO.getCgst());
+				invoiceProductLinesVO1.setIgst(invoiceProductLinesDTO.getIgst());
+				invoiceProductLinesVO1.setTax(invoiceProductLinesDTO.getTax());
+				invoiceProductLinesVO1
+						.setBaseAmount(invoiceProductLinesDTO.getQuantity().multiply(invoiceProductLinesDTO.getRate()));
 
-			BigDecimal taxAmount = BigDecimal.ZERO;
-			if (invoiceVO.getGstType() == null || invoiceVO.getGstType().isEmpty()
-					|| !invoiceVO.getGstType().equalsIgnoreCase("INTRA")
-							&& !invoiceVO.getGstType().equalsIgnoreCase("INTER")) {
-				invoiceProductLinesVO1.setIgstAmount(BigDecimal.ZERO);
-				invoiceProductLinesVO1.setCgstAmount(BigDecimal.ZERO);
-				invoiceProductLinesVO1.setSgstAmount(BigDecimal.ZERO);
-				invoiceProductLinesVO1.setTaxValue(BigDecimal.ZERO);
-			} else {
-				if (invoiceVO.getGstType().equalsIgnoreCase("INTER")) {
-					BigDecimal igstAmount = invoiceProductLinesDTO.getIgst()
-							.multiply(invoiceProductLinesDTO.getBaseAmount()).divide(BigDecimal.valueOf(100));
-					invoiceProductLinesVO1.setCgstAmount(BigDecimal.ZERO);
-					invoiceProductLinesVO1.setSgstAmount(BigDecimal.ZERO);
-					taxAmount = igstAmount;
-					invoiceProductLinesVO1.setIgstAmount(igstAmount);
-					invoiceProductLinesVO1.setTaxValue(taxAmount);
+//				BigDecimal taxAmount = BigDecimal.ZERO;
+//				if (invoiceVO.getGstType() == null || invoiceVO.getGstType().isEmpty()
+//						|| !invoiceVO.getGstType().equalsIgnoreCase("INTRA")
+//								&& !invoiceVO.getGstType().equalsIgnoreCase("INTER")) {
+//					invoiceProductLinesVO1.setIgstAmount(BigDecimal.ZERO);
+//					invoiceProductLinesVO1.setCgstAmount(BigDecimal.ZERO);
+//					invoiceProductLinesVO1.setSgstAmount(BigDecimal.ZERO);
+//					invoiceProductLinesVO1.setTaxValue(BigDecimal.ZERO);
+//				} else {
+//					if (invoiceVO.getGstType().equalsIgnoreCase("INTER")) {
+//						BigDecimal igstAmount = invoiceProductLinesDTO.getIgst()
+//								.multiply(invoiceProductLinesDTO.getBaseAmount()).divide(BigDecimal.valueOf(100));
+//						invoiceProductLinesVO1.setCgstAmount(BigDecimal.ZERO);
+//						invoiceProductLinesVO1.setSgstAmount(BigDecimal.ZERO);
+//						taxAmount = igstAmount;
+//						invoiceProductLinesVO1.setIgstAmount(igstAmount);
+//						invoiceProductLinesVO1.setTaxValue(taxAmount);
+//
+//					} else if (invoiceVO.getGstType().equalsIgnoreCase("INTRA")) {
+//						BigDecimal sgstAmount = invoiceProductLinesDTO.getSgst()
+//								.multiply(invoiceProductLinesDTO.getBaseAmount()).divide(BigDecimal.valueOf(100));
+//						BigDecimal cgstAmount = invoiceProductLinesDTO.getCgst()
+//								.multiply(invoiceProductLinesDTO.getBaseAmount()).divide(BigDecimal.valueOf(100));
+//						invoiceProductLinesVO1.setIgstAmount(BigDecimal.ZERO);
+//						invoiceProductLinesVO1.setSgstAmount(sgstAmount);
+//						invoiceProductLinesVO1.setCgstAmount(cgstAmount);
+//						taxAmount = cgstAmount.add(sgstAmount);
+//						invoiceProductLinesVO1.setTaxValue(taxAmount);
+//					}
+			//	}
+				
+				BigDecimal taxAmount = BigDecimal.ZERO;
+				taxAmount=invoiceProductLinesDTO.getTax()
+				.multiply(invoiceProductLinesDTO.getBaseAmount()).divide(BigDecimal.valueOf(100));
+				
+			//	invoiceProductLinesVO1. (taxAmount);
 
-				} else if (invoiceVO.getGstType().equalsIgnoreCase("INTRA")) {
-					BigDecimal sgstAmount = invoiceProductLinesDTO.getSgst()
-							.multiply(invoiceProductLinesDTO.getBaseAmount()).divide(BigDecimal.valueOf(100));
-					BigDecimal cgstAmount = invoiceProductLinesDTO.getCgst()
-							.multiply(invoiceProductLinesDTO.getBaseAmount()).divide(BigDecimal.valueOf(100));
-					invoiceProductLinesVO1.setIgstAmount(BigDecimal.ZERO);
-					invoiceProductLinesVO1.setSgstAmount(sgstAmount);
-					invoiceProductLinesVO1.setCgstAmount(cgstAmount);
-					taxAmount = cgstAmount.add(sgstAmount);
-					invoiceProductLinesVO1.setTaxValue(taxAmount);
-				}
+			//	invoiceProductLinesVO1
+				//		.setAmount(invoiceProductLinesDTO.getBaseAmount().add(invoiceProductLinesVO1.getTaxValue()));
+
+				subToatl = subToatl.add(invoiceProductLinesVO1.getAmount());
+				invoiceProductLinesVO1.setInvoiceVO(invoiceVO);
+				invoiceProductLinesVOs.add(invoiceProductLinesVO1);
 			}
-
-			
-			invoiceProductLinesVO1.setAmount(
-					invoiceProductLinesDTO.getBaseAmount().add(invoiceProductLinesVO1.getTaxValue()));
-			
-			subToatl=subToatl.add(invoiceProductLinesVO1.getAmount());
-			invoiceProductLinesVO1.setInvoiceVO(invoiceVO);
-			invoiceProductLinesVOs.add(invoiceProductLinesVO1);
 		}
-	}
-		
+
 		invoiceVO.setSubTotal(subToatl);
 		invoiceVO.setProductLines(invoiceProductLinesVOs);
-		
-		
+
 	}
 
 	@Override
@@ -223,44 +225,80 @@ public class ReportServiceImpl implements ReportService {
 	@Override
 	public Map<String, Object> createUpdateIssuemanifest(IssueManifestProviderDTO issueManifestProviderDTO)
 			throws ApplicationException {
-		IssueManifestProviderVO issueManifestProviderVO = null;
-		String message = null;
-		if (issueManifestProviderDTO.getId() != null) {
-			// Update existing entity
-			issueManifestProviderVO = issueManifestProviderRepo.findById(issueManifestProviderDTO.getId())
-					.orElseThrow(() -> new ApplicationException(
-							"This Id Not Found Any Information, Invalid Id: " + issueManifestProviderDTO.getId()));
-			issueManifestProviderVO.setUpdatedBy(issueManifestProviderDTO.getCreatedBy());
-			if (!issueManifestProviderVO.getTransactionNo().equals(issueManifestProviderDTO.getTransactionNo())) {
-				if (issueManifestProviderRepo.existsByOrgIdAndTransactionNo(issueManifestProviderDTO.getOrgId(),
-						issueManifestProviderDTO.getTransactionNo())) {
-					throw new ApplicationException("TransactionNo already Exists");
-				}
-				issueManifestProviderVO.setTransactionNo(issueManifestProviderDTO.getTransactionNo());
-
+//		IssueManifestProviderVO issueManifestProviderVO = new IssueManifestProviderVO();
+//		String message = null;
+//		if (issueManifestProviderDTO.getId() != null) {
+//			// Update existing entity
+//			issueManifestProviderVO = issueManifestProviderRepo.findById(issueManifestProviderDTO.getId())
+//					.orElseThrow(() -> new ApplicationException(
+//							"This Id Not Found Any Information, Invalid Id: " + issueManifestProviderDTO.getId()));
+//			issueManifestProviderVO.setUpdatedBy(issueManifestProviderDTO.getCreatedBy());
+//			if (!issueManifestProviderVO.getTransactionNo().equals(issueManifestProviderDTO.getTransactionNo())) {
+//				if (issueManifestProviderRepo.existsByOrgIdAndTransactionNo(issueManifestProviderDTO.getOrgId(),
+//						issueManifestProviderDTO.getTransactionNo())) {
+//					throw new ApplicationException("TransactionNo already Exists");
+//				}
+//				issueManifestProviderVO.setTransactionNo(issueManifestProviderDTO.getTransactionNo());
+//
+//			}
+//			message = "IssueManifestProvider Updation Sucessfully";
+//
+//		} else {
+//
+//			issueManifestProviderVO = new IssueManifestProviderVO();
+//			issueManifestProviderVO.setCreatedBy(issueManifestProviderDTO.getCreatedBy());
+//			issueManifestProviderVO.setUpdatedBy(issueManifestProviderDTO.getCreatedBy());
+//			if (issueManifestProviderRepo.existsByOrgIdAndTransactionNo(issueManifestProviderDTO.getOrgId(),
+//					issueManifestProviderDTO.getTransactionNo())) {
+//				throw new ApplicationException("TransactionNo already Exists");
+//			}
+//			issueManifestProviderVO.setTransactionNo(issueManifestProviderDTO.getTransactionNo());
+//			message = "IssueManifestProvider Creatrion Sucessfully";
+//		}
+//		getIssueManifestProviderVOFromIssueManifestProviderDTO(issueManifestProviderVO, issueManifestProviderDTO);
+//		issueManifestProviderRepo.save(issueManifestProviderVO);
+//
+//		// Prepare the response
+//		Map<String, Object> response = new HashMap<>();
+//		response.put("message", message);
+//		response.put("issueManifestProviderVO", issueManifestProviderVO);
+//		return response;
+		
+		IssueManifestProviderVO issueManifestProviderVO = new IssueManifestProviderVO();
+		String message = null;	
+		if (ObjectUtils.isEmpty(issueManifestProviderDTO.getId())) {
+			if (issueManifestProviderRepo.existsByOrgIdAndTransactionNo(issueManifestProviderDTO.getOrgId(),issueManifestProviderDTO.getTransactionNo())) {
+				String errorMessage = String.format("The TransactionNo: %s already exists This Organization.",
+						issueManifestProviderDTO.getTransactionNo());
+				throw new ApplicationException(errorMessage);
 			}
-			message = "IssueManifestProvider Updation Sucessfully";
-
-		} else {
-
 			issueManifestProviderVO = new IssueManifestProviderVO();
 			issueManifestProviderVO.setCreatedBy(issueManifestProviderDTO.getCreatedBy());
 			issueManifestProviderVO.setUpdatedBy(issueManifestProviderDTO.getCreatedBy());
-			if (issueManifestProviderRepo.existsByOrgIdAndTransactionNo(issueManifestProviderDTO.getOrgId(),
-					issueManifestProviderDTO.getTransactionNo())) {
-				throw new ApplicationException("TransactionNo already Exists");
+			message = "IssueManifestProvider Creation SuccessFully";
+		} else {
+
+			issueManifestProviderVO = issueManifestProviderRepo.findById(issueManifestProviderDTO.getId())
+					.orElseThrow(() -> new ApplicationException("IssueManifestProvider not found with id: " + issueManifestProviderDTO.getId()));
+			issueManifestProviderVO.setUpdatedBy(issueManifestProviderDTO.getCreatedBy());
+			if (!issueManifestProviderVO.getTransactionNo().equals(issueManifestProviderDTO.getTransactionNo())) {
+				if (issueManifestProviderRepo.existsByOrgIdAndTransactionNo(issueManifestProviderDTO.getOrgId(),issueManifestProviderDTO.getTransactionNo())) {
+					String errorMessage = String.format("The TransactionNo: %s already exists This Organization.",
+							issueManifestProviderDTO.getTransactionNo());
+					throw new ApplicationException(errorMessage);
+				}
+				issueManifestProviderVO.setTransactionNo(issueManifestProviderDTO.getTransactionNo());
 			}
-			issueManifestProviderVO.setTransactionNo(issueManifestProviderDTO.getTransactionNo());
-			message = "IssueManifestProvider Creatrion Sucessfully";
+			message = "IssueManifestProvider Update Successfully";
 		}
+
 		getIssueManifestProviderVOFromIssueManifestProviderDTO(issueManifestProviderVO, issueManifestProviderDTO);
 		issueManifestProviderRepo.save(issueManifestProviderVO);
-
-		// Prepare the response
 		Map<String, Object> response = new HashMap<>();
-		response.put("message", message);
 		response.put("issueManifestProviderVO", issueManifestProviderVO);
+		response.put("message", message);
 		return response;
+			
 	}
 
 	private IssueManifestProviderVO getIssueManifestProviderVOFromIssueManifestProviderDTO(
@@ -287,14 +325,15 @@ public class ReportServiceImpl implements ReportService {
 		issueManifestProviderVO.setCancel(issueManifestProviderDTO.isCancel());
 		issueManifestProviderVO.setOrgId(issueManifestProviderDTO.getOrgId());
 		issueManifestProviderVO.setFinYear(issueManifestProviderDTO.getFinYear());
-		if (issueManifestProviderDTO.getId() != null) {
+		
+		if (ObjectUtils.isNotEmpty(issueManifestProviderDTO.getId())) {
 
 			List<IssueManifestProviderDetailsVO> issueManifestProviderDetailsVOs = issueManifestProviderDetailsRepo
 					.findByIssueManifestProviderVO(issueManifestProviderVO);
 			issueManifestProviderDetailsRepo.deleteAll(issueManifestProviderDetailsVOs);
 		}
 
-		List<IssueManifestProviderDetailsVO> detailsVOs = new ArrayList<IssueManifestProviderDetailsVO>();
+		List<IssueManifestProviderDetailsVO> detailsVOs = new ArrayList<>();
 
 		for (IssueManifestProviderDetailsDTO detailsDTO : issueManifestProviderDTO
 				.getIssueManifestProviderDetailsDTO()) {
@@ -585,38 +624,52 @@ public class ReportServiceImpl implements ReportService {
 		quotationVO.setCustomerAddress(quotationDTO.getCustomerAddress());
 //	    quotationVO.setFinYear(quotationDTO.getFinYear());
 		quotationVO.setOrgId(quotationDTO.getOrgId());
+
 		quotationVO.setCode(quotationDTO.getCode());
 		quotationVO.setFinYear(quotationDTO.getFinYear());
 		quotationVO.setCompanyAddress(quotationDTO.getCompanyAddress());
 		quotationVO.setCustomerName(quotationDTO.getCustomerName());
 		quotationVO.setFinYear(quotationDTO.getFinYear());
-		
 
 		if (quotationDTO.getId() != null) {
 			List<QuotationDetailsVO> quotationDetailsVOs = quotationDetailsRepo.findByQuotationVO(quotationVO);
 			quotationDetailsRepo.deleteAll(quotationDetailsVOs);
 
 		}
+		BigDecimal subTotal = BigDecimal.ZERO;
 
 		List<QuotationDetailsVO> quotationDetailsVOs = new ArrayList<>();
 		for (QuotationDetailsDTO quotationDetailsDTO : quotationDTO.getQuotationDetailsDTO()) {
-			QuotationDetailsVO quotationDetailsVO = new QuotationDetailsVO();
-			quotationDetailsVO.setDescription(quotationDetailsDTO.getDescription());
-			quotationDetailsVO.setQuantity(quotationDetailsDTO.getQuantity());
-			quotationDetailsVO.setRate(quotationDetailsDTO.getRate());
-			quotationDetailsVO.setAmount(quotationDetailsDTO.getAmount());
-			quotationDetailsVO.setTax(quotationDetailsDTO.getTax());
-			quotationDetailsVO.setTaxAmount(quotationDetailsDTO.getTaxAmount());
-			quotationDetailsVO.setSubTotal(quotationDetailsDTO.getSubTotal());		
-			quotationDetailsVO.setQuotationVO(quotationVO);
-			quotationDetailsVOs.add(quotationDetailsVO);
+		    QuotationDetailsVO quotationDetailsVO = new QuotationDetailsVO();
+		    
+		    quotationDetailsVO.setDescription(quotationDetailsDTO.getDescription());
+		    quotationDetailsVO.setQuantity(quotationDetailsDTO.getQuantity());
+		    quotationDetailsVO.setRate(quotationDetailsDTO.getRate());
+		    quotationDetailsVO.setTax(quotationDetailsDTO.getTax());
+
+		    BigDecimal baseAmount = quotationDetailsDTO.getQuantity().multiply(quotationDetailsDTO.getRate());
+		    quotationDetailsVO.setBaseAmount(baseAmount);
+
+		    BigDecimal taxAmount = baseAmount.multiply(quotationDetailsDTO.getTax()).divide(BigDecimal.valueOf(100));
+		    quotationDetailsVO.setTaxAmount(taxAmount);
+
+		    BigDecimal totalAmount = baseAmount.add(taxAmount);
+		    quotationDetailsVO.setAmount(totalAmount);
+
+		    subTotal = subTotal.add(totalAmount);
+
+		    quotationDetailsVO.setQuotationVO(quotationVO);
+		    quotationDetailsVOs.add(quotationDetailsVO);
 		}
+
+		quotationVO.setSubTotal(subTotal);
 		quotationVO.setQuotationDetailsVO(quotationDetailsVOs);
+
 		return quotationVO;
 	}
 
 	@Override
-	public List<Map<String, Object>> getQuotationByorgId(Long orgId) {
+	public List<QuotationVO> getQuotationByorgId(Long orgId) {
 		return quotationRepo.findQutationByOrgId(orgId);
 	}
 
@@ -753,6 +806,20 @@ public class ReportServiceImpl implements ReportService {
 			list1.add(doctype);
 		}
 		return list1;
+	}
+
+	@Override
+	public List<IssueManifestProviderVO> findMIMReports(String type, Long orgId, String customerName, String finYear,
+			String toDate, String fromDate) {
+
+		return issueManifestProviderRepo.findMIMReports(type, orgId, customerName, finYear, toDate, fromDate);
+	}
+
+	@Override
+	public List<RetrievalManifestProviderVO> findRIMReports(String type, Long orgId, String customerName,
+			String finYear, String toDate, String fromDate) {
+
+		return issueManifestProviderRepo.findRIMReports(type, orgId, customerName, finYear, toDate, fromDate);
 	}
 
 //		@Override

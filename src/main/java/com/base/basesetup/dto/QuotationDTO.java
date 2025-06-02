@@ -1,5 +1,6 @@
 package com.base.basesetup.dto;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -13,7 +14,6 @@ import lombok.NoArgsConstructor;
 public class QuotationDTO {
 
 	private Long id;
-
 	private String quotationNo;
 	private LocalDate quotationDate;
 	private String deliveryAddress;
@@ -24,6 +24,7 @@ public class QuotationDTO {
 	private String finYear;
 	private String companyAddress;	
 	private String customerName;
+    private BigDecimal subTotal;
 
 	private List<QuotationDetailsDTO> quotationDetailsDTO;
 }

@@ -41,7 +41,7 @@ public class QuotationVO {
 	@Column(name ="quotationno")
 	private String quotationNo;
 	@Column(name ="quotationdate")
-	private LocalDate quotationDate;
+	private LocalDate quotationDate = LocalDate.now();
 	private String code;
 	@Column(name = "deliverygaddress")
 	private String deliveryAddress;
@@ -68,6 +68,9 @@ public class QuotationVO {
 	
 	@Column(name="totalamount",precision = 10, scale = 2)
     private BigDecimal totalAmount;
+	
+	@Column(name="subtotal",precision = 10, scale = 2)
+    private BigDecimal subTotal;
 
 
 	//private String prefix="WDS";
