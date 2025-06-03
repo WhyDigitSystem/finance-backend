@@ -411,6 +411,27 @@ public class CostDebitNoteServiceImpl implements CostDebitNoteService {
 		System.out.println(costInvoiceVO.getNetBillCurrAmt());
 //		System.out.println(roundedValue);
 
+//		if (netAmountBillCurr.compareTo(sumLcAmounts) <= 0) {
+//			costDebitNoteVO.setNetBillCurrAmt(netAmountBillCurr);
+//
+//		} else {
+//			throw new IllegalArgumentException("COSTDEBITNOTE " + netAmountBillCurr
+//					+ " must be less than or equal to COSTINVOICE  " + sumLcAmounts);
+//		}
+		
+		Set<Object[]> byAmount = costDebitNoteRepo.getByAmount(costDebitNoteDTO.getOrginBill());
+
+		BigDecimal previouslyCreditedAmount = BigDecimal.ZERO;
+		for (Object[] row : byAmount) {
+		    if (row[0] != null) {
+		        previouslyCreditedAmount = previouslyCreditedAmount.add(new BigDecimal(row[0].toString()));
+		    }
+		}
+		
+		System.out.println(previouslyCreditedAmount);
+		
+		
+		   if(netAmountBillCurr.compareTo(previouslyCreditedAmount) <= 0) {
 		if (netAmountBillCurr.compareTo(sumLcAmounts) <= 0) {
 			costDebitNoteVO.setNetBillCurrAmt(netAmountBillCurr);
 
@@ -418,6 +439,10 @@ public class CostDebitNoteServiceImpl implements CostDebitNoteService {
 			throw new IllegalArgumentException("COSTDEBITNOTE " + netAmountBillCurr
 					+ " must be less than or equal to COSTINVOICE  " + sumLcAmounts);
 		}
+		   }else {
+			   
+			   throw new IllegalArgumentException("CREDIT NOTE " + netAmountBillCurr + " must be less than or equal to Amount "+ previouslyCreditedAmount);
+		   }
 
 		costDebitNoteVO.setActBillCurrAmt(actBillAmtBillCurr);
 		costDebitNoteVO.setActBillLcAmt(actBillAmtLc);
