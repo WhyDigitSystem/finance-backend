@@ -56,8 +56,8 @@ public interface RetrievalManifestProviderRepo extends JpaRepository<RetrievalMa
 			  + "  AND a.orgid = ?2\r\n"
 			  + "  AND (a.sender = ?3 OR ?3 = 'ALL')\r\n"
 			  + "  AND a.finyear = ?4\r\n"
-			  + "  AND (?5 IS NULL OR a.transactiondate >= ?5)\r\n"
-			  + "  AND (?6 IS NULL OR a.transactiondate <= ?6)",
+			  + "  AND (?6 IS NULL OR a.transactiondate >= ?6)\r\n"
+			  + "  AND (?5 IS NULL OR a.transactiondate <= ?5) order by a.transactionno , a.transactiondate",
 			  nativeQuery = true)
 List<RetrievalManifestProviderVO> findRIMReports(String type, Long orgId, String sender, String finYear, String toDate, String fromDate);
 

@@ -43,11 +43,12 @@ public interface IssueManifestProviderRepo extends JpaRepository<IssueManifestPr
 	@Query(value = "SELECT *\r\n"
 			+ "FROM finance_aip.mim a\r\n"
 			+ "WHERE ?1 = 'MIM'\r\n"
-			+ "  AND a.orgid = ?2\r\n"
-			+ "  AND (a.receiver = ?3 OR ?3 = 'ALL')\r\n"
+			+ "  AND a.orgid =?2\r\n"
+			+ "  AND (a.receiver =?3 OR ?3 = 'ALL')\r\n"
 			+ "  AND a.finyear = ?4\r\n"
-			+ "  AND (?6 IS NULL OR a.transactiondate >= ?6)\r\n"
-			+ "  AND (?5 IS NULL OR a.transactiondate <= ?5)", nativeQuery = true)
+			+ "  AND (?6 IS NULL OR a.transactiondate >=?6)\r\n"
+			+ "  AND (?5 IS NULL OR a.transactiondate <= ?5)\r\n"
+			+ "  order by  a.transactionno ,a.transactiondate", nativeQuery = true)
 	List<IssueManifestProviderVO> findMIMReports(String type, Long orgId, String customerName, String finYear,
 			String toDate, String fromDate);
 	
