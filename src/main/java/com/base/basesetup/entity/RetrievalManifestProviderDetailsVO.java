@@ -15,6 +15,7 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
 @Entity
 @Table(name = "rimdetails")
 @Data
@@ -22,7 +23,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class RetrievalManifestProviderDetailsVO {
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY, generator = "rimdetailssgen")
+	@GeneratedValue(strategy = GenerationType.IDENTITY, generator = "rimdetailsgen")
 	@SequenceGenerator(name = "rimdetailsgen", sequenceName = "rimdetailsseq", initialValue = 1000000001, allocationSize = 1)
 	@Column(name = "rimdetailsid")
 	private Long id;

@@ -91,6 +91,8 @@ public class IssueManifestProviderVO {
 	private String note2;
 	@Column(name = "receivername")
 	private String receiverName;
+	@Column(name = "locationunit")
+	private String locationUnit;
 
 
 	@JsonGetter("active")

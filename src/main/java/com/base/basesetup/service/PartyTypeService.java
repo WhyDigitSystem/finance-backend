@@ -67,5 +67,7 @@ public interface PartyTypeService {
 	
 	List<Map<String, Object>> getVedorsAddressDetails(Long orgId);
 
+	List<Map<String, Object>> getCustomersAddressDetails(Long orgId);
+
 	
 }
