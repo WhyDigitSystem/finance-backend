@@ -186,16 +186,16 @@ public class ReportServiceImpl implements ReportService {
 //						taxAmount = cgstAmount.add(sgstAmount);
 //						invoiceProductLinesVO1.setTaxValue(taxAmount);
 //					}
-			//	}
-				
-				BigDecimal taxAmount = BigDecimal.ZERO;
-				taxAmount=invoiceProductLinesDTO.getTax()
-				.multiply(invoiceProductLinesDTO.getBaseAmount()).divide(BigDecimal.valueOf(100));
-				
-			//	invoiceProductLinesVO1. (taxAmount);
+				// }
 
-			//	invoiceProductLinesVO1
-				//		.setAmount(invoiceProductLinesDTO.getBaseAmount().add(invoiceProductLinesVO1.getTaxValue()));
+				BigDecimal taxAmount = BigDecimal.ZERO;
+				taxAmount = invoiceProductLinesDTO.getTax().multiply(invoiceProductLinesDTO.getBaseAmount())
+						.divide(BigDecimal.valueOf(100));
+
+				// invoiceProductLinesVO1. (taxAmount);
+
+				// invoiceProductLinesVO1
+				// .setAmount(invoiceProductLinesDTO.getBaseAmount().add(invoiceProductLinesVO1.getTaxValue()));
 
 				subToatl = subToatl.add(invoiceProductLinesVO1.getAmount());
 				invoiceProductLinesVO1.setInvoiceVO(invoiceVO);
@@ -263,11 +263,12 @@ public class ReportServiceImpl implements ReportService {
 //		response.put("message", message);
 //		response.put("issueManifestProviderVO", issueManifestProviderVO);
 //		return response;
-		
+
 		IssueManifestProviderVO issueManifestProviderVO = new IssueManifestProviderVO();
-		String message = null;	
+		String message = null;
 		if (ObjectUtils.isEmpty(issueManifestProviderDTO.getId())) {
-			if (issueManifestProviderRepo.existsByOrgIdAndTransactionNo(issueManifestProviderDTO.getOrgId(),issueManifestProviderDTO.getTransactionNo())) {
+			if (issueManifestProviderRepo.existsByOrgIdAndTransactionNo(issueManifestProviderDTO.getOrgId(),
+					issueManifestProviderDTO.getTransactionNo())) {
 				String errorMessage = String.format("The TransactionNo: %s already exists This Organization.",
 						issueManifestProviderDTO.getTransactionNo());
 				throw new ApplicationException(errorMessage);
@@ -279,10 +280,12 @@ public class ReportServiceImpl implements ReportService {
 		} else {
 
 			issueManifestProviderVO = issueManifestProviderRepo.findById(issueManifestProviderDTO.getId())
-					.orElseThrow(() -> new ApplicationException("IssueManifestProvider not found with id: " + issueManifestProviderDTO.getId()));
+					.orElseThrow(() -> new ApplicationException(
+							"IssueManifestProvider not found with id: " + issueManifestProviderDTO.getId()));
 			issueManifestProviderVO.setUpdatedBy(issueManifestProviderDTO.getCreatedBy());
 			if (!issueManifestProviderVO.getTransactionNo().equals(issueManifestProviderDTO.getTransactionNo())) {
-				if (issueManifestProviderRepo.existsByOrgIdAndTransactionNo(issueManifestProviderDTO.getOrgId(),issueManifestProviderDTO.getTransactionNo())) {
+				if (issueManifestProviderRepo.existsByOrgIdAndTransactionNo(issueManifestProviderDTO.getOrgId(),
+						issueManifestProviderDTO.getTransactionNo())) {
 					String errorMessage = String.format("The TransactionNo: %s already exists This Organization.",
 							issueManifestProviderDTO.getTransactionNo());
 					throw new ApplicationException(errorMessage);
@@ -298,7 +301,7 @@ public class ReportServiceImpl implements ReportService {
 		response.put("issueManifestProviderVO", issueManifestProviderVO);
 		response.put("message", message);
 		return response;
-			
+
 	}
 
 	private IssueManifestProviderVO getIssueManifestProviderVOFromIssueManifestProviderDTO(
@@ -326,7 +329,7 @@ public class ReportServiceImpl implements ReportService {
 		issueManifestProviderVO.setCancel(issueManifestProviderDTO.isCancel());
 		issueManifestProviderVO.setOrgId(issueManifestProviderDTO.getOrgId());
 		issueManifestProviderVO.setFinYear(issueManifestProviderDTO.getFinYear());
-		
+
 		if (ObjectUtils.isNotEmpty(issueManifestProviderDTO.getId())) {
 
 			List<IssueManifestProviderDetailsVO> issueManifestProviderDetailsVOs = issueManifestProviderDetailsRepo
@@ -641,26 +644,26 @@ public class ReportServiceImpl implements ReportService {
 
 		List<QuotationDetailsVO> quotationDetailsVOs = new ArrayList<>();
 		for (QuotationDetailsDTO quotationDetailsDTO : quotationDTO.getQuotationDetailsDTO()) {
-		    QuotationDetailsVO quotationDetailsVO = new QuotationDetailsVO();
-		    
-		    quotationDetailsVO.setDescription(quotationDetailsDTO.getDescription());
-		    quotationDetailsVO.setQuantity(quotationDetailsDTO.getQuantity());
-		    quotationDetailsVO.setRate(quotationDetailsDTO.getRate());
-		    quotationDetailsVO.setTax(quotationDetailsDTO.getTax());
+			QuotationDetailsVO quotationDetailsVO = new QuotationDetailsVO();
 
-		    BigDecimal baseAmount = quotationDetailsDTO.getQuantity().multiply(quotationDetailsDTO.getRate());
-		    quotationDetailsVO.setBaseAmount(baseAmount);
+			quotationDetailsVO.setDescription(quotationDetailsDTO.getDescription());
+			quotationDetailsVO.setQuantity(quotationDetailsDTO.getQuantity());
+			quotationDetailsVO.setRate(quotationDetailsDTO.getRate());
+			quotationDetailsVO.setTax(quotationDetailsDTO.getTax());
 
-		    BigDecimal taxAmount = baseAmount.multiply(quotationDetailsDTO.getTax()).divide(BigDecimal.valueOf(100));
-		    quotationDetailsVO.setTaxAmount(taxAmount);
+			BigDecimal baseAmount = quotationDetailsDTO.getQuantity().multiply(quotationDetailsDTO.getRate());
+			quotationDetailsVO.setBaseAmount(baseAmount);
 
-		    BigDecimal totalAmount = baseAmount.add(taxAmount);
-		    quotationDetailsVO.setAmount(totalAmount);
+			BigDecimal taxAmount = baseAmount.multiply(quotationDetailsDTO.getTax()).divide(BigDecimal.valueOf(100));
+			quotationDetailsVO.setTaxAmount(taxAmount);
 
-		    subTotal = subTotal.add(totalAmount);
+			BigDecimal totalAmount = baseAmount.add(taxAmount);
+			quotationDetailsVO.setAmount(totalAmount);
 
-		    quotationDetailsVO.setQuotationVO(quotationVO);
-		    quotationDetailsVOs.add(quotationDetailsVO);
+			subTotal = subTotal.add(totalAmount);
+
+			quotationDetailsVO.setQuotationVO(quotationVO);
+			quotationDetailsVOs.add(quotationDetailsVO);
 		}
 
 		quotationVO.setSubTotal(subTotal);
@@ -820,8 +823,32 @@ public class ReportServiceImpl implements ReportService {
 	public List<RetrievalManifestProviderVO> findRIMReports(String type, Long orgId, String customerName,
 			String finYear, String toDate, String fromDate) {
 
-		return issueManifestProviderRepo.findRIMReports(type, orgId, customerName, finYear, toDate, fromDate);
+		return retrievalManifestProviderRepo.findRIMReports(type, orgId, customerName, finYear, toDate, fromDate);
 	}
+
+//	@Override
+//	public List<RetrievalManifestProviderVO> findRIMMIMReports(
+//	        String type,
+//	        Long orgId,
+//	        String customerName,
+//	        String finYear,
+//	        String toDate,
+//	        String fromDate) {
+//
+//	    if (type == null) {
+//	        throw new IllegalArgumentException("Type must not be null");
+//	    }
+//
+//	    if ("MIM".equalsIgnoreCase(type)) {
+//	         issueManifestProviderRepo.findMIMReports(type, orgId, customerName, finYear, toDate, fromDate);
+//	    } else if ("RIM".equalsIgnoreCase(type)) {
+//	         retrievalManifestProviderRepo.findRIMReports(type, orgId, customerName, finYear, toDate, fromDate);
+//	    } else {
+//	        throw new IllegalArgumentException("Unsupported report type: " + type);
+//	    }
+//	}
+
+
 
 //		@Override
 //		public List<IssueManifestProviderVO> getFillGridForTaxInvoice(Long orgId) {

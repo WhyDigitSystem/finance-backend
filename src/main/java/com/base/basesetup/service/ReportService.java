@@ -85,6 +85,9 @@ public interface ReportService {
 		List<RetrievalManifestProviderVO> findRIMReports(String type, Long orgId, String customerName, String finYear,
 				String toDate, String fromDate);
 
+//		List<RetrievalManifestProviderVO> findRIMMIMReports(String type, Long orgId, String customerName,
+//				String finYear, String toDate, String fromDate);
+
 		
 
 		

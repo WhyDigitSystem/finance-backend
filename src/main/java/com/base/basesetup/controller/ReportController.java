@@ -626,7 +626,7 @@ public class ReportController extends BaseController {
 	
 	@GetMapping("/findMIMReports")
 	public ResponseEntity<ResponseDTO> findMIMReports(@RequestParam String type, @RequestParam Long orgId,
-			@RequestParam String customerName, @RequestParam String finYear,
+			@RequestParam(required = false) String customerName, @RequestParam String finYear,
 			@RequestParam(required = false) String toDate, @RequestParam(required = false) String fromDate) {
 		String methodName = "findMIMReports()";
 		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
@@ -654,8 +654,8 @@ public class ReportController extends BaseController {
 	}
 	
 	@GetMapping("/findRIMReports")
-	public ResponseEntity<ResponseDTO> findRIMReports(@RequestParam String type, @RequestParam Long orgId,
-			@RequestParam String customerName, @RequestParam String finYear,
+	public ResponseEntity<ResponseDTO> findRIMReports(@RequestParam String type,@RequestParam Long orgId,
+			@RequestParam(required = false) String customerName, @RequestParam String finYear,
 			@RequestParam(required = false) String toDate, @RequestParam(required = false) String fromDate) {
 		String methodName = "findRIMReports()";
 		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
@@ -664,7 +664,7 @@ public class ReportController extends BaseController {
 		ResponseDTO responseDTO = null;
 		List<RetrievalManifestProviderVO> rimReportFillGrid = new ArrayList<>();
 		try {
-			rimReportFillGrid  = reportService.findRIMReports(type, orgId, customerName, finYear, toDate, fromDate);
+			rimReportFillGrid  = reportService.findRIMReports(type,orgId, customerName, finYear, toDate, fromDate);
 		} catch (Exception e) {
 			errorMsg = e.getMessage();
 			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
@@ -681,5 +681,34 @@ public class ReportController extends BaseController {
 		return ResponseEntity.ok().body(responseDTO);
 
 	}
+	
+//	@GetMapping("/findRIMMIMReports")
+//	public ResponseEntity<ResponseDTO> findRIMMIMReports(@RequestParam String type,@RequestParam Long orgId,
+//			@RequestParam(required = false) String customerName, @RequestParam String finYear,
+//			@RequestParam(required = false) String toDate, @RequestParam(required = false) String fromDate) {
+//		String methodName = "findRIMMIMReports()";
+//		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+//		String errorMsg = null;
+//		Map<String, Object> responseObjectsMap = new HashMap<>();
+//		ResponseDTO responseDTO = null;
+//		List<RetrievalManifestProviderVO> rimReportFillGrid = new ArrayList<>();
+//		try {
+//			rimReportFillGrid  = reportService.findRIMMIMReports(type,orgId, customerName, finYear, toDate, fromDate);
+//		} catch (Exception e) {
+//			errorMsg = e.getMessage();
+//			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+//		}
+//		if (StringUtils.isBlank(errorMsg)) {
+//			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "RimReports information get successfully ByOrgId");
+//			responseObjectsMap.put("rimReportFillGrid", rimReportFillGrid );
+//			responseDTO = createServiceResponse(responseObjectsMap);
+//		} else {
+//			responseDTO = createServiceResponseError(responseObjectsMap, "RimReports information receive failedByOrgId",
+//					errorMsg);
+//		}
+//		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+//		return ResponseEntity.ok().body(responseDTO);
+//
+//	}
 
 }
