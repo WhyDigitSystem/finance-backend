@@ -1,6 +1,7 @@
 package com.base.basesetup.service;
 
 import java.math.BigDecimal;
+
 import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -453,21 +454,6 @@ public class IrnCreditNoteServiceImpl implements IrnCreditNoteService {
 
 	@Override
 	public List<TaxInvoiceVO> getOriginBillNofromTaxInvoiceByParty(Long orgId, String party,String branchCode) {
-//		 List<TaxInvoiceVO> existingInvoices = taxInvoiceRepo.getCheck(orgId, party);
-//		    List<TaxInvoiceVO> allPartyInvoices = taxInvoiceRepo.findPartyInvoiceDetails(orgId, party, branchCode);
-//
-//		    if (existingInvoices == null || existingInvoices.isEmpty()) {
-//		        return allPartyInvoices; // No existing invoices, return all
-//		    }
-//
-//		    Set<String> existingInvoiceNumbers = existingInvoices.stream()
-//		            .map(TaxInvoiceVO::getDocId) // Change this to the correct unique field
-//		            .collect(Collectors.toSet());
-//
-//		    return allPartyInvoices.stream()
-//		            .filter(invoice -> !existingInvoiceNumbers.contains(invoice.getDocId())) // Change field if needed
-//		            .collect(Collectors.toList());
-		
 		return taxInvoiceRepo.findPartyInvoiceDetails(orgId, party, branchCode);
 	}
 

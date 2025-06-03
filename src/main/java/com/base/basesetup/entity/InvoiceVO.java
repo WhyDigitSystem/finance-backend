@@ -1,6 +1,7 @@
 package com.base.basesetup.entity;
 
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import javax.persistence.CascadeType;
@@ -58,23 +59,17 @@ public class InvoiceVO {
 	@Column(name = "termsandconditions", length = 1000, columnDefinition = "TEXT")
 	private String termsAndConditions;
 
-	@Column(name = "subtotal")
-	private Long subtotal;
 
-//	@Column(name = "sgst")
-//	private Integer sgst;
-//
-//	@Column(name = "cgst")
-//	private Integer cgst;
+	@Column(name="subtotal",precision = 10, scale = 2)
+    private BigDecimal subTotal;
+
 
 	@Column(name = "total")
 	private Long total;
 
 	@Column(name = "gsttype", length = 1000, columnDefinition = "TEXT")
 	private String gstType;
-//
-//	@Column(name = "igst")
-//	private Integer igst;
+
 
 	@Column(name = "orgid")
 	private Long orgId;

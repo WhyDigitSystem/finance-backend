@@ -21,7 +21,7 @@ public class InvoiceDTO {
 	private String vendorAddress;
 	private String deliveryAddress;
 	private String termsAndConditions;
-	private Long subtotal;
+//	private Long subtotal;
 //	private Integer sgst;
 //	private Integer cgst;
 	private Long total;

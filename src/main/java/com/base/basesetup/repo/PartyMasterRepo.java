@@ -299,5 +299,18 @@ public interface PartyMasterRepo extends JpaRepository<PartyMasterVO, Long> {
 			+ "JOIN partyaddress p ON a.partymasterid = p.partymasterid\r\n"
 			+ "WHERE a.partytype = 'VENDOR' and a.orgid =?1  group by a.partyname,addressline1 ,addressline2,addressline3 ,stategstin  ")
 	Set<Object[]> getVedorsAddressDetails(Long orgId );
+	
+	@Query(nativeQuery = true, value = "SELECT \r\n"
+			+ "    a.partyname,\r\n"
+			+ "    CONCAT(\r\n"
+			+ "        IFNULL(p.addressline1, ''), ' ',\r\n"
+			+ "        IFNULL(p.addressline2, ''), ' ',\r\n"
+			+ "        IFNULL(p.addressline3, '')\r\n"
+			+ "    ) AS full_address,\r\n"
+			+ "    p.stategstin \r\n"
+			+ "FROM partymaster a\r\n"
+			+ "JOIN partyaddress p ON a.partymasterid = p.partymasterid\r\n"
+			+ "WHERE a.partytype = 'CUSTOMER' and a.orgid =?1  group by a.partyname,addressline1 ,addressline2,addressline3 ,stategstin  ")
+	Set<Object[]> getCustomersAddressDetails(Long orgId );
 
 }

@@ -10,14 +10,11 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 import com.base.basesetup.dto.CreatedUpdatedDate;
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
@@ -88,14 +85,24 @@ public class RetrievalManifestProviderVO {
 		return cancel ? "T" : "F";
 	}
 	
-	@OneToMany(mappedBy ="retrievalManifestProviderVO",cascade =CascadeType.ALL)
-	@JsonManagedReference
-	private List<RetrievalManifestProviderDetailsVO> retrievalManifestProviderDetailsVOs;
+//	@OneToMany(mappedBy ="retrievalManifestProviderVO",cascade =CascadeType.ALL)
+//	@JsonManagedReference
+//	private List<RetrievalManifestProviderDetailsVO> retrievalManifestProviderDetailsVOs;
+//	
+//	@ManyToOne
+//	@JsonBackReference
+//	@JoinColumn(name="rimdeclarationid")
+//	private RimDeclarationVO rimDeclarationVO;
 	
-	@ManyToOne
-	@JsonBackReference
-	@JoinColumn(name="rimdeclarationid")
-	private RimDeclarationVO rimDeclarationVO;
+	// ✅ One-to-many with details
+    @OneToMany(mappedBy = "retrievalManifestProviderVO", cascade = CascadeType.ALL)
+    @JsonManagedReference
+    private List<RetrievalManifestProviderDetailsVO> retrievalManifestProviderDetailsVOs;
+    
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "rimdeclarationid") // This is the FK column in this table
+//    @JsonBackReference
+//    private RimDeclarationVO rimDeclarationVO;
 
 	@Embedded
 	private CreatedUpdatedDate commonDate = new CreatedUpdatedDate();
