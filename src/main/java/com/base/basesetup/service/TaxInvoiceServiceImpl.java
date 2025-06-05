@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 
 import org.apache.commons.lang3.ObjectUtils;
@@ -26,6 +25,7 @@ import com.base.basesetup.entity.AccountsVO;
 import com.base.basesetup.entity.ArapDetailsVO;
 import com.base.basesetup.entity.DocumentTypeMappingDetailsVO;
 import com.base.basesetup.entity.GroupLedgerVO;
+import com.base.basesetup.entity.IrnCreditNoteVO;
 import com.base.basesetup.entity.MultipleDocIdGenerationDetailsVO;
 import com.base.basesetup.entity.PartyMasterVO;
 import com.base.basesetup.entity.TaxInvoiceAnnexureVO;
@@ -39,6 +39,7 @@ import com.base.basesetup.repo.ArapDetailsRepo;
 import com.base.basesetup.repo.ChargeTypeRequestRepo;
 import com.base.basesetup.repo.DocumentTypeMappingDetailsRepo;
 import com.base.basesetup.repo.GroupLedgerRepo;
+import com.base.basesetup.repo.IrnCreditNoteRepo;
 import com.base.basesetup.repo.MultipleDocIdGenerationDetailsRepo;
 import com.base.basesetup.repo.PartyMasterRepo;
 import com.base.basesetup.repo.TaxInvoiceAnnexureRepo;
@@ -68,6 +69,9 @@ public class TaxInvoiceServiceImpl implements TaxInvoiceService {
 
 	@Autowired
 	PartyMasterRepo partyMasterRepo;
+	
+	@Autowired
+ IrnCreditNoteRepo irnCreditNoteRepo;
 
 	@Autowired
 	ArapDetailsRepo arapDetailsRepo;
@@ -996,8 +1000,8 @@ public class TaxInvoiceServiceImpl implements TaxInvoiceService {
 
 	@Override
 	public List<Map<String, Object>> getReportDetailsForSalesRegister( String fromDate,String toDate,
-			Long orgId, String branchCode, String partyCode) {
-		Set<Object[]> chType = taxInvoiceRepo.getReportDetailsForSalesRegister( fromDate, toDate, orgId, branchCode,  partyCode);
+			Long orgId, String branchCode, String partyCode, String finYear) {
+		Set<Object[]> chType = taxInvoiceRepo.getReportDetailsForSalesRegister( fromDate, toDate, orgId, branchCode,  partyCode, finYear);
 		return getReportDetailsForSalesRegister(chType);
 	}
 
@@ -1057,4 +1061,18 @@ public class TaxInvoiceServiceImpl implements TaxInvoiceService {
 		return List1;
 
 	}
+
+	@Override
+	public TaxInvoiceVO getTaxInvoiceByDocIdandScreenCode(String ScreenCode, String docId) {
+		// TODO Auto-generated method stub
+		return taxInvoiceRepo.getTaxInvoiceByDocIdandScreenCode(ScreenCode, docId);
+	}
+
+	@Override
+	public IrnCreditNoteVO getCreditNoteByDocIdandScreenCode(String ScreenCode, String docId) {
+		// TODO Auto-generated method stub
+		return irnCreditNoteRepo.getCreditNoteByDocIdandScreenCode(ScreenCode, docId);
+	}
+	
+	
 }

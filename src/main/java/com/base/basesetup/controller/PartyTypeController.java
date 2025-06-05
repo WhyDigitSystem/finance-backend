@@ -477,7 +477,7 @@ public class PartyTypeController extends BaseController {
 	
 	@GetMapping("/getAllLedgerReport")
 	public ResponseEntity<ResponseDTO> getAllLedgerReport(@RequestParam(required = true) Long orgId,@RequestParam(required = true) String accountName,
-			@RequestParam(required = true) String branchCode,@RequestParam(required = true) String fromDate,@RequestParam(required = true) String toDate) {
+			@RequestParam(required = true) String branchCode,@RequestParam(required = false) String fromDate,@RequestParam(required = false) String toDate) {
 		String methodName = "getAllLedgerReport()";
 		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
 		String errorMsg = null;
