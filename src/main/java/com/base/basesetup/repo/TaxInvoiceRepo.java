@@ -113,7 +113,7 @@ public interface TaxInvoiceRepo extends JpaRepository<TaxInvoiceVO, Long> {
 			+ "    )\r\n"
 			+ "    AND a.orgid = ?3\r\n"
 			+ "    AND (a.branchcode = ?4 OR ?4 = 'ALL')\r\n"
-			+ "    AND (e.partycode = ?5 OR ?5 = 'ALL')\r\n"
+			+ "    AND (e.partycode = ?5 OR ?5 = 'ALL') and a.finyear=?6\r\n"
 			+ "GROUP BY\r\n"
 			+ "    a.orgid, a.branchcode, a.vid, a.vdate, a.joborderno, c.docid, c.docdate, \r\n"
 			+ "    e.partyshortname, e.controllingoff, a.billcurr, a.billcurrrate, a.totalinvamountbc, \r\n"
@@ -161,7 +161,7 @@ public interface TaxInvoiceRepo extends JpaRepository<TaxInvoiceVO, Long> {
 			+ "    )\r\n"
 			+ "    AND a.orgid = ?3\r\n"
 			+ "    AND (a.branchcode = ?4 OR ?4 = 'ALL')\r\n"
-			+ "    AND (e.partycode = ?5 OR ?5 = 'ALL')\r\n"
+			+ "    AND (e.partycode = ?5 OR ?5 = 'ALL') and a.finyear=?6\r\n"
 			+ "GROUP BY\r\n"
 			+ "    a.orgid, a.branchcode, a.vid, a.vdate, a.jobno, e.partyshortname, e.controllingoff, \r\n"
 			+ "    a.billcurr, a.billcurrrate, a.totalinvamountbc, a.totalinvamountlc, \r\n"
@@ -171,7 +171,7 @@ public interface TaxInvoiceRepo extends JpaRepository<TaxInvoiceVO, Long> {
 			+ "ORDER BY\r\n"
 			+ "    vid, vdate")
 	Set<Object[]> getReportDetailsForSalesRegister( String fromDate, String toDate, Long orgId,
-			String branchCode, String partyCode);
+			String branchCode, String partyCode, String finYear);
 
 	@Query(nativeQuery = true,value = "SELECT SUM(a.amount) \r\n"
 			+ "FROM (\r\n"
@@ -516,6 +516,10 @@ Set<Object[]> getMimFillGridgetKitDetails(Long orgId, String transactionNo);
 
 @Query(nativeQuery = true, value = "SELECT originbillno, vid, totalinvamountlc  FROM irncreditnote WHERE orgid =?1 AND originbillno =?2 AND approvestatus is Null")
 Set<Object[]> getOrginBillNoBased(Long orgId, String orginBillNo);
+
+
+@Query(nativeQuery = true, value = "select * from taxinvoice where screencode=?1 and docid=?2")
+TaxInvoiceVO getTaxInvoiceByDocIdandScreenCode(String screenCode, String docId);
  
 
 

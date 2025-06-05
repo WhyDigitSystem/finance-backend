@@ -74,6 +74,10 @@ public interface IrnCreditNoteRepo extends JpaRepository<IrnCreditNoteVO, Long> 
 			+ ") AS sub")
 	Set<Object[]> getByAmount(String docId);
 	
+	
+		@Query(nativeQuery = true, value = "select * from irncreditnote where screencode=?1 and docid=?2")
+	IrnCreditNoteVO getCreditNoteByDocIdandScreenCode(String screenCode, String docId);
+	
 
 
 }

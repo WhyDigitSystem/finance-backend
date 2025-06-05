@@ -903,6 +903,7 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 			map.put("BillDbAmount", ch[14] != null ? new BigDecimal(ch[14].toString()) : BigDecimal.ZERO);
 			map.put("BillCrAmount", ch[15] != null ? new BigDecimal(ch[15].toString()) : BigDecimal.ZERO);
 			map.put("ClBal", ch[16] != null ? new BigDecimal(ch[16].toString()) : BigDecimal.ZERO);
+			map.put("Particulars", ch[17] != null ? ch[17].toString() : "");
 			List1.add(map);
 		}
 		return List1;
