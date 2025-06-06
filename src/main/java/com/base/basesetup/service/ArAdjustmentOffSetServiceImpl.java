@@ -204,7 +204,6 @@ public class ArAdjustmentOffSetServiceImpl implements ArAdjustmentOffSetService 
 					arapAdjustmentsRepo.delete(existingReverse);
 				}
 
-				// Second posting with negative values
 				ArapAdjustmentsVO negativeArapAdjustments = new ArapAdjustmentsVO();
 				negativeArapAdjustments.setBranch(arAdjustmentOffSetVO.getBranch());
 				negativeArapAdjustments.setFinYear(arAdjustmentOffSetVO.getFinYear());
