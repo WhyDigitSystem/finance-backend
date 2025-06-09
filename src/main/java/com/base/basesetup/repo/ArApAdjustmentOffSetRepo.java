@@ -24,3 +24,4 @@ public interface ArApAdjustmentOffSetRepo extends JpaRepository<ArApAdjustmentOf
 	String getArApAdjustmentOffSetDocId(Long orgId, String finYear, String branchCode, String screenCode);
 
 }
+ 	
