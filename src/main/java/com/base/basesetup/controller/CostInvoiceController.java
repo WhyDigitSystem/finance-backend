@@ -24,7 +24,9 @@ import com.base.basesetup.common.CommonConstant;
 import com.base.basesetup.common.UserConstants;
 import com.base.basesetup.dto.CostInvoiceDTO;
 import com.base.basesetup.dto.ResponseDTO;
+import com.base.basesetup.entity.CostDebitNoteVO;
 import com.base.basesetup.entity.CostInvoiceVO;
+import com.base.basesetup.entity.IrnCreditNoteVO;
 import com.base.basesetup.entity.PartyMasterVO;
 import com.base.basesetup.service.CostInvoiceService;
 
@@ -634,4 +636,60 @@ public class CostInvoiceController extends BaseController {
 		return ResponseEntity.ok().body(responseDTO);
 	}
 
+	@GetMapping("/getCostByDocIdandScreenCode")
+	public ResponseEntity<ResponseDTO> getCostByDocIdandScreenCode(@RequestParam String ScreenCode , @RequestParam String docId) {
+		String methodName = "getCostByDocIdandScreenCode()";
+		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+		String errorMsg = null;
+		Map<String, Object> responseObjectsMap = new HashMap<>();
+		ResponseDTO responseDTO = null;
+		CostInvoiceVO costInvoiceVO = new CostInvoiceVO();
+		try {
+			costInvoiceVO = costInvoiceService.getCostByDocIdandScreenCode( ScreenCode, docId);
+		} catch (Exception e) {
+			errorMsg = e.getMessage();
+			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+		}
+		if (StringUtils.isBlank(errorMsg)) {
+			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "CostInvoice information get successfully By docid");
+			responseObjectsMap.put("costInvoiceVO", costInvoiceVO);
+			responseDTO = createServiceResponse(responseObjectsMap);
+		} else {
+			responseDTO = createServiceResponseError(responseObjectsMap,
+					"CostInvoice information receive failed By docid", errorMsg);
+		}
+		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+		return ResponseEntity.ok().body(responseDTO);
+
+	}
+
+	@GetMapping("/getDebitNoteByDocIdandScreenCode")
+	public ResponseEntity<ResponseDTO> getDebitNoteByDocIdandScreenCode(@RequestParam String ScreenCode , @RequestParam String docId) {
+		String methodName = "getDebitNoteByDocIdandScreenCode()";
+		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+		String errorMsg = null;
+		Map<String, Object> responseObjectsMap = new HashMap<>();
+		ResponseDTO responseDTO = null;
+		CostDebitNoteVO costDebitNoteVO = new CostDebitNoteVO();
+		try {
+			costDebitNoteVO = costInvoiceService.getDebitNoteByDocIdandScreenCode( ScreenCode, docId);
+		} catch (Exception e) {
+			errorMsg = e.getMessage();
+			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+		}
+		if (StringUtils.isBlank(errorMsg)) {
+			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "Cost Debit Note information get successfully By docid");
+			responseObjectsMap.put("costDebitNoteVO", costDebitNoteVO);
+			responseDTO = createServiceResponse(responseObjectsMap);
+		} else {
+			responseDTO = createServiceResponseError(responseObjectsMap,
+					"Cost Debit Note information receive failed By docid", errorMsg);
+		}
+		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+		return ResponseEntity.ok().body(responseDTO);
+
+	}
+
+	
+	
 }
