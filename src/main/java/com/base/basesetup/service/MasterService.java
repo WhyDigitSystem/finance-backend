@@ -256,6 +256,8 @@ public interface MasterService {
 	List<UomVO> getUomById(Long id);
 
 	Map<String, Object> updateCreateUom(@Valid UomDTO uomDTO) throws ApplicationException;
+
+	List<GroupLedgerVO> getAllGroupLedgerByAccountCode(String accountCode);
 	
 	
 

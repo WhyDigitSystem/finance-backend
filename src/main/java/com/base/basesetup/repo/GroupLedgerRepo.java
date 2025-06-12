@@ -68,6 +68,8 @@ GroupLedgerVO getOrgIdAndSubAccountCode(Long orgId, String parentCode);
 		+ "    CAST(c.accountcode as unsigned) asc")
 Set<Object[]> findgetGroupLedgerexcelDetails(Long orgId);
 
+@Query(nativeQuery =true,value = "select * from groupledger where accountcode=?1")
+List<GroupLedgerVO> findAllGroupLedgerByAccountCode(String  accountCode);
 
 
 

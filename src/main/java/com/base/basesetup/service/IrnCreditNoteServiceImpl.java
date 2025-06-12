@@ -1,7 +1,6 @@
 package com.base.basesetup.service;
 
 import java.math.BigDecimal;
-
 import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -10,7 +9,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.ObjectUtils;
 import org.slf4j.Logger;
@@ -32,7 +30,6 @@ import com.base.basesetup.entity.IrnCreditNoteGstVO;
 import com.base.basesetup.entity.IrnCreditNoteVO;
 import com.base.basesetup.entity.MultipleDocIdGenerationDetailsVO;
 import com.base.basesetup.entity.PartyMasterVO;
-import com.base.basesetup.entity.TaxInvoiceAnnexureVO;
 import com.base.basesetup.entity.TaxInvoiceVO;
 import com.base.basesetup.exception.ApplicationException;
 import com.base.basesetup.repo.AccountsDetailsRepo;
@@ -403,29 +400,13 @@ public class IrnCreditNoteServiceImpl implements IrnCreditNoteService {
 //		System.out.println(totalInvAmountLc);
 //		System.out.println(roundedTotalInvAmountLC);
 		
-		// Step 3: Fetch total previously credited amount from multiple sources
-				Set<Object[]> byAmount = irnCreditRepo.getByAmount(irnCreditNoteDTO.getOriginBillNo());
-
-				BigDecimal previouslyCreditedAmount = BigDecimal.ZERO;
-				for (Object[] row : byAmount) {
-				    if (row[0] != null) {
-				        previouslyCreditedAmount = previouslyCreditedAmount.add(new BigDecimal(row[0].toString()));
-				    }
-				}
-				
-				System.out.println(previouslyCreditedAmount);
-		
-   if(totalInvAmountLC.compareTo(previouslyCreditedAmount) <= 0) {
+	
 		if (totalInvAmountLC.compareTo(totalInvAmountLc1) <= 0) {  
 			irnCreditNoteVO.setTotalInvAmountLc(totalInvAmountLC);
- 
+
 		} else {
 		    throw new IllegalArgumentException("CREDIT NOTE " + totalInvAmountLC + " must be less than or equal to TAXINVOICE "+ totalInvAmountLc1);
 		}
-   }else {
-	   
-	   throw new IllegalArgumentException("CREDIT NOTE " + totalInvAmountLC + " must be less than or equal to Amount "+ previouslyCreditedAmount);
-   }
 
 		
 		irnCreditNoteVO.setAmountInWords(amountInWordsConverterService.convert(irnCreditNoteVO.getTotalInvAmountLc()));

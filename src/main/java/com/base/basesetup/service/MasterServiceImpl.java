@@ -1157,6 +1157,12 @@ public class MasterServiceImpl implements MasterService {
 		return groupLedgerRepo.findGroupLedgerByActive();
 
 	}
+	
+	@Override
+	public List<GroupLedgerVO> getAllGroupLedgerByAccountCode(String accountCode) {
+		return groupLedgerRepo.findAllGroupLedgerByAccountCode(accountCode);
+
+	}
 
 	// SacCode
 
