@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -2710,6 +2711,81 @@ public class MasterServiceImpl implements MasterService {
 		uomVO.setUomDesc(uomDTO.getUomDesc());
 		uomVO.setOrgId(uomDTO.getOrgId());
 		uomVO.setActive(uomDTO.isActive());
+
+	}
+
+	@Override
+	public List<Map<String, Object>> getGroupLedgerexcelDetails(Long orgId) {
+		Set<Object[]> result = groupLedgerRepo.findgetGroupLedgerexcelDetails(orgId);
+		return getGroupLedgerexcelDetails(result);
+	}
+
+//	private List<Map<String, Object>> getGroupLedgerexcelDetails(Set<Object[]> result) {
+//		List<Map<String, Object>> details = new ArrayList<>();
+//		for (Object[] fs : result) {
+//			Map<String, Object> object = new HashMap<>();
+//			object.put("account", fs[0] != null ? fs[0].toString() : "");
+//			object.put("accountcode", fs[1] != null ? fs[1].toString() : "");
+//			object.put("maingroup", fs[2] != null ? fs[2].toString() : "");
+//			object.put("maingroupaccountcode", fs[3] != null ? fs[3].toString() : "");
+//			object.put("subgroup", fs[4] != null ? fs[4].toString() : "");
+//			object.put("subgroupaccountcode", fs[5] != null ? fs[5].toString() : "");
+//
+//			details.add(object); // Add the map to the list
+//
+//		}
+//		return details;
+//	}
+	
+	private List<Map<String, Object>> getGroupLedgerexcelDetails(Set<Object[]> getActiveGroup) {
+		// A map to store the hierarchy for efficient processing
+		Map<String, Map<String, Object>> mainGroupMap = new LinkedHashMap<>();
+
+		for (Object[] row : getActiveGroup) {
+			String mainGroupName = (String) row[0];
+			String mainGroupCode = (String) row[1];
+			String subGroupName = (String) row[2];
+			String subGroupCode = (String) row[3];
+			String accountName = (String) row[4];
+			String accountCode = (String) row[5];
+
+			// Add or retrieve main group
+			Map<String, Object> mainGroup = mainGroupMap.computeIfAbsent(mainGroupCode, k -> {
+				Map<String, Object> group = new LinkedHashMap<>();
+				group.put("mainGroupName", mainGroupName);
+				group.put("mainGroupCode", mainGroupCode);
+				group.put("subGroups", new LinkedHashMap<>());
+				return group;
+			});
+
+			// Add or retrieve sub group within main group
+			Map<String, Map<String, Object>> subGroupMap = (Map<String, Map<String, Object>>) mainGroup
+					.get("subGroups");
+			Map<String, Object> subGroup = subGroupMap.computeIfAbsent(subGroupCode, k -> {
+				Map<String, Object> group = new LinkedHashMap<>();
+				group.put("subGroupName", subGroupName);
+				group.put("subGroupCode", subGroupCode);
+				group.put("accounts", new ArrayList<>());
+				return group;
+			});
+
+			// Add account to sub group
+			List<Map<String, String>> accounts = (List<Map<String, String>>) subGroup.get("accounts");
+			Map<String, String> account = new LinkedHashMap<>();
+			account.put("accountName", accountName);
+			account.put("accountCode", accountCode);
+			accounts.add(account);
+		}
+
+		// Convert the hierarchical map into a list
+		List<Map<String, Object>> result = new ArrayList<>();
+		for (Map<String, Object> mainGroup : mainGroupMap.values()) {
+			Map<String, Map<String, Object>> subGroups = (Map<String, Map<String, Object>>) mainGroup.get("subGroups");
+			mainGroup.put("subGroups", new ArrayList<>(subGroups.values()));
+			result.add(mainGroup);
+		}
+
+		return result;
 
 	}
 

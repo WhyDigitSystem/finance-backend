@@ -129,7 +129,7 @@ public interface RCostInvoiceGnaRepo extends JpaRepository<RCostInvoiceGnaVO, Lo
 			+ "        AND a.orgid = 202502\r\n"
 			+ "       AND (?2 = 'ALL' OR a.branchcode = ?2)\r\n"
 			+ "        AND ((?3 IS NULL AND ?4 IS NULL) OR c.vdate BETWEEN DATE(?3) AND DATE(?4))\r\n"
-			+ "        AND (?5 = 'ALL' OR a.suppliercode = ?5) group by a.branchcode,\r\n"
+			+ "        AND (?5 = 'ALL' OR a.suppliercode = ?5)and a.finyear=?6 group by a.branchcode,\r\n"
 			+ "        a.vid,\r\n"
 			+ "        a.vdate,\r\n"
 			+ "        a.suppliername,\r\n"
@@ -172,7 +172,7 @@ public interface RCostInvoiceGnaRepo extends JpaRepository<RCostInvoiceGnaVO, Lo
 			+ "        AND a.orgid = ?1\r\n"
 			+ "        AND (?2 = 'ALL' OR a.branchcode = ?2)\r\n"
 			+ "        AND ((?3 IS NULL AND ?4 IS NULL) OR c.vdate BETWEEN DATE(?3) AND DATE(?4))\r\n"
-			+ "        AND (?5 = 'ALL' OR a.suppliercode = ?5) group by a.branchcode,\r\n"
+			+ "        AND (?5 = 'ALL' OR a.suppliercode = ?5)and a.finyear=?6 group by a.branchcode,\r\n"
 			+ "        a.vid,\r\n"
 			+ "        a.vdate,\r\n"
 			+ "        a.suppliername,\r\n"
@@ -198,6 +198,6 @@ public interface RCostInvoiceGnaRepo extends JpaRepository<RCostInvoiceGnaVO, Lo
 			+ "    evid, \r\n"
 			+ "    evdate")
 	Set<Object[]> findRegisterCostInvoiceReport(Long orgId, String branchCode, String fromDate,
-			String toDate,String partyCode);
+			String toDate,String partyCode, String finYear);
 }
 	

@@ -120,4 +120,8 @@ public interface CostDebitNoteRepo extends JpaRepository<CostDebitNoteVO, Long> 
 			+ ") AS sub")
 	Set<Object[]> getByAmount(String docId);
 	
+	@Query(nativeQuery = true, 
+		       value = "SELECT * FROM costdebitnote WHERE screencode = ?1 AND docid = ?2")
+		CostDebitNoteVO getDebitNoteByDocIdandScreenCode(String screenCode, String docId);
+	
 }

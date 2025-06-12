@@ -404,7 +404,7 @@ public class RCostInvoiceGnaController extends BaseController{
 			@RequestParam(required = true) String branchCode,
 			@RequestParam (required = false) String fromDate,
 			@RequestParam (required = false) String toDate,
-			@RequestParam (required = true) String partyCode) {
+			@RequestParam (required = true) String partyCode,@RequestParam (required = false) String finYear) {
 		String methodName = "getRegisterCostInvoiceReport()";
 		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
 		String errorMsg = null;
@@ -413,7 +413,7 @@ public class RCostInvoiceGnaController extends BaseController{
 		List<Map<String, Object>> mapp = new ArrayList<>();
 
 		try {
-			mapp = rCostInvoiceGnaService.getRegisterCostInvoiceReport(orgId,branchCode,fromDate,toDate,partyCode);
+			mapp = rCostInvoiceGnaService.getRegisterCostInvoiceReport(orgId,branchCode,fromDate,toDate,partyCode,finYear);
 		} catch (Exception e) {
 			errorMsg = e.getMessage();
 			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
