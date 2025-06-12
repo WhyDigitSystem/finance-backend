@@ -2450,4 +2450,33 @@ public class MasterController extends BaseController {
 
 	}
 
+	
+	
+	@GetMapping("/getAllGroupLedgerByAccountCode")
+	public ResponseEntity<ResponseDTO> getAllGroupLedgerByAccountCode(@RequestParam(required = false) String  accountCode) {
+		String methodName = "getAllGroupLedgerByAccountCode()";
+		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+		String errorMsg = null;
+		Map<String, Object> responseObjectsMap = new HashMap<>();
+		ResponseDTO responseDTO = null;
+		List<GroupLedgerVO> groupLedgerVO = new ArrayList<>();
+		try {
+			groupLedgerVO = masterService.getAllGroupLedgerByAccountCode(accountCode);
+		} catch (Exception e) {
+			errorMsg = e.getMessage();
+			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+		}
+		if (StringUtils.isBlank(errorMsg)) {
+			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "groupLedger information get successfully By OrgId");
+			responseObjectsMap.put("groupLedgerVO", groupLedgerVO);
+			responseDTO = createServiceResponse(responseObjectsMap);
+		} else {
+			responseDTO = createServiceResponseError(responseObjectsMap, "groupLedgerVO information receive failed By OrgId",
+					errorMsg);
+		}
+		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+		return ResponseEntity.ok().body(responseDTO);
+
+	}
+	
 }

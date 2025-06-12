@@ -418,6 +418,10 @@ public interface CostInvoiceRepo extends JpaRepository<CostInvoiceVO, Long> {
 //	@Query(nativeQuery=true,value="select * from costdebitnote where docid=?2 and screencode=?1")
 //	CostDebitNoteVO getDebitNoteByDocIdandScreenCode(String screenCode, String docId);
 	
+	@Query(nativeQuery = true, value = "select accountgroupname,category from groupledger where orgid=?1 and gsttaxflag='NA' and category='RECEIVABLE A/C' and type='ACCOUNT'  and groupname='TDS'")
+	Set<Object[]> getTdsLedgerFromAccountReceivable(Long orgId);
+
+	
 	
 //	@Query(nativeQuery = true, 
 //		       value = "SELECT * FROM costdebitnote WHERE screencode = ?1 AND docid = ?2")
