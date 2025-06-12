@@ -412,12 +412,16 @@ public interface CostInvoiceRepo extends JpaRepository<CostInvoiceVO, Long> {
 	
 	
 	//cost invoice hyperlink
-	@Query(nativeQuery=true,value="select * from costinvoice where docid=?1 and screencode=?2")
+	@Query(nativeQuery=true,value="select * from costinvoice where docid=?2 and screencode=?1")
 	CostInvoiceVO getCostByDocIdandScreenCode(String screenCode, String docId);
 
-	@Query(nativeQuery=true,value="select * from costdebitnote where docid=?1 and screencode=?2")
-	CostDebitNoteVO getDebitNoteByDocIdandScreenCode(String screenCode, String docId);
+//	@Query(nativeQuery=true,value="select * from costdebitnote where docid=?2 and screencode=?1")
+//	CostDebitNoteVO getDebitNoteByDocIdandScreenCode(String screenCode, String docId);
 	
+	
+//	@Query(nativeQuery = true, 
+//		       value = "SELECT * FROM costdebitnote WHERE screencode = ?1 AND docid = ?2")
+//		CostDebitNoteVO getDebitNoteByDocIdandScreenCode(String screenCode, String docId);
 	
 	
 //

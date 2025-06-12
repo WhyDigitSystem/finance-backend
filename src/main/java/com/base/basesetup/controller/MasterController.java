@@ -2422,5 +2422,32 @@ public class MasterController extends BaseController {
 		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
 		return ResponseEntity.ok().body(responseDTO);
 	}
+	
+	@GetMapping("/getGroupLedgerexcelDetails")
+	public ResponseEntity<ResponseDTO> getGroupLedgerexcelDetails(@RequestParam(required = false) Long orgId) {
+		String methodName = "getGroupLedgerexcelDetails()";
+		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+		String errorMsg = null;
+		Map<String, Object> responseObjectsMap = new HashMap<>();
+		ResponseDTO responseDTO = null;
+		List<Map<String, Object>> groupLedgerVO = new ArrayList<>();
+		try {
+			groupLedgerVO = masterService.getGroupLedgerexcelDetails(orgId);
+		} catch (Exception e) {
+			errorMsg = e.getMessage();
+			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+		}
+		if (StringUtils.isBlank(errorMsg)) {
+			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "groupLedger information get successfully By OrgId");
+			responseObjectsMap.put("groupLedgerVO", groupLedgerVO);
+			responseDTO = createServiceResponse(responseObjectsMap);
+		} else {
+			responseDTO = createServiceResponseError(responseObjectsMap, "groupLedgerVO information receive failed By OrgId",
+					errorMsg);
+		}
+		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+		return ResponseEntity.ok().body(responseDTO);
+
+	}
 
 }

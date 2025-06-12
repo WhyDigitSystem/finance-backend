@@ -43,6 +43,7 @@ import com.base.basesetup.repo.AccountsRepo;
 import com.base.basesetup.repo.ArapDetailsRepo;
 import com.base.basesetup.repo.ChargeTypeRequestRepo;
 import com.base.basesetup.repo.ChargerCostInvoiceRepo;
+import com.base.basesetup.repo.CostDebitNoteRepo;
 import com.base.basesetup.repo.CostInvoiceRepo;
 import com.base.basesetup.repo.DocumentTypeMappingDetailsRepo;
 import com.base.basesetup.repo.GroupLedgerRepo;
@@ -87,6 +88,8 @@ public class CostInvoiceServiceImpl implements CostInvoiceService {
 	@Autowired
 	AmountInWordsConverterService amountInWordsConverterService;
 
+	@Autowired
+	CostDebitNoteRepo costDebitNoteRepo;
 	// costInvoice
 
 	@Override
@@ -1185,7 +1188,7 @@ public class CostInvoiceServiceImpl implements CostInvoiceService {
 	@Override
 	public CostDebitNoteVO getDebitNoteByDocIdandScreenCode(String ScreenCode, String docId) {
 		// TODO Auto-generated method stub
-		return costInvoiceRepo.getDebitNoteByDocIdandScreenCode(ScreenCode, docId);
+		return costDebitNoteRepo.getDebitNoteByDocIdandScreenCode(ScreenCode, docId);
 	}
 	
 		

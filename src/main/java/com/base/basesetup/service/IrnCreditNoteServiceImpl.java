@@ -418,7 +418,7 @@ public class IrnCreditNoteServiceImpl implements IrnCreditNoteService {
    if(totalInvAmountLC.compareTo(previouslyCreditedAmount) <= 0) {
 		if (totalInvAmountLC.compareTo(totalInvAmountLc1) <= 0) {  
 			irnCreditNoteVO.setTotalInvAmountLc(totalInvAmountLC);
-
+ 
 		} else {
 		    throw new IllegalArgumentException("CREDIT NOTE " + totalInvAmountLC + " must be less than or equal to TAXINVOICE "+ totalInvAmountLc1);
 		}
