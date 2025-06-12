@@ -169,6 +169,8 @@ public class TaxInvoiceVO {
 	private String trasactionNo;
 	@Column(name = "totalqty")
 	private Long totalQty;
+	@Column(name = "partyshortname")
+	private String partyShortName;
 
 	
 

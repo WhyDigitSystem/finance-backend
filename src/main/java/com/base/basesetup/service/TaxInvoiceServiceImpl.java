@@ -203,6 +203,7 @@ public class TaxInvoiceServiceImpl implements TaxInvoiceService {
 		taxInvoiceVO.setJobOrderNo(taxInvoiceDTO.getJobOrderNo());
 		taxInvoiceVO.setPartyId(taxInvoiceDTO.getPartyId());
 		taxInvoiceVO.setRemarks(taxInvoiceDTO.getRemarks());
+		taxInvoiceVO.setPartyShortName(taxInvoiceDTO.getPartyShortName());
 		taxInvoiceVO.setVId(taxInvoiceDTO.getVId());
 		taxInvoiceVO.setVDate(taxInvoiceDTO.getVDate());
 		taxInvoiceVO.setTrasactionNo(taxInvoiceDTO.getTrasactionNo());
