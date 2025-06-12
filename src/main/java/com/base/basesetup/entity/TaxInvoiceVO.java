@@ -167,6 +167,8 @@ public class TaxInvoiceVO {
 	private double annexureSubTotal;
 	@Column(name = "transactionno")
 	private String trasactionNo;
+	@Column(name = "totalqty")
+	private Long totalQty;
 
 	
 
