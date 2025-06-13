@@ -1,6 +1,7 @@
 package com.base.basesetup.repo;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -520,6 +521,26 @@ Set<Object[]> getOrginBillNoBased(Long orgId, String orginBillNo);
 
 @Query(nativeQuery = true, value = "select * from taxinvoice where screencode=?1 and docid=?2")
 TaxInvoiceVO getTaxInvoiceByDocIdandScreenCode(String screenCode, String docId);
+
+@Query(nativeQuery = true, value = "select finyear,Vid,Vdate,docid,docdate,invoiceno,invoicedate,gsttype,partyname,placeofsupply,totalchargeamountlc,\r\n"
+		+ "totalinvamountlc,totaltaxamountlc, chargetype,chargecode,chargename,description,currency,gstpercent,qty,rate,taxable,billamount,gstamount from finance_aip.taxinvoice a,finance_aip.taxinvoicedetails b\r\n"
+		+ "where a.taxinvoiceid = b.taxinvoiceid and orgid = ?1\r\n"
+		+ "and( a.partyname =?3 or 'ALL' = ?3) and a.finyear =?2\r\n"
+		+ "and (?4 IS NULL OR vdate >= ?4)\r\n"
+		+ "    AND\r\n"
+		+ "    (?5 IS NULL OR vdate <= ?5)order by createdon desc")
+Set<Object[]> getTaxinvoiceDetails(Long orgId, String finYear, String partyname, String fromDate, String toDate);
+
+@Query(nativeQuery = true, value = "SELECT finyear, Vid, Vdate, docid, docdate, invoiceno, invoicedate, gsttype,\r\n"
+		+ "               partyname, placeofsupply, totalchargeamountlc, totalinvamountlc, totaltaxamountlc\r\n"
+		+ "        FROM finance_aip.taxinvoice a\r\n"
+		+ "        WHERE a.orgid = ?1\r\n"
+		+ "          AND (a.partyname = ?3 OR ?3 = 'ALL')\r\n"
+		+ "          AND a.finyear = ?2\r\n"
+		+ "          AND (?4 IS NULL OR a.vdate >= ?4)\r\n"
+		+ "          AND (?5 IS NULL OR a.vdate <= ?5)\r\n"
+		+ "        ORDER BY a.createdon DESC")
+Set<Object[]> getTaxinvoiceSummary(Long orgId, String finYear, String partyname, String fromDate, String toDate);
  
 
 
