@@ -670,7 +670,7 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 			PartySpecialTDSVO.setTdsWithSec(specialTdsDTO.getWhSection());
 			PartySpecialTDSVO.setSection(specialTdsDTO.getSection());
 			PartySpecialTDSVO.setRateFrom(specialTdsDTO.getRateFrom());
-			PartySpecialTDSVO.setRateTo(specialTdsDTO.getRateTo());
+			PartySpecialTDSVO.setRateTo(specialTdsDTO.getRateTo()); 
 			PartySpecialTDSVO.setTdsWithPer(specialTdsDTO.getWhPercentage());
 			PartySpecialTDSVO.setSurchargePer(specialTdsDTO.getSurPercentage());
 			PartySpecialTDSVO.setEdPercentage(specialTdsDTO.getEdPercentage());
@@ -903,6 +903,7 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 			map.put("BillDbAmount", ch[14] != null ? new BigDecimal(ch[14].toString()) : BigDecimal.ZERO);
 			map.put("BillCrAmount", ch[15] != null ? new BigDecimal(ch[15].toString()) : BigDecimal.ZERO);
 			map.put("ClBal", ch[16] != null ? new BigDecimal(ch[16].toString()) : BigDecimal.ZERO);
+			map.put("Particulars", ch[17] != null ? ch[17].toString() : "");
 			List1.add(map);
 		}
 		return List1;
@@ -998,7 +999,7 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 			String branchCode) {
 		Set<Object[]> chType = partyMasterRepo.getMonthlyAndYearWiseData(orgId, month, finYear, branchCode);
 		return getMonthlyAndYear(chType);
-	}
+	}  
 
 	private List<Map<String, Object>> getMonthlyAndYear(Set<Object[]> chType) {
 		List<Map<String, Object>> List1 = new ArrayList<>();

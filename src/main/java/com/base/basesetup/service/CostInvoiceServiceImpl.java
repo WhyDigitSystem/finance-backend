@@ -27,11 +27,15 @@ import com.base.basesetup.entity.AccountsDetailsVO;
 import com.base.basesetup.entity.AccountsVO;
 import com.base.basesetup.entity.ArapDetailsVO;
 import com.base.basesetup.entity.ChargerCostInvoiceVO;
+import com.base.basesetup.entity.CostDebitNoteVO;
 import com.base.basesetup.entity.CostInvoiceVO;
+import com.base.basesetup.entity.DebitNoteVO;
 import com.base.basesetup.entity.DocumentTypeMappingDetailsVO;
 import com.base.basesetup.entity.GroupLedgerVO;
+import com.base.basesetup.entity.IrnCreditNoteVO;
 import com.base.basesetup.entity.MultipleDocIdGenerationDetailsVO;
 import com.base.basesetup.entity.PartyMasterVO;
+import com.base.basesetup.entity.TaxInvoiceVO;
 import com.base.basesetup.entity.TdsCostInvoiceVO;
 import com.base.basesetup.exception.ApplicationException;
 import com.base.basesetup.repo.AccountsDetailsRepo;
@@ -39,6 +43,7 @@ import com.base.basesetup.repo.AccountsRepo;
 import com.base.basesetup.repo.ArapDetailsRepo;
 import com.base.basesetup.repo.ChargeTypeRequestRepo;
 import com.base.basesetup.repo.ChargerCostInvoiceRepo;
+import com.base.basesetup.repo.CostDebitNoteRepo;
 import com.base.basesetup.repo.CostInvoiceRepo;
 import com.base.basesetup.repo.DocumentTypeMappingDetailsRepo;
 import com.base.basesetup.repo.GroupLedgerRepo;
@@ -83,6 +88,8 @@ public class CostInvoiceServiceImpl implements CostInvoiceService {
 	@Autowired
 	AmountInWordsConverterService amountInWordsConverterService;
 
+	@Autowired
+	CostDebitNoteRepo costDebitNoteRepo;
 	// costInvoice
 
 	@Override
@@ -1171,4 +1178,18 @@ public class CostInvoiceServiceImpl implements CostInvoiceService {
 		return List1;
 
 	}
+
+	@Override
+	public CostInvoiceVO getCostByDocIdandScreenCode(String ScreenCode, String docId) {
+		// TODO Auto-generated method stub
+		return costInvoiceRepo.getCostByDocIdandScreenCode(ScreenCode, docId);
+	}
+
+	@Override
+	public CostDebitNoteVO getDebitNoteByDocIdandScreenCode(String ScreenCode, String docId) {
+		// TODO Auto-generated method stub
+		return costDebitNoteRepo.getDebitNoteByDocIdandScreenCode(ScreenCode, docId);
+	}
+	
+		
 }

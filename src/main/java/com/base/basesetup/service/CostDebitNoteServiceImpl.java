@@ -411,6 +411,15 @@ public class CostDebitNoteServiceImpl implements CostDebitNoteService {
 		System.out.println(costInvoiceVO.getNetBillCurrAmt());
 //		System.out.println(roundedValue);
 
+//		if (netAmountBillCurr.compareTo(sumLcAmounts) <= 0) {
+//			costDebitNoteVO.setNetBillCurrAmt(netAmountBillCurr);
+//
+//		} else {
+//			throw new IllegalArgumentException("COSTDEBITNOTE " + netAmountBillCurr
+//					+ " must be less than or equal to COSTINVOICE  " + sumLcAmounts);
+//		}
+		
+		
 		if (netAmountBillCurr.compareTo(sumLcAmounts) <= 0) {
 			costDebitNoteVO.setNetBillCurrAmt(netAmountBillCurr);
 

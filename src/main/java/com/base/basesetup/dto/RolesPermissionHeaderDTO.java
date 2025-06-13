@@ -5,17 +5,20 @@ import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
-public class RolesDTO {
-	
+@NoArgsConstructor
+public class RolesPermissionHeaderDTO {
+
 	private Long id;
 	private String role;
-	private String createdBy;
-	private Long orgId;
 	private boolean active;
-	private List<RolesResponsibilityDTO> rolesResponsibilityDTO;
+	private boolean cancel;
+	private Long orgId;
+	private String createdBy;
+	private String updatedBy;
+	private String cancelRemarks;
+	
 	private List<RolesPermissionDTO> rolesPermissionDTO;
+	
 }

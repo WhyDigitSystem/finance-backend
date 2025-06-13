@@ -29,13 +29,18 @@ import com.base.basesetup.dto.RefreshTokenDTO;
 import com.base.basesetup.dto.ResetPasswordFormDTO;
 import com.base.basesetup.dto.ResponsibilityDTO;
 import com.base.basesetup.dto.RolesDTO;
+import com.base.basesetup.dto.RolesPermissionDTO;
+import com.base.basesetup.dto.RolesPermissionHeaderDTO;
 import com.base.basesetup.dto.RolesResponsibilityDTO;
 import com.base.basesetup.dto.ScreensDTO;
 import com.base.basesetup.dto.SignUpFormDTO;
 import com.base.basesetup.dto.UserLoginBranchAccessDTO;
 import com.base.basesetup.dto.UserLoginRoleAccessDTO;
 import com.base.basesetup.dto.UserResponseDTO;
+import com.base.basesetup.entity.ItemMasterVO;
 import com.base.basesetup.entity.ResponsibilityVO;
+import com.base.basesetup.entity.RolesPermissionHeaderVO;
+import com.base.basesetup.entity.RolesPermissionVO;
 import com.base.basesetup.entity.RolesResponsibilityVO;
 import com.base.basesetup.entity.RolesVO;
 import com.base.basesetup.entity.ScreensVO;
@@ -45,6 +50,8 @@ import com.base.basesetup.entity.UserLoginRolesVO;
 import com.base.basesetup.entity.UserVO;
 import com.base.basesetup.exception.ApplicationException;
 import com.base.basesetup.repo.ResponsibilitiesRepo;
+import com.base.basesetup.repo.RolePermissionRepo;
+import com.base.basesetup.repo.RolesPermissionHeaderRepo;
 import com.base.basesetup.repo.RolesRepo;
 import com.base.basesetup.repo.RolesResponsibilityRepo;
 import com.base.basesetup.repo.ScreensRepo;
@@ -74,8 +81,16 @@ public class AuthServiceImpl implements AuthService {
 	UserLoginRolesRepo loginRolesRepo;
 
 	@Autowired
+	RolesPermissionHeaderRepo rolesPermissionHeaderRepo;
+
+	@Autowired
 	UserBranchAccessRepo branchAccessRepo;
 
+	@Autowired
+	RolePermissionRepo rolesPermissionRepo;
+
+	@Autowired
+	RolePermissionRepo rolePermissionRepo;
 
 	@Autowired
 	TokenProvider tokenProvider;
@@ -206,8 +221,7 @@ public class AuthServiceImpl implements AuthService {
 				loginRequest.getUserName());
 
 		if (ObjectUtils.isNotEmpty(userVO)) {
-			if(userVO.getActive()=="In-Active")
-			{
+			if (userVO.getActive() == "In-Active") {
 				throw new ApplicationException("Your account is In-Active, Please Contact Administrator");
 			}
 			if (compareEncodedPasswordWithEncryptedPassword(loginRequest.getPassword(), userVO.getPassword())) {
@@ -340,7 +354,7 @@ public class AuthServiceImpl implements AuthService {
 //		}
 //		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
 //	}
-	
+
 	@Override
 	public void changePassword(ChangePasswordFormDTO changePasswordRequest) {
 		String methodName = "changePassword()";
@@ -706,4 +720,157 @@ public class AuthServiceImpl implements AuthService {
 		}
 	}
 
+	// Method to create and update Role Screen Permission
+
+	@Override
+	public Map<String, Object> createUpdateRoleScreenPermission(RolesPermissionHeaderDTO rolesPermissionHeaderDTO)
+			throws ApplicationException {
+
+		RolesPermissionHeaderVO rolesPermissionHeaderVO;
+		String message;
+
+		if (ObjectUtils.isNotEmpty(rolesPermissionHeaderDTO.getId())) {
+			rolesPermissionHeaderVO = rolesPermissionHeaderRepo.findById(rolesPermissionHeaderDTO.getId())
+					.orElseThrow(() -> new ApplicationException(
+							"This Role Not Found Any Information, Invalid Id: " + rolesPermissionHeaderDTO.getId()));
+			rolesPermissionHeaderVO.setUpdatedBy(rolesPermissionHeaderDTO.getCreatedBy());
+
+			message = "Roles Permission Updated Successfully";
+		} else {
+			rolesPermissionHeaderVO = new RolesPermissionHeaderVO();
+			rolesPermissionHeaderVO.setCreatedBy(rolesPermissionHeaderDTO.getCreatedBy());
+			rolesPermissionHeaderVO.setUpdatedBy(rolesPermissionHeaderDTO.getCreatedBy());
+
+			message = "Roles Permission Created Successfully";
+		}
+
+		createUpdateRolesPermissionHeaderVO(rolesPermissionHeaderDTO, rolesPermissionHeaderVO);
+		rolesPermissionHeaderRepo.save(rolesPermissionHeaderVO);
+
+		// rolesPermissionHeaderRepo.save(rolesPermissionHeaderVO);
+
+		Map<String, Object> response = new HashMap<>();
+		response.put("rolesPermissionHeaderVO", rolesPermissionHeaderVO);
+		response.put("message", message);
+		return response;
+	}
+
+	private RolesPermissionHeaderVO createUpdateRolesPermissionHeaderVO(RolesPermissionHeaderDTO dto,
+			RolesPermissionHeaderVO vo) throws ApplicationException {
+
+		vo.setRole(dto.getRole());
+		vo.setActive(dto.isActive());
+		vo.setCancel(dto.isCancel());
+		vo.setOrgId(dto.getOrgId());
+		vo.setCancelRemarks(dto.getCancelRemarks());
+		
+		
+		if(vo.getId()!=null){
+			List<RolesPermissionVO> RolesPermissionVOList = rolesPermissionRepo.findByRolesPermissionHeaderVO(vo);
+			rolesPermissionRepo.deleteAll(RolesPermissionVOList);
+		}
+		
+		if (ObjectUtils.isNotEmpty(dto.getRolesPermissionDTO())) {
+			List<RolesPermissionVO> permissionList = new ArrayList<>();
+			for (RolesPermissionDTO permissionDTO : dto.getRolesPermissionDTO()) {
+				RolesPermissionVO permissionVO = new RolesPermissionVO();
+				permissionVO.setCanDelete(permissionDTO.isCanDelete());
+				permissionVO.setCanRead(permissionDTO.isCanRead());
+				permissionVO.setCanWrite(permissionDTO.isCanWrite());
+				permissionVO.setScreenId(permissionDTO.getScreenId());
+				permissionVO.setScreenName(permissionDTO.getScreenName());
+				permissionVO.setRolesPermissionHeaderVO(vo);
+				permissionList.add(permissionVO);
+			}
+			vo.setRolesPermissionVO(permissionList);
+		}
+
+		return vo;
+	}
+
+	
+	
+@Override
+public List<RolesPermissionHeaderVO> getRolesPermissionHeaderByRoleandOrgid(String role, Long orgId) {
+	return rolesPermissionHeaderRepo.getRolesPermissionHeaderByRoleandOrgid(role, orgId);
+}
+
+	
+	
+//	// Roles Screen Permission
+//	@Override
+//	public Map<String, Object> createUpdateRoleScreenPermission(
+//			Roles1DTO rolesDTO) throws ApplicationException {
+//		RolesVO rolesVO = new RolesVO();
+//		String message;
+//
+//
+//			// Check if the rolesDTO ID is empty (indicating a new entry)
+//			if (ObjectUtils.isEmpty(rolesDTO.getId())) {
+//
+//				// Validate if role already exists
+//				if (rolesRepo.existsByRoleAndOrgId(rolesDTO.getRole(), rolesDTO.getOrgId())) {
+//					throw new ApplicationException("Role already exists");
+//				}
+//
+//				rolesVO.setCreatedBy(rolesDTO.getCreatedBy());
+//				rolesVO.setUpdatedBy(rolesDTO.getCreatedBy());
+//				// Set the values from rolesDTO to rolesVO
+//				mapRoles11DtoToRoles11Vo(rolesDTO, rolesVO);
+//				message = "Roles Created successfully";
+//
+//			} else {
+//
+//				// Retrieve the existing RolesVO from the repository
+//				rolesVO = rolesRepo.findById(rolesDTO.getId())
+//						.orElseThrow(() -> new ApplicationException("Role not found"));
+//
+//				// Validate and update unique fields if changed
+//				if (!rolesVO.getRole().equalsIgnoreCase(rolesDTO.getRole())) {
+//					if (rolesRepo.existsByRoleAndOrgId(rolesDTO.getRole(), rolesDTO.getOrgId())) {
+//						throw new ApplicationException("Role already exists");
+//					}
+//					rolesVO.setRole(rolesDTO.getRole().toUpperCase());
+//				}
+//
+//				List<RolesPermissionVO> rolesPermissionVOs = rolesPermissionRepo.findByRolesVO(rolesVO);
+//				rolesPermissionRepo.deleteAll(rolesPermissionVOs);
+//				
+//				
+//
+//				rolesVO.setUpdatedBy(rolesDTO.getCreatedBy());
+//				// Update the remaining fields from rolesDTO to rolesVO
+//				mapRoles11DtoToRoles11Vo(rolesDTO, rolesVO);
+//				message = "Roles Updated successfully";
+//			}
+//
+//			rolesRepo.save(rolesVO);
+//			Map<String, Object> response = new HashMap<>();
+//			response.put("rolesVO", rolesVO);
+//			response.put("message", message);
+//			return response;
+//		}
+//
+//		// Helper method to map RolesDTO to RolesVO
+//		private void mapRoles11DtoToRoles11Vo(Roles1DTO rolesDTO, RolesVO rolesVO) {
+//			rolesVO.setRole(rolesDTO.getRole().toUpperCase());
+//			rolesVO.setOrgId(rolesDTO.getOrgId());
+//			rolesVO.setActive(rolesDTO.isActive());
+//			if (rolesDTO.getRolesPermissionDTO() != null)
+//			{
+//				List<RolesPermissionVO> rolesResponsibilityVOList = new ArrayList<>();
+//				for (RolesPermissionDTO rolesResponsibilityDTO : rolesDTO.getRolesPermissionDTO()) {
+//					RolesPermissionVO rolesResponsibilityVO = new RolesPermissionVO();
+//					rolesResponsibilityVO.setCanDelete(rolesResponsibilityDTO.isCanDelete());
+//					rolesResponsibilityVO.setCanRead(rolesResponsibilityDTO.isCanRead());
+//					rolesResponsibilityVO.setCanWrite(rolesResponsibilityDTO.isCanWrite());
+//				rolesResponsibilityVO.setScreenId(rolesResponsibilityDTO.getScreenId());
+//				rolesResponsibilityVO.setScreenName(rolesResponsibilityDTO.getScreenName().toUpperCase());
+//					rolesResponsibilityVO.setRolesVO(rolesVO);
+//					rolesResponsibilityVOList.add(rolesResponsibilityVO);
+//				}
+//				rolesVO.setRolesPermissionVO(rolesResponsibilityVOList);
+//			}
+//			
+//		}
 }

@@ -324,6 +324,7 @@ public class ReportServiceImpl implements ReportService {
 		issueManifestProviderVO.setVehicleNo(issueManifestProviderDTO.getVehicleNo());
 		issueManifestProviderVO.setDriverPhoneNo(issueManifestProviderDTO.getDriverPhoneNo());
 		issueManifestProviderVO.setLocationUnit(issueManifestProviderDTO.getLocationUnit());
+		issueManifestProviderVO.setTransactionNo(issueManifestProviderDTO.getTransactionNo());
 		issueManifestProviderVO.setActive(issueManifestProviderDTO.isActive());
 		issueManifestProviderVO.setCancel(issueManifestProviderDTO.isCancel());
 		issueManifestProviderVO.setOrgId(issueManifestProviderDTO.getOrgId());

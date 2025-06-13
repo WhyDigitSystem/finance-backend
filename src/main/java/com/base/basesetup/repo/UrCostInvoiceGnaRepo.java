@@ -37,7 +37,7 @@ public interface UrCostInvoiceGnaRepo extends JpaRepository<UrCostInvoiceGnaVO, 
 			+ "           a1.orgid=?1  and a1.partymasterid=b.partymasterid and a.orgid=a1.orgid and a1.partycode=?2  order by a.currency")
 	Set<Object[]> getCurrencyAndExrateFromParty(Long orgId, String supplierCode);
 
-	@Query(nativeQuery = true, value = "select accountgroupname from groupledger where orgid=?1 and category in ('OTHERS','TAX') and active = true  order by accountgroupname")
+	@Query(nativeQuery = true, value = "select accountgroupname from groupledger where orgid=?1 and category in ('OTHERS','TAX','BANK') and active = true  order by accountgroupname")
 	Set<Object[]> getChargeLedgerFromGroup(Long orgId);
 
 	@Query(nativeQuery = true, value = "select a.sectionname ,b.tcspercentage  from tdsmaster a , tdsmaster2 b where a.tdsmasterid=b.tdsmaster2id and a.orgid=?1 and a.section=?2 and a.active = 1  order by sectionname")

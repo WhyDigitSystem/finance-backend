@@ -138,6 +138,8 @@ public interface MasterService {
 	GroupLedgerVO updateCreateGroupLedger(@Valid GroupLedgerDTO groupLedgerDTO) throws ApplicationException;
 
 	List<GroupLedgerVO> getGroupLedgerByActive();
+	
+	List<Map<String, Object>> getGroupLedgerexcelDetails(Long orgId);
 
 //	SacCode
 	List<SacCodeVO> getAllSacCodeById(Long id);
@@ -254,5 +256,9 @@ public interface MasterService {
 	List<UomVO> getUomById(Long id);
 
 	Map<String, Object> updateCreateUom(@Valid UomDTO uomDTO) throws ApplicationException;
+
+	List<GroupLedgerVO> getAllGroupLedgerByAccountCode(String accountCode);
+	
+	
 
 }

@@ -3,7 +3,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -21,6 +20,7 @@ import com.base.basesetup.common.CommonConstant;
 import com.base.basesetup.common.UserConstants;
 import com.base.basesetup.dto.ResponseDTO;
 import com.base.basesetup.dto.TaxInvoiceDTO;
+import com.base.basesetup.entity.IrnCreditNoteVO;
 import com.base.basesetup.entity.PartyMasterVO;
 import com.base.basesetup.entity.TaxInvoiceVO;
 import com.base.basesetup.service.TaxInvoiceService;
@@ -499,7 +499,8 @@ public class TaxInvoiceController extends BaseController {
 	
 	@GetMapping("/getReportDetailsForSalesRegister")
 	public ResponseEntity<ResponseDTO> getReportDetailsForSalesRegister(@RequestParam(required = false) String fromDate,
-	        @RequestParam(required = false) String toDate ,@RequestParam(required =false) Long orgId,@RequestParam(required =false) String branchCode,@RequestParam(required =false) String partyCode) {
+	        @RequestParam(required = false) String toDate ,@RequestParam(required =false) Long orgId,@RequestParam(required =false) String branchCode,@RequestParam(required =false) String partyCode,
+	        @RequestParam(required =false)String finYear) {
 		String methodName = "getReportDetailsForSalesRegister()";
 		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
 		String errorMsg = null;
@@ -508,7 +509,7 @@ public class TaxInvoiceController extends BaseController {
 		List<Map<String, Object>> mapp = new ArrayList<>();
 
 		try {
-			mapp = taxInvoiceService.getReportDetailsForSalesRegister(fromDate,toDate,orgId,branchCode,partyCode);
+			mapp = taxInvoiceService.getReportDetailsForSalesRegister(fromDate,toDate,orgId,branchCode,partyCode,finYear);
 		} catch (Exception e) {
 			errorMsg = e.getMessage();
 			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
@@ -553,6 +554,60 @@ public class TaxInvoiceController extends BaseController {
 
 		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
 		return ResponseEntity.ok().body(responseDTO);
+	}
+
+	@GetMapping("/getTaxInvoiceByDocIdandScreenCode")
+	public ResponseEntity<ResponseDTO> getTaxInvoiceByDocIdandScreenCode(@RequestParam String ScreenCode , @RequestParam String docId) {
+		String methodName = "getTaxInvoiceByDocIdandScreenCode()";
+		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+		String errorMsg = null;
+		Map<String, Object> responseObjectsMap = new HashMap<>();
+		ResponseDTO responseDTO = null;
+		TaxInvoiceVO taxInvoiceVO = new TaxInvoiceVO();
+		try {
+			taxInvoiceVO = taxInvoiceService.getTaxInvoiceByDocIdandScreenCode( ScreenCode, docId);
+		} catch (Exception e) {
+			errorMsg = e.getMessage();
+			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+		}
+		if (StringUtils.isBlank(errorMsg)) {
+			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "TaxInvoice information get successfully By docid");
+			responseObjectsMap.put("taxInvoiceVO", taxInvoiceVO);
+			responseDTO = createServiceResponse(responseObjectsMap);
+		} else {
+			responseDTO = createServiceResponseError(responseObjectsMap,
+					"TaxInvoice information receive failed By docid", errorMsg);
+		}
+		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+		return ResponseEntity.ok().body(responseDTO);
+
+	}
+
+	@GetMapping("/getCreditNoteByDocIdandScreenCode")
+	public ResponseEntity<ResponseDTO> getCreditNoteByDocIdandScreenCode(@RequestParam String ScreenCode , @RequestParam String docId) {
+		String methodName = "getCreditNoteByDocIdandScreenCode()";
+		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+		String errorMsg = null;
+		Map<String, Object> responseObjectsMap = new HashMap<>();
+		ResponseDTO responseDTO = null;
+		IrnCreditNoteVO irnCreditNoteVO = new IrnCreditNoteVO();
+		try {
+			irnCreditNoteVO = taxInvoiceService.getCreditNoteByDocIdandScreenCode( ScreenCode, docId);
+		} catch (Exception e) {
+			errorMsg = e.getMessage();
+			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+		}
+		if (StringUtils.isBlank(errorMsg)) {
+			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "CreditNote information get successfully By docid");
+			responseObjectsMap.put("irnCreditNoteVO", irnCreditNoteVO);
+			responseDTO = createServiceResponse(responseObjectsMap);
+		} else {
+			responseDTO = createServiceResponseError(responseObjectsMap,
+					"CreditNote information receive failed By docid", errorMsg);
+		}
+		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+		return ResponseEntity.ok().body(responseDTO);
+
 	}
 
 

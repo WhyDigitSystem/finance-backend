@@ -144,8 +144,7 @@ public class APServiceImpl implements APService {
 		    String invNo = dtlsVO.getInvNo();
 		    LocalDate invDate = dtlsVO.getInvDate();
 
-		    PartyMasterVO partyMaster = partyMasterRepo.findByPartyCode(partyCode);
-
+		    // Delete existing Forward adjustment if exists
 		    ArapAdjustmentsVO existingForward = arapAdjustmentsRepo.findByDocIdAndRefNoAndOrgIdAndSubledgerCode(
 		        docId, invNo, paymentVO.getOrgId(), partyCode
 		    );
@@ -153,6 +152,7 @@ public class APServiceImpl implements APService {
 		        arapAdjustmentsRepo.delete(existingForward);
 		    }
 
+		    // Save new Forward adjustment
 		    ArapAdjustmentsVO forward = new ArapAdjustmentsVO();
 		    forward.setCancel(false);
 		    forward.setActive(true);
@@ -175,11 +175,16 @@ public class APServiceImpl implements APService {
 		    forward.setBranchCode(paymentVO.getBranchCode());
 		    forward.setBranch(paymentVO.getBranch());
 		    forward.setSourceId(dtlsVO.getId());
-		    forward.setAccountName(partyMaster.getAccountType());
+
+		    PartyMasterVO partyMaster = partyMasterRepo.findByPartyCode(partyCode);
+		    if (partyMaster != null) {
+		        forward.setAccountName(partyMaster.getAccountType());
+		    }
+
 		    arapAdjustmentsRepo.save(forward);
 
 		    ArapAdjustmentsVO existingReverse = arapAdjustmentsRepo.findByDocIdAndRefNoAndOrgIdAndSubledgerCode(
-		        invNo,  docId, paymentVO.getOrgId(), partyCode
+		        invNo, docId, paymentVO.getOrgId(), partyCode
 		    );
 		    if (existingReverse != null) {
 		        arapAdjustmentsRepo.delete(existingReverse);
@@ -204,13 +209,17 @@ public class APServiceImpl implements APService {
 		    reverse.setNativeAmt(dtlsVO.getSettled().negate());
 		    reverse.setOrgId(paymentVO.getOrgId());
 		    reverse.setAccCurrency(dtlsVO.getCurrency());
-		    reverse.setAccountName(partyMaster.getAccountType());
 		    reverse.setBranchCode(paymentVO.getBranchCode());
 		    reverse.setBranch(paymentVO.getBranch());
 		    reverse.setSourceId(dtlsVO.getId());
+
+		    if (partyMaster != null) {
+		        reverse.setAccountName(partyMaster.getAccountType());
+		    }
+
 		    arapAdjustmentsRepo.save(reverse);
 		}
-
+		
 		Map<String, Object> response = new HashMap<>();
 		response.put("paymentVO", paymentVO);
 		response.put("message", message);
@@ -293,7 +302,7 @@ public class APServiceImpl implements APService {
 				}
 //
 //				BigDecimal outstanding = dto.getOutStanding();
-				vo.setOutstanding(dto.getChargeAmt().subtract(dto.getSettled()));
+				vo.setOutstanding(vo.getChargeAmt().subtract(vo.getSettled()));
 
 				totalOutstanding = totalOutstanding.add(vo.getOutstanding());
 
@@ -757,9 +766,6 @@ public class APServiceImpl implements APService {
 	        throw new ApplicationException("Only SUBMIT payments can be approved or rejected.");
 	    }
 
-	    List<PaymentInvDtlsVO> paymentInvDtlsVOs = paymentInvDtlsRepo.findByPaymentVO(paymentVO);
-
-	    for (PaymentInvDtlsVO dtlsVO : paymentInvDtlsVOs) {
 
 	        String screenCode1 = "AC";
 	        String sourceScreenCode = paymentVO.getScreenCode();
@@ -795,31 +801,39 @@ public class APServiceImpl implements APService {
 	        accountsVO.setBranchCode(paymentVO.getBranchCode());
 	        accountsVO.setRefNo(paymentVO.getDocId());
 	        accountsVO.setRefDate(paymentVO.getDocDate());
+	        accountsVO.setVId(paymentVO.getDocId());
+	        accountsVO.setVDate(paymentVO.getDocDate());
 	        accountsVO.setCurrency(paymentVO.getCurrency());
 	        accountsVO.setRemarks(paymentVO.getCancelRemarks());
 	        accountsVO.setFinYear(paymentVO.getFinYear());
-	        accountsVO.setTotalDebitAmount(dtlsVO.getSettled());
-	        accountsVO.setTotalCreditAmount(dtlsVO.getSettled());
+//	        accountsVO.setTotalDebitAmount(dtlsVO.getSettled());
+//	        accountsVO.setTotalCreditAmount(dtlsVO.getSettled());
+	        
+	        BigDecimal netAmount = paymentVO.getNetAmount();
+	        BigDecimal paymentAmt = paymentVO.getPaymentAmt();
+	        BigDecimal effectiveNetAmount = (netAmount == null || netAmount.compareTo(BigDecimal.ZERO) == 0)
+	                ? (paymentAmt != null ? paymentAmt : BigDecimal.ZERO)
+	                : netAmount;
 
 	        List<AccountsDetailsVO> accountsDetailsVOs = new ArrayList<>();
 
 	        // PAYABLE A/C (Debit)
 	        AccountsDetailsVO accPayable = new AccountsDetailsVO();
-	        accPayable.setNDebitAmount(dtlsVO.getSettled());
+	        accPayable.setNDebitAmount(effectiveNetAmount);
 	        accPayable.setACategory("PAYABLE A/C");
 	        accPayable.setAccountName("PAYABLE A/C");
 	        accPayable.setSubLedgerCode(paymentVO.getPartyCode());
-	        accPayable.setDebitAmount(dtlsVO.getSettled());
+	        accPayable.setDebitAmount(effectiveNetAmount);
 	        accPayable.setNCreditAmount(BigDecimal.ZERO);
 	        accPayable.setCreditAmount(BigDecimal.ZERO);
 	        accPayable.setArapFlag(true);
-	        accPayable.setArapAmount(dtlsVO.getSettled().multiply(BigDecimal.valueOf(-1)));
-	        accPayable.setBDebitAmount(dtlsVO.getSettled());
+	        accPayable.setArapAmount(effectiveNetAmount.multiply(BigDecimal.valueOf(-1)));
+	        accPayable.setBDebitAmount(effectiveNetAmount);
 	        accPayable.setBCrAmount(BigDecimal.ZERO);
-	        accPayable.setBArapAmount(dtlsVO.getSettled().multiply(BigDecimal.valueOf(-1)));
+	        accPayable.setBArapAmount(effectiveNetAmount.multiply(BigDecimal.valueOf(-1)));
 	        accPayable.setACurrency(paymentVO.getCurrency());
 	        accPayable.setSubledgerName(paymentVO.getPartyName());
-	        accPayable.setNArapAmount(dtlsVO.getSettled().multiply(BigDecimal.valueOf(-1)));
+	        accPayable.setNArapAmount(effectiveNetAmount.multiply(BigDecimal.valueOf(-1)));
 	        accPayable.setGstflag(2);
 	        accPayable.setAccountsVO(accountsVO);
 	        accountsDetailsVOs.add(accPayable);
@@ -830,12 +844,12 @@ public class APServiceImpl implements APService {
 	        accBank.setAccountName(paymentVO.getBankCashAcc());
 	        accBank.setSubLedgerCode("None");
 	        accBank.setDebitAmount(BigDecimal.ZERO);
-	        accBank.setNCreditAmount(dtlsVO.getSettled());
-	        accBank.setCreditAmount(dtlsVO.getSettled());
+	        accBank.setNCreditAmount(paymentAmt);
+	        accBank.setCreditAmount(paymentAmt);
 	        accBank.setArapFlag(false);
 	        accBank.setArapAmount(BigDecimal.ZERO);
 	        accBank.setBDebitAmount(BigDecimal.ZERO);
-	        accBank.setBCrAmount(dtlsVO.getSettled());
+	        accBank.setBCrAmount(paymentAmt);
 	        accBank.setBArapAmount(BigDecimal.ZERO);
 	        accBank.setACurrency(paymentVO.getCurrency());
 	        accBank.setSubledgerName("None");
@@ -844,6 +858,8 @@ public class APServiceImpl implements APService {
 	        accBank.setAccountsVO(accountsVO);
 	        accountsDetailsVOs.add(accBank);
 
+	        accountsVO.setTotalDebitAmount(effectiveNetAmount);
+	        accountsVO.setTotalCreditAmount(paymentAmt);
 	        accountsVO.setAccountsDetailsVO(accountsDetailsVOs);
 	        AccountsVO savedAccountsVO = accountsRepo.save(accountsVO);
 
@@ -879,9 +895,7 @@ public class APServiceImpl implements APService {
 	        arapDetailsVO.setNativeAmt(arapDetailsSource.getArapAmount());
 
 	        arapDetailsRepo.save(arapDetailsVO);
-	    }
-
-	    // ✅ Approve only after all processing
+	
 	    paymentVO.setApproveStatus(action);
 	    paymentVO.setApproveBy(actionBy);
 	    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy hh:mm:ss a");

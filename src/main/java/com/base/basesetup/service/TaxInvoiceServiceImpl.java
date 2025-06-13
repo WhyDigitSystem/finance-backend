@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 
 import org.apache.commons.lang3.ObjectUtils;
@@ -26,6 +25,7 @@ import com.base.basesetup.entity.AccountsVO;
 import com.base.basesetup.entity.ArapDetailsVO;
 import com.base.basesetup.entity.DocumentTypeMappingDetailsVO;
 import com.base.basesetup.entity.GroupLedgerVO;
+import com.base.basesetup.entity.IrnCreditNoteVO;
 import com.base.basesetup.entity.MultipleDocIdGenerationDetailsVO;
 import com.base.basesetup.entity.PartyMasterVO;
 import com.base.basesetup.entity.TaxInvoiceAnnexureVO;
@@ -39,6 +39,7 @@ import com.base.basesetup.repo.ArapDetailsRepo;
 import com.base.basesetup.repo.ChargeTypeRequestRepo;
 import com.base.basesetup.repo.DocumentTypeMappingDetailsRepo;
 import com.base.basesetup.repo.GroupLedgerRepo;
+import com.base.basesetup.repo.IrnCreditNoteRepo;
 import com.base.basesetup.repo.MultipleDocIdGenerationDetailsRepo;
 import com.base.basesetup.repo.PartyMasterRepo;
 import com.base.basesetup.repo.TaxInvoiceAnnexureRepo;
@@ -68,6 +69,9 @@ public class TaxInvoiceServiceImpl implements TaxInvoiceService {
 
 	@Autowired
 	PartyMasterRepo partyMasterRepo;
+	
+	@Autowired
+ IrnCreditNoteRepo irnCreditNoteRepo;
 
 	@Autowired
 	ArapDetailsRepo arapDetailsRepo;
@@ -199,6 +203,7 @@ public class TaxInvoiceServiceImpl implements TaxInvoiceService {
 		taxInvoiceVO.setJobOrderNo(taxInvoiceDTO.getJobOrderNo());
 		taxInvoiceVO.setPartyId(taxInvoiceDTO.getPartyId());
 		taxInvoiceVO.setRemarks(taxInvoiceDTO.getRemarks());
+		taxInvoiceVO.setPartyShortName(taxInvoiceDTO.getPartyShortName());
 		taxInvoiceVO.setVId(taxInvoiceDTO.getVId());
 		taxInvoiceVO.setVDate(taxInvoiceDTO.getVDate());
 		taxInvoiceVO.setTrasactionNo(taxInvoiceDTO.getTrasactionNo());
@@ -220,6 +225,7 @@ public class TaxInvoiceServiceImpl implements TaxInvoiceService {
 		BigDecimal totalTaxAmountBC = BigDecimal.ZERO;
 		BigDecimal totalInvAmountLC = BigDecimal.ZERO;
 		BigDecimal totalInvAmountBC = BigDecimal.ZERO;
+		Long totalQty = Long.valueOf(0);
 
 		List<TaxInvoiceDetailsVO> taxInvoiceDetailsVOs = new ArrayList<>();
 		for (TaxInvoiceDetailsDTO taxInvoiceDetailsDTO : taxInvoiceDTO.getTaxInvoiceDetailsDTO()) {
@@ -314,6 +320,7 @@ public class TaxInvoiceServiceImpl implements TaxInvoiceService {
 				// taxInvoiceAnnexureVO.setSubTotal(subtotal);
 
 				taxInvoiceAnnexureVO.setTaxInvoiceVO(taxInvoiceVO);
+				totalQty=totalQty+(taxInvoiceAnnexureDTO.getQty());
 
 				invoiceAnnexureVOs.add(taxInvoiceAnnexureVO);
 
@@ -416,6 +423,7 @@ public class TaxInvoiceServiceImpl implements TaxInvoiceService {
 
 // 		BigDecimal roundedTotalInvAmountBC = totalInvAmountBC.setScale(0, RoundingMode.HALF_UP);
 		taxInvoiceVO.setTotalInvAmountBc(totalInvAmountBC);
+		taxInvoiceVO.setTotalQty(totalQty);
 
 		taxInvoiceVO.setTaxInvoiceDetailsVO(taxInvoiceDetailsVOs);
 
@@ -996,8 +1004,8 @@ public class TaxInvoiceServiceImpl implements TaxInvoiceService {
 
 	@Override
 	public List<Map<String, Object>> getReportDetailsForSalesRegister( String fromDate,String toDate,
-			Long orgId, String branchCode, String partyCode) {
-		Set<Object[]> chType = taxInvoiceRepo.getReportDetailsForSalesRegister( fromDate, toDate, orgId, branchCode,  partyCode);
+			Long orgId, String branchCode, String partyCode, String finYear) {
+		Set<Object[]> chType = taxInvoiceRepo.getReportDetailsForSalesRegister( fromDate, toDate, orgId, branchCode,  partyCode, finYear);
 		return getReportDetailsForSalesRegister(chType);
 	}
 
@@ -1057,4 +1065,18 @@ public class TaxInvoiceServiceImpl implements TaxInvoiceService {
 		return List1;
 
 	}
+
+	@Override
+	public TaxInvoiceVO getTaxInvoiceByDocIdandScreenCode(String ScreenCode, String docId) {
+		// TODO Auto-generated method stub
+		return taxInvoiceRepo.getTaxInvoiceByDocIdandScreenCode(ScreenCode, docId);
+	}
+
+	@Override
+	public IrnCreditNoteVO getCreditNoteByDocIdandScreenCode(String ScreenCode, String docId) {
+		// TODO Auto-generated method stub
+		return irnCreditNoteRepo.getCreditNoteByDocIdandScreenCode(ScreenCode, docId);
+	}
+	
+		
 }

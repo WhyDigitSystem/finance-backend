@@ -49,6 +49,7 @@ public class TaxInvoiceDTO {
 	private LocalDate invoiceDate;
 	private String jobOrderNo;
 	private String remarks;
+	private String partyShortName;
 	
 	private String vId;
 	private LocalDate vDate;

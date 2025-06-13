@@ -6,7 +6,9 @@ import java.util.Set;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
+import com.base.basesetup.entity.CostDebitNoteVO;
 import com.base.basesetup.entity.CostInvoiceVO;
+import com.base.basesetup.entity.DebitNoteVO;
 import com.base.basesetup.entity.PartyMasterVO;
 
 public interface CostInvoiceRepo extends JpaRepository<CostInvoiceVO, Long> {
@@ -407,6 +409,24 @@ public interface CostInvoiceRepo extends JpaRepository<CostInvoiceVO, Long> {
 			+ "and c.finyear=?2 and c.orgid=?1 and c.branchcode=?3 \r\n"
 			+ "group by c.vid,c.vdate, c.suppliername,p.partyshortname,d.totaltds,c.finyear")
 	Set<Object[]> getTotaltdsFromCustomerBillWise(Long orgId, Long finYear, String branchCode, String partyName);
+	
+	
+	//cost invoice hyperlink
+	@Query(nativeQuery=true,value="select * from costinvoice where docid=?2 and screencode=?1")
+	CostInvoiceVO getCostByDocIdandScreenCode(String screenCode, String docId);
+
+//	@Query(nativeQuery=true,value="select * from costdebitnote where docid=?2 and screencode=?1")
+//	CostDebitNoteVO getDebitNoteByDocIdandScreenCode(String screenCode, String docId);
+	
+	@Query(nativeQuery = true, value = "select accountgroupname,category from groupledger where orgid=?1 and gsttaxflag='NA' and category='RECEIVABLE A/C' and type='ACCOUNT'  and groupname='TDS'")
+	Set<Object[]> getTdsLedgerFromAccountReceivable(Long orgId);
+
+	
+	
+//	@Query(nativeQuery = true, 
+//		       value = "SELECT * FROM costdebitnote WHERE screencode = ?1 AND docid = ?2")
+//		CostDebitNoteVO getDebitNoteByDocIdandScreenCode(String screenCode, String docId);
+	
 	
 //
 //	@Query(nativeQuery = true,value="select * from costinvoice a,costdebitnote a1  where a.orgid=a1.orgid and a.suppliercode=a1.suppliercode and a.docid=a1.orginbill\r\n"

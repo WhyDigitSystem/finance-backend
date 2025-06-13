@@ -8,7 +8,9 @@ import javax.validation.Valid;
 import org.springframework.stereotype.Service;
 
 import com.base.basesetup.dto.CostInvoiceDTO;
+import com.base.basesetup.entity.CostDebitNoteVO;
 import com.base.basesetup.entity.CostInvoiceVO;
+import com.base.basesetup.entity.DebitNoteVO;
 import com.base.basesetup.entity.PartyMasterVO;
 import com.base.basesetup.exception.ApplicationException;
 
@@ -64,4 +66,11 @@ public interface CostInvoiceService {
 	CostInvoiceVO getCostInvoiceById(Long id);
 
 	List<Map<String, Object>> getDsahboardCost(Long orgId, String billMonth, String finYear);
+	
+	// hyperlink for Cost  register
+		CostInvoiceVO getCostByDocIdandScreenCode(String ScreenCode, String docId);
+		//screencode
+		
+		CostDebitNoteVO getDebitNoteByDocIdandScreenCode(String ScreenCode, String docId);
+		
 }

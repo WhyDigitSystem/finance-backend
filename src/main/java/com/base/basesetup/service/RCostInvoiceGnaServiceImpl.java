@@ -526,7 +526,7 @@ public class RCostInvoiceGnaServiceImpl implements RCostInvoiceGnaService {
 		BigDecimal netAmtBillCurr;
 		if ("INR".equalsIgnoreCase(Currency)) {
 		    netAmtBillCurr = sumOfLcAmount.subtract(totaltdsAmount);  
-		    rCostInvoiceGnaVO.setActBillAmtLc(netAmtBillCurr);  
+		    rCostInvoiceGnaVO.setActBillAmtLc(netAmtBillCurr.add(gstAmount2));  
 //		    rCostInvoiceGnaVO.setActBillAmtBc(sumOfBillAmount.subtract(totaltdsAmount));
 		} else {
 		    netAmtBillCurr = sumOfLcAmount.subtract(totaltdsAmount); 
@@ -541,8 +541,8 @@ public class RCostInvoiceGnaServiceImpl implements RCostInvoiceGnaService {
 		// Set values in VO
 //		rCostInvoiceGnaVO.setActBillAmtBc(sumOfBillAmount);  // Actual bill in bill currency
 //		rCostInvoiceGnaVO.setActBillAmtLc(sumOfLcAmount);     // Actual bill in local currency
-		rCostInvoiceGnaVO.setNetAmtBc(sumOfBillAmount.add(gstAmount2));  
-		rCostInvoiceGnaVO.setActBillAmtBc(sumOfBillAmount);
+//		rCostInvoiceGnaVO.setNetAmtBc(sumOfBillAmount.add(gstAmount2));  
+		rCostInvoiceGnaVO.setActBillAmtBc(sumOfBillAmount.add(gstAmount2));
 		BigDecimal unroundedNetAmtLc = netAmtBillLc.add(gtaAmount);
 
 		BigDecimal netAmtLc = unroundedNetAmtLc.setScale(0, RoundingMode.HALF_UP);
@@ -550,6 +550,7 @@ public class RCostInvoiceGnaServiceImpl implements RCostInvoiceGnaService {
 		BigDecimal roundOff =unroundedNetAmtLc.subtract(netAmtLc).abs().setScale(2, RoundingMode.HALF_UP);
 
 		rCostInvoiceGnaVO.setNetAmtLc(netAmtLc);
+		rCostInvoiceGnaVO.setNetAmtBc(netAmtLc); 
 		rCostInvoiceGnaVO.setRoundOff(roundOff);
 
 		// Set GST, TDS, sum amounts
@@ -811,9 +812,9 @@ public class RCostInvoiceGnaServiceImpl implements RCostInvoiceGnaService {
 
 	@Override
 	public List<Map<String, Object>> getRegisterCostInvoiceReport(Long orgId, String branchCode,
-			String fromDate, String toDate,String partyCode) {
+			String fromDate, String toDate,String partyCode,String finYear) {
 		Set<Object[]> chCode = rCostInvoiceGnaRepo.findRegisterCostInvoiceReport(orgId, branchCode,  fromDate,
-				toDate,partyCode);
+				toDate,partyCode,finYear);
 		return findRegisterCostInvoice(chCode);
 	}
 
