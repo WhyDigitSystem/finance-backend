@@ -825,6 +825,55 @@ public class ReportServiceImpl implements ReportService {
 
 		return retrievalManifestProviderRepo.findRIMReports(type, orgId, customerName, finYear, toDate, fromDate);
 	}
+	
+	
+	@Override
+	public List<Map<String, Object>> findMimSummaryReport(String type, Long orgId, String customerName, String finYear,
+			String fromDate, String toDate) {
+		Set<Object[]> chCode = issueManifestProviderRepo.findMimSummaryReport(type, orgId, customerName, finYear,fromDate, toDate);
+		return findMimSummary(chCode);
+	}
+
+	private List<Map<String, Object>> findMimSummary(Set<Object[]> chCode) {
+		List<Map<String, Object>> list1 = new ArrayList<>();
+		for (Object[] sup : chCode) {
+			Map<String, Object> doctype = new HashMap<>();
+			doctype.put("transactionNo", sup[0] != null ? sup[0].toString() : "");
+			doctype.put("transactionDate", sup[1] != null ? sup[1].toString() : "");
+			doctype.put("transporterName", sup[2] != null ? sup[2].toString() : "");
+			doctype.put("receiver", sup[3] != null ? sup[3].toString() : "");
+			doctype.put("amount", sup[4] != null ? new BigDecimal(sup[4].toString()) : BigDecimal.ZERO);
+			doctype.put("hsnCode", sup[5] != null ? Long.parseLong(sup[5].toString()) : 0L); 
+			doctype.put("kitQty", sup[6] != null ? new BigDecimal(sup[6].toString()) : BigDecimal.ZERO);
+			list1.add(doctype);
+		}
+		return list1;
+	}
+
+	
+	@Override
+	public List<Map<String, Object>> findRimSummaryReport(String type, Long orgId, String customerName, String finYear,
+			String fromDate, String toDate) {
+		Set<Object[]> chCode = issueManifestProviderRepo.findRimSummaryReport(type, orgId, customerName, finYear,fromDate, toDate);
+		return findRimSummary(chCode);
+	}
+
+	private List<Map<String, Object>> findRimSummary(Set<Object[]> chCode) {
+		List<Map<String, Object>> list1 = new ArrayList<>();
+		for (Object[] sup : chCode) {
+			Map<String, Object> doctype = new HashMap<>();
+			doctype.put("transactionNo", sup[0] != null ? sup[0].toString() : "");
+			doctype.put("transactionDate", sup[1] != null ? sup[1].toString() : "");
+			doctype.put("transporterName", sup[2] != null ? sup[2].toString() : "");
+			doctype.put("sender", sup[3] != null ? sup[3].toString() : "");
+			doctype.put("amount", sup[4] != null ? new BigDecimal(sup[4].toString()) : BigDecimal.ZERO);
+			doctype.put("hsnCode", sup[5] != null ? Long.parseLong(sup[5].toString()) : 0L); 
+			doctype.put("kitQty", sup[6] != null ? new BigDecimal(sup[6].toString()) : BigDecimal.ZERO);
+			list1.add(doctype);
+		}
+		return list1;
+	}
+	
 
 //	@Override
 //	public List<RetrievalManifestProviderVO> findRIMMIMReports(

@@ -61,6 +61,32 @@ public interface IssueManifestProviderRepo extends JpaRepository<IssueManifestPr
 //    nativeQuery = true)
 //List<RetrievalManifestProviderVO> findRIMReports(String type, Long orgId, String sender, String finYear, String toDate, String fromDate);
 
-	
 
+	@Query(nativeQuery = true, value = "select transactionno,transactiondate,transportername,receiver,amount,hsncode,SUM(kitqty) as sum from (\r\n"
+			+ "			      select  transactionno,transactiondate,transportername,receiver,amount,hsncode,kitqty,orgid,finyear  from mim a,mimdetails m where a.mimid =m.mimid \r\n"
+			+ "			     group by transactionno,transactiondate,transportername,receiver,kitid,amount,hsncode,kitqty,orgid,finyear\r\n"
+			+ "			      order by transactionno,transactiondate) A  where \r\n"
+			+ "                  ?1 = 'MIM'\r\n"
+			+ "  AND a.orgid =?2\r\n"
+			+ "  AND (a.receiver =?3 OR ?3 = 'ALL')\r\n"
+			+ "  AND a.finyear =?4\r\n"
+			+ "  AND (?5 IS NULL OR a.transactiondate >=?5)\r\n"
+			+ "  AND (?6  IS NULL OR a.transactiondate <=?6) \r\n"
+			+ " group by transactionno,transactiondate,transportername,receiver,amount,hsncode")
+	Set<Object[]> findMimSummaryReport(String type, Long orgId, String customerName, String finYear, String fromDate,
+			String toDate);
+	
+	@Query(nativeQuery = true, value = "select transactionno,transactiondate,transportername,sender,0 as  amount,hsncode,SUM(kitqty)  from (\r\n"
+			+ "			      select  transactionno,transactiondate,transportername,sender,hsncode,kitqty,orgid,finyear  from rim a,rimdetails m where a.rimid =m.rimid \r\n"
+			+ "			     group by transactionno,transactiondate,transportername,sender,kitid,hsncode,kitqty,orgid,finyear\r\n"
+			+ "			      order by transactionno,transactiondate) A  where \r\n"
+			+ "                  ?1 = 'RIM'\r\n"
+			+ "  AND a.orgid =?2\r\n"
+			+ "  AND (a.sender =?3 OR ?3 = 'ALL')\r\n"
+			+ "  AND a.finyear =?4\r\n"
+			+ "  AND (?5 IS NULL OR a.transactiondate >=?5)\r\n"
+			+ "  AND (?6  IS NULL OR a.transactiondate <=?6) \r\n"
+			+ " group by transactionno,transactiondate,transportername,sender,hsncode")
+	Set<Object[]> findRimSummaryReport(String type, Long orgId, String customerName, String finYear, String fromDate,
+			String toDate);
 }

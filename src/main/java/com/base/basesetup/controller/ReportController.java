@@ -682,6 +682,65 @@ public class ReportController extends BaseController {
 
 	}
 	
+	
+	@GetMapping("/findMimSummaryReport")
+	public ResponseEntity<ResponseDTO> findMimSummaryReport(@RequestParam String type, @RequestParam Long orgId,
+			@RequestParam String customerName, @RequestParam String finYear, @RequestParam(required = false) String fromDate,@RequestParam(required = false) String toDate) {
+		String methodName = "findMimSummaryReport()";
+		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+		String errorMsg = null;
+		Map<String, Object> responseObjectsMap = new HashMap<>();
+		ResponseDTO responseDTO = null;
+		List<Map<String, Object>> department = new ArrayList<>();
+		try {
+			department = reportService.findMimSummaryReport(type, orgId, customerName, finYear, fromDate, toDate);
+		} catch (Exception e) {
+			errorMsg = e.getMessage();
+			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+		}
+		if (StringUtils.isBlank(errorMsg)) {
+			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "Report get successfully");
+			responseObjectsMap.put("MIMSummaryReport", department);
+			responseDTO = createServiceResponse(responseObjectsMap);
+		} else {
+			responseDTO = createServiceResponseError(responseObjectsMap, "Report  receive failed", errorMsg);
+		}
+		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+		return ResponseEntity.ok().body(responseDTO);
+
+	}
+	
+	
+	@GetMapping("/findRimSummaryReport")
+	public ResponseEntity<ResponseDTO> findRimSummaryReport(@RequestParam String type, @RequestParam Long orgId,
+			@RequestParam String customerName, @RequestParam String finYear, @RequestParam(required = false) String fromDate,@RequestParam(required = false) String toDate) {
+		String methodName = "findMimSummaryReport()";
+		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+		String errorMsg = null;
+		Map<String, Object> responseObjectsMap = new HashMap<>();
+		ResponseDTO responseDTO = null;
+		List<Map<String, Object>> department = new ArrayList<>();
+		try {
+			department = reportService.findRimSummaryReport(type, orgId, customerName, finYear, fromDate, toDate);
+		} catch (Exception e) {
+			errorMsg = e.getMessage();
+			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+		}
+		if (StringUtils.isBlank(errorMsg)) {
+			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "Report get successfully");
+			responseObjectsMap.put("RIMSummaryReport", department);
+			responseDTO = createServiceResponse(responseObjectsMap);
+		} else {
+			responseDTO = createServiceResponseError(responseObjectsMap, "Report  receive failed", errorMsg);
+		}
+		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+		return ResponseEntity.ok().body(responseDTO);
+
+	}
+	
+	
+	
+	
 //	@GetMapping("/findRIMMIMReports")
 //	public ResponseEntity<ResponseDTO> findRIMMIMReports(@RequestParam String type,@RequestParam Long orgId,
 //			@RequestParam(required = false) String customerName, @RequestParam String finYear,
