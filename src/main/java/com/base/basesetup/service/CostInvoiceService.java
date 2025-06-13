@@ -1,5 +1,6 @@
 package com.base.basesetup.service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
@@ -72,5 +73,13 @@ public interface CostInvoiceService {
 		//screencode
 		
 		CostDebitNoteVO getDebitNoteByDocIdandScreenCode(String ScreenCode, String docId);
+		
+		//COSTINVOICE SUMMARY
+
+		List<Map<String, Object>> getCostInvoiceSummary(Long orgId, String fromDate, String toDate, String finYear,
+				String partyName);
+
+		List<Map<String, Object>> getCostInvoiceSummaryDetails(Long orgId, String fromDate, String toDate,
+				String finYear, String partyName);
 		
 }

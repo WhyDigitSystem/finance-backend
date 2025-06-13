@@ -29,13 +29,10 @@ import com.base.basesetup.entity.ArapDetailsVO;
 import com.base.basesetup.entity.ChargerCostInvoiceVO;
 import com.base.basesetup.entity.CostDebitNoteVO;
 import com.base.basesetup.entity.CostInvoiceVO;
-import com.base.basesetup.entity.DebitNoteVO;
 import com.base.basesetup.entity.DocumentTypeMappingDetailsVO;
 import com.base.basesetup.entity.GroupLedgerVO;
-import com.base.basesetup.entity.IrnCreditNoteVO;
 import com.base.basesetup.entity.MultipleDocIdGenerationDetailsVO;
 import com.base.basesetup.entity.PartyMasterVO;
-import com.base.basesetup.entity.TaxInvoiceVO;
 import com.base.basesetup.entity.TdsCostInvoiceVO;
 import com.base.basesetup.exception.ApplicationException;
 import com.base.basesetup.repo.AccountsDetailsRepo;
@@ -1190,6 +1187,80 @@ public class CostInvoiceServiceImpl implements CostInvoiceService {
 		// TODO Auto-generated method stub
 		return costDebitNoteRepo.getDebitNoteByDocIdandScreenCode(ScreenCode, docId);
 	}
-	
-		
+
+	@Override
+	public List<Map<String, Object>> getCostInvoiceSummary(Long orgId, String fromDate, String toDate,
+			String finYear, String partyName) {
+		Set<Object[]> chType = costInvoiceRepo.getCostInvoiceSummary(orgId, fromDate,toDate, finYear,partyName);
+		return getCostSummary(chType);
+	}
+
+	private List<Map<String, Object>> getCostSummary(Set<Object[]> chType) {
+		List<Map<String, Object>> List1 = new ArrayList<>();
+		for (Object[] ch : chType) {
+			if (ch != null) {
+				Map<String, Object> map = new HashMap<>();
+				map.put("finYear", ch[0] != null ? ch[0].toString() : "");
+				map.put("docId", ch[1] != null ? ch[1].toString() : "");
+				map.put("docDate", ch[2] != null ? ch[2].toString() : "");
+				map.put("vId", ch[3] != null ? ch[3].toString() : "");
+				map.put("purVoucherNo", ch[4] != null ? ch[4].toString() : "");
+				map.put("purVoucherDate", ch[5] != null ? ch[5].toString() : "");
+				map.put("supplierCode", ch[6] != null ? ch[6].toString() : "");
+				map.put("supplierName", ch[7] != null ? ch[7].toString() : "");
+				map.put("supplierPlace", ch[8] != null ? ch[8].toString() : "");
+				map.put("gstType", ch[9] != null ? ch[9].toString() : "");
+				map.put("mode", ch[10] != null ? ch[11].toString() : "");
+				map.put("totChargeLcAmt", ch[11] != null ? new BigDecimal(ch[11].toString()) : BigDecimal.ZERO);
+				map.put("payment", ch[12] != null ? ch[12].toString() : "");
+				List1.add(map);
+			}
+		}
+		return List1;
+
+	}
+
+	@Override
+	public List<Map<String, Object>> getCostInvoiceSummaryDetails(Long orgId, String fromDate, String toDate,
+			String finYear, String partyName) {
+		Set<Object[]> chType = costInvoiceRepo.getCostInvoiceDetails(orgId, fromDate,toDate, finYear,partyName);
+		return getCosteDetails(chType);
+	}
+
+	private List<Map<String, Object>> getCosteDetails(Set<Object[]> chType) {
+		List<Map<String, Object>> List1 = new ArrayList<>();
+		for (Object[] ch : chType) {
+			if (ch != null) {
+				Map<String, Object> map = new HashMap<>();
+				
+				map.put("finYear", ch[0] != null ? ch[0].toString() : "");
+				map.put("docId", ch[1] != null ? ch[1].toString() : "");
+				map.put("docDate", ch[2] != null ? ch[2].toString() : "");
+				map.put("vId", ch[3] != null ? ch[3].toString() : "");
+				map.put("purVoucherNo", ch[4] != null ? ch[4].toString() : "");
+				map.put("purVoucherDate", ch[5] != null ? ch[5].toString() : "");
+				map.put("supplierCode", ch[6] != null ? ch[6].toString() : "");
+				map.put("party", ch[7] != null ? ch[7].toString() : "");
+				map.put("description", ch[8] != null ? ch[8].toString() : "");
+				map.put("supplierName", ch[9] != null ? ch[9].toString() : "");
+				map.put("supplierPlace", ch[10] != null ? ch[10].toString() : "");
+				map.put("gstType", ch[11] != null ? ch[11].toString() : "");
+				map.put("mode", ch[12] != null ? ch[12].toString() : "");
+				map.put("totChargesLcAmt", ch[13] != null ? new BigDecimal(ch[13].toString()) : BigDecimal.ZERO);
+				map.put("payment", ch[14] != null ? ch[14].toString() : "");
+				map.put("section", ch[15] != null ? ch[15].toString() : "");
+				map.put("totalTds", ch[16] != null ? new BigDecimal(ch[16].toString()) : BigDecimal.ZERO);
+				map.put("jobNo", ch[17] != null ? ch[17].toString() : "");
+				map.put("chargeCode", ch[18] != null ? ch[18].toString() : "");
+				map.put("chargerName", ch[19] != null ? ch[19].toString() : "");
+				map.put("ledger", ch[20] != null ? ch[20].toString() : "");
+				map.put("lcAmt", ch[21] != null ? new BigDecimal(ch[21].toString()) : BigDecimal.ZERO);
+				map.put("gst", ch[22] != null ? new BigDecimal(ch[22].toString()) : BigDecimal.ZERO);
+				
+				List1.add(map);
+			}
+		}
+		return List1;
+
+	}
 }
