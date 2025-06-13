@@ -203,6 +203,7 @@ public class TaxInvoiceServiceImpl implements TaxInvoiceService {
 		taxInvoiceVO.setJobOrderNo(taxInvoiceDTO.getJobOrderNo());
 		taxInvoiceVO.setPartyId(taxInvoiceDTO.getPartyId());
 		taxInvoiceVO.setRemarks(taxInvoiceDTO.getRemarks());
+		taxInvoiceVO.setPartyShortName(taxInvoiceDTO.getPartyShortName());
 		taxInvoiceVO.setVId(taxInvoiceDTO.getVId());
 		taxInvoiceVO.setVDate(taxInvoiceDTO.getVDate());
 		taxInvoiceVO.setTrasactionNo(taxInvoiceDTO.getTrasactionNo());
@@ -224,6 +225,7 @@ public class TaxInvoiceServiceImpl implements TaxInvoiceService {
 		BigDecimal totalTaxAmountBC = BigDecimal.ZERO;
 		BigDecimal totalInvAmountLC = BigDecimal.ZERO;
 		BigDecimal totalInvAmountBC = BigDecimal.ZERO;
+		Long totalQty = Long.valueOf(0);
 
 		List<TaxInvoiceDetailsVO> taxInvoiceDetailsVOs = new ArrayList<>();
 		for (TaxInvoiceDetailsDTO taxInvoiceDetailsDTO : taxInvoiceDTO.getTaxInvoiceDetailsDTO()) {
@@ -318,6 +320,7 @@ public class TaxInvoiceServiceImpl implements TaxInvoiceService {
 				// taxInvoiceAnnexureVO.setSubTotal(subtotal);
 
 				taxInvoiceAnnexureVO.setTaxInvoiceVO(taxInvoiceVO);
+				totalQty=totalQty+(taxInvoiceAnnexureDTO.getQty());
 
 				invoiceAnnexureVOs.add(taxInvoiceAnnexureVO);
 
@@ -420,6 +423,7 @@ public class TaxInvoiceServiceImpl implements TaxInvoiceService {
 
 // 		BigDecimal roundedTotalInvAmountBC = totalInvAmountBC.setScale(0, RoundingMode.HALF_UP);
 		taxInvoiceVO.setTotalInvAmountBc(totalInvAmountBC);
+		taxInvoiceVO.setTotalQty(totalQty);
 
 		taxInvoiceVO.setTaxInvoiceDetailsVO(taxInvoiceDetailsVOs);
 
@@ -1074,5 +1078,5 @@ public class TaxInvoiceServiceImpl implements TaxInvoiceService {
 		return irnCreditNoteRepo.getCreditNoteByDocIdandScreenCode(ScreenCode, docId);
 	}
 	
-	
+		
 }
