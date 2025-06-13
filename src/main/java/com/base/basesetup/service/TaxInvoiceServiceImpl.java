@@ -1077,6 +1077,77 @@ public class TaxInvoiceServiceImpl implements TaxInvoiceService {
 		// TODO Auto-generated method stub
 		return irnCreditNoteRepo.getCreditNoteByDocIdandScreenCode(ScreenCode, docId);
 	}
+
+	@Override
+	public List<Map<String, Object>> getTaxinvoiceDetails(Long orgId, String finYear, String partyname, String fromDate,
+			String toDate) {
+		Set<Object[]> chType  = taxInvoiceRepo.getTaxinvoiceDetails(orgId, finYear, partyname, fromDate,toDate);
+		return getTaxinvoiceDetails(chType);
+	}
+
+	private List<Map<String, Object>> getTaxinvoiceDetails(Set<Object[]> chType) {
+		List<Map<String, Object>> List1 = new ArrayList<>();
+		for (Object[] ch : chType) {
+			Map<String, Object> map = new HashMap<>();
+			map.put("finyear",             ch[0]  != null ? ch[0].toString() : "");   // 0
+			map.put("Vid",                 ch[1]  != null ? ch[1].toString() : "");   // 1
+			map.put("Vdate",               ch[2]  != null ? ch[2].toString() : "");   // 2
+			map.put("docid",               ch[3]  != null ? ch[3].toString() : "");   // 3
+			map.put("docdate",             ch[4]  != null ? ch[4].toString() : "");   // 4
+			map.put("invoiceno",           ch[5]  != null ? ch[5].toString() : "");   // 5
+			map.put("invoicedate",         ch[6]  != null ? ch[6].toString() : "");   // 6
+			map.put("gsttype",             ch[7]  != null ? ch[7].toString() : "");   // 7
+			map.put("partyname",           ch[8]  != null ? ch[8].toString() : "");   // 8
+			map.put("placeofsupply",       ch[9]  != null ? ch[9].toString() : "");   // 9
+			map.put("totalchargeamountlc", ch[10] != null ? ch[10].toString() : "");  // 10
+			map.put("totalinvamountlc",    ch[11] != null ? ch[11].toString() : "");  // 11
+			map.put("totaltaxamountlc",    ch[12] != null ? ch[12].toString() : "");  // 12
+			map.put("chargetype",          ch[13] != null ? ch[13].toString() : "");  // 13
+			map.put("chargecode",          ch[14] != null ? ch[14].toString() : "");  // 14
+			map.put("chargename",          ch[15] != null ? ch[15].toString() : "");  // 15
+			map.put("description",         ch[16] != null ? ch[16].toString() : "");  // 16
+			map.put("currency",            ch[17] != null ? ch[17].toString() : "");  // 17
+			map.put("gstpercent",          ch[18] != null ? ch[18].toString() : "");  // 18
+			map.put("qty",                 ch[19] != null ? ch[19].toString() : "");  // 19
+			map.put("rate",                ch[20] != null ? ch[20].toString() : "");  // 20
+			map.put("taxable",             ch[21] != null ? ch[21].toString() : "");  // 21
+			map.put("gstamount",           ch[22] != null ? ch[22].toString() : "");  // 22
+
+			List1.add(map);
+		}
+		return List1;
+	}
+
+	@Override
+	public List<Map<String, Object>> getTaxinvoiceSummary(Long orgId, String finYear, String partyname, String fromDate,
+			String toDate) {
+		Set<Object[]> chType  = taxInvoiceRepo.getTaxinvoiceSummary(orgId, finYear, partyname, fromDate,toDate);
+		return getTaxinvoiceSummary(chType);
+	}
+
+	private List<Map<String, Object>> getTaxinvoiceSummary(Set<Object[]> chType) {
+		List<Map<String, Object>> List1 = new ArrayList<>();
+		for (Object[] ch : chType) {
+			Map<String, Object> map = new HashMap<>();
+			map.put("Vid",                 ch[1] != null ? ch[1].toString() : "");
+			map.put("Vdate",               ch[2] != null ? ch[2].toString() : "");
+			map.put("docdate",             ch[3] != null ? ch[3].toString() : "");
+			map.put("docid",               ch[4] != null ? ch[4].toString() : "");
+			map.put("finyear",             ch[5] != null ? ch[5].toString() : "");
+			map.put("gsttype",             ch[6] != null ? ch[6].toString() : "");
+			map.put("invoicedate",         ch[7] != null ? ch[7].toString() : "");
+			map.put("invoiceno",           ch[8] != null ? ch[8].toString() : "");
+			map.put("partyname",           ch[9] != null ? ch[9].toString() : "");
+			map.put("placeofsupply",       ch[10] != null ? ch[10].toString() : "");
+			map.put("totalchargeamountlc", ch[11] != null ? ch[11].toString() : "");
+			map.put("totalinvamountlc",    ch[12] != null ? ch[12].toString() : "");
+			map.put("totaltaxamountlc",    ch[13] != null ? ch[13].toString() : "");
+
+			List1.add(map);
+	}
+		return List1;
+
 	
-		
+	
+	}
 }
