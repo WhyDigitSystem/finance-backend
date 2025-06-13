@@ -726,8 +726,8 @@ public class ReportServiceImpl implements ReportService {
 	}
 
 	@Override
-	public List<Map<String, Object>> getMimFillGridgettransaction(Long orgId, String Receiver) {
-		Set<Object[]> requestedByDetails = taxInvoiceRepo.getMimFillGridgettransaction(orgId, Receiver);
+	public List<Map<String, Object>> getMimFillGridgettransaction(Long orgId, String Receiver,String docId) {
+		Set<Object[]> requestedByDetails = taxInvoiceRepo.getMimFillGridgettransaction(orgId, Receiver,docId);
 		return getMimFillGridgettransaction(requestedByDetails);
 	}
 

@@ -496,12 +496,36 @@ public interface TaxInvoiceRepo extends JpaRepository<TaxInvoiceVO, Long> {
 		Set<Object[]> getFillGridForTaxInvoice(Long orgId);
 		
 		
-		@Query(nativeQuery = true, value = "select transactionno from mim a \r\n"
-				+ "where transactionno not in (select  transno from taxinvoiceannexure a, taxinvoice b where a.taxinvoiceid = b.taxinvoiceid and approvestatus ='Approved' )\r\n"
-				+ "and a.cancel =0\r\n"
-				+ "and receiver=?2 \r\n"
-				+ "and a.orgid=?1")
-	Set<Object[]> getMimFillGridgettransaction(Long orgId,String Receiver);
+		@Query(nativeQuery = true, value = "SELECT \r\n"
+				+ "    a.transactionno,\r\n"
+				+ "    NULL AS docid\r\n"
+				+ "FROM \r\n"
+				+ "    mim a\r\n"
+				+ "WHERE \r\n"
+				+ "    a.transactionno NOT IN (\r\n"
+				+ "        SELECT \r\n"
+				+ "            ax.transno \r\n"
+				+ "        FROM \r\n"
+				+ "            taxinvoiceannexure ax\r\n"
+				+ "        JOIN \r\n"
+				+ "            taxinvoice b ON ax.taxinvoiceid = b.taxinvoiceid\r\n"
+				+ "        WHERE \r\n"
+				+ "            b.approvestatus = 'Approved'  \r\n"
+				+ "    )\r\n"
+				+ "    AND a.cancel = 0\r\n"
+				+ "    AND a.receiver =?2\r\n"
+				+ "    AND a.orgid =?1\r\n"
+				+ "\r\n"
+				+ "UNION\r\n"
+				+ "\r\n"
+				+ "SELECT \r\n"
+				+ "    transactionno,\r\n"
+				+ "    docid \r\n"
+				+ "FROM \r\n"
+				+ "    taxinvoice  \r\n"
+				+ "WHERE \r\n"
+				+ "    docid =?3")
+	Set<Object[]> getMimFillGridgettransaction(Long orgId,String Receiver,String docId);
 
 
 @Query(nativeQuery = true, value = "SELECT a.transactionno, a.transactiondate, m.kitid, m.kitname, m.kitqty \r\n"
