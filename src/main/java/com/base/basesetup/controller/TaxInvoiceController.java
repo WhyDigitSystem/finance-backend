@@ -613,7 +613,7 @@ public class TaxInvoiceController extends BaseController {
 	
 	
 	@GetMapping("/getTaxinvoiceDetails")
-	public ResponseEntity<ResponseDTO> getTaxinvoiceDetails(@RequestParam Long orgId, String finYear, String partyname, String fromDate, String toDate) {
+	public ResponseEntity<ResponseDTO> getTaxinvoiceDetails(@RequestParam Long orgId, @RequestParam(required = true) String finYear, String partyname, String fromDate, String toDate) {
 		String methodName = "getTaxinvoiceDetails()";
 		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
 		String errorMsg = null;

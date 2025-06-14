@@ -42,13 +42,16 @@ public class QuotationVO {
 	private String quotationNo;
 	@Column(name ="quotationdate")
 	private LocalDate quotationDate = LocalDate.now();
+	@Column(name ="code")
 	private String code;
 	@Column(name = "deliverygaddress")
 	private String deliveryAddress;
 	@Column(name = "customeraddress")
 	private String customerAddress;
-	private boolean active;
-	private boolean cancel;
+	@Column(name = "active")
+	private boolean active = true;
+	@Column(name = "cancle")
+	private boolean cancel = false;
 	@Column(name = "orgid")
 	private Long orgId;
 	@Column(name = "finyear")
@@ -71,6 +74,9 @@ public class QuotationVO {
 	
 	@Column(name="subtotal",precision = 10, scale = 2)
     private BigDecimal subTotal;
+	
+	@Column(name="totaltaxamount",precision = 10, scale = 2)
+    private BigDecimal totalTaxAmount;
 
 
 	//private String prefix="WDS";

@@ -498,8 +498,7 @@ public interface TaxInvoiceRepo extends JpaRepository<TaxInvoiceVO, Long> {
 		
 		
 		@Query(nativeQuery = true, value = "SELECT \r\n"
-				+ "    a.transactionno,\r\n"
-				+ "    NULL AS docid\r\n"
+				+ "    a.transactionno\r\n"
 				+ "FROM \r\n"
 				+ "    mim a\r\n"
 				+ "WHERE \r\n"
@@ -514,18 +513,18 @@ public interface TaxInvoiceRepo extends JpaRepository<TaxInvoiceVO, Long> {
 				+ "            b.approvestatus = 'Approved'  \r\n"
 				+ "    )\r\n"
 				+ "    AND a.cancel = 0\r\n"
-				+ "    AND a.receiver =?2\r\n"
-				+ "    AND a.orgid =?1\r\n"
+				+ "    AND a.receiver = ?2\r\n"
+				+ "    AND a.orgid = ?1\r\n"
 				+ "\r\n"
 				+ "UNION\r\n"
 				+ "\r\n"
 				+ "SELECT \r\n"
-				+ "    transactionno,\r\n"
-				+ "    docid \r\n"
+				+ "    transactionno\r\n"
 				+ "FROM \r\n"
 				+ "    taxinvoice  \r\n"
 				+ "WHERE \r\n"
-				+ "    docid =?3")
+				+ "    docid = ?3\r\n"
+				+ "")
 	Set<Object[]> getMimFillGridgettransaction(Long orgId,String Receiver,String docId);
 
 

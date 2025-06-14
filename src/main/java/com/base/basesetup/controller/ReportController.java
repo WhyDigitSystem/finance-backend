@@ -519,7 +519,7 @@ public class ReportController extends BaseController {
 	}
 
 	@GetMapping("/getMimFillGridgettransaction")
-	public ResponseEntity<ResponseDTO> getMimFillGridgettransaction(@RequestParam Long orgId, String Receiver,@RequestParam String docId) {
+	public ResponseEntity<ResponseDTO> getMimFillGridgettransaction(@RequestParam Long orgId, String Receiver,@RequestParam(required = false) String docId) {
 		String methodName = "getMimFillGridgettransaction()";
 		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
 		String errorMsg = null;
@@ -700,7 +700,7 @@ public class ReportController extends BaseController {
 		}
 		if (StringUtils.isBlank(errorMsg)) {
 			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "Report get successfully");
-			responseObjectsMap.put("MIMSummaryReport", department);
+			responseObjectsMap.put("mimReportFillGrid", department);
 			responseDTO = createServiceResponse(responseObjectsMap);
 		} else {
 			responseDTO = createServiceResponseError(responseObjectsMap, "Report  receive failed", errorMsg);
@@ -728,7 +728,7 @@ public class ReportController extends BaseController {
 		}
 		if (StringUtils.isBlank(errorMsg)) {
 			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "Report get successfully");
-			responseObjectsMap.put("RIMSummaryReport", department);
+			responseObjectsMap.put("rimReportFillGrid", department);
 			responseDTO = createServiceResponse(responseObjectsMap);
 		} else {
 			responseDTO = createServiceResponseError(responseObjectsMap, "Report  receive failed", errorMsg);
