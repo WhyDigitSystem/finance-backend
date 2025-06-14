@@ -1129,19 +1129,22 @@ public class TaxInvoiceServiceImpl implements TaxInvoiceService {
 		List<Map<String, Object>> List1 = new ArrayList<>();
 		for (Object[] ch : chType) {
 			Map<String, Object> map = new HashMap<>();
-			map.put("Vid",                 ch[0] != null ? ch[0].toString() : "");
-			map.put("Vdate",               ch[1] != null ? ch[1].toString() : "");
-			map.put("docdate",             ch[2] != null ? ch[2].toString() : "");
-			map.put("docid",               ch[3] != null ? ch[3].toString() : "");
-			map.put("finyear",             ch[4] != null ? ch[4].toString() : "");
-			map.put("gsttype",             ch[5] != null ? ch[5].toString() : "");
-			map.put("invoicedate",         ch[6] != null ? ch[6].toString() : "");
-			map.put("invoiceno",           ch[7] != null ? ch[7].toString() : "");
-			map.put("partyname",           ch[8] != null ? ch[8].toString() : "");
+			map.put("finyear",                 ch[0] != null ? ch[0].toString() : "");
+			map.put("vId",               ch[1] != null ? ch[1].toString() : "");
+			map.put("vDate",             ch[2] != null ? ch[2].toString() : "");
+			map.put("docId",               ch[3] != null ? ch[3].toString() : "");
+			map.put("docDate",             ch[4] != null ? ch[4].toString() : "");
+			map.put("invoiceNo",             ch[5] != null ? ch[5].toString() : "");
+			map.put("invoiceDate",         ch[6] != null ? ch[6].toString() : "");
+			map.put("gstType",           ch[7] != null ? ch[7].toString() : "");
+			map.put("partyName",           ch[8] != null ? ch[8].toString() : "");
 			map.put("placeofsupply",       ch[9] != null ? ch[9].toString() : "");
 			map.put("totalchargeamountlc", ch[10] != null ? new BigDecimal(ch[10].toString()) : BigDecimal.ZERO);
 			map.put("totalinvamountlc",   ch[11] != null ? new BigDecimal(ch[11].toString()) : BigDecimal.ZERO);
 			map.put("totaltaxamountlc",    ch[12] != null ? new BigDecimal(ch[12].toString()) : BigDecimal.ZERO);
+			
+			
+			
 
 			List1.add(map);
 	}
