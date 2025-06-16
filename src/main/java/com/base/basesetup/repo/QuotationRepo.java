@@ -14,4 +14,6 @@ public interface QuotationRepo extends JpaRepository<QuotationVO, Long>{
 	@Query(nativeQuery =true,value ="select * from quotation where orgid=?1")
 	List<QuotationVO> findQutationByOrgId(Long orgId);
 
+	boolean existsByOrgIdAndQuotationNo(Long orgId, String quotationNo);
+
 }

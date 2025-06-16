@@ -40,8 +40,6 @@ public class QuotationDetailsVO {
     private BigDecimal rate;
 	@Column(name="amount",precision = 10, scale = 2)
     private BigDecimal amount;
-	@Column(name="baseamount",precision = 10, scale = 2)
-    private BigDecimal baseAmount;
 	@Column(name="tax",precision = 10, scale = 2)
     private BigDecimal tax;
 	@Column(name="taxamount",precision = 10, scale = 2)
