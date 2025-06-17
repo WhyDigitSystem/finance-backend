@@ -541,18 +541,23 @@ public class ReportServiceImpl implements ReportService {
 			doctype.put("chequeNo", sup[7] != null ? sup[7].toString() : "");
 			doctype.put("subLedgerCode", sup[8] != null ? sup[8].toString() : "");
 			doctype.put("subLedgerName", sup[9] != null ? sup[9].toString() : "");
-			doctype.put("accountName", sup[10] != null ? sup[10].toString() : "");
-			doctype.put("receiptAmount", sup[11] != null ? new BigDecimal(sup[11].toString()) : BigDecimal.ZERO);
+			doctype.put("partyShortName", sup[10] != null ? sup[10].toString() : "");
+			doctype.put("PaymentAmount", sup[11] != null ? new BigDecimal(sup[11].toString()) : BigDecimal.ZERO);
 			doctype.put("bankChargesAmt", sup[12] != null ? new BigDecimal(sup[12].toString()) : BigDecimal.ZERO);
 			doctype.put("tdsAmt", sup[13] != null ? new BigDecimal(sup[13].toString()) : BigDecimal.ZERO);
 			doctype.put("staxAmount", sup[14] != null ? new BigDecimal(sup[14].toString()) : BigDecimal.ZERO);
-			doctype.put("invoiceNo", sup[15] != null ? sup[15].toString() : "");
-			doctype.put("invoiceDate", sup[16] != null ? sup[16].toString() : "");
-			doctype.put("refNo", sup[17] != null ? sup[17].toString() : "");
-			doctype.put("refDate", sup[18] != null ? sup[18].toString() : "");
-			doctype.put("arapAmount", sup[19] != null ? new BigDecimal(sup[19].toString()) : BigDecimal.ZERO);
-			doctype.put("arApOutstanding", sup[20] != null ? new BigDecimal(sup[20].toString()) : BigDecimal.ZERO);
-			doctype.put("arapSettled", sup[21] != null ? new BigDecimal(sup[21].toString()) : BigDecimal.ZERO);
+//			doctype.put("invoiceNo", sup[15] != null ? sup[15].toString() : "");
+//			doctype.put("invoiceDate", sup[16] != null ? sup[16].toString() : "");
+//			doctype.put("refNo", sup[17] != null ? sup[17].toString() : "");
+//			doctype.put("refDate", sup[18] != null ? sup[18].toString() : "");
+			doctype.put("arapAmount", sup[15] != null ? new BigDecimal(sup[15].toString()) : BigDecimal.ZERO);
+			doctype.put("arApOutstanding", sup[16] != null ? new BigDecimal(sup[16].toString()) : BigDecimal.ZERO);
+			doctype.put("arapSettled", sup[17] != null ? new BigDecimal(sup[17].toString()) : BigDecimal.ZERO);
+			doctype.put("chequeDate", sup[18] != null ? sup[18].toString() : "");
+			doctype.put("bankCashAcc", sup[19] != null ? sup[19].toString() : "");
+			doctype.put("onaccount", sup[20] != null ? new BigDecimal(sup[20].toString()) : BigDecimal.ZERO);
+			doctype.put("netamount", sup[21] != null ? new BigDecimal(sup[21].toString()) : BigDecimal.ZERO);
+			doctype.put("chargeamt", sup[22] != null ? new BigDecimal(sup[22].toString()) : BigDecimal.ZERO);
 
 			list1.add(doctype);
 		}

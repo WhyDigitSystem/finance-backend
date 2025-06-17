@@ -903,6 +903,83 @@ public class APServiceImpl implements APService {
 
 	    return paymentRepo.save(paymentVO);
 	}
-  
+
+	@Override
+	public List<Map<String, Object>> getPaymentDetails(Long orgId, String finYear, String partyname, String fromDate,
+			String toDate) {
+		Set<Object[]> chType  = paymentRepo.getPaymentDetails(orgId, finYear, partyname, fromDate,toDate);
+		return getPaymentDetails(chType);
+	}
+
+	private List<Map<String, Object>> getPaymentDetails(Set<Object[]> chType) {
+	    List<Map<String, Object>> List1 = new ArrayList<>();
+	    for (Object[] ch : chType) {
+	        Map<String, Object> map = new HashMap<>();
+	        map.put("finyear",       ch[0]  != null ? ch[0].toString()  : "");
+	        map.put("invno",         ch[1]  != null ? ch[1].toString()  : "");
+	        map.put("invdate",       ch[2]  != null ? ch[2].toString()  : "");
+	        map.put("docid",         ch[3]  != null ? ch[3].toString()  : "");
+	        map.put("docdate",       ch[4]  != null ? ch[4].toString()  : "");
+	        map.put("refno",         ch[5]  != null ? ch[5].toString()  : "");
+	        map.put("refdate",       ch[6]  != null ? ch[6].toString()  : "");
+	        map.put("partyname",     ch[7]  != null ? ch[7].toString()  : "");
+	        map.put("partycode",     ch[8]  != null ? ch[8].toString()  : "");
+	        map.put("paymentamt",    ch[9]  != null ? ch[9].toString()  : "");
+	        map.put("netamount",     ch[10] != null ? ch[10].toString() : "");
+	        map.put("onaccount",     ch[11] != null ? ch[11].toString() : "");
+	        map.put("chequeno",      ch[12] != null ? ch[12].toString() : "");
+	        map.put("chequedate",    ch[13] != null ? ch[13].toString() : "");
+	        map.put("tdsamt",        ch[14] != null ? ch[14].toString() : "");
+	        map.put("amount",        ch[15] != null ? ch[15].toString() : "");
+	        map.put("gstamount",     ch[16] != null ? ch[16].toString() : "");
+	        map.put("chargeamt",     ch[17] != null ? ch[17].toString() : "");
+	        map.put("settled",       ch[18] != null ? ch[18].toString() : "");
+	        map.put("outstanding",   ch[19] != null ? ch[19].toString() : ""); 
+	        map.put("status",   ch[20] != null ? ch[20].toString() : "");
+	        map.put("approvestatus",   ch[21] != null ? ch[21].toString() : "");
+	        List1.add(map);
+	    }
+	    return List1;
+	}
+
+
+	@Override
+	public List<Map<String, Object>> getPaymentSummary(Long orgId, String finYear, String partyname, String fromDate,
+			String toDate) {
+		Set<Object[]> chType  = paymentRepo.getPaymentSummary(orgId, finYear, partyname, fromDate,toDate);
+		return getPaymentSummary(chType);
+	}
+
+	private List<Map<String, Object>> getPaymentSummary(Set<Object[]> chType) {
+	    List<Map<String, Object>> List1 = new ArrayList<>();
+	    for (Object[] ch : chType) {
+	        Map<String, Object> map = new HashMap<>();
+	        map.put("finyear",      ch[0]  != null ? ch[0].toString()  : "");
+	        map.put("docid",        ch[1]  != null ? ch[1].toString()  : "");
+	        map.put("docdate",      ch[2]  != null ? ch[2].toString()  : "");
+	        map.put("partyname",    ch[3]  != null ? ch[3].toString()  : "");
+	        map.put("partycode",    ch[4]  != null ? ch[4].toString()  : "");
+	        map.put("chequeno",     ch[5]  != null ? ch[5].toString()  : "");
+	        map.put("chequedate",   ch[6]  != null ? ch[6].toString()  : "");
+	        map.put("paymentamt",   ch[7]  != null ? ch[7].toString()  : "");
+	        map.put("netamount",    ch[8]  != null ? ch[8].toString()  : "");
+	        map.put("tdsamt",       ch[9]  != null ? ch[9].toString()  : "");
+	        map.put("onaccount",    ch[10] != null ? ch[10].toString() : "");
+	        map.put("bankcashacc",  ch[11] != null ? ch[11].toString() : "");
+	        map.put("status",   ch[12] != null ? ch[12].toString() : "");
+	        map.put("approvestatus",   ch[13] != null ? ch[13].toString() : "");
+	        List1.add(map);
+	    }
+	    return List1;
+	}
+
+	@Override
+	public PaymentVO getPaymentByDocId(Long orgId, String docId) {
+		// TODO Auto-generated method stub
+		return paymentRepo.findAllPaymentByDocId(orgId, docId);
+	}
+ 
+	   
+
 }
 
