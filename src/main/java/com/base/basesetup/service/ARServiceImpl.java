@@ -636,6 +636,11 @@ public class ARServiceImpl implements ARService {
 
 		BigDecimal netAmount = receiptVO.getNetAmount();
 		BigDecimal receiptAmt = receiptVO.getReceiptAmt();
+
+		BigDecimal effectivereceiptAmt = (netAmount == null || netAmount.compareTo(BigDecimal.ZERO) == 0)
+				? (receiptAmt != null ? receiptAmt : BigDecimal.ZERO)
+				: netAmount;
+		
 		BigDecimal effectiveNetAmount = (netAmount == null || netAmount.compareTo(BigDecimal.ZERO) == 0)
 				? (receiptAmt != null ? receiptAmt : BigDecimal.ZERO)
 				: netAmount;
@@ -665,15 +670,15 @@ public class ARServiceImpl implements ARService {
 
 		// BANK/CASH (Debit)
 		AccountsDetailsVO cashBank = new AccountsDetailsVO();
-		cashBank.setNDebitAmount(receiptAmt);
+		cashBank.setNDebitAmount(effectivereceiptAmt);
 		cashBank.setAccountName(receiptVO.getBankCashAcc());
 		cashBank.setSubLedgerCode("None");
-		cashBank.setDebitAmount(receiptAmt);
+		cashBank.setDebitAmount(effectivereceiptAmt);
 		cashBank.setNCreditAmount(BigDecimal.ZERO);
 		cashBank.setCreditAmount(BigDecimal.ZERO);
 		cashBank.setArapFlag(false);
 		cashBank.setArapAmount(BigDecimal.ZERO);
-		cashBank.setBDebitAmount(receiptAmt);
+		cashBank.setBDebitAmount(effectivereceiptAmt);
 		cashBank.setBCrAmount(BigDecimal.ZERO);
 		cashBank.setBArapAmount(BigDecimal.ZERO);
 		cashBank.setACurrency(receiptVO.getCurrency());
@@ -685,7 +690,7 @@ public class ARServiceImpl implements ARService {
 
 		// Set totals
 		accountsVO.setTotalDebitAmount(effectiveNetAmount.add(receiptVO.getTdsAmt()));
-		accountsVO.setTotalCreditAmount(receiptAmt.add(receiptVO.getTdsAmt()));
+		accountsVO.setTotalCreditAmount(effectivereceiptAmt.add(receiptVO.getTdsAmt()));
 		accountsVO.setAccountsDetailsVO(accountsDetailsVOs);
 
 		Set<Object[]> tdsLedgers = costInvoiceRepo.getTdsLedgerFromAccountReceivable(receiptVO.getOrgId());
