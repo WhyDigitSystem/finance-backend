@@ -424,6 +424,7 @@ public class TaxInvoiceServiceImpl implements TaxInvoiceService {
 // 		BigDecimal roundedTotalInvAmountBC = totalInvAmountBC.setScale(0, RoundingMode.HALF_UP);
 		taxInvoiceVO.setTotalInvAmountBc(totalInvAmountBC);
 		taxInvoiceVO.setTotalQty(totalQty);
+		taxInvoiceVO.setTotalTaxableAmountLc(totalChargeAmountLC);
 
 		taxInvoiceVO.setTaxInvoiceDetailsVO(taxInvoiceDetailsVOs);
 

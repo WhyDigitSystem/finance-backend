@@ -54,5 +54,15 @@ public interface ARService {
 	ReceiptVO approveReceipt(Long orgId, Long id, String docId, String action, String actionBy)
 			throws ApplicationException;
 
+	
+	//Report
+	List<Map<String, Object>> getReceiptDetails(Long orgId, String finYear, String partyname, String fromDate,
+			String toDate);
+
+	List<Map<String, Object>> getReceiptSummary(Long orgId, String finYear, String partyname, String fromDate,
+			String toDate);
+
+	ReceiptVO getReceiptByDocIdAndScreenCode(String docId);
+
 
 }

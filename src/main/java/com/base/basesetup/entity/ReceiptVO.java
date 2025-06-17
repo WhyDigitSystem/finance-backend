@@ -165,7 +165,19 @@ public class ReceiptVO {
 	
 	@Column(name = "status",length = 30)
 	private String status;
+	
+	@Column(name = "shortname",length = 30)
+	private String shortName;
+	
+	@Column(name = "totaloutstanding", precision = 10, scale = 2)
+	private BigDecimal totalOutStanding;
+	
+	@Column(name = "totalchargeamount", precision = 10, scale = 2)
+	private BigDecimal totalChargeAmount;
     
+	@Column(name = "receivableamount", precision = 10, scale = 2)
+	private BigDecimal receivableAmount;
+	
 	@DateTimeFormat(pattern = "dd-MM-yyyy hh:mm:ss a")
 	@Column(name="approveon")
 	private String approveOn;

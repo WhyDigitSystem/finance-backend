@@ -30,6 +30,7 @@ public class ReceiptDTO {
 	private String inCurrencyTdsAmt;
 	private String chequeBank;
 	private String receiptType;
+	private String shortName;
 	private String chequeUtiNo;
 	private LocalDate chequeUtiDate;
 	private String receivedFrom;
