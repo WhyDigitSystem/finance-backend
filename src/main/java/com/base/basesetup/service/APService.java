@@ -12,6 +12,7 @@ import com.base.basesetup.dto.ApBillBalanceDTO;
 import com.base.basesetup.dto.PaymentDTO;
 import com.base.basesetup.entity.ApBillBalanceVO;
 import com.base.basesetup.entity.PaymentVO;
+import com.base.basesetup.entity.TaxInvoiceVO;
 import com.base.basesetup.exception.ApplicationException;
 
 @Service
@@ -22,6 +23,8 @@ public interface APService {
 
 	List<PaymentVO> getPaymentById(Long id);
 
+	PaymentVO getPaymentByDocId(Long orgId, String docId);
+	
 	Map<String, Object> updateCreatePayment(PaymentDTO paymentDTO) throws ApplicationException;
 
 	List<Map<String, Object>> getPartyNameAndCodeForPayment(Long orgId,String partyName);
@@ -32,6 +35,10 @@ public interface APService {
 	List<Map<String, Object>> getStateCodeByOrgIdForPayment(Long orgId);
 
 	List<Map<String, Object>> getAccountGroupNameByOrgIdForPayment(Long orgId);
+	
+List<Map<String, Object>> getPaymentDetails(Long orgId, String finYear,String partyname,String fromDate, String toDate);
+	
+	List<Map<String, Object>> getPaymentSummary(Long orgId, String finYear,String partyname,String fromDate, String toDate);
 
 	String getPaymentDocId(Long orgId, String finYear, String branch, String branchCode);
 

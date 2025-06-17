@@ -30,5 +30,5 @@ public interface ArapAdjustmentsService {
 	
 	List<Map<String, Object>> GetArapAgeing(String asondate , String pdate,String partyname,Long orgId);
 	
-	List<Map<String, Object>> GetArapAdjustments(String asondt,String partyname, String branch, Long orgId);
+	List<Map<String, Object>> GetArapAdjustments(String asondt,String partyname, String branch, Long orgId, String pdate);
 }
