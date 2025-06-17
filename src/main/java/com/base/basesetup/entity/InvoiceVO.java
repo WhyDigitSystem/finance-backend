@@ -1,6 +1,5 @@
 package com.base.basesetup.entity;
 
-
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -46,10 +45,10 @@ public class InvoiceVO {
 
 	@Column(name = "vendoraddress", columnDefinition = "TEXT")
 	private String vendorAddress;
-	
+
 	@Column(name = "vendorname")
 	private String vendorName;
-	
+
 	@Column(name = "gstin")
 	private String gstIn;
 
@@ -59,34 +58,35 @@ public class InvoiceVO {
 	@Column(name = "termsandconditions", length = 1000, columnDefinition = "TEXT")
 	private String termsAndConditions;
 
+	@Column(name = "subtotal", precision = 10, scale = 2)
+	private BigDecimal subTotal;
 
-	@Column(name="subtotal",precision = 10, scale = 2)
-    private BigDecimal subTotal;
+	@Column(name = "totaltaxamount", precision = 10, scale = 2)
+	private BigDecimal totalTaxAmount;
 
+	@Column(name = "total", precision = 10, scale = 2)
+	private BigDecimal total;
 
-	@Column(name = "total")
-	private Long total;
-
-	@Column(name = "gsttype", length = 1000, columnDefinition = "TEXT")
-	private String gstType;
-
+	@Column(name = "remarks")
+	private String remarks;
 
 	@Column(name = "orgid")
 	private Long orgId;
-	
+
 	@Column(name = "finyear")
 	private String finYear;
-	
+
 	@Column(name = "createdby", columnDefinition = "TEXT")
 	private String createdBy;
-	
+
 	@Column(name = "modifiedby", columnDefinition = "TEXT")
 	private String modifiedBy;
-	
+
 	@Column(name = "cancel")
 	private boolean cancel = false;
-	
 
+	@Column(name = "active")
+	private boolean active = true;
 
 	@OneToMany(mappedBy = "invoiceVO", cascade = CascadeType.ALL)
 	@JsonManagedReference

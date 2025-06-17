@@ -131,10 +131,8 @@ public class ReportServiceImpl implements ReportService {
 		invoiceVO.setVendorName(invoiceDTO.getVendorName());
 		invoiceVO.setGstIn(invoiceDTO.getGstIn());
 		invoiceVO.setTermsAndConditions(invoiceDTO.getTermsAndConditions());
-		invoiceVO.setTotal(invoiceDTO.getTotal());
-		invoiceVO.setGstType(invoiceDTO.getGstType());
 		invoiceVO.setFinYear(invoiceDTO.getFinYear());
-
+		invoiceVO.setRemarks(invoiceDTO.getRemarks());
 		invoiceVO.setOrgId(invoiceDTO.getOrgId());
 
 		if (ObjectUtils.isNotEmpty(invoiceDTO.getId())) {
@@ -143,6 +141,8 @@ public class ReportServiceImpl implements ReportService {
 		}
 
 		BigDecimal subToatl = BigDecimal.ZERO;
+		BigDecimal taxAmount = BigDecimal.ZERO;
+		BigDecimal totalTaxAmount = BigDecimal.ZERO;
 		List<InvoiceProductLinesVO> invoiceProductLinesVOs = new ArrayList<>();
 		if (invoiceDTO.getItems() != null) {
 			for (InvoiceProductLinesDTO invoiceProductLinesDTO : invoiceDTO.getItems()) {
@@ -150,60 +150,23 @@ public class ReportServiceImpl implements ReportService {
 				invoiceProductLinesVO1.setDescription(invoiceProductLinesDTO.getDescription());
 				invoiceProductLinesVO1.setQuantity(invoiceProductLinesDTO.getQuantity());
 				invoiceProductLinesVO1.setRate(invoiceProductLinesDTO.getRate());
-				invoiceProductLinesVO1.setSgst(invoiceProductLinesDTO.getSgst());
-				invoiceProductLinesVO1.setCgst(invoiceProductLinesDTO.getCgst());
-				invoiceProductLinesVO1.setIgst(invoiceProductLinesDTO.getIgst());
-				invoiceProductLinesVO1.setTax(invoiceProductLinesDTO.getTax());
-				invoiceProductLinesVO1
-						.setBaseAmount(invoiceProductLinesDTO.getQuantity().multiply(invoiceProductLinesDTO.getRate()));
-
-//				BigDecimal taxAmount = BigDecimal.ZERO;
-//				if (invoiceVO.getGstType() == null || invoiceVO.getGstType().isEmpty()
-//						|| !invoiceVO.getGstType().equalsIgnoreCase("INTRA")
-//								&& !invoiceVO.getGstType().equalsIgnoreCase("INTER")) {
-//					invoiceProductLinesVO1.setIgstAmount(BigDecimal.ZERO);
-//					invoiceProductLinesVO1.setCgstAmount(BigDecimal.ZERO);
-//					invoiceProductLinesVO1.setSgstAmount(BigDecimal.ZERO);
-//					invoiceProductLinesVO1.setTaxValue(BigDecimal.ZERO);
-//				} else {
-//					if (invoiceVO.getGstType().equalsIgnoreCase("INTER")) {
-//						BigDecimal igstAmount = invoiceProductLinesDTO.getIgst()
-//								.multiply(invoiceProductLinesDTO.getBaseAmount()).divide(BigDecimal.valueOf(100));
-//						invoiceProductLinesVO1.setCgstAmount(BigDecimal.ZERO);
-//						invoiceProductLinesVO1.setSgstAmount(BigDecimal.ZERO);
-//						taxAmount = igstAmount;
-//						invoiceProductLinesVO1.setIgstAmount(igstAmount);
-//						invoiceProductLinesVO1.setTaxValue(taxAmount);
-//
-//					} else if (invoiceVO.getGstType().equalsIgnoreCase("INTRA")) {
-//						BigDecimal sgstAmount = invoiceProductLinesDTO.getSgst()
-//								.multiply(invoiceProductLinesDTO.getBaseAmount()).divide(BigDecimal.valueOf(100));
-//						BigDecimal cgstAmount = invoiceProductLinesDTO.getCgst()
-//								.multiply(invoiceProductLinesDTO.getBaseAmount()).divide(BigDecimal.valueOf(100));
-//						invoiceProductLinesVO1.setIgstAmount(BigDecimal.ZERO);
-//						invoiceProductLinesVO1.setSgstAmount(sgstAmount);
-//						invoiceProductLinesVO1.setCgstAmount(cgstAmount);
-//						taxAmount = cgstAmount.add(sgstAmount);
-//						invoiceProductLinesVO1.setTaxValue(taxAmount);
-//					}
-				// }
-
-				BigDecimal taxAmount = BigDecimal.ZERO;
-				taxAmount = invoiceProductLinesDTO.getTax().multiply(invoiceProductLinesDTO.getBaseAmount())
+				invoiceProductLinesVO1.setTax(invoiceProductLinesDTO.getTax());				
+				invoiceProductLinesVO1.setAmount(invoiceProductLinesDTO.getQuantity().multiply(invoiceProductLinesDTO.getRate()));
+				taxAmount = invoiceProductLinesDTO.getTax().multiply(invoiceProductLinesVO1.getAmount())
 						.divide(BigDecimal.valueOf(100));
-
-				// invoiceProductLinesVO1. (taxAmount);
-
-				// invoiceProductLinesVO1
-				// .setAmount(invoiceProductLinesDTO.getBaseAmount().add(invoiceProductLinesVO1.getTaxValue()));
-
+				invoiceProductLinesVO1.setTaxValue(taxAmount);
 				subToatl = subToatl.add(invoiceProductLinesVO1.getAmount());
+				totalTaxAmount=totalTaxAmount.add(invoiceProductLinesVO1.getTaxValue());
 				invoiceProductLinesVO1.setInvoiceVO(invoiceVO);
 				invoiceProductLinesVOs.add(invoiceProductLinesVO1);
 			}
 		}
 
 		invoiceVO.setSubTotal(subToatl);
+		invoiceVO.setTotalTaxAmount(totalTaxAmount);
+		BigDecimal totalAmount=subToatl.add(totalTaxAmount);
+		invoiceVO.setTotal(totalAmount);
+				
 		invoiceVO.setProductLines(invoiceProductLinesVOs);
 
 	}
@@ -598,27 +561,41 @@ public class ReportServiceImpl implements ReportService {
 
 	@Override
 	public Map<String, Object> createUpdateQuotatio(QuotationDTO quotationDTO) throws ApplicationException {
-		QuotationVO quotationVO;
+		QuotationVO quotationVO = new QuotationVO();
 		String message = null;
 
 		if (ObjectUtils.isEmpty(quotationDTO.getId())) {
+			if (quotationRepo.existsByOrgIdAndQuotationNo(quotationDTO.getOrgId(), quotationDTO.getQuotationNo())) {
+				String errorMessage = String.format("The QuotationNo: %s already exists This Organization.",
+						quotationDTO.getQuotationNo());
+				throw new ApplicationException(errorMessage);
+			}
 			quotationVO = new QuotationVO();
 			quotationVO.setCreatedBy(quotationDTO.getCreatedBy());
 			quotationVO.setUpdatedBy(quotationDTO.getCreatedBy());
-			message = "Quotation Created Successfully";
+			message = "Quotation Creation SuccessFully";
 		} else {
-			quotationVO = quotationRepo.findById(quotationDTO.getId()).orElseThrow(
-					() -> new ApplicationException("Quotation Not Found with id: " + quotationDTO.getId()));
+
+			quotationVO = quotationRepo.findById(quotationDTO.getId())
+					.orElseThrow(() -> new ApplicationException("Quotation not found with id: " + quotationDTO.getId()));
 			quotationVO.setUpdatedBy(quotationDTO.getCreatedBy());
-			message = "Quotation Updation Successfully";
+			if (!quotationVO.getQuotationNo().equalsIgnoreCase(quotationDTO.getQuotationNo())) {
+				if (quotationRepo.existsByOrgIdAndQuotationNo(quotationDTO.getOrgId(), quotationDTO.getQuotationNo())) {
+					String errorMessage = String.format("The QuotationNo : %s already exists This Organization.",
+							quotationDTO.getQuotationNo());
+					throw new ApplicationException(errorMessage);
+				}
+				quotationVO.setQuotationNo(quotationDTO.getQuotationNo().toUpperCase());
+			}
+			message = "Quotation Update Successfully";
 		}
 
-		quotationVO = getQuotationVOFromQuotationDTO(quotationVO, quotationDTO);
+		getQuotationVOFromQuotationDTO(quotationVO, quotationDTO);
 		quotationRepo.save(quotationVO);
 		Map<String, Object> response = new HashMap<>();
-		response.put("message", message);
 		response.put("quotationVO", quotationVO);
-		return response;
+		response.put("message", message);
+		return response;	
 	}
 
 	private QuotationVO getQuotationVOFromQuotationDTO(QuotationVO quotationVO, QuotationDTO quotationDTO) {
@@ -626,9 +603,7 @@ public class ReportServiceImpl implements ReportService {
 		quotationVO.setQuotationDate(quotationDTO.getQuotationDate());
 		quotationVO.setDeliveryAddress(quotationDTO.getDeliveryAddress());
 		quotationVO.setCustomerAddress(quotationDTO.getCustomerAddress());
-//	    quotationVO.setFinYear(quotationDTO.getFinYear());
 		quotationVO.setOrgId(quotationDTO.getOrgId());
-
 		quotationVO.setCode(quotationDTO.getCode());
 		quotationVO.setFinYear(quotationDTO.getFinYear());
 		quotationVO.setCompanyAddress(quotationDTO.getCompanyAddress());
@@ -641,7 +616,8 @@ public class ReportServiceImpl implements ReportService {
 
 		}
 		BigDecimal subTotal = BigDecimal.ZERO;
-
+		BigDecimal taxAmount = BigDecimal.ZERO;
+		BigDecimal totalTaxAmount = BigDecimal.ZERO;
 		List<QuotationDetailsVO> quotationDetailsVOs = new ArrayList<>();
 		for (QuotationDetailsDTO quotationDetailsDTO : quotationDTO.getQuotationDetailsDTO()) {
 			QuotationDetailsVO quotationDetailsVO = new QuotationDetailsVO();
@@ -651,22 +627,22 @@ public class ReportServiceImpl implements ReportService {
 			quotationDetailsVO.setRate(quotationDetailsDTO.getRate());
 			quotationDetailsVO.setTax(quotationDetailsDTO.getTax());
 
-			BigDecimal baseAmount = quotationDetailsDTO.getQuantity().multiply(quotationDetailsDTO.getRate());
-			quotationDetailsVO.setBaseAmount(baseAmount);
-
-			BigDecimal taxAmount = baseAmount.multiply(quotationDetailsDTO.getTax()).divide(BigDecimal.valueOf(100));
+			
+			quotationDetailsVO.setAmount(quotationDetailsDTO.getQuantity().multiply(quotationDetailsDTO.getRate()));
+			taxAmount = quotationDetailsDTO.getTax().multiply(quotationDetailsDTO.getAmount())
+					.divide(BigDecimal.valueOf(100));
 			quotationDetailsVO.setTaxAmount(taxAmount);
-
-			BigDecimal totalAmount = baseAmount.add(taxAmount);
-			quotationDetailsVO.setAmount(totalAmount);
-
-			subTotal = subTotal.add(totalAmount);
+			subTotal = subTotal.add(quotationDetailsVO.getAmount());
+			totalTaxAmount=totalTaxAmount.add(quotationDetailsVO.getTaxAmount());
 
 			quotationDetailsVO.setQuotationVO(quotationVO);
 			quotationDetailsVOs.add(quotationDetailsVO);
 		}
 
 		quotationVO.setSubTotal(subTotal);
+		quotationVO.setTotalTaxAmount(totalTaxAmount);
+		BigDecimal totalAmount=subTotal.add(totalTaxAmount);
+		quotationVO.setTotalAmount(totalAmount);		
 		quotationVO.setQuotationDetailsVO(quotationDetailsVOs);
 
 		return quotationVO;
@@ -726,8 +702,8 @@ public class ReportServiceImpl implements ReportService {
 	}
 
 	@Override
-	public List<Map<String, Object>> getMimFillGridgettransaction(Long orgId, String Receiver) {
-		Set<Object[]> requestedByDetails = taxInvoiceRepo.getMimFillGridgettransaction(orgId, Receiver);
+	public List<Map<String, Object>> getMimFillGridgettransaction(Long orgId, String Receiver,String docId) {
+		Set<Object[]> requestedByDetails = taxInvoiceRepo.getMimFillGridgettransaction(orgId, Receiver,docId);
 		return getMimFillGridgettransaction(requestedByDetails);
 	}
 
@@ -735,7 +711,6 @@ public class ReportServiceImpl implements ReportService {
 		List<Map<String, Object>> List1 = new ArrayList<>();
 		for (Object[] ch : chCode) {
 			Map<String, Object> map = new HashMap<>();
-//				map.put("employeeId", ch[0] != null ? Integer.parseInt(ch[0].toString()) : 0);
 			map.put("transactionno", ch[0] != null ? ch[0].toString() : "");
 			List1.add(map);
 		}
@@ -825,6 +800,55 @@ public class ReportServiceImpl implements ReportService {
 
 		return retrievalManifestProviderRepo.findRIMReports(type, orgId, customerName, finYear, toDate, fromDate);
 	}
+	
+	
+	@Override
+	public List<Map<String, Object>> findMimSummaryReport(String type, Long orgId, String customerName, String finYear,
+			String fromDate, String toDate) {
+		Set<Object[]> chCode = issueManifestProviderRepo.findMimSummaryReport(type, orgId, customerName, finYear,fromDate, toDate);
+		return findMimSummary(chCode);
+	}
+
+	private List<Map<String, Object>> findMimSummary(Set<Object[]> chCode) {
+		List<Map<String, Object>> list1 = new ArrayList<>();
+		for (Object[] sup : chCode) {
+			Map<String, Object> doctype = new HashMap<>();
+			doctype.put("transactionNo", sup[0] != null ? sup[0].toString() : "");
+			doctype.put("transactionDate", sup[1] != null ? sup[1].toString() : "");
+			doctype.put("transporterName", sup[2] != null ? sup[2].toString() : "");
+			doctype.put("receiver", sup[3] != null ? sup[3].toString() : "");
+			doctype.put("amount", sup[4] != null ? new BigDecimal(sup[4].toString()) : BigDecimal.ZERO);
+			doctype.put("hsnCode", sup[5] != null ? Long.parseLong(sup[5].toString()) : 0L); 
+			doctype.put("kitQty", sup[6] != null ? new BigDecimal(sup[6].toString()) : BigDecimal.ZERO);
+			list1.add(doctype);
+		}
+		return list1;
+	}
+
+	
+	@Override
+	public List<Map<String, Object>> findRimSummaryReport(String type, Long orgId, String customerName, String finYear,
+			String fromDate, String toDate) {
+		Set<Object[]> chCode = issueManifestProviderRepo.findRimSummaryReport(type, orgId, customerName, finYear,fromDate, toDate);
+		return findRimSummary(chCode);
+	}
+
+	private List<Map<String, Object>> findRimSummary(Set<Object[]> chCode) {
+		List<Map<String, Object>> list1 = new ArrayList<>();
+		for (Object[] sup : chCode) {
+			Map<String, Object> doctype = new HashMap<>();
+			doctype.put("transactionNo", sup[0] != null ? sup[0].toString() : "");
+			doctype.put("transactionDate", sup[1] != null ? sup[1].toString() : "");
+			doctype.put("transporterName", sup[2] != null ? sup[2].toString() : "");
+			doctype.put("sender", sup[3] != null ? sup[3].toString() : "");
+			doctype.put("amount", sup[4] != null ? new BigDecimal(sup[4].toString()) : BigDecimal.ZERO);
+			doctype.put("hsnCode", sup[5] != null ? Long.parseLong(sup[5].toString()) : 0L); 
+			doctype.put("kitQty", sup[6] != null ? new BigDecimal(sup[6].toString()) : BigDecimal.ZERO);
+			list1.add(doctype);
+		}
+		return list1;
+	}
+	
 
 //	@Override
 //	public List<RetrievalManifestProviderVO> findRIMMIMReports(

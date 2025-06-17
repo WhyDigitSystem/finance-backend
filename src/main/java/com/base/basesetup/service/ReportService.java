@@ -39,7 +39,7 @@ public interface ReportService {
 		
 		List<Map<String, Object>> getFillGridForTaxInvoice(Long orgId);
 		
-		List<Map<String, Object>> getMimFillGridgettransaction(Long orgId,String Receiver);
+		List<Map<String, Object>> getMimFillGridgettransaction(Long orgId,String Receiver,String docId);
 		
 		List<Map<String, Object>> getMimFillGridgetKitDetails(Long orgId, String TransactionNo);
 		
@@ -84,6 +84,12 @@ public interface ReportService {
 
 		List<RetrievalManifestProviderVO> findRIMReports(String type, Long orgId, String customerName, String finYear,
 				String toDate, String fromDate);
+
+		List<Map<String, Object>> findMimSummaryReport(String type, Long orgId, String customerName, String finYear,
+				String fromDate, String toDate);
+
+		List<Map<String, Object>> findRimSummaryReport(String type, Long orgId, String customerName, String finYear,
+				String fromDate, String toDate);
 
 //		List<RetrievalManifestProviderVO> findRIMMIMReports(String type, Long orgId, String customerName,
 //				String finYear, String toDate, String fromDate);
