@@ -233,11 +233,11 @@ public class ArapAdjustmentsController extends BaseController {
 	
 	
 	@GetMapping("/GetArapAdjustments")
-	public ResponseEntity<ResponseDTO> GetArapAdjustments(@RequestParam (required=true) String asondt,
-			@RequestParam (required=true)String partyName,
-			@RequestParam (required=false) String branch,
-			@RequestParam (required=true)Long orgId,
-			@RequestParam (required=false)String pdate) {
+	public ResponseEntity<ResponseDTO> GetArapAdjustments(@RequestParam(required = true) String Asondate, 
+			@RequestParam(required = true) String partyname,@RequestParam(required = true) String branch,  
+			@RequestParam(required = true)  Long orgId, 
+			@RequestParam(required = false) String pdate, 
+			@RequestParam(required = true) Long finyear	) {
 		String methodName = "GetArapAdjustments()"; 
 		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
 		String errorMsg = null;
@@ -245,7 +245,7 @@ public class ArapAdjustmentsController extends BaseController {
 		ResponseDTO responseDTO = null;
 		List<Map<String, Object>> mapp = new ArrayList<>();
 		try {
-			mapp = arapAdjustmentsService.GetArapAdjustments(asondt, partyName,branch ,orgId, pdate);
+			mapp = arapAdjustmentsService.GetArapAdjustments(Asondate, partyname,branch,orgId,pdate,finyear);
 		} catch (Exception e) {
 			errorMsg = e.getMessage();
 			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);

@@ -573,9 +573,11 @@ public class ApController extends BaseController {
 	// Ap Outstanding
 
 	@GetMapping("/getAPOutstanding")
-	public ResponseEntity<ResponseDTO> getAPOutstanding(@RequestParam(required = true) String Asondate,
-			@RequestParam(required = true) String partyname, @RequestParam(required = false) String pdate,
-			@RequestParam(required = true) Long orgId) {
+	public ResponseEntity<ResponseDTO> getAPOutstanding(@RequestParam(required = true) String Asondate, 
+			@RequestParam(required = true) String partyname,@RequestParam(required = true) String branch,  
+			@RequestParam(required = true)  Long orgId, 
+			@RequestParam(required = false) String pdate, 
+			@RequestParam(required = true) Long finyear) {
 		String methodName = "getAPOutstanding()";
 		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
 		String errorMsg = null;
@@ -583,7 +585,7 @@ public class ApController extends BaseController {
 		ResponseDTO responseDTO = null;
 		List<Map<String, Object>> APOutstanding = new ArrayList<>();
 		try {
-			APOutstanding = apService.getAPOutstanding(Asondate, partyname, pdate, orgId);
+			APOutstanding = apService.getAPOutstanding(Asondate, partyname,branch,orgId,pdate,finyear);
 		} catch (Exception e) {
 			errorMsg = e.getMessage();
 			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);

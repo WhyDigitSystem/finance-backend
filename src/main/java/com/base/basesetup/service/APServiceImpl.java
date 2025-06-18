@@ -623,8 +623,8 @@ public class APServiceImpl implements APService {
 	}
 
 	@Override
-	public List<Map<String, Object>> getAPOutstanding(String Asondate, String partyname, String pdate, Long orgId) {
-		Set<Object[]> group = arapAdjustmentsRepo.findAPOutstanding(Asondate, partyname, pdate, orgId);
+	public List<Map<String, Object>> getAPOutstanding(String Asondate, String partyname, String branch, Long orgId,String pdate,Long finyear) {
+		Set<Object[]> group = arapAdjustmentsRepo.findAPOutstanding(Asondate, partyname,branch,orgId,pdate,finyear);
 		return getAPOutstanding(group);
 	}
 
@@ -632,22 +632,20 @@ public class APServiceImpl implements APService {
 		List<Map<String, Object>> apage = new ArrayList<>();
 		for (Object[] sup : customer) {
 			Map<String, Object> apageing = new HashMap<>();
-			apageing.put("orgId", sup[0] != null ? sup[0].toString() : "");
-			apageing.put("subledgerCode", sup[1] != null ? sup[1].toString() : "");
-			apageing.put("subledgerName", sup[2] != null ? sup[2].toString() : "");
-			apageing.put("partyType", sup[3] != null ? sup[3].toString() : "");
-			apageing.put("creditDays", sup[4] != null ? sup[4].toString() : "");
-			apageing.put("creditLimit", sup[5] != null ? sup[5].toString() : "");
-			apageing.put("amount", sup[6] != null ? sup[6].toString() : "");
-			apageing.put("outstanding", sup[7] != null ? sup[7].toString() : "");
-			apageing.put("unadjusted", sup[8] != null ? sup[8].toString() : "");
-			apageing.put("totalDue", sup[9] != null ? sup[9].toString() : "");
-			apageing.put("mslab1", sup[10] != null ? sup[10].toString() : "");
-			apageing.put("mslab2", sup[11] != null ? sup[11].toString() : "");
-			apageing.put("mslab3", sup[12] != null ? sup[12].toString() : "");
-			apageing.put("mslab4", sup[13] != null ? sup[13].toString() : "");
-			apageing.put("mslab5", sup[14] != null ? sup[14].toString() : "");
-			apageing.put("name", sup[15] != null ? sup[15].toString() : "");
+			apageing.put("no", sup[0] != null ? sup[0].toString() : "");
+			apageing.put("orgId", sup[1] != null ? sup[1].toString() : "");
+			apageing.put("subledgerCode", sup[2] != null ? sup[2].toString() : "");
+			apageing.put("partyName", sup[3] != null ? sup[3].toString() : "");
+			apageing.put("subledgerName", sup[4] != null ? sup[4].toString() : "");
+			apageing.put("partyType", sup[5] != null ? sup[5].toString() : "");
+			apageing.put("branch", sup[6] != null ? sup[6].toString() : "");
+			apageing.put("currency", sup[7] != null ? sup[7].toString() : "");
+			apageing.put("creditDays", sup[8] != null ? sup[8].toString() : "");
+			apageing.put("creditLimit", sup[9] != null ? sup[9].toString() : "");
+			apageing.put("amount", sup[10] != null ? sup[10].toString() : "");
+			apageing.put("outstanding", sup[11] != null ? sup[11].toString() : "");
+			apageing.put("unadjusted", sup[12] != null ? sup[12].toString() : "");
+			apageing.put("totaldue", sup[13] != null ? sup[13].toString() : "");
 
 			apage.add(apageing);
 		}
