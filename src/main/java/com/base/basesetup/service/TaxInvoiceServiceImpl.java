@@ -1112,8 +1112,9 @@ public class TaxInvoiceServiceImpl implements TaxInvoiceService {
 			map.put("qty",                ch[19] != null ? new BigDecimal(ch[19].toString()) : BigDecimal.ZERO);  // 19
 			map.put("rate",                ch[20] != null ? new BigDecimal(ch[20].toString()) : BigDecimal.ZERO);  // 20
 			map.put("taxable",             ch[21] != null ? ch[21].toString() : "");  // 21
-			map.put("gstamount",           ch[22] != null ? new BigDecimal(ch[22].toString()) : BigDecimal.ZERO);  // 22
-
+			map.put("billAmount",           ch[22] != null ? new BigDecimal(ch[22].toString()) : BigDecimal.ZERO);  // 22
+			map.put("gstamount",           ch[23] != null ? new BigDecimal(ch[23].toString()) : BigDecimal.ZERO);  // 22
+			map.put("totalLcAmount",           ch[24] != null ? new BigDecimal(ch[24].toString()) : BigDecimal.ZERO);  // 22
 			List1.add(map);
 		}
 		return List1;

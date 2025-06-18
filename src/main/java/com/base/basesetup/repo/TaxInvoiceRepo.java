@@ -567,7 +567,8 @@ TaxInvoiceVO getTaxInvoiceByDocIdandScreenCode(String screenCode, String docId);
 		+ "    b.rate,\r\n"
 		+ "    b.taxable,\r\n"
 		+ "    b.billamount,\r\n"
-		+ "    b.gstamount\r\n"
+		+ "    b.gstamount,\r\n"
+		+ "    b.billamount+b.gstamount as totalLcAmount\r\n"
 		+ "FROM \r\n"
 		+ "    finance_aip.taxinvoice a,\r\n"
 		+ "    finance_aip.taxinvoicedetails b\r\n"
@@ -578,7 +579,7 @@ TaxInvoiceVO getTaxInvoiceByDocIdandScreenCode(String screenCode, String docId);
 		+ "    AND a.finyear = ?2\r\n"
 		+ "    AND (?4 IS NULL OR a.vdate >= ?4)\r\n"
 		+ "    AND (?5 IS NULL OR a.vdate <= ?5)\r\n"
-		+ "    and  (a.branchcode = ?6 OR ?6 = 'ALL')\r\n"
+		+ "  AND (a.branchcode = ?6 OR ?6 = 'ALL')\r\n"
 		+ "ORDER BY \r\n"
 		+ "    a.createdon DESC")
 Set<Object[]> getTaxinvoiceDetails(Long orgId, String finYear, String partyname, String fromDate, String toDate,String branchCode);
