@@ -769,8 +769,8 @@ public class ARServiceImpl implements ARService {
 
 	@Override
 	public List<Map<String, Object>> getReceiptDetails(Long orgId, String finYear, String partyname, String fromDate,
-			String toDate) {
-		Set<Object[]> chType = receiptRepo.getReceiptDetails(orgId, finYear, partyname, fromDate, toDate);
+			String toDate,String branchCode) {
+		Set<Object[]> chType = receiptRepo.getReceiptDetails(orgId, finYear, partyname, fromDate, toDate,branchCode);
 		return getReceiptDetails(chType);
 	}
 
@@ -806,8 +806,8 @@ public class ARServiceImpl implements ARService {
 
 	@Override
 	public List<Map<String, Object>> getReceiptSummary(Long orgId, String finYear, String partyname, String fromDate,
-			String toDate) {
-		Set<Object[]> chType = receiptRepo.getReceiptSummary(orgId, finYear, partyname, fromDate, toDate);
+			String toDate,String branchCode) {
+		Set<Object[]> chType = receiptRepo.getReceiptSummary(orgId, finYear, partyname, fromDate, toDate,branchCode);
 		return getReceiptSummary(chType);
 	}
 

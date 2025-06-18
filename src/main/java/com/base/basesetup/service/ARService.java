@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 import com.base.basesetup.dto.ArBillBalanceDTO;
 import com.base.basesetup.dto.ReceiptDTO;
 import com.base.basesetup.entity.ArBillBalanceVO;
-import com.base.basesetup.entity.PaymentVO;
 import com.base.basesetup.entity.ReceiptVO;
 import com.base.basesetup.exception.ApplicationException;
 
@@ -57,10 +56,10 @@ public interface ARService {
 	
 	//Report
 	List<Map<String, Object>> getReceiptDetails(Long orgId, String finYear, String partyname, String fromDate,
-			String toDate);
+			String toDate,String branchCode);
 
 	List<Map<String, Object>> getReceiptSummary(Long orgId, String finYear, String partyname, String fromDate,
-			String toDate);
+			String toDate,String branchCode);
 
 	ReceiptVO getReceiptByDocIdAndScreenCode(String docId);
 

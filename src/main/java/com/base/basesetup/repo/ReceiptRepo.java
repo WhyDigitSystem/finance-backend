@@ -498,15 +498,15 @@ public interface ReceiptRepo extends JpaRepository<ReceiptVO, Long> {
 			+ "    b.refno,\r\n"
 			+ "    b.refdate,\r\n"
 			+ "    a.customername,\r\n"
-			+ "	a.customercode,\r\n"
+			+ "    a.customercode,\r\n"
 			+ "    a.receiptamt,\r\n"
 			+ "    a.netamount,\r\n"
 			+ "    a.onaccount,\r\n"
-			+ "	a.chequeutino,\r\n"
-			+ "	a.chequeutidate,\r\n"
+			+ "    a.chequeutino,\r\n"
+			+ "    a.chequeutidate,\r\n"
 			+ "    a.tdsamt,\r\n"
-			+ "    b.amount ,\r\n"
-			+ "    b.gstamt ,\r\n"
+			+ "    b.amount,\r\n"
+			+ "    b.gstamt,\r\n"
 			+ "    b.chargeamt,\r\n"
 			+ "    b.tds,\r\n"
 			+ "    b.settled,\r\n"
@@ -517,23 +517,23 @@ public interface ReceiptRepo extends JpaRepository<ReceiptVO, Long> {
 			+ "WHERE \r\n"
 			+ "    a.receiptid = b.receiptid\r\n"
 			+ "    AND a.orgid = ?1\r\n"
-			+ "    AND (a.customername = ?3 OR ?3 = 'ALL')\r\n"
 			+ "    AND a.finyear = ?2\r\n"
+			+ "    AND (a.customername = ?3 OR ?3 = 'ALL')\r\n"
 			+ "    AND (?4 IS NULL OR a.docdate >= ?4)\r\n"
 			+ "    AND (?5 IS NULL OR a.docdate <= ?5)\r\n"
+			+ "	and (a.branchcode = ?6 OR ?6 = 'ALL')\r\n"
 			+ "ORDER BY \r\n"
 			+ "    a.createdon DESC")
-	Set<Object[]> getReceiptDetails(Long orgId, String finYear, String partyname, String fromDate, String toDate);
+	Set<Object[]> getReceiptDetails(Long orgId, String finYear, String partyname, String fromDate, String toDate,String branchCode);
 
 	@Query(nativeQuery = true, value = "SELECT \r\n"
 			+ "    a.finyear, \r\n"
 			+ "    a.docid, \r\n"
-			+ "    a.docdate, \r\n"
-			+ "	a.customername,\r\n"
-			+ "	a.customercode,\r\n"
+			+ "    a.docdate,\r\n"
+			+ "    a.customername,\r\n"
+			+ "    a.customercode,\r\n"
 			+ "    a.chequeutino, \r\n"
-			+ "    a.chequeutidate, \r\n"
-			+ "    \r\n"
+			+ "    a.chequeutidate,\r\n"
 			+ "    a.receiptamt, \r\n"
 			+ "    a.netamount,\r\n"
 			+ "    a.tdsamt, \r\n"
@@ -547,9 +547,10 @@ public interface ReceiptRepo extends JpaRepository<ReceiptVO, Long> {
 			+ "    AND a.finyear = ?2\r\n"
 			+ "    AND (?4 IS NULL OR a.docdate >= ?4)\r\n"
 			+ "    AND (?5 IS NULL OR a.docdate <= ?5)\r\n"
+			+ "	and (a.branchcode = ?6 OR ?6 = 'ALL')\r\n"
 			+ "ORDER BY \r\n"
 			+ "    a.createdon DESC")
-	Set<Object[]> getReceiptSummary(Long orgId, String finYear, String partyname, String fromDate, String toDate);
+	Set<Object[]> getReceiptSummary(Long orgId, String finYear, String partyname, String fromDate, String toDate,String branchCode);
 	
 	@Query(nativeQuery = true, value = "select * from receipt where  docid=?1")
 	ReceiptVO getReceiptByDocId(String docId);
