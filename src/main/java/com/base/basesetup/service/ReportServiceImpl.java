@@ -504,15 +504,23 @@ public class ReportServiceImpl implements ReportService {
 			doctype.put("receiptAmount", sup[12] != null ? new BigDecimal(sup[12].toString()) : BigDecimal.ZERO);
 			doctype.put("bankChargesAmt", sup[13] != null ? new BigDecimal(sup[13].toString()) : BigDecimal.ZERO);
 			doctype.put("tdsAmt", sup[14] != null ? new BigDecimal(sup[14].toString()) : BigDecimal.ZERO);
-			doctype.put("invoiceNo", sup[15] != null ? sup[15].toString() : "");
-			doctype.put("invoiceDate", sup[16] != null ? sup[16].toString() : "");
-			doctype.put("refNo", sup[17] != null ? sup[17].toString() : "");
-			doctype.put("refDate", sup[18] != null ? sup[18].toString() : "");
-			doctype.put("arapAmt", sup[19] != null ? new BigDecimal(sup[19].toString()) : BigDecimal.ZERO);
-			doctype.put("chargableAmt", sup[20] != null ? new BigDecimal(sup[20].toString()) : BigDecimal.ZERO);
-			doctype.put("arApOutstanding", sup[21] != null ? new BigDecimal(sup[21].toString()) : BigDecimal.ZERO);
-			doctype.put("arapSettled", sup[22] != null ? new BigDecimal(sup[22].toString()) : BigDecimal.ZERO);
-
+//			doctype.put("invoiceNo", sup[15] != null ? sup[15].toString() : "");
+//			doctype.put("invoiceDate", sup[16] != null ? sup[16].toString() : "");
+//			doctype.put("refNo", sup[17] != null ? sup[17].toString() : "");
+//			doctype.put("refDate", sup[18] != null ? sup[18].toString() : "");
+			doctype.put("arapAmt", sup[15] != null ? new BigDecimal(sup[15].toString()) : BigDecimal.ZERO);
+			doctype.put("chargableAmt", sup[16] != null ? new BigDecimal(sup[16].toString()) : BigDecimal.ZERO);
+			doctype.put("arApOutstanding", sup[17] != null ? new BigDecimal(sup[17].toString()) : BigDecimal.ZERO);
+			doctype.put("arapSettled", sup[18] != null ? new BigDecimal(sup[18].toString()) : BigDecimal.ZERO);
+			doctype.put("chequeDate", sup[19] != null ? sup[19].toString() : "");
+			doctype.put("totalAmount", sup[20] != null ? new BigDecimal(sup[20].toString()) : BigDecimal.ZERO);
+//			doctype.put("tds", sup[25] != null ? new BigDecimal(sup[25].toString()) : BigDecimal.ZERO);
+			doctype.put("shortName", sup[21] != null ? sup[21].toString() : "");
+			doctype.put("netAmount", sup[22] != null ? new BigDecimal(sup[22].toString()) : BigDecimal.ZERO);
+			doctype.put("onAccount", sup[23] != null ? new BigDecimal(sup[23].toString()) : BigDecimal.ZERO);
+			doctype.put("rn", sup[24] != null ? new BigDecimal(sup[24].toString()) : BigDecimal.ZERO);
+			doctype.put("chargeAmount", sup[25] != null ? new BigDecimal(sup[25].toString()) : BigDecimal.ZERO);
+			doctype.put("receivableAmount", sup[26] != null ? new BigDecimal(sup[26].toString()) : BigDecimal.ZERO);
 			doctypeMappingDetails.add(doctype);
 		}
 

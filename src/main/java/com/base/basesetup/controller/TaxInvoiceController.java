@@ -613,7 +613,7 @@ public class TaxInvoiceController extends BaseController {
 	
 	
 	@GetMapping("/getTaxinvoiceDetails")
-	public ResponseEntity<ResponseDTO> getTaxinvoiceDetails(@RequestParam Long orgId, @RequestParam(required = true) String finYear, String partyname, String fromDate, String toDate) {
+	public ResponseEntity<ResponseDTO> getTaxinvoiceDetails(@RequestParam Long orgId, @RequestParam(required = true) String finYear, @RequestParam String partyname, String fromDate, String toDate,@RequestParam String branchCode) {
 		String methodName = "getTaxinvoiceDetails()";
 		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
 		String errorMsg = null;
@@ -622,7 +622,7 @@ public class TaxInvoiceController extends BaseController {
 		List<Map<String, Object>> mapp = new ArrayList<>();
 
 		try {
-			mapp = taxInvoiceService.getTaxinvoiceDetails(orgId, finYear, partyname, fromDate, toDate);
+			mapp = taxInvoiceService.getTaxinvoiceDetails(orgId, finYear, partyname, fromDate, toDate,branchCode);
 		} catch (Exception e) {
 			errorMsg = e.getMessage();
 			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
@@ -642,7 +642,8 @@ public class TaxInvoiceController extends BaseController {
 
 	
 	@GetMapping("/getTaxinvoiceSummary")
-	public ResponseEntity<ResponseDTO> getTaxinvoiceSummary(@RequestParam Long orgId, @RequestParam(required = true) String finYear, String partyname, String fromDate, String toDate) {
+	public ResponseEntity<ResponseDTO> getTaxinvoiceSummary(@RequestParam Long orgId, @RequestParam(required = true) String finYear,@RequestParam
+			String partyname, String fromDate, String toDate,@RequestParam String branchCode) {
 		String methodName = "getTaxinvoiceSummary()";
 		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
 		String errorMsg = null;
@@ -651,7 +652,7 @@ public class TaxInvoiceController extends BaseController {
 		List<Map<String, Object>> mapp = new ArrayList<>();
 
 		try {
-			mapp = taxInvoiceService.getTaxinvoiceSummary(orgId, finYear, partyname, fromDate, toDate);
+			mapp = taxInvoiceService.getTaxinvoiceSummary(orgId, finYear, partyname, fromDate, toDate,branchCode);
 		} catch (Exception e) {
 			errorMsg = e.getMessage();
 			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);

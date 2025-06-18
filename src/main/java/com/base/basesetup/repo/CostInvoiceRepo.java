@@ -305,20 +305,27 @@ public interface CostInvoiceRepo extends JpaRepository<CostInvoiceVO, Long> {
 			+ "    a.suppliername,\r\n"
 			+ "    a.supplierplace,\r\n"
 			+ "    a.gsttype,\r\n"
-			+ "    a.mode,\r\n"
 			+ "    a.totchargeslcamt,\r\n"
-			+ "    a.payment\r\n"
-			+ "FROM finance_aip.costinvoice a\r\n"
+			+ "    a.payment,\r\n"
+			+ "    a.vdate,\r\n"
+			+ "    a.gstinputlcamt,\r\n"
+			+ "    a.netbilllcamt,\r\n"
+			+ "    a.totchargeslcamt + a.gstinputlcamt as totalAmount,\r\n"
+			+ "    a1.totaltds\r\n"
+			+ "FROM \r\n"
+			+ "    finance_aip.costinvoice a,tdscostinvoice a1 \r\n"
 			+ "WHERE \r\n"
-			+ "    a.orgid = ?1\r\n"
-			+ "    AND a.finyear = ?4\r\n"
-			+ "    AND (?2 IS NULL OR a.vdate >= ?2)\r\n"
+			+ "a.costinvoiceid=a1.costinvoiceid and \r\n"
+			+ "    a.orgid =?1\r\n"
+			+ "  AND a.finyear = ?4\r\n"
+			+ "  AND (?2 IS NULL OR a.vdate >= ?2)\r\n"
 			+ "    AND (?3 IS NULL OR a.vdate <= ?3)\r\n"
 			+ "    AND (?5 IS NULL OR ?5 = 'ALL' OR a.suppliername = ?5)\r\n"
-			+ "ORDER BY a.createdon DESC\r\n"
-			+ "")
+			+ " AND (a.branchcode = ?6 OR ?6 = 'ALL')\r\n"
+			+ "ORDER BY \r\n"
+			+ "    a.createdon DESC")
 	Set<Object[]> getCostInvoiceSummary(Long orgId, String fromDate, String	 toDate, String finYear,
-			String partyName);
+			String partyName,String branchCode);
 	
 	
 @Query(nativeQuery = true,value ="SELECT \r\n"
@@ -344,19 +351,29 @@ public interface CostInvoiceRepo extends JpaRepository<CostInvoiceVO, Long> {
 		+ "    c.chargername,\r\n"
 		+ "    c.ledger,\r\n"
 		+ "    c.lcamt,\r\n"
-		+ "    c.gst\r\n"
-		+ "FROM finance_aip.costinvoice a\r\n"
-		+ "JOIN finance_aip.tdscostinvoice b ON a.costinvoiceid = b.costinvoiceid\r\n"
-		+ "JOIN finance_aip.chargercostinvoice c ON a.costinvoiceid = c.costinvoiceid\r\n"
+		+ "    c.gst,\r\n"
+		+ "    c.qty,\r\n"
+		+ "    c.rate,\r\n"
+		+ "    c.lcamt + c.gst AS totalLcAmount,\r\n"
+		+ "    a.vdate,\r\n"
+		+ "   case \r\n"
+		+ "   when c.ledger like ('%GST%') then 0 else a.netbilllcamt end as netbilllcamt\r\n"
+		+ "FROM \r\n"
+		+ "    finance_aip.costinvoice a\r\n"
+		+ "JOIN \r\n"
+		+ "    finance_aip.tdscostinvoice b ON a.costinvoiceid = b.costinvoiceid\r\n"
+		+ "JOIN \r\n"
+		+ "    finance_aip.chargercostinvoice c ON a.costinvoiceid = c.costinvoiceid\r\n"
 		+ "WHERE \r\n"
-		+ "    a.orgid = ?1\r\n"
-		+ "    AND a.finyear = ?4\r\n"
+		+ "    a.orgid =?1\r\n"
+		+ "   AND a.finyear = ?4\r\n"
 		+ "    AND (?2 IS NULL OR a.vdate >= ?2)\r\n"
-		+ "    AND (?3 IS NULL OR a.vdate <= ?3)\r\n"
-		+ "    AND (?5 IS NULL OR ?5 = 'ALL' OR a.suppliername = ?5)\r\n"
-		+ "ORDER BY a.createdon DESC\r\n"
-		+ "")
-	Set<Object[]> getCostInvoiceDetails(Long orgId, String fromDate, String toDate, String finYear, String partyName);
+		+ "     AND (?3 IS NULL OR a.vdate <= ?3)\r\n"
+		+ "      AND (?5 IS NULL OR ?5 = 'ALL' OR a.suppliername = ?5)\r\n"
+		+ "    AND (a.branchcode = ?6 OR ?6 = 'ALL')\r\n"
+		+ "ORDER BY \r\n"
+		+ "    a.createdon DESC")
+	Set<Object[]> getCostInvoiceDetails(Long orgId, String fromDate, String toDate, String finYear, String partyName,String branchCode);
 
 //	@Query(nativeQuery = true, 
 //		       value = "SELECT * FROM costdebitnote WHERE screencode = ?1 AND docid = ?2")

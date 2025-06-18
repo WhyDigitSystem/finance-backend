@@ -263,6 +263,7 @@ public class ARServiceImpl implements ARService {
 		receiptVO.setTaxAmt(receiptDTO.getTaxAmt());
 		receiptVO.setBranchCode(receiptDTO.getBranchCode());
 		receiptVO.setOrgId(receiptDTO.getOrgId());
+		receiptVO.setShortName(receiptDTO.getShortName());
 		receiptVO.setRemarks(receiptDTO.getRemarks());
 
 		if (ObjectUtils.isNotEmpty(receiptVO.getId())) {
@@ -273,6 +274,9 @@ public class ARServiceImpl implements ARService {
 		BigDecimal netAmount = BigDecimal.ZERO;
 		BigDecimal onAccount = BigDecimal.ZERO;
 		BigDecimal totalTds = BigDecimal.ZERO;
+		BigDecimal totalOutStanding = BigDecimal.ZERO;
+		BigDecimal totalChargeAmount = BigDecimal.ZERO;
+		BigDecimal receiableAmount = BigDecimal.ZERO;
 
 		List<ReceiptInvDetailsVO> receiptInvDetailsVOs = new ArrayList<>();
 		BigDecimal totalSettled = BigDecimal.ZERO;
@@ -299,6 +303,9 @@ public class ARServiceImpl implements ARService {
 						: BigDecimal.ZERO;
 				BigDecimal chargeAmt = amount.add(gstAmt);
 				receiptInvDetailsVO.setChargeAmt(chargeAmt);
+				
+				totalChargeAmount=totalChargeAmount.add(receiptInvDetailsVO.getChargeAmt());
+				
 
 				BigDecimal tds = receiptInvDetailsDTO.getTds() != null ? receiptInvDetailsDTO.getTds()
 						: BigDecimal.ZERO;
@@ -306,13 +313,18 @@ public class ARServiceImpl implements ARService {
 
 				BigDecimal settled = receiptInvDetailsDTO.getSettled() != null ? receiptInvDetailsDTO.getSettled()
 						: BigDecimal.ZERO;
+				
+				receiableAmount=receiableAmount.add(chargeAmt.subtract(tdsValue));
+				
 				BigDecimal outstanding = chargeAmt.subtract(settled).subtract(tdsValue);
 				totalTds = totalTds.add(tdsValue);
 				receiptInvDetailsVO.setOutstanding(outstanding);
+				totalOutStanding = totalOutStanding.add(receiptInvDetailsVO.getOutstanding());
 
 				receiptInvDetailsVO.setGstAmt(gstAmt);
 				receiptInvDetailsVO.setAmount(amount);
 				receiptInvDetailsVO.setSettled(settled);
+				receiptInvDetailsVO.setTdsAmount(tdsValue);
 				receiptInvDetailsVO.setRecExRate(receiptInvDetailsDTO.getRecExRate());
 				receiptInvDetailsVO.setTxnSettled(receiptInvDetailsDTO.getTxnSettled());
 				receiptInvDetailsVO.setGainAmt(receiptInvDetailsDTO.getGainAmt());
@@ -336,7 +348,9 @@ public class ARServiceImpl implements ARService {
 			receiptVO.setOnAccount(receiptAmount);
 		}
 		receiptVO.setTdsAmt(totalTds);
-
+		receiptVO.setTotalOutStanding(totalOutStanding);
+		receiptVO.setTotalChargeAmount(totalChargeAmount);
+		receiptVO.setReceivableAmount(receiableAmount);
 		receiptVO.setReceiptInvDetailsVO(receiptInvDetailsVOs);
 
 		return receiptVO;
@@ -360,6 +374,7 @@ public class ARServiceImpl implements ARService {
 			Map<String, Object> doctype = new HashMap<>();
 			doctype.put("customerName", sup[0] != null ? sup[0].toString() : "");
 			doctype.put("customerCode", sup[1] != null ? sup[1].toString() : "");
+			doctype.put("shortName", sup[2] != null ? sup[2].toString() : "");
 			doctypeMappingDetails.add(doctype);
 		}
 
@@ -621,6 +636,11 @@ public class ARServiceImpl implements ARService {
 
 		BigDecimal netAmount = receiptVO.getNetAmount();
 		BigDecimal receiptAmt = receiptVO.getReceiptAmt();
+
+		BigDecimal effectivereceiptAmt = (netAmount == null || netAmount.compareTo(BigDecimal.ZERO) == 0)
+				? (receiptAmt != null ? receiptAmt : BigDecimal.ZERO)
+				: netAmount;
+		
 		BigDecimal effectiveNetAmount = (netAmount == null || netAmount.compareTo(BigDecimal.ZERO) == 0)
 				? (receiptAmt != null ? receiptAmt : BigDecimal.ZERO)
 				: netAmount;
@@ -650,15 +670,15 @@ public class ARServiceImpl implements ARService {
 
 		// BANK/CASH (Debit)
 		AccountsDetailsVO cashBank = new AccountsDetailsVO();
-		cashBank.setNDebitAmount(receiptAmt);
+		cashBank.setNDebitAmount(effectivereceiptAmt);
 		cashBank.setAccountName(receiptVO.getBankCashAcc());
 		cashBank.setSubLedgerCode("None");
-		cashBank.setDebitAmount(receiptAmt);
+		cashBank.setDebitAmount(effectivereceiptAmt);
 		cashBank.setNCreditAmount(BigDecimal.ZERO);
 		cashBank.setCreditAmount(BigDecimal.ZERO);
 		cashBank.setArapFlag(false);
 		cashBank.setArapAmount(BigDecimal.ZERO);
-		cashBank.setBDebitAmount(receiptAmt);
+		cashBank.setBDebitAmount(effectivereceiptAmt);
 		cashBank.setBCrAmount(BigDecimal.ZERO);
 		cashBank.setBArapAmount(BigDecimal.ZERO);
 		cashBank.setACurrency(receiptVO.getCurrency());
@@ -667,10 +687,10 @@ public class ARServiceImpl implements ARService {
 		cashBank.setGstflag(3);
 		cashBank.setAccountsVO(accountsVO);
 		accountsDetailsVOs.add(cashBank);
-		
+
 		// Set totals
 		accountsVO.setTotalDebitAmount(effectiveNetAmount.add(receiptVO.getTdsAmt()));
-		accountsVO.setTotalCreditAmount(receiptAmt.add(receiptVO.getTdsAmt()));
+		accountsVO.setTotalCreditAmount(effectivereceiptAmt.add(receiptVO.getTdsAmt()));
 		accountsVO.setAccountsDetailsVO(accountsDetailsVOs);
 
 		Set<Object[]> tdsLedgers = costInvoiceRepo.getTdsLedgerFromAccountReceivable(receiptVO.getOrgId());
@@ -743,6 +763,81 @@ public class ARServiceImpl implements ARService {
 		receiptVO.setApproveOn(LocalDateTime.now().format(formatter).toUpperCase());
 
 		return receiptRepo.save(receiptVO);
+	}
+
+	// Report
+
+	@Override
+	public List<Map<String, Object>> getReceiptDetails(Long orgId, String finYear, String partyname, String fromDate,
+			String toDate,String branchCode) {
+		Set<Object[]> chType = receiptRepo.getReceiptDetails(orgId, finYear, partyname, fromDate, toDate,branchCode);
+		return getReceiptDetails(chType);
+	}
+
+	private List<Map<String, Object>> getReceiptDetails(Set<Object[]> chType) {
+		List<Map<String, Object>> List1 = new ArrayList<>();
+		for (Object[] ch : chType) {
+			Map<String, Object> map = new HashMap<>();
+			map.put("finyear", ch[0] != null ? ch[0].toString() : "");
+			map.put("invoiceNo", ch[1] != null ? ch[1].toString() : ""); // 1
+			map.put("invoiceDate", ch[2] != null ? ch[2].toString() : ""); // 2
+			map.put("docid", ch[3] != null ? ch[3].toString() : ""); // 3
+			map.put("docdate", ch[4] != null ? ch[4].toString() : ""); // 4
+			map.put("refNo", ch[5] != null ? ch[5].toString() : ""); // 5
+			map.put("refDate", ch[6] != null ? ch[6].toString() : ""); // 6
+			map.put("customerName", ch[7] != null ? ch[7].toString() : ""); // 7
+			map.put("customerCode", ch[8] != null ? ch[8].toString() : ""); // 8
+			map.put("receiptAmount", ch[9] != null ? new BigDecimal(ch[9].toString()) : BigDecimal.ZERO); // 9
+			map.put("netAmount", ch[10] != null ? new BigDecimal(ch[10].toString()) : BigDecimal.ZERO); // 10
+			map.put("onAccount", ch[11] != null ? new BigDecimal(ch[11].toString()) : BigDecimal.ZERO); // 11
+			map.put("chequeNo", ch[12] != null ? ch[12].toString() : ""); // 12
+			map.put("chequeDate", ch[13] != null ? ch[13].toString() : ""); // 13
+			map.put("tdsAmount", ch[14] != null ? new BigDecimal(ch[14].toString()) : BigDecimal.ZERO); // 14
+			map.put("amount", ch[15] != null ? new BigDecimal(ch[15].toString()) : BigDecimal.ZERO); // 15
+			map.put("gstAmount", ch[16] != null ? new BigDecimal(ch[16].toString()) : BigDecimal.ZERO); // 16
+			map.put("chargeamount", ch[17] != null ? new BigDecimal(ch[17].toString()) : BigDecimal.ZERO); // 17
+			map.put("tdsPercentage", ch[18] != null ? new BigDecimal(ch[18].toString()) : BigDecimal.ZERO); // 18
+			map.put("settledAmount", ch[19] != null ? new BigDecimal(ch[19].toString()) : BigDecimal.ZERO); // 19
+			map.put("outStanding", ch[20] != null ? new BigDecimal(ch[20].toString()) : BigDecimal.ZERO); // 20
+			List1.add(map);
+		}
+		return List1;
+	}
+
+	@Override
+	public List<Map<String, Object>> getReceiptSummary(Long orgId, String finYear, String partyname, String fromDate,
+			String toDate,String branchCode) {
+		Set<Object[]> chType = receiptRepo.getReceiptSummary(orgId, finYear, partyname, fromDate, toDate,branchCode);
+		return getReceiptSummary(chType);
+	}
+
+	private List<Map<String, Object>> getReceiptSummary(Set<Object[]> chType) {
+		List<Map<String, Object>> List1 = new ArrayList<>();
+		for (Object[] ch : chType) {
+			Map<String, Object> map = new HashMap<>();
+			map.put("finyear", ch[0] != null ? ch[0].toString() : "");
+			map.put("docId", ch[1] != null ? ch[1].toString() : "");
+			map.put("docDate", ch[2] != null ? ch[2].toString() : "");
+			map.put("customerName", ch[3] != null ? ch[3].toString() : "");
+			map.put("customerCode", ch[4] != null ? ch[4].toString() : "");
+			map.put("chequeNo", ch[5] != null ? ch[5].toString() : "");
+			map.put("chequeDate", ch[6] != null ? ch[6].toString() : "");
+			map.put("receiptAmount", ch[7] != null ? new BigDecimal(ch[7].toString()) : BigDecimal.ZERO);
+			map.put("netAmount", ch[8] != null ? new BigDecimal(ch[8].toString()) : BigDecimal.ZERO);
+			map.put("tdsAmount", ch[9] != null ? new BigDecimal(ch[9].toString()) : BigDecimal.ZERO);
+			map.put("onAccount", ch[10] != null ? new BigDecimal(ch[10].toString()) : BigDecimal.ZERO);
+			map.put("bankAccount", ch[11] != null ? ch[11].toString() : "");
+			List1.add(map);
+		}
+		return List1;
+	}
+	
+	
+	@Override
+	public ReceiptVO getReceiptByDocIdAndScreenCode(String docId) {
+		
+	  return receiptRepo.getReceiptByDocId(docId);
+	
 	}
 
 }

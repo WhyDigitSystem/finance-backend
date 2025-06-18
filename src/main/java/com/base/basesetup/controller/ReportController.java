@@ -359,7 +359,7 @@ public class ReportController extends BaseController {
 	// Receipt Register
 	@GetMapping("/getReceiptRegisterReport")
 	public ResponseEntity<ResponseDTO> getReceiptRegisterReport(@RequestParam Long orgId,
-			@RequestParam String partyCode, @RequestParam String branchCode, @RequestParam String finYear,
+			@RequestParam String partyName, @RequestParam String branchCode, @RequestParam String finYear,
 			@RequestParam(required = false) String fromDate, @RequestParam(required = false) String toDate) {
 		String methodName = "getReceiptRegisterReport()";
 		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
@@ -368,7 +368,7 @@ public class ReportController extends BaseController {
 		ResponseDTO responseDTO = null;
 		List<Map<String, Object>> reciptReport = new ArrayList<>();
 		try {
-			reciptReport = reportService.getReceiptRegisterReport(orgId, partyCode, branchCode, finYear, fromDate,
+			reciptReport = reportService.getReceiptRegisterReport(orgId, partyName, branchCode, finYear, fromDate,
 					toDate);
 		} catch (Exception e) {
 			errorMsg = e.getMessage();
