@@ -797,6 +797,11 @@ public class APServiceImpl implements APService {
 
 		BigDecimal netAmount = paymentVO.getNetAmount();
 		BigDecimal paymentAmt = paymentVO.getPaymentAmt();
+		
+		BigDecimal effectivepaymentAmt = (netAmount == null || netAmount.compareTo(BigDecimal.ZERO) == 0)
+				? (paymentAmt != null ? paymentAmt : BigDecimal.ZERO)
+				: netAmount;
+		
 		BigDecimal effectiveNetAmount = (netAmount == null || netAmount.compareTo(BigDecimal.ZERO) == 0)
 				? (paymentAmt != null ? paymentAmt : BigDecimal.ZERO)
 				: netAmount;
@@ -830,12 +835,12 @@ public class APServiceImpl implements APService {
 		accBank.setAccountName(paymentVO.getBankCashAcc());
 		accBank.setSubLedgerCode("None");
 		accBank.setDebitAmount(BigDecimal.ZERO);
-		accBank.setNCreditAmount(paymentAmt);
-		accBank.setCreditAmount(paymentAmt);
+		accBank.setNCreditAmount(effectivepaymentAmt);
+		accBank.setCreditAmount(effectivepaymentAmt);
 		accBank.setArapFlag(false);
 		accBank.setArapAmount(BigDecimal.ZERO);
 		accBank.setBDebitAmount(BigDecimal.ZERO);
-		accBank.setBCrAmount(paymentAmt);
+		accBank.setBCrAmount(effectivepaymentAmt);
 		accBank.setBArapAmount(BigDecimal.ZERO);
 		accBank.setACurrency(paymentVO.getCurrency());
 		accBank.setSubledgerName("None");
@@ -845,7 +850,7 @@ public class APServiceImpl implements APService {
 		accountsDetailsVOs.add(accBank);
 
 		accountsVO.setTotalDebitAmount(effectiveNetAmount);
-		accountsVO.setTotalCreditAmount(paymentAmt);
+		accountsVO.setTotalCreditAmount(effectivepaymentAmt);
 		accountsVO.setAccountsDetailsVO(accountsDetailsVOs);
 		AccountsVO savedAccountsVO = accountsRepo.save(accountsVO);
 
