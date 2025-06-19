@@ -236,8 +236,7 @@ public class ArapAdjustmentsController extends BaseController {
 	public ResponseEntity<ResponseDTO> GetArapAdjustments(@RequestParam(required = true) String Asondate, 
 			@RequestParam(required = true) String partyname,@RequestParam(required = true) String branch,  
 			@RequestParam(required = true)  Long orgId, 
-			@RequestParam(required = false) String pdate, 
-			@RequestParam(required = true) Long finyear	) {
+			@RequestParam(required = false) String pdate) {
 		String methodName = "GetArapAdjustments()"; 
 		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
 		String errorMsg = null;
@@ -245,7 +244,7 @@ public class ArapAdjustmentsController extends BaseController {
 		ResponseDTO responseDTO = null;
 		List<Map<String, Object>> mapp = new ArrayList<>();
 		try {
-			mapp = arapAdjustmentsService.GetArapAdjustments(Asondate, partyname,branch,orgId,pdate,finyear);
+			mapp = arapAdjustmentsService.GetArapAdjustments(Asondate, partyname,branch,orgId,pdate);
 		} catch (Exception e) {
 			errorMsg = e.getMessage();
 			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);

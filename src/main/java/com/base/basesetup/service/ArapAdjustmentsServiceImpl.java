@@ -209,8 +209,8 @@ public class ArapAdjustmentsServiceImpl implements ArapAdjustmentsService{
 	
 	
 	@Override
-	public List<Map<String, Object>> GetArapAdjustments(String Asondate, String partyname, String branch, Long orgId,String pdate,Long finyear) {
-		Set<Object[]> mapp = arapAdjustmentsRepo.findArapAdjustments(Asondate, partyname,branch,orgId,pdate,finyear);
+	public List<Map<String, Object>> GetArapAdjustments(String Asondate, String partyname, String branch, Long orgId,String pdate) {
+		Set<Object[]> mapp = arapAdjustmentsRepo.findArapAdjustments(Asondate, partyname,branch,orgId,pdate);
 		return GetArapAdjustments(mapp);
 	}
 

@@ -34,6 +34,6 @@ public interface ArapAdjustmentsService {
 	List<Map<String, Object>> GetArapAdjustments(@RequestParam(required = true) String Asondate, 
 			@RequestParam(required = true) String partyname,@RequestParam(required = true) String branch,  
 			@RequestParam(required = true)  Long orgId, 
-			@RequestParam(required = false) String pdate, 
-			@RequestParam(required = true) Long finyear	);
+			@RequestParam(required = false) String pdate
+		);
 }

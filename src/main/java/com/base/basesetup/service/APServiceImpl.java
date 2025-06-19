@@ -621,8 +621,8 @@ public class APServiceImpl implements APService {
 	}
 
 	@Override
-	public List<Map<String, Object>> getAPOutstanding(String Asondate, String partyname, String branch, Long orgId,String pdate,Long finyear) {
-		Set<Object[]> group = arapAdjustmentsRepo.findAPOutstanding(Asondate, partyname,branch,orgId,pdate,finyear);
+	public List<Map<String, Object>> getAPOutstanding(String Asondate, String partyname, String branch, Long orgId,String pdate) {
+		Set<Object[]> group = arapAdjustmentsRepo.findAPOutstanding(Asondate, partyname,branch,orgId,pdate);
 		return getAPOutstanding(group);
 	}
 
