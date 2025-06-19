@@ -644,4 +644,34 @@ public class PartyTypeController extends BaseController {
 		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
 		return ResponseEntity.ok().body(responseDTO);
 	}
+	
+	@GetMapping("/getLedgerReport")
+	public ResponseEntity<ResponseDTO> getLedgerReport(@RequestParam(required = true) Long orgId,@RequestParam(required = true) String branch,@RequestParam(required = true) String fromdate,
+			@RequestParam(required = true) String toDate,@RequestParam(required = true) String finYear,@RequestParam(required = true) String accountName
+			,@RequestParam(required = true) String details) {
+		String methodName = "getLedgerReport()";
+		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+		String errorMsg = null;
+		Map<String, Object> responseObjectsMap = new HashMap<>();
+		ResponseDTO responseDTO = null;
+		List<Map<String, Object>> mapp = new ArrayList<>();
+
+		try {
+			mapp = partyTypeService.getLedgerReport(orgId,branch,fromdate,toDate,finYear,accountName,details);
+		} catch (Exception e) {
+			errorMsg = e.getMessage();
+			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+		}
+
+		if (StringUtils.isBlank(errorMsg)) {
+			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "LedgerReport data  retrieved successfully");
+			responseObjectsMap.put("ledgerReport", mapp);
+			responseDTO = createServiceResponse(responseObjectsMap);
+		} else {
+			responseDTO = createServiceResponseError(responseObjectsMap, "LedgerReport data Reterive Failed", errorMsg);
+		}
+
+		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+		return ResponseEntity.ok().body(responseDTO);
+	}
 }
