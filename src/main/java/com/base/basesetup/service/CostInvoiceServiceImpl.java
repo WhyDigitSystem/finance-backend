@@ -1266,6 +1266,8 @@ public class CostInvoiceServiceImpl implements CostInvoiceService {
 				map.put("toalLcAmount", ch[25] != null ? new BigDecimal(ch[25].toString()) : BigDecimal.ZERO);
 				map.put("vDate", ch[26] != null ? ch[26].toString() : "");
 				map.put("netAmount", ch[27] != null ? new BigDecimal(ch[27].toString()) : BigDecimal.ZERO);
+				map.put("gstPercentage", ch[28] != null ? new BigDecimal(ch[28].toString()) : BigDecimal.ZERO);
+				map.put("gstType", ch[29] != null ? ch[29].toString() : "");
 				
 				List1.add(map);
 			}

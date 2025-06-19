@@ -1,15 +1,12 @@
 package com.base.basesetup.repo;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
-import com.base.basesetup.entity.CostDebitNoteVO;
 import com.base.basesetup.entity.CostInvoiceVO;
-import com.base.basesetup.entity.DebitNoteVO;
 import com.base.basesetup.entity.PartyMasterVO;
 
 public interface CostInvoiceRepo extends JpaRepository<CostInvoiceVO, Long> {
@@ -294,86 +291,37 @@ public interface CostInvoiceRepo extends JpaRepository<CostInvoiceVO, Long> {
 	@Query(nativeQuery = true, value = "select accountgroupname,category from groupledger where orgid=?1 and gsttaxflag='NA' and category='RECEIVABLE A/C' and type='ACCOUNT'  and groupname='TDS'")
 	Set<Object[]> getTdsLedgerFromAccountReceivable(Long orgId);
 
-	@Query(nativeQuery = true, value = "SELECT \r\n"
-			+ "    a.finyear,\r\n"
-			+ "    a.docid,\r\n"
-			+ "    a.docdate,\r\n"
-			+ "    a.vid,\r\n"
-			+ "    a.purvoucherno,\r\n"
-			+ "    a.purvoucherdate,\r\n"
-			+ "    a.suppliercode,\r\n"
-			+ "    a.suppliername,\r\n"
-			+ "    a.supplierplace,\r\n"
-			+ "    a.gsttype,\r\n"
-			+ "    a.totchargeslcamt,\r\n"
-			+ "    a.payment,\r\n"
-			+ "    a.vdate,\r\n"
-			+ "    a.gstinputlcamt,\r\n"
-			+ "    a.netbilllcamt,\r\n"
-			+ "    a.totchargeslcamt + a.gstinputlcamt as totalAmount,\r\n"
-			+ "    a1.totaltds\r\n"
-			+ "FROM \r\n"
-			+ "    finance_aip.costinvoice a,tdscostinvoice a1 \r\n"
-			+ "WHERE \r\n"
-			+ "a.costinvoiceid=a1.costinvoiceid and \r\n"
-			+ "    a.orgid =?1\r\n"
-			+ "  AND a.finyear = ?4\r\n"
-			+ "  AND (?2 IS NULL OR a.vdate >= ?2)\r\n"
+	@Query(nativeQuery = true, value = "SELECT \r\n" + "    a.finyear,\r\n" + "    a.docid,\r\n" + "    a.docdate,\r\n"
+			+ "    a.vid,\r\n" + "    a.purvoucherno,\r\n" + "    a.purvoucherdate,\r\n" + "    a.suppliercode,\r\n"
+			+ "    a.suppliername,\r\n" + "    a.supplierplace,\r\n" + "    a.gsttype,\r\n"
+			+ "    a.totchargeslcamt,\r\n" + "    a.payment,\r\n" + "    a.vdate,\r\n" + "    a.gstinputlcamt,\r\n"
+			+ "    a.netbilllcamt,\r\n" + "    a.totchargeslcamt + a.gstinputlcamt as totalAmount,\r\n"
+			+ "    a1.totaltds\r\n" + "FROM \r\n" + "    finance_aip.costinvoice a,tdscostinvoice a1 \r\n"
+			+ "WHERE \r\n" + "a.costinvoiceid=a1.costinvoiceid and \r\n" + "    a.orgid =?1\r\n"
+			+ "  AND a.finyear = ?4\r\n" + "  AND (?2 IS NULL OR a.vdate >= ?2)\r\n"
 			+ "    AND (?3 IS NULL OR a.vdate <= ?3)\r\n"
 			+ "    AND (?5 IS NULL OR ?5 = 'ALL' OR a.suppliername = ?5)\r\n"
-			+ " AND (a.branchcode = ?6 OR ?6 = 'ALL')\r\n"
-			+ "ORDER BY \r\n"
-			+ "    a.createdon DESC")
-	Set<Object[]> getCostInvoiceSummary(Long orgId, String fromDate, String	 toDate, String finYear,
-			String partyName,String branchCode);
-	
-	
-@Query(nativeQuery = true,value ="SELECT \r\n"
-		+ "    a.finyear,\r\n"
-		+ "    a.docid,\r\n"
-		+ "    a.docdate,\r\n"
-		+ "    a.vid,\r\n"
-		+ "    a.purvoucherno,\r\n"
-		+ "    a.purvoucherdate,\r\n"
-		+ "    a.suppliercode,\r\n"
-		+ "    c.party,\r\n"
-		+ "    c.description,\r\n"
-		+ "    a.suppliername,\r\n"
-		+ "    a.supplierplace,\r\n"
-		+ "    a.gsttype,\r\n"
-		+ "    a.mode,\r\n"
-		+ "    a.totchargeslcamt,\r\n"
-		+ "    a.payment,\r\n"
-		+ "    b.section,\r\n"
-		+ "    b.totaltds,\r\n"
-		+ "    c.jobno,\r\n"
-		+ "    c.chargecode,\r\n"
-		+ "    c.chargername,\r\n"
-		+ "    c.ledger,\r\n"
-		+ "    c.lcamt,\r\n"
-		+ "    c.gst,\r\n"
-		+ "    c.qty,\r\n"
-		+ "    c.rate,\r\n"
-		+ "    c.lcamt + c.gst AS totalLcAmount,\r\n"
-		+ "    a.vdate,\r\n"
-		+ "   case \r\n"
-		+ "   when c.ledger like ('%GST%') then 0 else a.netbilllcamt end as netbilllcamt\r\n"
-		+ "FROM \r\n"
-		+ "    finance_aip.costinvoice a\r\n"
-		+ "JOIN \r\n"
-		+ "    finance_aip.tdscostinvoice b ON a.costinvoiceid = b.costinvoiceid\r\n"
-		+ "JOIN \r\n"
-		+ "    finance_aip.chargercostinvoice c ON a.costinvoiceid = c.costinvoiceid\r\n"
-		+ "WHERE \r\n"
-		+ "    a.orgid =?1\r\n"
-		+ "   AND a.finyear = ?4\r\n"
-		+ "    AND (?2 IS NULL OR a.vdate >= ?2)\r\n"
-		+ "     AND (?3 IS NULL OR a.vdate <= ?3)\r\n"
-		+ "      AND (?5 IS NULL OR ?5 = 'ALL' OR a.suppliername = ?5)\r\n"
-		+ "    AND (a.branchcode = ?6 OR ?6 = 'ALL')\r\n"
-		+ "ORDER BY \r\n"
-		+ "    a.createdon DESC")
-	Set<Object[]> getCostInvoiceDetails(Long orgId, String fromDate, String toDate, String finYear, String partyName,String branchCode);
+			+ " AND (a.branchcode = ?6 OR ?6 = 'ALL')\r\n" + "ORDER BY \r\n" + "    a.createdon DESC")
+	Set<Object[]> getCostInvoiceSummary(Long orgId, String fromDate, String toDate, String finYear, String partyName,
+			String branchCode);
+
+	@Query(nativeQuery = true, value = "SELECT \r\n" + "    a.finyear,\r\n" + "    a.docid,\r\n" + "    a.docdate,\r\n"
+			+ "    a.vid,\r\n" + "    a.purvoucherno,\r\n" + "    a.purvoucherdate,\r\n" + "    a.suppliercode,\r\n"
+			+ "    c.party,\r\n" + "    c.description,\r\n" + "    a.suppliername,\r\n" + "    a.supplierplace,\r\n"
+			+ "    a.gsttype,\r\n" + "    a.mode,\r\n" + "    a.totchargeslcamt,\r\n" + "    a.payment,\r\n"
+			+ "    b.section,\r\n" + "    b.totaltds,\r\n" + "    c.jobno,\r\n" + "    c.chargecode,\r\n"
+			+ "    c.chargername,\r\n" + "   c.ledger ,\r\n" + "    c.lcamt,\r\n" + "    c.gst,\r\n" + "    c.qty,\r\n"
+			+ "    c.rate,\r\n" + "    c.lcamt + c.gst AS totalLcAmount,\r\n" + "    a.vdate,\r\n"
+			+ "  a.netbilllcamt ,\r\n" + " c.gstpercent,\r\n" + " a.gsttype\r\n" + "FROM \r\n"
+			+ "    finance_aip.costinvoice a\r\n" + "JOIN \r\n"
+			+ "    finance_aip.tdscostinvoice b ON a.costinvoiceid = b.costinvoiceid\r\n" + "JOIN \r\n"
+			+ "    finance_aip.chargercostinvoice c ON a.costinvoiceid = c.costinvoiceid\r\n" + "WHERE \r\n"
+			+ "    a.orgid =?1\r\n" + "    and c.ledger not like ('%GST%') \r\n" + "    AND a.finyear = ?4\r\n"
+			+ "      AND (?2 IS NULL OR a.vdate >= ?2)\r\n" + "      AND (?3 IS NULL OR a.vdate <= ?3)\r\n"
+			+ "      AND (?5 IS NULL OR ?5 = 'ALL' OR a.suppliername = ?5)\r\n"
+			+ "   AND (a.branchcode = ?6 OR ?6 = 'ALL')\r\n" + "ORDER BY \r\n" + "    a.createdon DESC")
+	Set<Object[]> getCostInvoiceDetails(Long orgId, String fromDate, String toDate, String finYear, String partyName,
+			String branchCode);
 
 //	@Query(nativeQuery = true, 
 //		       value = "SELECT * FROM costdebitnote WHERE screencode = ?1 AND docid = ?2")
