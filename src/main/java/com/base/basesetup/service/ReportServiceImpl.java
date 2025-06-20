@@ -862,6 +862,45 @@ public class ReportServiceImpl implements ReportService {
 		return list1;
 	}
 	
+	
+	
+	
+	@Override
+	public List<Map<String, Object>> getApAgeing(Long orgId, String branch, String partyname, String asdate, String baseType) {
+		Set<Object[]> chType = receiptRepo.getApAgeing(orgId, branch, partyname, asdate,baseType);
+		return getApAge(chType);
+	}
+
+	private List<Map<String, Object>> getApAge(Set<Object[]> chType) {
+		List<Map<String, Object>> List1 = new ArrayList<>();
+		for (Object[] ch : chType) {
+			Map<String, Object> map = new HashMap<>();
+			map.put("sno", ch[0] != null ? Long.valueOf(ch[0].toString()) : "");
+			map.put("arapDetailsId", ch[1] != null ? Long.valueOf(ch[1].toString()) : "");
+			map.put("branch", ch[2] != null ? ch[2].toString() : ""); // 2
+			map.put("subledgerCode", ch[3] != null ? ch[3].toString() : ""); // 4
+			map.put("partyName", ch[4] != null ? ch[4].toString() : ""); // 3
+			map.put("subledgerName", ch[5] != null ? ch[5].toString() : ""); // 4
+			map.put("partyType", ch[6] != null ? ch[6].toString() : ""); // 5
+			map.put("salesPerson", ch[7] != null ? ch[7].toString() : ""); // 6
+			map.put("docId", ch[8] != null ? ch[8].toString() : ""); // 7
+			map.put("docDate", ch[9] != null ? ch[9].toString() : ""); // 8
+			map.put("supRefNo", ch[10] != null ? ch[10].toString() : ""); // 9
+			map.put("supRefDate", ch[11] != null ? ch[11].toString() : ""); // 10
+			map.put("dueDate", ch[12] != null ? ch[12].toString() : ""); // 11
+			map.put("refNo", ch[13] != null ? ch[13].toString() : ""); // 12
+			map.put("refDate", ch[14] != null ? ch[14].toString() : ""); // 13
+			map.put("amount", ch[15] != null ? new BigDecimal(ch[15].toString()) : BigDecimal.ZERO); // 14
+			map.put("outStanding", ch[16] != null ? new BigDecimal(ch[16].toString()) : BigDecimal.ZERO); // 15
+			map.put("totalDue", ch[17] != null ? new BigDecimal(ch[17].toString()) : BigDecimal.ZERO); // 16
+			
+
+			List1.add(map);
+		}
+		return List1;
+	}
+
+	
 
 //	@Override
 //	public List<RetrievalManifestProviderVO> findRIMMIMReports(

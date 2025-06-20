@@ -738,6 +738,38 @@ public class ReportController extends BaseController {
 
 	}
 	
+	@GetMapping("/getApAgeing")
+	public ResponseEntity<ResponseDTO> getApAgeing(@RequestParam Long orgId,
+			@RequestParam String branch, @RequestParam String partyname,
+			@RequestParam String asdate,  @RequestParam String baseType ) {
+		String methodName = "getApAgeing()";
+		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+		String errorMsg = null;
+		Map<String, Object> responseObjectsMap = new HashMap<>();
+		ResponseDTO responseDTO = null;
+		List<Map<String, Object>> mapp = new ArrayList<>();
+
+		try {
+			mapp = reportService.getApAgeing(orgId, branch, partyname, asdate,baseType);
+		} catch (Exception e) {
+			errorMsg = e.getMessage();
+			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+		}
+
+		if (StringUtils.isBlank(errorMsg)) {
+			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "ApAgeing Details retrieved successfully");
+			responseObjectsMap.put("mapp", mapp);
+			responseDTO = createServiceResponse(responseObjectsMap);
+		} else {
+			responseDTO = createServiceResponseError(responseObjectsMap, "Failed to retrieve tax ApAgeing Details",
+					errorMsg);
+		}
+
+		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+		return ResponseEntity.ok().body(responseDTO);
+	}
+	
+	
 	
 	
 	

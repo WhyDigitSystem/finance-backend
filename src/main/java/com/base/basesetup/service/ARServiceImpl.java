@@ -583,6 +583,7 @@ public class ARServiceImpl implements ARService {
 			throws ApplicationException {
 
 		ReceiptVO receiptVO = receiptRepo.findByOrgIdAndIdAndDocId(orgId, id, docId);
+		
 
 		// Null check before any processing
 		if (receiptVO == null) {
@@ -613,7 +614,12 @@ public class ARServiceImpl implements ARService {
 
 		multipleDocIdGenerationDetailsVO.setLastno(multipleDocIdGenerationDetailsVO.getLastno() + 1);
 		multipleDocIdGenerationDetailsRepo.save(multipleDocIdGenerationDetailsVO);
-
+		
+		List<ReceiptInvDetailsVO> receiptInvDetailsVOs = receiptVO.getReceiptInvDetailsVO();
+		String currency = (!receiptInvDetailsVOs.isEmpty() && receiptInvDetailsVOs.get(0).getCurrency() != null)
+		        ? receiptInvDetailsVOs.get(0).getCurrency()
+		        : receiptVO.getCurrency();
+		
 		AccountsVO accountsVO = new AccountsVO();
 		accountsVO.setDocId(accountsDocId);
 		accountsVO.setSourceScreen(receiptVO.getScreenName());
@@ -627,7 +633,7 @@ public class ARServiceImpl implements ARService {
 		accountsVO.setRefDate(receiptVO.getDocDate());
 		accountsVO.setVId(receiptVO.getDocId());
 		accountsVO.setVDate(receiptVO.getDocDate());
-		accountsVO.setCurrency(receiptVO.getCurrency());
+		accountsVO.setCurrency(currency);
 		accountsVO.setExRate(BigDecimal.ONE);
 		accountsVO.setRemarks(receiptVO.getRemarks());
 		accountsVO.setFinYear(receiptVO.getFinYear());
@@ -661,7 +667,7 @@ public class ARServiceImpl implements ARService {
 		receivable.setBDebitAmount(BigDecimal.ZERO);
 		receivable.setBCrAmount(effectiveNetAmount.add(receiptVO.getTdsAmt()));
 		receivable.setBArapAmount(effectiveNetAmount.add(receiptVO.getTdsAmt()).negate());
-		receivable.setACurrency(receiptVO.getCurrency());
+		receivable.setACurrency(currency);
 		receivable.setSubledgerName(receiptVO.getCustomerName());
 		receivable.setNArapAmount(effectiveNetAmount.add(receiptVO.getTdsAmt()).negate());
 		receivable.setGstflag(1);
@@ -681,7 +687,7 @@ public class ARServiceImpl implements ARService {
 		cashBank.setBDebitAmount(effectivereceiptAmt);
 		cashBank.setBCrAmount(BigDecimal.ZERO);
 		cashBank.setBArapAmount(BigDecimal.ZERO);
-		cashBank.setACurrency(receiptVO.getCurrency());
+		cashBank.setACurrency(currency);
 		cashBank.setSubledgerName("None");
 		cashBank.setNArapAmount(BigDecimal.ZERO);
 		cashBank.setGstflag(3);
@@ -708,7 +714,7 @@ public class ARServiceImpl implements ARService {
 			tdsDetail.setBArapAmount(BigDecimal.ZERO);
 			tdsDetail.setNArapAmount(BigDecimal.ZERO);
 			tdsDetail.setArapFlag(false);
-			tdsDetail.setACurrency(receiptVO.getCurrency());
+			tdsDetail.setACurrency(currency);
 //		            tdsDetail.setAExRate(receiptVO.getExRate());
 			tdsDetail.setSubledgerName("None");
 			tdsDetail.setSubLedgerCode("None");
@@ -738,7 +744,7 @@ public class ARServiceImpl implements ARService {
 		arapDetailsVO.setOrgId(savedAccountsVO.getOrgId());
 		arapDetailsVO.setRefDate(savedAccountsVO.getRefDate());
 		arapDetailsVO.setSubLedgerCode(accountsDetailsVOs2.getSubLedgerCode());
-		arapDetailsVO.setCurrency(accountsDetailsVOs2.getACurrency());
+		arapDetailsVO.setCurrency(savedAccountsVO.getCurrency());
 		arapDetailsVO.setExRate(accountsDetailsVOs2.getAExRate());
 		arapDetailsVO.setAmount(accountsDetailsVOs2.getArapAmount());
 		arapDetailsVO.setBaseAmt(accountsDetailsVOs2.getArapAmount());
@@ -746,7 +752,7 @@ public class ARServiceImpl implements ARService {
 		arapDetailsVO.setCreditDays(savedAccountsVO.getCreditDays());
 		arapDetailsVO.setDocId(savedAccountsVO.getDocId());
 		arapDetailsVO.setDocDate(savedAccountsVO.getDocDate());
-		arapDetailsVO.setAccCurrency(savedAccountsVO.getCurrency());
+		arapDetailsVO.setAccCurrency(accountsDetailsVOs2.getACurrency());
 		arapDetailsVO.setExRate(savedAccountsVO.getExRate());
 		arapDetailsVO.setAccName(accountsDetailsVOs2.getAccountName());
 		arapDetailsVO.setGstFlag(accountsDetailsVOs2.getGstflag());
