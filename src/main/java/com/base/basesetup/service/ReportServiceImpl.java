@@ -893,6 +893,15 @@ public class ReportServiceImpl implements ReportService {
 			map.put("amount", ch[15] != null ? new BigDecimal(ch[15].toString()) : BigDecimal.ZERO); // 14
 			map.put("outStanding", ch[16] != null ? new BigDecimal(ch[16].toString()) : BigDecimal.ZERO); // 15
 			map.put("totalDue", ch[17] != null ? new BigDecimal(ch[17].toString()) : BigDecimal.ZERO); // 16
+			map.put("unAdjusted", ch[18] != null ? new BigDecimal(ch[18].toString()) : BigDecimal.ZERO); // 9
+			map.put("dDays", ch[19] != null ? Long.valueOf(ch[19].toString()) : ""); // 10
+			map.put("msLab1", ch[20] != null ? new BigDecimal(ch[20].toString()) : BigDecimal.ZERO); // 11
+			map.put("msLab2", ch[21] != null ?new BigDecimal(ch[21].toString()) : BigDecimal.ZERO); // 12
+			map.put("msLab3", ch[22] != null ? new BigDecimal(ch[22].toString()) : BigDecimal.ZERO); // 13
+			map.put("msLab4", ch[23] != null ? new BigDecimal(ch[23].toString()) : BigDecimal.ZERO); 
+			map.put("msLab5", ch[24] != null ? new BigDecimal(ch[24].toString()) : BigDecimal.ZERO);// 14
+			map.put("creditLimit", ch[25] != null ? new BigDecimal(ch[25].toString()) : BigDecimal.ZERO); // 15
+			map.put("creditDays", ch[26] != null ? Long.valueOf(ch[26].toString()) : ""); // 16
 			
 
 			List1.add(map);
