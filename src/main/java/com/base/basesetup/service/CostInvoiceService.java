@@ -1,6 +1,5 @@
 package com.base.basesetup.service;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
@@ -11,7 +10,6 @@ import org.springframework.stereotype.Service;
 import com.base.basesetup.dto.CostInvoiceDTO;
 import com.base.basesetup.entity.CostDebitNoteVO;
 import com.base.basesetup.entity.CostInvoiceVO;
-import com.base.basesetup.entity.DebitNoteVO;
 import com.base.basesetup.entity.PartyMasterVO;
 import com.base.basesetup.exception.ApplicationException;
 
@@ -77,9 +75,9 @@ public interface CostInvoiceService {
 		//COSTINVOICE SUMMARY
 
 		List<Map<String, Object>> getCostInvoiceSummary(Long orgId, String fromDate, String toDate, String finYear,
-				String partyName);
+				String partyName,String branchCode);
 
 		List<Map<String, Object>> getCostInvoiceSummaryDetails(Long orgId, String fromDate, String toDate,
-				String finYear, String partyName);
+				String finYear, String partyName,String branchCode);
 		
 }

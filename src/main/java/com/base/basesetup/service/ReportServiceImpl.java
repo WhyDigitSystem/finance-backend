@@ -505,15 +505,23 @@ public class ReportServiceImpl implements ReportService {
 			doctype.put("receiptAmount", sup[12] != null ? new BigDecimal(sup[12].toString()) : BigDecimal.ZERO);
 			doctype.put("bankChargesAmt", sup[13] != null ? new BigDecimal(sup[13].toString()) : BigDecimal.ZERO);
 			doctype.put("tdsAmt", sup[14] != null ? new BigDecimal(sup[14].toString()) : BigDecimal.ZERO);
-			doctype.put("invoiceNo", sup[15] != null ? sup[15].toString() : "");
-			doctype.put("invoiceDate", sup[16] != null ? sup[16].toString() : "");
-			doctype.put("refNo", sup[17] != null ? sup[17].toString() : "");
-			doctype.put("refDate", sup[18] != null ? sup[18].toString() : "");
-			doctype.put("arapAmt", sup[19] != null ? new BigDecimal(sup[19].toString()) : BigDecimal.ZERO);
-			doctype.put("chargableAmt", sup[20] != null ? new BigDecimal(sup[20].toString()) : BigDecimal.ZERO);
-			doctype.put("arApOutstanding", sup[21] != null ? new BigDecimal(sup[21].toString()) : BigDecimal.ZERO);
-			doctype.put("arapSettled", sup[22] != null ? new BigDecimal(sup[22].toString()) : BigDecimal.ZERO);
-
+//			doctype.put("invoiceNo", sup[15] != null ? sup[15].toString() : "");
+//			doctype.put("invoiceDate", sup[16] != null ? sup[16].toString() : "");
+//			doctype.put("refNo", sup[17] != null ? sup[17].toString() : "");
+//			doctype.put("refDate", sup[18] != null ? sup[18].toString() : "");
+			doctype.put("arapAmt", sup[15] != null ? new BigDecimal(sup[15].toString()) : BigDecimal.ZERO);
+			doctype.put("chargableAmt", sup[16] != null ? new BigDecimal(sup[16].toString()) : BigDecimal.ZERO);
+			doctype.put("arApOutstanding", sup[17] != null ? new BigDecimal(sup[17].toString()) : BigDecimal.ZERO);
+			doctype.put("arapSettled", sup[18] != null ? new BigDecimal(sup[18].toString()) : BigDecimal.ZERO);
+			doctype.put("chequeDate", sup[19] != null ? sup[19].toString() : "");
+			doctype.put("totalAmount", sup[20] != null ? new BigDecimal(sup[20].toString()) : BigDecimal.ZERO);
+//			doctype.put("tds", sup[25] != null ? new BigDecimal(sup[25].toString()) : BigDecimal.ZERO);
+			doctype.put("shortName", sup[21] != null ? sup[21].toString() : "");
+			doctype.put("netAmount", sup[22] != null ? new BigDecimal(sup[22].toString()) : BigDecimal.ZERO);
+			doctype.put("onAccount", sup[23] != null ? new BigDecimal(sup[23].toString()) : BigDecimal.ZERO);
+			doctype.put("rn", sup[24] != null ? new BigDecimal(sup[24].toString()) : BigDecimal.ZERO);
+			doctype.put("chargeAmount", sup[25] != null ? new BigDecimal(sup[25].toString()) : BigDecimal.ZERO);
+			doctype.put("receivableAmount", sup[26] != null ? new BigDecimal(sup[26].toString()) : BigDecimal.ZERO);
 			doctypeMappingDetails.add(doctype);
 		}
 
@@ -542,18 +550,23 @@ public class ReportServiceImpl implements ReportService {
 			doctype.put("chequeNo", sup[7] != null ? sup[7].toString() : "");
 			doctype.put("subLedgerCode", sup[8] != null ? sup[8].toString() : "");
 			doctype.put("subLedgerName", sup[9] != null ? sup[9].toString() : "");
-			doctype.put("accountName", sup[10] != null ? sup[10].toString() : "");
-			doctype.put("receiptAmount", sup[11] != null ? new BigDecimal(sup[11].toString()) : BigDecimal.ZERO);
+			doctype.put("partyShortName", sup[10] != null ? sup[10].toString() : "");
+			doctype.put("PaymentAmount", sup[11] != null ? new BigDecimal(sup[11].toString()) : BigDecimal.ZERO);
 			doctype.put("bankChargesAmt", sup[12] != null ? new BigDecimal(sup[12].toString()) : BigDecimal.ZERO);
 			doctype.put("tdsAmt", sup[13] != null ? new BigDecimal(sup[13].toString()) : BigDecimal.ZERO);
 			doctype.put("staxAmount", sup[14] != null ? new BigDecimal(sup[14].toString()) : BigDecimal.ZERO);
-			doctype.put("invoiceNo", sup[15] != null ? sup[15].toString() : "");
-			doctype.put("invoiceDate", sup[16] != null ? sup[16].toString() : "");
-			doctype.put("refNo", sup[17] != null ? sup[17].toString() : "");
-			doctype.put("refDate", sup[18] != null ? sup[18].toString() : "");
-			doctype.put("arapAmount", sup[19] != null ? new BigDecimal(sup[19].toString()) : BigDecimal.ZERO);
-			doctype.put("arApOutstanding", sup[20] != null ? new BigDecimal(sup[20].toString()) : BigDecimal.ZERO);
-			doctype.put("arapSettled", sup[21] != null ? new BigDecimal(sup[21].toString()) : BigDecimal.ZERO);
+//			doctype.put("invoiceNo", sup[15] != null ? sup[15].toString() : "");
+//			doctype.put("invoiceDate", sup[16] != null ? sup[16].toString() : "");
+//			doctype.put("refNo", sup[17] != null ? sup[17].toString() : "");
+//			doctype.put("refDate", sup[18] != null ? sup[18].toString() : "");
+			doctype.put("arapAmount", sup[15] != null ? new BigDecimal(sup[15].toString()) : BigDecimal.ZERO);
+			doctype.put("arApOutstanding", sup[16] != null ? new BigDecimal(sup[16].toString()) : BigDecimal.ZERO);
+			doctype.put("arapSettled", sup[17] != null ? new BigDecimal(sup[17].toString()) : BigDecimal.ZERO);
+			doctype.put("chequeDate", sup[18] != null ? sup[18].toString() : "");
+			doctype.put("bankCashAcc", sup[19] != null ? sup[19].toString() : "");
+			doctype.put("onaccount", sup[20] != null ? new BigDecimal(sup[20].toString()) : BigDecimal.ZERO);
+			doctype.put("netamount", sup[21] != null ? new BigDecimal(sup[21].toString()) : BigDecimal.ZERO);
+			doctype.put("chargeamt", sup[22] != null ? new BigDecimal(sup[22].toString()) : BigDecimal.ZERO);
 
 			list1.add(doctype);
 		}
@@ -893,6 +906,56 @@ public class ReportServiceImpl implements ReportService {
 		}
 		return list1;
 	}
+
+	
+	
+	
+	
+	@Override
+	public List<Map<String, Object>> getApAgeing(Long orgId, String branch, String partyname, String asdate, String baseType) {
+		Set<Object[]> chType = receiptRepo.getApAgeing(orgId, branch, partyname, asdate,baseType);
+		return getApAge(chType);
+	}
+
+	private List<Map<String, Object>> getApAge(Set<Object[]> chType) {
+		List<Map<String, Object>> List1 = new ArrayList<>();
+		for (Object[] ch : chType) {
+			Map<String, Object> map = new HashMap<>();
+			map.put("sno", ch[0] != null ? Long.valueOf(ch[0].toString()) : "");
+			map.put("arapDetailsId", ch[1] != null ? Long.valueOf(ch[1].toString()) : "");
+			map.put("branch", ch[2] != null ? ch[2].toString() : ""); // 2
+			map.put("subledgerCode", ch[3] != null ? ch[3].toString() : ""); // 4
+			map.put("partyName", ch[4] != null ? ch[4].toString() : ""); // 3
+			map.put("subledgerName", ch[5] != null ? ch[5].toString() : ""); // 4
+			map.put("partyType", ch[6] != null ? ch[6].toString() : ""); // 5
+			map.put("salesPerson", ch[7] != null ? ch[7].toString() : ""); // 6
+			map.put("docId", ch[8] != null ? ch[8].toString() : ""); // 7
+			map.put("docDate", ch[9] != null ? ch[9].toString() : ""); // 8
+			map.put("supRefNo", ch[10] != null ? ch[10].toString() : ""); // 9
+			map.put("supRefDate", ch[11] != null ? ch[11].toString() : ""); // 10
+			map.put("dueDate", ch[12] != null ? ch[12].toString() : ""); // 11
+			map.put("refNo", ch[13] != null ? ch[13].toString() : ""); // 12
+			map.put("refDate", ch[14] != null ? ch[14].toString() : ""); // 13
+			map.put("amount", ch[15] != null ? new BigDecimal(ch[15].toString()) : BigDecimal.ZERO); // 14
+			map.put("outStanding", ch[16] != null ? new BigDecimal(ch[16].toString()) : BigDecimal.ZERO); // 15
+			map.put("totalDue", ch[17] != null ? new BigDecimal(ch[17].toString()) : BigDecimal.ZERO); // 16
+			map.put("unAdjusted", ch[18] != null ? new BigDecimal(ch[18].toString()) : BigDecimal.ZERO); // 9
+			map.put("dDays", ch[19] != null ? Long.valueOf(ch[19].toString()) : ""); // 10
+			map.put("msLab1", ch[20] != null ? new BigDecimal(ch[20].toString()) : BigDecimal.ZERO); // 11
+			map.put("msLab2", ch[21] != null ?new BigDecimal(ch[21].toString()) : BigDecimal.ZERO); // 12
+			map.put("msLab3", ch[22] != null ? new BigDecimal(ch[22].toString()) : BigDecimal.ZERO); // 13
+			map.put("msLab4", ch[23] != null ? new BigDecimal(ch[23].toString()) : BigDecimal.ZERO); 
+			map.put("msLab5", ch[24] != null ? new BigDecimal(ch[24].toString()) : BigDecimal.ZERO);// 14
+			map.put("creditLimit", ch[25] != null ? new BigDecimal(ch[25].toString()) : BigDecimal.ZERO); // 15
+			map.put("creditDays", ch[26] != null ? Long.valueOf(ch[26].toString()) : ""); // 16
+			
+
+			List1.add(map);
+		}
+		return List1;
+	}
+
+
 
 //	@Override
 //	public List<RetrievalManifestProviderVO> findRIMMIMReports(

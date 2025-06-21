@@ -1190,8 +1190,8 @@ public class CostInvoiceServiceImpl implements CostInvoiceService {
 
 	@Override
 	public List<Map<String, Object>> getCostInvoiceSummary(Long orgId, String fromDate, String toDate,
-			String finYear, String partyName) {
-		Set<Object[]> chType = costInvoiceRepo.getCostInvoiceSummary(orgId, fromDate,toDate, finYear,partyName);
+			String finYear, String partyName,String branchCode) {
+		Set<Object[]> chType = costInvoiceRepo.getCostInvoiceSummary(orgId, fromDate,toDate, finYear,partyName,branchCode);
 		return getCostSummary(chType);
 	}
 
@@ -1210,9 +1210,14 @@ public class CostInvoiceServiceImpl implements CostInvoiceService {
 				map.put("supplierName", ch[7] != null ? ch[7].toString() : "");
 				map.put("supplierPlace", ch[8] != null ? ch[8].toString() : "");
 				map.put("gstType", ch[9] != null ? ch[9].toString() : "");
-				map.put("mode", ch[10] != null ? ch[11].toString() : "");
-				map.put("totChargeLcAmt", ch[11] != null ? new BigDecimal(ch[11].toString()) : BigDecimal.ZERO);
-				map.put("payment", ch[12] != null ? ch[12].toString() : "");
+		
+				map.put("totChargeLcAmt", ch[10] != null ? new BigDecimal(ch[10].toString()) : BigDecimal.ZERO);
+				map.put("payment", ch[11] != null ? ch[11].toString() : "");
+				map.put("vDate", ch[12] != null ? ch[12].toString() : "");
+				map.put("gstAmount", ch[13] != null ? new BigDecimal(ch[13].toString()) : BigDecimal.ZERO);
+				map.put("totalLcAmount", ch[14] != null ? new BigDecimal(ch[14].toString()) : BigDecimal.ZERO);
+				map.put("totalAmount", ch[15] != null ? new BigDecimal(ch[15].toString()) : BigDecimal.ZERO);
+				map.put("tdsAmount", ch[16] != null ? new BigDecimal(ch[16].toString()) : BigDecimal.ZERO);
 				List1.add(map);
 			}
 		}
@@ -1222,8 +1227,8 @@ public class CostInvoiceServiceImpl implements CostInvoiceService {
 
 	@Override
 	public List<Map<String, Object>> getCostInvoiceSummaryDetails(Long orgId, String fromDate, String toDate,
-			String finYear, String partyName) {
-		Set<Object[]> chType = costInvoiceRepo.getCostInvoiceDetails(orgId, fromDate,toDate, finYear,partyName);
+			String finYear, String partyName,String branchCode) {
+		Set<Object[]> chType = costInvoiceRepo.getCostInvoiceDetails(orgId, fromDate,toDate, finYear,partyName,branchCode);
 		return getCosteDetails(chType);
 	}
 
@@ -1232,7 +1237,7 @@ public class CostInvoiceServiceImpl implements CostInvoiceService {
 		for (Object[] ch : chType) {
 			if (ch != null) {
 				Map<String, Object> map = new HashMap<>();
-				
+		
 				map.put("finYear", ch[0] != null ? ch[0].toString() : "");
 				map.put("docId", ch[1] != null ? ch[1].toString() : "");
 				map.put("docDate", ch[2] != null ? ch[2].toString() : "");
@@ -1256,6 +1261,13 @@ public class CostInvoiceServiceImpl implements CostInvoiceService {
 				map.put("ledger", ch[20] != null ? ch[20].toString() : "");
 				map.put("lcAmt", ch[21] != null ? new BigDecimal(ch[21].toString()) : BigDecimal.ZERO);
 				map.put("gst", ch[22] != null ? new BigDecimal(ch[22].toString()) : BigDecimal.ZERO);
+				map.put("qty", ch[23] != null ? new BigDecimal(ch[23].toString()) : BigDecimal.ZERO);
+				map.put("rate", ch[24] != null ? new BigDecimal(ch[24].toString()) : BigDecimal.ZERO);
+				map.put("toalLcAmount", ch[25] != null ? new BigDecimal(ch[25].toString()) : BigDecimal.ZERO);
+				map.put("vDate", ch[26] != null ? ch[26].toString() : "");
+				map.put("netAmount", ch[27] != null ? new BigDecimal(ch[27].toString()) : BigDecimal.ZERO);
+				map.put("gstPercentage", ch[28] != null ? new BigDecimal(ch[28].toString()) : BigDecimal.ZERO);
+//				map.put("gstType", ch[29] != null ? ch[29].toString() : "");
 				
 				List1.add(map);
 			}
