@@ -434,4 +434,5 @@ public interface PartyMasterRepo extends JpaRepository<PartyMasterVO, Long> {
 	Set<Object[]> getLedgerReport(Long orgId, String branch, String fromdate, String toDate, String finYear,
 			String accountName, String details);
 
+
 }

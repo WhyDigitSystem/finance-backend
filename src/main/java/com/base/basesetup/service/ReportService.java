@@ -94,6 +94,10 @@ public interface ReportService {
 		List<Map<String, Object>> getARAgeingReport(Long orgId, String branch, String partyName, String asOnDate,
 				String base);
 
+		List<Map<String, Object>> getApAgeing(Long orgId, String branch, String partyname, String asdate,
+				String baseType);
+
+
 //		List<RetrievalManifestProviderVO> findRIMMIMReports(String type, Long orgId, String customerName,
 //				String finYear, String toDate, String fromDate);
 

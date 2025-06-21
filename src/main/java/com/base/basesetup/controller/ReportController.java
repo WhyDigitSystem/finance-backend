@@ -359,7 +359,7 @@ public class ReportController extends BaseController {
 	// Receipt Register
 	@GetMapping("/getReceiptRegisterReport")
 	public ResponseEntity<ResponseDTO> getReceiptRegisterReport(@RequestParam Long orgId,
-			@RequestParam String partyCode, @RequestParam String branchCode, @RequestParam String finYear,
+			@RequestParam String partyName, @RequestParam String branchCode, @RequestParam String finYear,
 			@RequestParam(required = false) String fromDate, @RequestParam(required = false) String toDate) {
 		String methodName = "getReceiptRegisterReport()";
 		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
@@ -368,7 +368,7 @@ public class ReportController extends BaseController {
 		ResponseDTO responseDTO = null;
 		List<Map<String, Object>> reciptReport = new ArrayList<>();
 		try {
-			reciptReport = reportService.getReceiptRegisterReport(orgId, partyCode, branchCode, finYear, fromDate,
+			reciptReport = reportService.getReceiptRegisterReport(orgId, partyName, branchCode, finYear, fromDate,
 					toDate);
 		} catch (Exception e) {
 			errorMsg = e.getMessage();
@@ -738,7 +738,7 @@ public class ReportController extends BaseController {
 
 	}
 	
-	@GetMapping("/getARAgeingReport")
+@GetMapping("/getARAgeingReport")
 	public ResponseEntity<ResponseDTO> getARAgeingReport(@RequestParam Long orgId,
 			@RequestParam String branch, @RequestParam String partyName, @RequestParam(required = false) String asOnDate,@RequestParam(required = false) String base) {
 		String methodName = "getARAgeingReport()";
@@ -763,6 +763,38 @@ public class ReportController extends BaseController {
 		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
 		return ResponseEntity.ok().body(responseDTO);
 
+	}
+  
+  
+  @GetMapping("/getApAgeing")
+	public ResponseEntity<ResponseDTO> getApAgeing(@RequestParam Long orgId,
+			@RequestParam String branch, @RequestParam String partyname,
+			@RequestParam String asdate,  @RequestParam String baseType ) {
+		String methodName = "getApAgeing()";
+		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+		String errorMsg = null;
+		Map<String, Object> responseObjectsMap = new HashMap<>();
+		ResponseDTO responseDTO = null;
+		List<Map<String, Object>> mapp = new ArrayList<>();
+
+		try {
+			mapp = reportService.getApAgeing(orgId, branch, partyname, asdate,baseType);
+		} catch (Exception e) {
+			errorMsg = e.getMessage();
+			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+		}
+
+		if (StringUtils.isBlank(errorMsg)) {
+			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "ApAgeing Details retrieved successfully");
+			responseObjectsMap.put("mapp", mapp);
+			responseDTO = createServiceResponse(responseObjectsMap);
+		} else {
+			responseDTO = createServiceResponseError(responseObjectsMap, "Failed to retrieve tax ApAgeing Details",
+					errorMsg);
+		}
+
+		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+		return ResponseEntity.ok().body(responseDTO);
 	}
 	
 	
