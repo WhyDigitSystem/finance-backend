@@ -1022,7 +1022,7 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 		for (Object[] ch : chType) {
 			Map<String, Object> map = new HashMap<>();
 			map.put("product", ch[0] != null ? ch[0].toString() : "");
-			map.put("amt", ch[1] != null ? ch[1].toString() : "");
+			map.put("amt", ch[1] != null ? ch[1].toString() : ""); 
 			List1.add(map);
 		}
 		return List1;
@@ -1067,7 +1067,7 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 
 	@Override
 	public List<Map<String, Object>> getLedgerReport(Long orgId,String branch, String fromdate, String toDate, String finYear,
-			String accountName, String details) {
+			String accountName, String details) { 
 		Set<Object[]> chType = partyMasterRepo.getLedgerReport(orgId,branch,fromdate, toDate, finYear, accountName,details);
 		return getLedgerReports(chType);
 	}

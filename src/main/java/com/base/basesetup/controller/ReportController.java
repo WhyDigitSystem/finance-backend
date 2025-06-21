@@ -738,7 +738,35 @@ public class ReportController extends BaseController {
 
 	}
 	
-	@GetMapping("/getApAgeing")
+@GetMapping("/getARAgeingReport")
+	public ResponseEntity<ResponseDTO> getARAgeingReport(@RequestParam Long orgId,
+			@RequestParam String branch, @RequestParam String partyName, @RequestParam(required = false) String asOnDate,@RequestParam(required = false) String base) {
+		String methodName = "getARAgeingReport()";
+		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+		String errorMsg = null;
+		Map<String, Object> responseObjectsMap = new HashMap<>();
+		ResponseDTO responseDTO = null;
+		List<Map<String, Object>> department = new ArrayList<>();
+		try {
+			department = reportService.getARAgeingReport(orgId, branch, partyName, asOnDate,base);
+		} catch (Exception e) {
+			errorMsg = e.getMessage();
+			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+		}
+		if (StringUtils.isBlank(errorMsg)) {
+			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "ArAgeing Report get successfully");
+			responseObjectsMap.put("rimReportFillGrid", department);
+			responseDTO = createServiceResponse(responseObjectsMap);
+		} else {
+			responseDTO = createServiceResponseError(responseObjectsMap, "ArAgeing Report  receive failed", errorMsg);
+		}
+		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+		return ResponseEntity.ok().body(responseDTO);
+
+	}
+  
+  
+  @GetMapping("/getApAgeing")
 	public ResponseEntity<ResponseDTO> getApAgeing(@RequestParam Long orgId,
 			@RequestParam String branch, @RequestParam String partyname,
 			@RequestParam String asdate,  @RequestParam String baseType ) {
@@ -768,9 +796,6 @@ public class ReportController extends BaseController {
 		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
 		return ResponseEntity.ok().body(responseDTO);
 	}
-	
-	
-	
 	
 	
 //	@GetMapping("/findRIMMIMReports")

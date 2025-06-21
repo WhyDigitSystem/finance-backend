@@ -150,13 +150,14 @@ public class ReportServiceImpl implements ReportService {
 				invoiceProductLinesVO1.setDescription(invoiceProductLinesDTO.getDescription());
 				invoiceProductLinesVO1.setQuantity(invoiceProductLinesDTO.getQuantity());
 				invoiceProductLinesVO1.setRate(invoiceProductLinesDTO.getRate());
-				invoiceProductLinesVO1.setTax(invoiceProductLinesDTO.getTax());				
-				invoiceProductLinesVO1.setAmount(invoiceProductLinesDTO.getQuantity().multiply(invoiceProductLinesDTO.getRate()));
+				invoiceProductLinesVO1.setTax(invoiceProductLinesDTO.getTax());
+				invoiceProductLinesVO1
+						.setAmount(invoiceProductLinesDTO.getQuantity().multiply(invoiceProductLinesDTO.getRate()));
 				taxAmount = invoiceProductLinesDTO.getTax().multiply(invoiceProductLinesVO1.getAmount())
 						.divide(BigDecimal.valueOf(100));
 				invoiceProductLinesVO1.setTaxValue(taxAmount);
 				subToatl = subToatl.add(invoiceProductLinesVO1.getAmount());
-				totalTaxAmount=totalTaxAmount.add(invoiceProductLinesVO1.getTaxValue());
+				totalTaxAmount = totalTaxAmount.add(invoiceProductLinesVO1.getTaxValue());
 				invoiceProductLinesVO1.setInvoiceVO(invoiceVO);
 				invoiceProductLinesVOs.add(invoiceProductLinesVO1);
 			}
@@ -164,9 +165,9 @@ public class ReportServiceImpl implements ReportService {
 
 		invoiceVO.setSubTotal(subToatl);
 		invoiceVO.setTotalTaxAmount(totalTaxAmount);
-		BigDecimal totalAmount=subToatl.add(totalTaxAmount);
+		BigDecimal totalAmount = subToatl.add(totalTaxAmount);
 		invoiceVO.setTotal(totalAmount);
-				
+
 		invoiceVO.setProductLines(invoiceProductLinesVOs);
 
 	}
@@ -589,8 +590,8 @@ public class ReportServiceImpl implements ReportService {
 			message = "Quotation Creation SuccessFully";
 		} else {
 
-			quotationVO = quotationRepo.findById(quotationDTO.getId())
-					.orElseThrow(() -> new ApplicationException("Quotation not found with id: " + quotationDTO.getId()));
+			quotationVO = quotationRepo.findById(quotationDTO.getId()).orElseThrow(
+					() -> new ApplicationException("Quotation not found with id: " + quotationDTO.getId()));
 			quotationVO.setUpdatedBy(quotationDTO.getCreatedBy());
 			if (!quotationVO.getQuotationNo().equalsIgnoreCase(quotationDTO.getQuotationNo())) {
 				if (quotationRepo.existsByOrgIdAndQuotationNo(quotationDTO.getOrgId(), quotationDTO.getQuotationNo())) {
@@ -608,7 +609,7 @@ public class ReportServiceImpl implements ReportService {
 		Map<String, Object> response = new HashMap<>();
 		response.put("quotationVO", quotationVO);
 		response.put("message", message);
-		return response;	
+		return response;
 	}
 
 	private QuotationVO getQuotationVOFromQuotationDTO(QuotationVO quotationVO, QuotationDTO quotationDTO) {
@@ -640,13 +641,12 @@ public class ReportServiceImpl implements ReportService {
 			quotationDetailsVO.setRate(quotationDetailsDTO.getRate());
 			quotationDetailsVO.setTax(quotationDetailsDTO.getTax());
 
-			
 			quotationDetailsVO.setAmount(quotationDetailsDTO.getQuantity().multiply(quotationDetailsDTO.getRate()));
 			taxAmount = quotationDetailsDTO.getTax().multiply(quotationDetailsDTO.getAmount())
 					.divide(BigDecimal.valueOf(100));
 			quotationDetailsVO.setTaxAmount(taxAmount);
 			subTotal = subTotal.add(quotationDetailsVO.getAmount());
-			totalTaxAmount=totalTaxAmount.add(quotationDetailsVO.getTaxAmount());
+			totalTaxAmount = totalTaxAmount.add(quotationDetailsVO.getTaxAmount());
 
 			quotationDetailsVO.setQuotationVO(quotationVO);
 			quotationDetailsVOs.add(quotationDetailsVO);
@@ -654,8 +654,8 @@ public class ReportServiceImpl implements ReportService {
 
 		quotationVO.setSubTotal(subTotal);
 		quotationVO.setTotalTaxAmount(totalTaxAmount);
-		BigDecimal totalAmount=subTotal.add(totalTaxAmount);
-		quotationVO.setTotalAmount(totalAmount);		
+		BigDecimal totalAmount = subTotal.add(totalTaxAmount);
+		quotationVO.setTotalAmount(totalAmount);
 		quotationVO.setQuotationDetailsVO(quotationDetailsVOs);
 
 		return quotationVO;
@@ -715,8 +715,8 @@ public class ReportServiceImpl implements ReportService {
 	}
 
 	@Override
-	public List<Map<String, Object>> getMimFillGridgettransaction(Long orgId, String Receiver,String docId) {
-		Set<Object[]> requestedByDetails = taxInvoiceRepo.getMimFillGridgettransaction(orgId, Receiver,docId);
+	public List<Map<String, Object>> getMimFillGridgettransaction(Long orgId, String Receiver, String docId) {
+		Set<Object[]> requestedByDetails = taxInvoiceRepo.getMimFillGridgettransaction(orgId, Receiver, docId);
 		return getMimFillGridgettransaction(requestedByDetails);
 	}
 
@@ -813,12 +813,12 @@ public class ReportServiceImpl implements ReportService {
 
 		return retrievalManifestProviderRepo.findRIMReports(type, orgId, customerName, finYear, toDate, fromDate);
 	}
-	
-	
+
 	@Override
 	public List<Map<String, Object>> findMimSummaryReport(String type, Long orgId, String customerName, String finYear,
 			String fromDate, String toDate) {
-		Set<Object[]> chCode = issueManifestProviderRepo.findMimSummaryReport(type, orgId, customerName, finYear,fromDate, toDate);
+		Set<Object[]> chCode = issueManifestProviderRepo.findMimSummaryReport(type, orgId, customerName, finYear,
+				fromDate, toDate);
 		return findMimSummary(chCode);
 	}
 
@@ -831,18 +831,18 @@ public class ReportServiceImpl implements ReportService {
 			doctype.put("transporterName", sup[2] != null ? sup[2].toString() : "");
 			doctype.put("receiver", sup[3] != null ? sup[3].toString() : "");
 			doctype.put("amount", sup[4] != null ? new BigDecimal(sup[4].toString()) : BigDecimal.ZERO);
-			doctype.put("hsnCode", sup[5] != null ? Long.parseLong(sup[5].toString()) : 0L); 
+			doctype.put("hsnCode", sup[5] != null ? Long.parseLong(sup[5].toString()) : 0L);
 			doctype.put("kitQty", sup[6] != null ? new BigDecimal(sup[6].toString()) : BigDecimal.ZERO);
 			list1.add(doctype);
 		}
 		return list1;
 	}
 
-	
 	@Override
 	public List<Map<String, Object>> findRimSummaryReport(String type, Long orgId, String customerName, String finYear,
 			String fromDate, String toDate) {
-		Set<Object[]> chCode = issueManifestProviderRepo.findRimSummaryReport(type, orgId, customerName, finYear,fromDate, toDate);
+		Set<Object[]> chCode = issueManifestProviderRepo.findRimSummaryReport(type, orgId, customerName, finYear,
+				fromDate, toDate);
 		return findRimSummary(chCode);
 	}
 
@@ -855,12 +855,58 @@ public class ReportServiceImpl implements ReportService {
 			doctype.put("transporterName", sup[2] != null ? sup[2].toString() : "");
 			doctype.put("sender", sup[3] != null ? sup[3].toString() : "");
 			doctype.put("amount", sup[4] != null ? new BigDecimal(sup[4].toString()) : BigDecimal.ZERO);
-			doctype.put("hsnCode", sup[5] != null ? Long.parseLong(sup[5].toString()) : 0L); 
+			doctype.put("hsnCode", sup[5] != null ? Long.parseLong(sup[5].toString()) : 0L);
 			doctype.put("kitQty", sup[6] != null ? new BigDecimal(sup[6].toString()) : BigDecimal.ZERO);
 			list1.add(doctype);
 		}
 		return list1;
 	}
+
+	@Override
+	public List<Map<String, Object>> getARAgeingReport(Long orgId, String branch, String partyName, String asOnDate,
+			String base) {
+		Set<Object[]> chCode = issueManifestProviderRepo.getARAgeingReport(orgId, branch, partyName, asOnDate, base);
+		return getARAgeing(chCode);
+	}
+
+	private List<Map<String, Object>> getARAgeing(Set<Object[]> chCode) {
+		List<Map<String, Object>> list1 = new ArrayList<>();
+		for (Object[] sup : chCode) {
+			Map<String, Object> doctype = new HashMap<>();
+			doctype.put("sNo", sup[0].toString());
+			doctype.put("arApDetailsId", sup[1] != null ? sup[1].toString() : "");
+			doctype.put("branch", sup[2] != null ? sup[2].toString() : "");
+			doctype.put("subledgerCode", sup[3] != null ? sup[3].toString() : "");
+			doctype.put("subledgerName", sup[4] != null ? sup[4].toString() : "");
+			doctype.put("partyType", sup[5] != null ? sup[5].toString() : "");
+			doctype.put("salesPerson", sup[6] != null ? sup[6].toString() : "");
+
+			doctype.put("docId", sup[7] != null ? sup[7].toString() : "");
+			doctype.put("docDate", sup[8] != null ? sup[8].toString() : "");
+			doctype.put("suppRefNo", sup[9] != null ? sup[9].toString() : "");
+			doctype.put("supRefDate", sup[10] != null ? sup[10].toString() : "");
+			doctype.put("dueDate", sup[11] != null ? sup[11].toString() : "");
+			doctype.put("refNo", sup[12] != null ? sup[12].toString() : "");
+			doctype.put("refDate", sup[13] != null ? sup[13].toString() : "");
+			doctype.put("amount", sup[14] != null ? new BigDecimal(sup[14].toString()) : BigDecimal.ZERO);
+
+			doctype.put("outstanding", sup[15] != null ? new BigDecimal(sup[15].toString()) : BigDecimal.ZERO);
+			doctype.put("totalDue", sup[16] != null ? new BigDecimal(sup[16].toString()) : BigDecimal.ZERO);
+			doctype.put("unAdjusted", sup[17] != null ? new BigDecimal(sup[17].toString()) : BigDecimal.ZERO);
+			doctype.put("dDays", sup[18] != null ? sup[18].toString() : "");
+			doctype.put("mSlab1", sup[19] != null ? new BigDecimal(sup[19].toString()) : BigDecimal.ZERO);
+			doctype.put("mSlab2", sup[20] != null ? new BigDecimal(sup[20].toString()) : BigDecimal.ZERO);
+			doctype.put("mSlab3", sup[21] != null ? new BigDecimal(sup[21].toString()) : BigDecimal.ZERO);
+			doctype.put("mSlab4", sup[22] != null ? new BigDecimal(sup[22].toString()) : BigDecimal.ZERO);
+			doctype.put("mSlab5", sup[23] != null ? new BigDecimal(sup[23].toString()) : BigDecimal.ZERO);
+			doctype.put("creditLimit", sup[24] != null ? new BigDecimal(sup[24].toString()) : BigDecimal.ZERO);
+			doctype.put("creditDays", sup[25] != null ? Long.parseLong(sup[25].toString()) : 0);
+
+			list1.add(doctype);
+		}
+		return list1;
+	}
+
 	
 	
 	
@@ -909,7 +955,7 @@ public class ReportServiceImpl implements ReportService {
 		return List1;
 	}
 
-	
+
 
 //	@Override
 //	public List<RetrievalManifestProviderVO> findRIMMIMReports(
@@ -932,8 +978,6 @@ public class ReportServiceImpl implements ReportService {
 //	        throw new IllegalArgumentException("Unsupported report type: " + type);
 //	    }
 //	}
-
-
 
 //		@Override
 //		public List<IssueManifestProviderVO> getFillGridForTaxInvoice(Long orgId) {
