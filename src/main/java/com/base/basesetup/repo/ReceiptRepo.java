@@ -954,7 +954,7 @@ public interface ReceiptRepo extends JpaRepository<ReceiptVO, Long> {
 			+ "                   p.partyname ,\r\n"
 			+ "                   p.partytype,\r\n"
 			+ "                   p.creditlimit,\r\n"
-			+ "                   p.gstregistered,\r\n"
+			+ "                   p.gstregistered,\r\n" 
 			+ "                   p.creditdays,\r\n"
 			+ "                   p.salesperson,a.docid ,\r\n"
 			+ "                   a.docdate,\r\n"
