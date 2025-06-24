@@ -66,7 +66,7 @@ public interface ReceiptRepo extends JpaRepository<ReceiptVO, Long> {
 			+ "        SUM(d.totalchargeamountlc) AS totalchargeamountlc,\r\n"
 			+ "        SUM(d.totalinvamountlc) AS totalinvamountlc,\r\n"
 			+ "        SUM(d.totaltaxamountlc) AS totaltaxamountlc\r\n"
-			+ "    FROM taxinvoice d\r\n"
+			+ "    FROM taxinvoice d where d.approvestatus = 'Approved' \r\n"
 			+ "    GROUP BY d.docid\r\n"
 			+ "),\r\n"
 			+ "creditnote_data AS (\r\n"
