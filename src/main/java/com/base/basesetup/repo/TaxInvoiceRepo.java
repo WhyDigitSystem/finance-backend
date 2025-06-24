@@ -597,8 +597,8 @@ Set<Object[]> getTaxinvoiceDetails(Long orgId, String finYear, String partyname,
 		+ "    a.placeofsupply, \r\n"
 		+ "    a.totalchargeamountlc, \r\n"
 		+ "    a.totalinvamountlc, \r\n"
-		+ "    a.totaltaxamountlc\r\n"
-		+ "  a.approvestatus\\r\\n"
+		+ "    a.totaltaxamountlc,\r\n"
+		+ "    a.approvestatus\r\n"
 		+ "FROM \r\n"
 		+ "    taxinvoice a\r\n"
 		+ "WHERE \r\n"
@@ -606,8 +606,8 @@ Set<Object[]> getTaxinvoiceDetails(Long orgId, String finYear, String partyname,
 		+ "    AND (a.partyname = ?3 OR ?3 = 'ALL')\r\n"
 		+ "    AND a.finyear = ?2\r\n"
 		+ "    AND (?4 IS NULL OR a.vdate >= ?4)\r\n"
-		+ "    AND (?5 IS NULL OR a.vdate <= ?5) \r\n"
-		+ "    and (a.branchcode = ?6 OR ?6 = 'ALL')\r\n"
+		+ "    AND (?5 IS NULL OR a.vdate <= ?5)\r\n"
+		+ "    AND (a.branchcode = ?6 OR ?6 = 'ALL')\r\n"
 		+ "ORDER BY \r\n"
 		+ "    a.createdon DESC")
 Set<Object[]> getTaxinvoiceSummary(Long orgId, String finYear, String partyname, String fromDate, String toDate,String branchCode);
