@@ -294,10 +294,10 @@ public class APServiceImpl implements APService {
 				totalSettled = totalSettled.add(dto.getSettled());
 				onAccount = reciptAmount.subtract(totalSettled);
 				paymentInvDtlsVOs.add(vo);
-				if (dto.getSettled().compareTo(dto.getAmount().add(dto.getGstAmount())) > 0) {
+				if (dto.getSettled().compareTo(dto.getChargeAmt()) > 0) {
 					throw new ApplicationException(
 							"Settled amount (" + dto.getSettled() + ") cannot be greater than charge amount ("
-									+ dto.getAmount() + ") for invoice: " + dto.getInvNo());
+									+ dto.getChargeAmt() + ") for invoice: " + dto.getInvNo());
 				}
 //
 //				BigDecimal outstanding = dto.getOutStanding();
