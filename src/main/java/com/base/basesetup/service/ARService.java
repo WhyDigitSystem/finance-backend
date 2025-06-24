@@ -55,10 +55,10 @@ public interface ARService {
 
 	
 	//Report
-	List<Map<String, Object>> getReceiptDetails(Long orgId, String finYear, String partyname, String fromDate,
+	List<Map<String, Object>> getReceiptDetails(Long orgId,  String partyname, String fromDate,
 			String toDate,String branchCode);
 
-	List<Map<String, Object>> getReceiptSummary(Long orgId, String finYear, String partyname, String fromDate,
+	List<Map<String, Object>> getReceiptSummary(Long orgId,  String partyname, String fromDate,
 			String toDate,String branchCode);
 
 	ReceiptVO getReceiptByDocIdAndScreenCode(String docId);

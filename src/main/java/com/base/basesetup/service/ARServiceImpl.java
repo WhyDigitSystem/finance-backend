@@ -774,9 +774,9 @@ public class ARServiceImpl implements ARService {
 	// Report
 
 	@Override
-	public List<Map<String, Object>> getReceiptDetails(Long orgId, String finYear, String partyname, String fromDate,
+	public List<Map<String, Object>> getReceiptDetails(Long orgId, String partyname, String fromDate,
 			String toDate,String branchCode) {
-		Set<Object[]> chType = receiptRepo.getReceiptDetails(orgId, finYear, partyname, fromDate, toDate,branchCode);
+		Set<Object[]> chType = receiptRepo.getReceiptDetails(orgId,  partyname, fromDate, toDate,branchCode);
 		return getReceiptDetails(chType);
 	}
 
@@ -812,9 +812,9 @@ public class ARServiceImpl implements ARService {
 	}
 
 	@Override
-	public List<Map<String, Object>> getReceiptSummary(Long orgId, String finYear, String partyname, String fromDate,
+	public List<Map<String, Object>> getReceiptSummary(Long orgId,  String partyname, String fromDate,
 			String toDate,String branchCode) {
-		Set<Object[]> chType = receiptRepo.getReceiptSummary(orgId, finYear, partyname, fromDate, toDate,branchCode);
+		Set<Object[]> chType = receiptRepo.getReceiptSummary(orgId,  partyname, fromDate, toDate,branchCode);
 		return getReceiptSummary(chType);
 	}
 
@@ -834,6 +834,7 @@ public class ARServiceImpl implements ARService {
 			map.put("tdsAmount", ch[9] != null ? new BigDecimal(ch[9].toString()) : BigDecimal.ZERO);
 			map.put("onAccount", ch[10] != null ? new BigDecimal(ch[10].toString()) : BigDecimal.ZERO);
 			map.put("bankAccount", ch[11] != null ? ch[11].toString() : "");
+			map.put("approvedStatus", ch[12] != null ? ch[12].toString() : "");
 			List1.add(map);
 		}
 		return List1;

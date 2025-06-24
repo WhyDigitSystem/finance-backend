@@ -1080,9 +1080,9 @@ public class TaxInvoiceServiceImpl implements TaxInvoiceService {
 	}
 
 	@Override
-	public List<Map<String, Object>> getTaxinvoiceDetails(Long orgId, String finYear, String partyname, String fromDate,
+	public List<Map<String, Object>> getTaxinvoiceDetails(Long orgId, String partyname, String fromDate,
 			String toDate,String branchCode) {
-		Set<Object[]> chType  = taxInvoiceRepo.getTaxinvoiceDetails(orgId, finYear, partyname, fromDate,toDate,branchCode);
+		Set<Object[]> chType  = taxInvoiceRepo.getTaxinvoiceDetails(orgId, partyname, fromDate,toDate,branchCode);
 		return getTaxinvoiceDetails(chType);
 	}
 
@@ -1121,9 +1121,9 @@ public class TaxInvoiceServiceImpl implements TaxInvoiceService {
 	}
 
 	@Override
-	public List<Map<String, Object>> getTaxinvoiceSummary(Long orgId, String finYear, String partyname, String fromDate,
+	public List<Map<String, Object>> getTaxinvoiceSummary(Long orgId, String partyname, String fromDate,
 			String toDate,String branchCode) {
-		Set<Object[]> chType  = taxInvoiceRepo.getTaxinvoiceSummary(orgId, finYear, partyname, fromDate,toDate,branchCode);
+		Set<Object[]> chType  = taxInvoiceRepo.getTaxinvoiceSummary(orgId, partyname, fromDate,toDate,branchCode);
 		return getTaxinvoiceSummary(chType);
 	}
 
@@ -1144,7 +1144,7 @@ public class TaxInvoiceServiceImpl implements TaxInvoiceService {
 			map.put("totalchargeamountlc", ch[10] != null ? new BigDecimal(ch[10].toString()) : BigDecimal.ZERO);
 			map.put("totalinvamountlc",   ch[11] != null ? new BigDecimal(ch[11].toString()) : BigDecimal.ZERO);
 			map.put("totaltaxamountlc",    ch[12] != null ? new BigDecimal(ch[12].toString()) : BigDecimal.ZERO);
-			
+			map.put("approvestatus",       ch[13] != null ? ch[13].toString() : "");
 			
 			
 

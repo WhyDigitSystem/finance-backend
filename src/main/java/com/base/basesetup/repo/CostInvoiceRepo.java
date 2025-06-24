@@ -291,18 +291,39 @@ public interface CostInvoiceRepo extends JpaRepository<CostInvoiceVO, Long> {
 	@Query(nativeQuery = true, value = "select accountgroupname,category from groupledger where orgid=?1 and gsttaxflag='NA' and category='RECEIVABLE A/C' and type='ACCOUNT'  and groupname='TDS'")
 	Set<Object[]> getTdsLedgerFromAccountReceivable(Long orgId);
 
-	@Query(nativeQuery = true, value = "SELECT \r\n" + "    a.finyear,\r\n" + "    a.docid,\r\n" + "    a.docdate,\r\n"
-			+ "    a.vid,\r\n" + "    a.purvoucherno,\r\n" + "    a.purvoucherdate,\r\n" + "    a.suppliercode,\r\n"
-			+ "    a.suppliername,\r\n" + "    a.supplierplace,\r\n" + "    a.gsttype,\r\n"
-			+ "    a.totchargeslcamt,\r\n" + "    a.payment,\r\n" + "    a.vdate,\r\n" + "    a.gstinputlcamt,\r\n"
-			+ "    a.netbilllcamt,\r\n" + "    a.totchargeslcamt + a.gstinputlcamt as totalAmount,\r\n"
-			+ "    a1.totaltds\r\n" + "FROM \r\n" + "   costinvoice a,tdscostinvoice a1 \r\n"
-			+ "WHERE \r\n" + "a.costinvoiceid=a1.costinvoiceid and \r\n" + "    a.orgid =?1\r\n"
-			+ "  AND a.finyear = ?4\r\n" + "  AND (?2 IS NULL OR a.vdate >= ?2)\r\n"
+	@Query(nativeQuery = true, value = "SELECT\r\n"
+			+ "    a.finyear,\r\n"
+			+ "    a.docid,\r\n"
+			+ "    a.docdate,\r\n"
+			+ "    a.vid,\r\n"
+			+ "    a.purvoucherno,\r\n"
+			+ "    a.purvoucherdate,\r\n"
+			+ "    a.suppliercode,\r\n"
+			+ "    a.suppliername,\r\n"
+			+ "    a.supplierplace,\r\n"
+			+ "    a.gsttype,\r\n"
+			+ "    a.totchargeslcamt,\r\n"
+			+ "    a.payment,\r\n"
+			+ "    a.vdate,\r\n"
+			+ "    a.gstinputlcamt,\r\n"
+			+ "    a.netbilllcamt,\r\n"
+			+ "    a.totchargeslcamt + a.gstinputlcamt AS totalAmount,\r\n"
+			+ "    t.totaltds,\r\n"
+			+ "    a.approvestatus\r\n"
+			+ "FROM\r\n"
+			+ "    costinvoice a\r\n"
+			+ "JOIN\r\n"
+			+ "    tdscostinvoice t\r\n"
+			+ "  ON a.costinvoiceid = t.costinvoiceid\r\n"
+			+ "WHERE\r\n"
+			+ "    a.orgid= ?1\r\n"
+			+ "    AND (?2 IS NULL OR a.vdate >= ?2)\r\n"
 			+ "    AND (?3 IS NULL OR a.vdate <= ?3)\r\n"
-			+ "    AND (?5 IS NULL OR ?5 = 'ALL' OR a.suppliername = ?5)\r\n"
-			+ " AND (a.branchcode = ?6 OR ?6 = 'ALL')\r\n" + "ORDER BY \r\n" + "    a.createdon DESC")
-	Set<Object[]> getCostInvoiceSummary(Long orgId, String fromDate, String toDate, String finYear, String partyName,
+			+ "    AND (?4 IS NULL OR ?4 = 'ALL' OR a.suppliername = ?5)\r\n"
+			+ "    AND (a.branchcode = ?5 OR ?5 = 'ALL')\r\n"
+			+ "ORDER BY\r\n"
+			+ "    a.createdon DESC")
+	Set<Object[]> getCostInvoiceSummary(Long orgId, String fromDate, String toDate, String partyName,
 			String branchCode);
 
 	@Query(nativeQuery = true, value = "SELECT \r\n"
@@ -338,20 +359,19 @@ public interface CostInvoiceRepo extends JpaRepository<CostInvoiceVO, Long> {
 			+ "FROM \r\n"
 			+ "    costinvoice a\r\n"
 			+ "JOIN \r\n"
-			+ "   tdscostinvoice b ON a.costinvoiceid = b.costinvoiceid\r\n"
+			+ "    tdscostinvoice b ON a.costinvoiceid = b.costinvoiceid\r\n"
 			+ "JOIN \r\n"
 			+ "    chargercostinvoice c ON a.costinvoiceid = c.costinvoiceid\r\n"
 			+ "WHERE \r\n"
-			+ "    a.orgid =?1\r\n"
-			+ "    AND c.ledger NOT LIKE ('%GST%')\r\n"
-			+ "    AND a.finyear =?4\r\n"
-			+ "  AND (?2 IS NULL OR a.vdate >= ?2)\r\n"
+			+ "    a.orgid = ?1\r\n"
+			+ "    AND c.ledger NOT LIKE '%GST%'\r\n"
+			+ "    AND (?2 IS NULL OR a.vdate >= ?2)\r\n"
 			+ "    AND (?3 IS NULL OR a.vdate <= ?3)\r\n"
-			+ "    AND (?5 IS NULL OR ?5 = 'ALL' OR a.suppliername = ?5)\r\n"
-			+ "    AND (a.branchcode = ?6 OR ?6 = 'ALL')\r\n"
+			+ "    AND (?4 IS NULL OR ?4 = 'ALL' OR a.suppliername = ?5)\r\n"
+			+ "    AND (a.branchcode = ?5 OR ?5 = 'ALL')\r\n"
 			+ "ORDER BY \r\n"
 			+ "    a.createdon DESC")
-	Set<Object[]> getCostInvoiceDetails(Long orgId, String fromDate, String toDate, String finYear, String partyName,
+	Set<Object[]> getCostInvoiceDetails(Long orgId, String fromDate, String toDate, String partyName,
 			String branchCode);
 
 //	@Query(nativeQuery = true, 
