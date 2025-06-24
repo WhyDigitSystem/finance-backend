@@ -109,6 +109,7 @@ public class IrnCreditNoteVO {
 	private String billCurr;
 	@Column(name = "billcurrrate", precision = 10, scale = 2)
 	private BigDecimal billCurrRate;
+	private double annexureSubTotal;
 	
 	@Column(name = "creditdays",length = 5)
 	private int creditDays;
@@ -148,6 +149,17 @@ public class IrnCreditNoteVO {
 	private String amountInWords;
 	@Column(name = "jobno")
 	private String jobNo;
+	private LocalDate dueDate;
+	private String vid;
+	private LocalDate vdate;
+	@Column(name="billofentry")
+	private String billOfEntry;
+	@Column(name="billingremarks")
+	private String billingRemarks;
+	@Column(name="partyid")
+	private String partyId;
+	@Column(name = "remainingamount", precision = 10, scale = 2)
+	private BigDecimal remainingAmount;
 	
 	@OneToMany(mappedBy = "irnCreditNoteVO", cascade = CascadeType.ALL)
 	@JsonManagedReference
@@ -157,6 +169,10 @@ public class IrnCreditNoteVO {
 	@OneToMany(mappedBy = "irnCreditNoteVO", cascade = CascadeType.ALL)
 	@JsonManagedReference
 	List<IrnCreditNoteGstVO> irnCreditNoteGstVO;
+	
+	@OneToMany(mappedBy = "irnCreditNoteVO", cascade = CascadeType.ALL)
+	@JsonManagedReference
+	List<IrnCreditNoteAnnexureVO> irnCreditNoteAnnexureVO;
 
 	@Embedded
 	@Builder.Default

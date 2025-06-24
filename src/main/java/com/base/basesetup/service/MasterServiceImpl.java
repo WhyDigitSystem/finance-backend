@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -40,6 +41,7 @@ import com.base.basesetup.dto.CostCenterDTO;
 import com.base.basesetup.dto.EmployeeDTO;
 import com.base.basesetup.dto.GroupLedgerDTO;
 import com.base.basesetup.dto.HSNSacCodeDTO;
+import com.base.basesetup.dto.ItemMasterDTO;
 import com.base.basesetup.dto.ListOfValues1DTO;
 import com.base.basesetup.dto.ListOfValuesDTO;
 import com.base.basesetup.dto.PartyAddressDTO;
@@ -61,6 +63,7 @@ import com.base.basesetup.dto.TcsMaster2DTO;
 import com.base.basesetup.dto.TcsMasterDTO;
 import com.base.basesetup.dto.TdsMaster2DTO;
 import com.base.basesetup.dto.TdsMasterDTO;
+import com.base.basesetup.dto.UomDTO;
 import com.base.basesetup.entity.Account1VO;
 import com.base.basesetup.entity.Account2VO;
 import com.base.basesetup.entity.Account3VO;
@@ -73,6 +76,7 @@ import com.base.basesetup.entity.CostCenterVO;
 import com.base.basesetup.entity.EmployeeVO;
 import com.base.basesetup.entity.GroupLedgerVO;
 import com.base.basesetup.entity.HSNSacCodeVO;
+import com.base.basesetup.entity.ItemMasterVO;
 import com.base.basesetup.entity.ListOfValues1VO;
 import com.base.basesetup.entity.ListOfValuesVO;
 import com.base.basesetup.entity.PartyAddressVO;
@@ -96,6 +100,7 @@ import com.base.basesetup.entity.TcsMaster2VO;
 import com.base.basesetup.entity.TcsMasterVO;
 import com.base.basesetup.entity.TdsMaster2VO;
 import com.base.basesetup.entity.TdsMasterVO;
+import com.base.basesetup.entity.UomVO;
 import com.base.basesetup.exception.ApplicationException;
 import com.base.basesetup.repo.Account1Repo;
 import com.base.basesetup.repo.Account2Repo;
@@ -110,6 +115,7 @@ import com.base.basesetup.repo.DocumentTypeMappingDetailsRepo;
 import com.base.basesetup.repo.EmployeeRepo;
 import com.base.basesetup.repo.GroupLedgerRepo;
 import com.base.basesetup.repo.HSNSacCodeRepo;
+import com.base.basesetup.repo.ItemMasterRepo;
 import com.base.basesetup.repo.ListOfValues1Repo;
 import com.base.basesetup.repo.ListOfValuesRepo;
 import com.base.basesetup.repo.PartyAddressRepo;
@@ -133,6 +139,7 @@ import com.base.basesetup.repo.TcsMaster2Repo;
 import com.base.basesetup.repo.TcsMasterRepo;
 import com.base.basesetup.repo.TdsMaster2Repo;
 import com.base.basesetup.repo.TdsMasterRepo;
+import com.base.basesetup.repo.UomRepo;
 
 import io.jsonwebtoken.io.IOException;
 
@@ -142,6 +149,12 @@ public class MasterServiceImpl implements MasterService {
 
 	@Autowired
 	BranchRepo branchRepo;
+
+	@Autowired
+	ItemMasterRepo itemMasterRepo;
+
+	@Autowired
+	UomRepo uomRepo;
 
 	@Autowired
 	EmployeeRepo employeeRepo;
@@ -314,8 +327,8 @@ public class MasterServiceImpl implements MasterService {
 			message = "Branch Updated Successfully";
 		}
 
-		getBranchVOFromBranchDTO(branchVO, branchDTO);
 		branchRepo.save(branchVO);
+		getBranchVOFromBranchDTO(branchVO, branchDTO);
 
 		Map<String, Object> response = new HashMap<>();
 		response.put("message", message);
@@ -752,24 +765,14 @@ public class MasterServiceImpl implements MasterService {
 			if (tdsMasterRepo.existsBySectionNameAndOrgId(tdsMasterDTO.getSectionName(), tdsMasterDTO.getOrgId())) {
 				throw new ApplicationException("The given section name already exists.");
 			}
-			if (tdsMasterRepo.existsBySectionAndOrgId(tdsMasterDTO.getSection(), tdsMasterDTO.getOrgId())) {
-				throw new ApplicationException("The given Section already exists.");
-			}
 			tdsMasterVO.setUpdatedBy(tdsMasterDTO.getCreatedBy());
 			tdsMasterVO.setCreatedBy(tdsMasterDTO.getCreatedBy());
 		}
 
 		if (isUpdate) {
 			TdsMasterVO tdsMaster = tdsMasterRepo.findById(tdsMasterDTO.getId()).orElse(null);
-			if (!tdsMaster.getSection().equalsIgnoreCase(tdsMasterDTO.getSection())) {
-				if (tdsMasterRepo.existsBySectionAndOrgIdAndId(tdsMasterDTO.getSection(), tdsMasterDTO.getOrgId(),
-						tdsMasterDTO.getId())) {
-					throw new ApplicationException("The given section already exists.");
-				}
-			}
 			if (!tdsMaster.getSectionName().equals(tdsMasterDTO.getSectionName())) {
-				if (tdsMasterRepo.existsBySectionNameAndOrgIdAndId(tdsMasterDTO.getSectionName(),
-						tdsMasterDTO.getOrgId(), tdsMasterDTO.getId())) {
+				if (tdsMasterRepo.existsBySectionNameAndOrgId(tdsMasterDTO.getSectionName(), tdsMasterDTO.getOrgId())) {
 					throw new ApplicationException("The given Section name already exists.");
 				}
 			}
@@ -812,6 +815,8 @@ public class MasterServiceImpl implements MasterService {
 		tdsMasterVO.setOrgId(tdsMasterDTO.getOrgId());
 		tdsMasterVO.setSection(tdsMasterDTO.getSection());
 		tdsMasterVO.setSectionName(tdsMasterDTO.getSectionName());
+		tdsMasterVO.setRecievableAccount(tdsMasterDTO.getRecievableAccount());
+		tdsMasterVO.setPayableAccount(tdsMasterDTO.getPayableAccount());
 		tdsMasterVO.setActive(tdsMasterDTO.isActive());
 	}
 
@@ -819,6 +824,42 @@ public class MasterServiceImpl implements MasterService {
 	public List<TdsMasterVO> getTdsMasterByActive() {
 		return tdsMasterRepo.findTdsMasterByActive();
 
+	}
+
+	@Override
+	public List<Map<String, Object>> getTdsAccountNameFromReceivable(Long orgId) {
+		Set<Object[]> chType = tdsMasterRepo.getTdsAccountNameFromReceivable(orgId);
+		return getTdsAccountNameFromR(chType);
+	}
+
+	public List<Map<String, Object>> getTdsAccountNameFromR(Set<Object[]> chType) {
+
+		List<Map<String, Object>> List1 = new ArrayList<>();
+		for (Object ch[] : chType) {
+			Map<String, Object> map = new HashMap<>();
+			map.put("accountName", ch[0] != null ? ch[0].toString() : ""); // Empty string if null
+			List1.add(map);
+
+		}
+		return List1;
+	}
+
+	@Override
+	public List<Map<String, Object>> getTdsAccountNameFromPayable(Long orgId) {
+		Set<Object[]> chType = tdsMasterRepo.getTdsAccountNameFromPayable(orgId);
+		return getTdsAccountNameFromP(chType);
+	}
+
+	public List<Map<String, Object>> getTdsAccountNameFromP(Set<Object[]> chType) {
+
+		List<Map<String, Object>> List1 = new ArrayList<>();
+		for (Object ch[] : chType) {
+			Map<String, Object> map = new HashMap<>();
+			map.put("accountName", ch[0] != null ? ch[0].toString() : ""); // Empty string if null
+			List1.add(map);
+
+		}
+		return List1;
 	}
 
 	// AccountVO
@@ -1116,6 +1157,12 @@ public class MasterServiceImpl implements MasterService {
 		return groupLedgerRepo.findGroupLedgerByActive();
 
 	}
+	
+	@Override
+	public List<GroupLedgerVO> getAllGroupLedgerByAccountCode(String accountCode) {
+		return groupLedgerRepo.findAllGroupLedgerByAccountCode(accountCode);
+
+	}
 
 	// SacCode
 
@@ -1133,8 +1180,8 @@ public class MasterServiceImpl implements MasterService {
 	}
 
 	@Override
-	public List<SacCodeVO> getAllActiveSacCodeByOrgId(Long orgId) {
-		List<SacCodeVO> sacCodeVO = new ArrayList<>();
+	public List<HSNSacCodeVO> getAllActiveSacCodeByOrgId(Long orgId) {
+		List<HSNSacCodeVO> sacCodeVO = new ArrayList<>();
 		sacCodeVO = sacCodeRepo.getAllActiveSacCodeByOrgId(orgId);
 
 		return sacCodeVO;
@@ -1565,8 +1612,10 @@ public class MasterServiceImpl implements MasterService {
 		chargeTypeRequestVO.setTaxablePercentage(chargeTypeRequestDTO.getTaxablePercentage());
 		chargeTypeRequestVO.setGovtSac(chargeTypeRequestDTO.getGovtSac().toUpperCase());
 		chargeTypeRequestVO.setExcempted(chargeTypeRequestDTO.getExcempted().toUpperCase());
+		chargeTypeRequestVO.setProduct(chargeTypeRequestDTO.getProduct().toUpperCase());
 		chargeTypeRequestVO.setGstTax(chargeTypeRequestDTO.getGstTax());
 		chargeTypeRequestVO.setOrgId(chargeTypeRequestDTO.getOrgId());
+		chargeTypeRequestVO.setActive(chargeTypeRequestDTO.isActive());
 		chargeTypeRequestVO.setApproved(chargeTypeRequestDTO.isApproved());
 		if (chargeTypeRequestDTO.isApproved()) {
 			chargeTypeRequestVO.setActive(true);
@@ -1795,6 +1844,7 @@ public class MasterServiceImpl implements MasterService {
 			partyAddressVO.setAddressLine2(partyAddressDTO.getAddressLine2());
 			partyAddressVO.setAddressLine3(partyAddressDTO.getAddressLine3());
 			partyAddressVO.setPincode(partyAddressDTO.getPincode());
+			partyAddressVO.setContact(partyAddressDTO.getContact());
 
 			partyAddressVO.setPartyMasterVO(partyMasterVO);
 			partyAddressVOs.add(partyAddressVO);
@@ -1942,7 +1992,7 @@ public class MasterServiceImpl implements MasterService {
 	private void getPartyMasterVOFromPartyMasterDTO(@Valid PartyMasterDTO partyMasterDTO, PartyMasterVO partyMasterVO) {
 		partyMasterVO.setPartyType(partyMasterDTO.getPartyType());
 		partyMasterVO.setCustomerType(partyMasterDTO.getCustomerType());
-		partyMasterVO.setPartyName(partyMasterDTO.getPartyName());
+		partyMasterVO.setPartyName(partyMasterDTO.getPartyName().toUpperCase());
 		partyMasterVO.setGstPartyName(partyMasterDTO.getGstPartyName());
 		partyMasterVO.setCompany(partyMasterDTO.getCompany());
 		partyMasterVO.setAgentName(partyMasterDTO.getAgentName());
@@ -1982,6 +2032,8 @@ public class MasterServiceImpl implements MasterService {
 		partyMasterVO.setFinYear(partyMasterDTO.getFinYear());
 		partyMasterVO.setBranchCode(partyMasterDTO.getBranchCode());
 		partyMasterVO.setCreditTerms(partyMasterDTO.getCreditTerms());
+		partyMasterVO.setPartyShortName(partyMasterDTO.getPartyShortName());
+
 	}
 
 	@Override
@@ -2023,17 +2075,17 @@ public class MasterServiceImpl implements MasterService {
 						// Retrieve cell values based on the provided order
 						String type = getStringCellValue1(row.getCell(0));
 						String accountName = getStringCellValue1(row.getCell(1));
-						if (groupLedgerRepo.existsByAccountGroupNameAndOrgId(accountName,orgId)) {
-							String errorMessage = String.format("This Accountname: %s Already Exists in This Organization",
-								accountName);
+						if (groupLedgerRepo.existsByAccountGroupNameAndOrgId(accountName, orgId)) {
+							String errorMessage = String
+									.format("This Accountname: %s Already Exists in This Organization", accountName);
 							throw new ApplicationException("The given Account Group Name already exists.");
-					}
+						}
 						String accountCode = getStringCellValue1(row.getCell(2));
-						if (groupLedgerRepo.existsByAccountCodeAndOrgId(accountCode,orgId)) {
-							String errorMessage = String.format("This AccountCode: %s Already Exists in This Organization",
-								accountCode);
+						if (groupLedgerRepo.existsByAccountCodeAndOrgId(accountCode, orgId)) {
+							String errorMessage = String
+									.format("This AccountCode: %s Already Exists in This Organization", accountCode);
 							throw new ApplicationException("The given Account Code  already exists.");
-					}
+						}
 						String parentCode = getStringCellValue1(row.getCell(3));
 						String GSTTaxFlag = getStringCellValue1(row.getCell(5));
 						String pbFlag = getStringCellValue1(row.getCell(6));
@@ -2264,6 +2316,7 @@ public class MasterServiceImpl implements MasterService {
 						String govtSacNumber = getStringCellValue1(row.getCell(9));
 						double gstTax = Double.parseDouble(getStringCellValue1(row.getCell(10)));
 						String activeString = getStringCellValue1(row.getCell(11));
+						String product = getStringCellValue1(row.getCell(12));
 						// Convert activeString to integer and handle the conditions
 						boolean active;
 						if ("1".equals(activeString)) {
@@ -2295,7 +2348,7 @@ public class MasterServiceImpl implements MasterService {
 						chargeTypeRequestVO.setGstTax((float) gstTax);
 						chargeTypeRequestVO.setActive(active);
 						chargeTypeRequestVO.setOrgId(orgId);
-						chargeTypeRequestVO.setProduct("ALL");
+						chargeTypeRequestVO.setProduct(product.toUpperCase());
 						chargeTypeRequestVO.setCreatedBy(createdBy);
 						chargeTypeRequestVO.setUpdatedBy(createdBy);
 						chargeTypeRequestRepo.save(chargeTypeRequestVO);
@@ -2330,8 +2383,9 @@ public class MasterServiceImpl implements MasterService {
 				&& "Taxable".equalsIgnoreCase(getStringCellValue1(headerRow.getCell(7)))
 				&& "Taxable %".equalsIgnoreCase(getStringCellValue1(headerRow.getCell(8)))
 				&& "Govt Sac Number".equalsIgnoreCase(getStringCellValue1(headerRow.getCell(9)))
-				&& "Tax %".equalsIgnoreCase(getStringCellValue1(headerRow.getCell(9)))
-				&& "Active".equalsIgnoreCase(getStringCellValue1(headerRow.getCell(10)));
+				&& "Tax %".equalsIgnoreCase(getStringCellValue1(headerRow.getCell(10)))
+				&& "Active".equalsIgnoreCase(getStringCellValue1(headerRow.getCell(11)))
+				&& "product".equalsIgnoreCase(getStringCellValue1(headerRow.getCell(12)));
 	}
 
 	@Override
@@ -2444,34 +2498,33 @@ public class MasterServiceImpl implements MasterService {
 		HSNSacCodeVO hsnSacCodeVO;
 		String message = null;
 
-		 if (ObjectUtils.isEmpty(hsnSacCodeDTO.getId())) {
-		        if (hsnSacCodeRepo.existsByCode(hsnSacCodeDTO.getCode())) {
-		            String errorMessage = String.format("This Code: %s Already Exists", hsnSacCodeDTO.getCode());
-		            throw new ApplicationException(errorMessage);
-		        }
+		if (ObjectUtils.isEmpty(hsnSacCodeDTO.getId())) {
+			if (hsnSacCodeRepo.existsByCode(hsnSacCodeDTO.getCode())) {
+				String errorMessage = String.format("This Code: %s Already Exists", hsnSacCodeDTO.getCode());
+				throw new ApplicationException(errorMessage);
+			}
 
-		        hsnSacCodeVO = new HSNSacCodeVO();
-		        hsnSacCodeVO.setCreatedBy(hsnSacCodeDTO.getCreatedBy());
-		        hsnSacCodeVO.setUpdatedBy(hsnSacCodeDTO.getCreatedBy());
-		        message = "HSNSacCode Created Successfully";
-		    } else {
-		        // Update existing code
-		        hsnSacCodeVO = hsnSacCodeRepo.findById(hsnSacCodeDTO.getId())
-		                .orElseThrow(() -> new ApplicationException("HSNSacCode not found with id: " + hsnSacCodeDTO.getId()));
+			hsnSacCodeVO = new HSNSacCodeVO();
+			hsnSacCodeVO.setCreatedBy(hsnSacCodeDTO.getCreatedBy());
+			hsnSacCodeVO.setUpdatedBy(hsnSacCodeDTO.getCreatedBy());
+			message = "HSNSacCode Created Successfully";
+		} else {
+			// Update existing code
+			hsnSacCodeVO = hsnSacCodeRepo.findById(hsnSacCodeDTO.getId()).orElseThrow(
+					() -> new ApplicationException("HSNSacCode not found with id: " + hsnSacCodeDTO.getId()));
 
-		        hsnSacCodeVO.setUpdatedBy(hsnSacCodeDTO.getCreatedBy());
+			hsnSacCodeVO.setUpdatedBy(hsnSacCodeDTO.getCreatedBy());
 
-		        if (!hsnSacCodeVO.getCode().equalsIgnoreCase(hsnSacCodeDTO.getCode())) {
-		            if (hsnSacCodeRepo.existsByCode(hsnSacCodeDTO.getCode())) {
-		                String errorMessage = String.format("This Code: %s Already Exists", hsnSacCodeDTO.getCode());
-		                throw new ApplicationException(errorMessage);
-		            }
-		            hsnSacCodeVO.setCode(hsnSacCodeDTO.getCode().toUpperCase());
-		        }
+			if (!hsnSacCodeVO.getCode().equalsIgnoreCase(hsnSacCodeDTO.getCode())) {
+				if (hsnSacCodeRepo.existsByCode(hsnSacCodeDTO.getCode())) {
+					String errorMessage = String.format("This Code: %s Already Exists", hsnSacCodeDTO.getCode());
+					throw new ApplicationException(errorMessage);
+				}
+				hsnSacCodeVO.setCode(hsnSacCodeDTO.getCode().toUpperCase());
+			}
 
-		        message = "HSNSacCode Updated Successfully";
-		    }
-
+			message = "HSNSacCode Updated Successfully";
+		}
 
 		getHSNSacCodeVOFromHSNSacCodeDTO(hsnSacCodeVO, hsnSacCodeDTO);
 		hsnSacCodeRepo.save(hsnSacCodeVO);
@@ -2511,6 +2564,235 @@ public class MasterServiceImpl implements MasterService {
 	public List<HSNSacCodeVO> findHSNSacCodeByActive() {
 
 		return hsnSacCodeRepo.findHSNSacCodeByActive();
+	}
+
+	@Override
+	public Map<String, Object> updateCreateItemMaster(ItemMasterDTO itemMasterDTO) throws ApplicationException {
+		String message;
+
+		ItemMasterVO itemMasterVO = new ItemMasterVO();
+
+		if (itemMasterDTO.getId() != null) {
+			// Fetch existing ItemVO for update
+			itemMasterVO = itemMasterRepo.findById(itemMasterDTO.getId())
+					.orElseThrow(() -> new ApplicationException("Item master not found"));
+			itemMasterVO.setModifiedBy(itemMasterDTO.getCreatedBy());
+
+			createUpdateItemMasterVOByItemMasterDTO(itemMasterDTO, itemMasterVO);
+			message = "Item Master Updated Successfully";
+
+		} else {
+
+			// Check for duplicate dupChk before creating
+			boolean isDupChkExists = itemMasterRepo.existsByDupChk(itemMasterDTO.getDupChk());
+			if (isDupChkExists) {
+				throw new ApplicationException(
+						"Duplicate value found item for the customer: " + itemMasterDTO.getDupChk());
+			}
+
+			// Create new ItemVO
+			itemMasterVO.setCreatedBy(itemMasterDTO.getCreatedBy());
+			itemMasterVO.setModifiedBy(itemMasterDTO.getCreatedBy());
+			createUpdateItemMasterVOByItemMasterDTO(itemMasterDTO, itemMasterVO);
+			message = "Item Master Created Successfully";
+		}
+
+		// Save the ItemVO
+		itemMasterRepo.save(itemMasterVO);
+
+		// Prepare response
+		Map<String, Object> response = new HashMap<>();
+		response.put("itemMasterVO", itemMasterVO);
+		response.put("message", message);
+		return response;
+	}
+
+	private void createUpdateItemMasterVOByItemMasterDTO(@Valid ItemMasterDTO itemMasterDTO,
+			ItemMasterVO itemMasterVO) {
+		itemMasterVO.setPartNo(itemMasterDTO.getPartNo());
+		// itemMasterVO.setId(itemMasterDTO.getId());
+		itemMasterVO.setOrgId(itemMasterDTO.getOrgId());
+		itemMasterVO.setBranch(itemMasterDTO.getBranch());
+		itemMasterVO.setBranchCode(itemMasterDTO.getBranchCode());
+		itemMasterVO.setFinYear(itemMasterDTO.getFinYear());
+		itemMasterVO.setCreatedBy(itemMasterDTO.getCreatedBy());
+		itemMasterVO.setModifiedBy(itemMasterDTO.getModifiedBy());
+		itemMasterVO.setActive(itemMasterDTO.isActive());
+		itemMasterVO.setCancel(itemMasterDTO.isCancel());
+		itemMasterVO.setCancelRemarks(itemMasterDTO.getCancelRemarks());
+		itemMasterVO.setCustPartNo(itemMasterDTO.getCustPartNo());
+		// itemMasterVO.setDupChk(itemMasterDTO.getDupChk());
+		String partNo = itemMasterDTO.getPartNo() != null ? itemMasterDTO.getPartNo().trim() : "";
+		String customer = itemMasterDTO.getCustomer() != null ? itemMasterDTO.getCustomer().trim() : "";
+		itemMasterVO.setDupChk(partNo + customer);
+
+		itemMasterVO.setHsnCode(itemMasterDTO.getHsnCode());
+		itemMasterVO.setItemType(itemMasterDTO.getItemType());
+		itemMasterVO.setPartDesc(itemMasterDTO.getPartDesc());
+		itemMasterVO.setPartNo(itemMasterDTO.getPartNo());
+		itemMasterVO.setUnit(itemMasterDTO.getUnit());
+		itemMasterVO.setCustomer(itemMasterDTO.getCustomer());
+		itemMasterVO.setWeight(itemMasterDTO.getWeight());
+
+	}
+
+	@Override
+	public List<ItemMasterVO> getAllItemMasterByOrgId(Long orgId, String branchCode) {
+		return itemMasterRepo.getAllItemMasterByOrgId(orgId, branchCode);
+	}
+
+	@Override
+	public List<ItemMasterVO> getAllItemMasterById(Long id) {
+		return itemMasterRepo.getAllItemMasterById(id);
+	}
+
+	@Override
+	public List<ItemMasterVO> getAllItemMasterByActive() {
+		return itemMasterRepo.getAllItemMasterByActive();
+	}
+
+	// uom
+
+	@Override
+	public List<UomVO> getUomByOrgId(Long orgId) {
+		List<UomVO> uomVO = new ArrayList<>();
+		if (ObjectUtils.isNotEmpty(orgId)) {
+			LOGGER.info("Successfully Received Uom BY OrgId : {}", orgId);
+			uomVO = uomRepo.getUomByOrgId(orgId);
+		}
+		return uomVO;
+	}
+
+	@Override
+	public List<UomVO> getUomById(Long id) {
+		List<UomVO> uomVO = new ArrayList<>();
+		if (ObjectUtils.isNotEmpty(id)) {
+			LOGGER.info("Successfully Received Uom BY Id : {}", id);
+			uomVO = uomRepo.getUomById(id);
+		}
+		return uomVO;
+	}
+
+	@Override
+	public Map<String, Object> updateCreateUom(@Valid UomDTO uomDTO) throws ApplicationException {
+		String screenCode = "D";
+		UomVO uomVO = new UomVO();
+		String message;
+		if (ObjectUtils.isNotEmpty(uomDTO.getId())) {
+			uomVO = uomRepo.findById(uomDTO.getId()).orElseThrow(() -> new ApplicationException("Uom not found"));
+
+			if (!uomVO.getUomCode().equalsIgnoreCase(uomDTO.getUomCode())) {
+				if (uomRepo.existsByUomCodeAndOrgId(uomDTO.getUomCode(), uomDTO.getOrgId())) {
+					String errorMessage = String.format("The UomCode: %s  already exists This Organization.",
+							uomDTO.getUomCode());
+					throw new ApplicationException(errorMessage);
+				}
+			}
+
+			uomVO.setUpdatedBy(uomDTO.getCreatedBy());
+			createUpdateUomVOByUomDTO(uomDTO, uomVO);
+			message = "Uom  Updated Successfully";
+		} else {
+
+			if (uomRepo.existsByUomCodeAndOrgId(uomDTO.getUomCode(), uomDTO.getOrgId())) {
+				String errorMessage = String.format("The UomCode: %s  already exists This Organization.",
+						uomDTO.getUomCode());
+				throw new ApplicationException(errorMessage);
+			}
+			uomVO.setCreatedBy(uomDTO.getCreatedBy());
+			uomVO.setUpdatedBy(uomDTO.getCreatedBy());
+			createUpdateUomVOByUomDTO(uomDTO, uomVO);
+			message = "Uom Created Successfully";
+		}
+
+		uomRepo.save(uomVO);
+		Map<String, Object> response = new HashMap<>();
+		response.put("uomVO", uomVO);
+		response.put("message", message);
+		return response;
+	}
+
+	private void createUpdateUomVOByUomDTO(@Valid UomDTO uomDTO, UomVO uomVO) throws ApplicationException {
+		uomVO.setUomCode(uomDTO.getUomCode());
+		uomVO.setUomDesc(uomDTO.getUomDesc());
+		uomVO.setOrgId(uomDTO.getOrgId());
+		uomVO.setActive(uomDTO.isActive());
+
+	}
+
+	@Override
+	public List<Map<String, Object>> getGroupLedgerexcelDetails(Long orgId) {
+		Set<Object[]> result = groupLedgerRepo.findgetGroupLedgerexcelDetails(orgId);
+		return getGroupLedgerexcelDetails(result);
+	}
+
+//	private List<Map<String, Object>> getGroupLedgerexcelDetails(Set<Object[]> result) {
+//		List<Map<String, Object>> details = new ArrayList<>();
+//		for (Object[] fs : result) {
+//			Map<String, Object> object = new HashMap<>();
+//			object.put("account", fs[0] != null ? fs[0].toString() : "");
+//			object.put("accountcode", fs[1] != null ? fs[1].toString() : "");
+//			object.put("maingroup", fs[2] != null ? fs[2].toString() : "");
+//			object.put("maingroupaccountcode", fs[3] != null ? fs[3].toString() : "");
+//			object.put("subgroup", fs[4] != null ? fs[4].toString() : "");
+//			object.put("subgroupaccountcode", fs[5] != null ? fs[5].toString() : "");
+//
+//			details.add(object); // Add the map to the list
+//
+//		}
+//		return details;
+//	}
+	
+	private List<Map<String, Object>> getGroupLedgerexcelDetails(Set<Object[]> getActiveGroup) {
+		// A map to store the hierarchy for efficient processing
+		Map<String, Map<String, Object>> mainGroupMap = new LinkedHashMap<>();
+
+		for (Object[] row : getActiveGroup) {
+			String mainGroupName = (String) row[0];
+			String mainGroupCode = (String) row[1];
+			String subGroupName = (String) row[2];
+			String subGroupCode = (String) row[3];
+			String accountName = (String) row[4];
+			String accountCode = (String) row[5];
+
+			// Add or retrieve main group
+			Map<String, Object> mainGroup = mainGroupMap.computeIfAbsent(mainGroupCode, k -> {
+				Map<String, Object> group = new LinkedHashMap<>();
+				group.put("mainGroupName", mainGroupName);
+				group.put("mainGroupCode", mainGroupCode);
+				group.put("subGroups", new LinkedHashMap<>());
+				return group;
+			});
+
+			// Add or retrieve sub group within main group
+			Map<String, Map<String, Object>> subGroupMap = (Map<String, Map<String, Object>>) mainGroup
+					.get("subGroups");
+			Map<String, Object> subGroup = subGroupMap.computeIfAbsent(subGroupCode, k -> {
+				Map<String, Object> group = new LinkedHashMap<>();
+				group.put("subGroupName", subGroupName);
+				group.put("subGroupCode", subGroupCode);
+				group.put("accounts", new ArrayList<>());
+				return group;
+			});
+
+			// Add account to sub group
+			List<Map<String, String>> accounts = (List<Map<String, String>>) subGroup.get("accounts");
+			Map<String, String> account = new LinkedHashMap<>();
+			account.put("accountName", accountName);
+			account.put("accountCode", accountCode);
+			accounts.add(account);
+		}
+
+		// Convert the hierarchical map into a list
+		List<Map<String, Object>> result = new ArrayList<>();
+		for (Map<String, Object> mainGroup : mainGroupMap.values()) {
+			Map<String, Map<String, Object>> subGroups = (Map<String, Map<String, Object>>) mainGroup.get("subGroups");
+			mainGroup.put("subGroups", new ArrayList<>(subGroups.values()));
+			result.add(mainGroup);
+		}
+
+		return result;
+
 	}
 
 }

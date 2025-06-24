@@ -31,9 +31,12 @@ import com.base.basesetup.dto.ResetPasswordFormDTO;
 import com.base.basesetup.dto.ResponseDTO;
 import com.base.basesetup.dto.ResponsibilityDTO;
 import com.base.basesetup.dto.RolesDTO;
+import com.base.basesetup.dto.RolesPermissionHeaderDTO;
 import com.base.basesetup.dto.SignUpFormDTO;
 import com.base.basesetup.dto.UserResponseDTO;
+import com.base.basesetup.entity.EmployeeVO;
 import com.base.basesetup.entity.ResponsibilityVO;
+import com.base.basesetup.entity.RolesPermissionHeaderVO;
 import com.base.basesetup.entity.RolesVO;
 import com.base.basesetup.entity.UserVO;
 import com.base.basesetup.service.AuthService;
@@ -507,4 +510,57 @@ public class AuthController extends BaseController {
 		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
 		return ResponseEntity.ok().body(responseDTO);
 	}
+	
+	//RoleScreenPermission
+	
+	@PutMapping("/createUpdateRoleScreenPermission")
+	public ResponseEntity<ResponseDTO> createUpdateRoleScreenPermission(@RequestBody RolesPermissionHeaderDTO rolesPermissionHeaderDTO) {
+		String methodName = "createUpdateRoleScreenPermission()";
+		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+		String errorMsg = null;
+		Map<String, Object> responseObjectsMap = new HashMap<>();
+		ResponseDTO responseDTO = null;
+		try {
+			Map<String, Object> roles = authService.createUpdateRoleScreenPermission(rolesPermissionHeaderDTO);
+			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, roles.get("message") );
+			responseObjectsMap.put("rolesPermissionHeaderVO", roles.get("rolesPermissionHeaderVO"));
+			responseDTO = createServiceResponse(responseObjectsMap);
+		} catch (Exception e) {
+			errorMsg = e.getMessage();
+			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+			responseDTO = createServiceResponseError(responseObjectsMap,errorMsg, errorMsg);
+		}
+		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+		return ResponseEntity.ok().body(responseDTO);
+	}
+	
+	@GetMapping("/getRolesPermissionHeaderByRoleandOrgid")
+	public ResponseEntity<ResponseDTO> getRolesPermissionHeaderByRoleandOrgid(@RequestParam String role, Long orgid) {
+		String methodName = "getRolesPermissionHeaderByRoleandOrgid()";
+		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+		String errorMsg = null;
+		Map<String, Object> responseObjectsMap = new HashMap<>();
+		ResponseDTO responseDTO = null;
+		List<RolesPermissionHeaderVO> userVO = new ArrayList<>();
+		try {
+			userVO = authService.getRolesPermissionHeaderByRoleandOrgid(role,orgid);
+		} catch (Exception e) {
+			errorMsg = e.getMessage();
+			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME_WITH_USER_ID, methodName, errorMsg);
+		}
+		if (StringUtils.isBlank(errorMsg)) {
+			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, UserConstants.GET_USER_INFORMATION_SUCCESS_MESSAGE);
+			responseObjectsMap.put("userVO", userVO);
+			responseDTO = createServiceResponse(responseObjectsMap);
+		} else {
+			responseDTO = createServiceResponseError(responseObjectsMap,
+					UserConstants.GET_USER_INFORMATION_FAILED_MESSAGE, errorMsg);
+		}
+		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+		return ResponseEntity.ok().body(responseDTO);
+	}
+	
+
+
+
 }

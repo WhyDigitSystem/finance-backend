@@ -15,7 +15,10 @@ import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
+import org.springframework.format.annotation.DateTimeFormat;
+
 import com.base.basesetup.dto.CreatedUpdatedDate;
+import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import lombok.AllArgsConstructor;
@@ -43,7 +46,7 @@ public class PaymentVO {
     @Column(name = "paymenttype", length = 20)
     private String paymentType;
 
-    @Column(name = "bankchargeacc", length = 50)
+    @Column(name = "bankchargeacc", length = 100)
     private String bankChargeAcc;
 
     @Column(name = "docid", length = 50)
@@ -82,7 +85,7 @@ public class PaymentVO {
     @Column(name = "gstin", length = 50)
     private String gstIn;
 
-    @Column(name = "chequeno", length = 20)
+    @Column(name = "chequeno", length = 250)
     private String chequeNo;
 
     @Column(name = "chequedate")
@@ -99,9 +102,6 @@ public class PaymentVO {
 
     @Column(name = "tdsacc", length = 50)
     private String tdsAcc;
-
-    @Column(name = "receiptamt", precision = 10, scale = 2)
-    private BigDecimal receiptAmt;
     
     @Column(name = "tdsamt", precision = 10, scale = 2)
     private BigDecimal tdsAmt;
@@ -111,6 +111,12 @@ public class PaymentVO {
 
     @Column(name = "currencyamt", precision = 10, scale = 2)
     private BigDecimal currencyAmt;
+    
+    @Column(name = "netamount", precision = 10, scale = 2)
+    private BigDecimal netAmount;
+    
+    @Column(name = "outstandingtotal", precision = 10, scale = 2)
+    private BigDecimal outStandingTotal;
     
     @Column(name = "branch", length = 25)
     private String branch;
@@ -125,7 +131,7 @@ public class PaymentVO {
     private String updatedBy;
 
     @Column(name = "active")
-    private boolean active;
+    private boolean active =true;
 
     @Column(name = "cancel")
     private boolean cancel;
@@ -141,11 +147,43 @@ public class PaymentVO {
 
     @Column(name = "screenname", length = 25)
     private String screenName = "PAYMENT";
+    
+    @Column(name="onaccount")
+    private BigDecimal onAccount;
+    
+	@Column(name="approvestatus",length = 20)
+	private String approveStatus;
+	
+	@Column(name="approveby",length = 20)
+	private String approveBy;
+	
+	@Column(name = "status",length = 30)
+	private String status;
+    
+	@DateTimeFormat(pattern = "dd-MM-yyyy hh:mm:ss a")
+	@Column(name="approveon")
+	private String approveOn;
+    
 	
 	@OneToMany(mappedBy = "paymentVO", cascade = CascadeType.ALL)
 	@JsonManagedReference
 	private List<PaymentInvDtlsVO> paymentInvDtlsVO;
 	
+	@JsonGetter("active")
+	public String getActive() {
+		return active ? "Active" : "In-Active";
+	}
+
+	// Optionally, if you want to control serialization for 'cancel' field similarly
+	@JsonGetter("cancel")
+	public String getCancel() {
+		return cancel ? "T" : "F";
+	}
+	
+//	@OneToMany(mappedBy = "paymentVO", cascade = CascadeType.ALL)
+//	@JsonManagedReference
+//	List<TdsPaymentVO> tdsPaymentVO;
+//	
 
 	@Embedded
 	@Builder.Default

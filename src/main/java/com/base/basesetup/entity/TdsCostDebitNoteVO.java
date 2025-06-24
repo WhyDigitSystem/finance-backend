@@ -25,15 +25,15 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class TdsCostDebitNoteVO {
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "costdebitNotetaxprtculgen")
-	@SequenceGenerator(name = "costdebitNotetaxprtculgen", sequenceName = "costdebitNotetaxprtculseq", initialValue = 1000000001, allocationSize = 1)
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "costdebitnotetaxprtculgen")
+	@SequenceGenerator(name = "costdebitnotetaxprtculgen", sequenceName = "costdebitnotetaxprtculseq", initialValue = 1000000001, allocationSize = 1)
 	@Column(name = "costdebitnotetaxprtculid")
 	private Long id;
 	@Column(name = "tdswithholding", length = 10)
 	private String tdsWithHolding;
 	@Column(name = "tdswithholdingper", precision = 10, scale = 2)
 	private BigDecimal tdsWithHoldingPer;
-	@Column(name = "section", length = 10)
+	@Column(name = "section")
 	private String section;
 	@Column(name = "totaltds", precision = 10, scale = 2)
 	private BigDecimal totTdsWhAmnt;

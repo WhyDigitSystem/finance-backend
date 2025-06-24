@@ -18,6 +18,7 @@ import com.base.basesetup.dto.CostCenterDTO;
 import com.base.basesetup.dto.EmployeeDTO;
 import com.base.basesetup.dto.GroupLedgerDTO;
 import com.base.basesetup.dto.HSNSacCodeDTO;
+import com.base.basesetup.dto.ItemMasterDTO;
 import com.base.basesetup.dto.ListOfValuesDTO;
 import com.base.basesetup.dto.PartyMasterDTO;
 import com.base.basesetup.dto.SacCodeDTO;
@@ -26,6 +27,7 @@ import com.base.basesetup.dto.SubLedgerAccountDTO;
 import com.base.basesetup.dto.TaxMasterDTO;
 import com.base.basesetup.dto.TcsMasterDTO;
 import com.base.basesetup.dto.TdsMasterDTO;
+import com.base.basesetup.dto.UomDTO;
 import com.base.basesetup.entity.AccountVO;
 import com.base.basesetup.entity.BranchVO;
 import com.base.basesetup.entity.ChargeTypeRequestVO;
@@ -34,6 +36,7 @@ import com.base.basesetup.entity.CostCenterVO;
 import com.base.basesetup.entity.EmployeeVO;
 import com.base.basesetup.entity.GroupLedgerVO;
 import com.base.basesetup.entity.HSNSacCodeVO;
+import com.base.basesetup.entity.ItemMasterVO;
 import com.base.basesetup.entity.ListOfValuesVO;
 import com.base.basesetup.entity.PartyMasterVO;
 import com.base.basesetup.entity.SacCodeVO;
@@ -42,6 +45,7 @@ import com.base.basesetup.entity.SubLedgerAccountVO;
 import com.base.basesetup.entity.TaxMasterVO;
 import com.base.basesetup.entity.TcsMasterVO;
 import com.base.basesetup.entity.TdsMasterVO;
+import com.base.basesetup.entity.UomVO;
 import com.base.basesetup.exception.ApplicationException;
 
 import io.jsonwebtoken.io.IOException;
@@ -110,6 +114,10 @@ public interface MasterService {
 	TdsMasterVO updateCreateTdsMaster(@Valid TdsMasterDTO tdsMasterDTO) throws ApplicationException;
 
 	List<TdsMasterVO> getTdsMasterByActive();
+	
+	List<Map<String, Object>> getTdsAccountNameFromReceivable(Long orgId);
+	
+	List<Map<String, Object>> getTdsAccountNameFromPayable(Long orgId);
 
 //	AccountVO
 	List<AccountVO> getAllAccountByOrgId(Long orgId);
@@ -130,13 +138,15 @@ public interface MasterService {
 	GroupLedgerVO updateCreateGroupLedger(@Valid GroupLedgerDTO groupLedgerDTO) throws ApplicationException;
 
 	List<GroupLedgerVO> getGroupLedgerByActive();
+	
+	List<Map<String, Object>> getGroupLedgerexcelDetails(Long orgId);
 
 //	SacCode
 	List<SacCodeVO> getAllSacCodeById(Long id);
 
 	List<SacCodeVO> getAllSacCodeByOrgId(Long orgId);
 
-	List<SacCodeVO> getAllActiveSacCodeByOrgId(Long orgId);
+	List<HSNSacCodeVO> getAllActiveSacCodeByOrgId(Long orgId);
 
 	SacCodeVO updateCreateSacCode(@Valid SacCodeDTO sacCodeDTO) throws ApplicationException;
 
@@ -228,5 +238,27 @@ public interface MasterService {
 	HSNSacCodeVO getAllHSNSacCodeById(Long id);
 
 	List<HSNSacCodeVO> findHSNSacCodeByActive();
+	
+	// Item Master
+	
+	Map<String, Object> updateCreateItemMaster(ItemMasterDTO itemMasterDTO) throws ApplicationException;
+
+	List<ItemMasterVO> getAllItemMasterByOrgId(Long orgId, String branchCode);
+
+	List<ItemMasterVO> getAllItemMasterById(Long id);
+
+	List<ItemMasterVO> getAllItemMasterByActive();
+	
+	// UOM
+
+	List<UomVO> getUomByOrgId(Long orgId);
+
+	List<UomVO> getUomById(Long id);
+
+	Map<String, Object> updateCreateUom(@Valid UomDTO uomDTO) throws ApplicationException;
+
+	List<GroupLedgerVO> getAllGroupLedgerByAccountCode(String accountCode);
+	
+	
 
 }

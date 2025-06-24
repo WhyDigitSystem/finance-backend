@@ -1,5 +1,6 @@
 package com.base.basesetup.controller;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -24,9 +25,10 @@ import com.base.basesetup.common.CommonConstant;
 import com.base.basesetup.common.UserConstants;
 import com.base.basesetup.dto.CostInvoiceDTO;
 import com.base.basesetup.dto.ResponseDTO;
+import com.base.basesetup.entity.CostDebitNoteVO;
 import com.base.basesetup.entity.CostInvoiceVO;
+import com.base.basesetup.entity.IrnCreditNoteVO;
 import com.base.basesetup.entity.PartyMasterVO;
-import com.base.basesetup.entity.TaxInvoiceVO;
 import com.base.basesetup.service.CostInvoiceService;
 
 @CrossOrigin
@@ -42,7 +44,8 @@ public class CostInvoiceController extends BaseController {
 	// CostInvoice
 
 	@GetMapping("/getAllCostInvoiceByOrgId")
-	public ResponseEntity<ResponseDTO> getAllCostInvoiceByOrgId(@RequestParam(required = false) Long orgId) {
+	public ResponseEntity<ResponseDTO> getAllCostInvoiceByOrgId(@RequestParam Long orgId, @RequestParam String finYear,
+			@RequestParam String branchCode) {
 		String methodName = "getAllCostInvoiceByOrgId()";
 		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
 		String errorMsg = null;
@@ -50,7 +53,7 @@ public class CostInvoiceController extends BaseController {
 		ResponseDTO responseDTO = null;
 		List<CostInvoiceVO> costInvoiceVO = new ArrayList<>();
 		try {
-			costInvoiceVO = costInvoiceService.getAllCostInvoiceByOrgId(orgId);
+			costInvoiceVO = costInvoiceService.getAllCostInvoiceByOrgId(orgId, finYear, branchCode);
 		} catch (Exception e) {
 			errorMsg = e.getMessage();
 			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
@@ -551,7 +554,7 @@ public class CostInvoiceController extends BaseController {
 		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
 		return ResponseEntity.ok().body(responseDTO);
 	}
-	
+
 	@GetMapping("/getCreditDaysFromVendor")
 	public ResponseEntity<ResponseDTO> getCreditDaysFromVendor(@RequestParam Long orgId,
 			@RequestParam String supplierCode) {
@@ -568,17 +571,189 @@ public class CostInvoiceController extends BaseController {
 			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
 		}
 		if (StringUtils.isBlank(errorMsg)) {
-			responseObjectsMap.put(CommonConstant.STRING_MESSAGE,
-					"Creditdays get successfully from Vendor master");
+			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "Creditdays get successfully from Vendor master");
 			responseObjectsMap.put("creditdays", creditdays);
 			responseDTO = createServiceResponse(responseObjectsMap);
 		} else {
-			responseDTO = createServiceResponseError(responseObjectsMap,
-					"creditdays receive failed from Vendor master", errorMsg);
+			responseDTO = createServiceResponseError(responseObjectsMap, "creditdays receive failed from Vendor master",
+					errorMsg);
 		}
 		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
 		return ResponseEntity.ok().body(responseDTO);
 	}
 
+	@GetMapping("/getCostInvoiceById")
+	public ResponseEntity<ResponseDTO> getCostInvoiceById(@RequestParam Long id) {
+		String methodName = "getCostInvoiceById()";
+		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+		String errorMsg = null;
+		Map<String, Object> responseObjectsMap = new HashMap<>();
+		ResponseDTO responseDTO = null;
+		CostInvoiceVO costInvoiceVO = new CostInvoiceVO();
+		try {
+			costInvoiceVO = costInvoiceService.getCostInvoiceById(id);
+		} catch (Exception e) {
+			errorMsg = e.getMessage();
+			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+		}
+		if (StringUtils.isBlank(errorMsg)) {
+			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "CostInvoice information get successfully By id");
+			responseObjectsMap.put("costInvoiceVO", costInvoiceVO);
+			responseDTO = createServiceResponse(responseObjectsMap);
+		} else {
+			responseDTO = createServiceResponseError(responseObjectsMap,
+					"CostInvoice information receive failedByOrgId", errorMsg);
+		}
+		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+		return ResponseEntity.ok().body(responseDTO);
+	}
+
+	@GetMapping("/getDsahboardCost")
+	public ResponseEntity<ResponseDTO> getDsahboardCost(@RequestParam(required = false) Long orgId,
+			@RequestParam(required = false) String billMonth, @RequestParam(required = false) String finYear) {
+		String methodName = "getDsahboardCost()";
+		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+		String errorMsg = null;
+		Map<String, Object> responseObjectsMap = new HashMap<>();
+		ResponseDTO responseDTO = null;
+		List<Map<String, Object>> mapp = new ArrayList<>();
+
+		try {
+			mapp = costInvoiceService.getDsahboardCost(orgId, billMonth, finYear);
+		} catch (Exception e) {
+			errorMsg = e.getMessage();
+			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+		}
+
+		if (StringUtils.isBlank(errorMsg)) {
+			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "Cost retrieved successfully");
+			responseObjectsMap.put("cost", mapp);
+			responseDTO = createServiceResponse(responseObjectsMap);
+		} else {
+			responseDTO = createServiceResponseError(responseObjectsMap, "Cost to retrieve JobCard", errorMsg);
+		}
+
+		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+		return ResponseEntity.ok().body(responseDTO);
+	}
+
+	@GetMapping("/getCostByDocIdandScreenCode")
+	public ResponseEntity<ResponseDTO> getCostByDocIdandScreenCode(@RequestParam String ScreenCode,
+			@RequestParam String docId) {
+		String methodName = "getCostByDocIdandScreenCode()";
+		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+		String errorMsg = null;
+		Map<String, Object> responseObjectsMap = new HashMap<>();
+		ResponseDTO responseDTO = null;
+		CostInvoiceVO costInvoiceVO = new CostInvoiceVO();
+		try {
+			costInvoiceVO = costInvoiceService.getCostByDocIdandScreenCode(ScreenCode, docId);
+		} catch (Exception e) {
+			errorMsg = e.getMessage();
+			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+		}
+		if (StringUtils.isBlank(errorMsg)) {
+			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "CostInvoice information get successfully By docid");
+			responseObjectsMap.put("costInvoiceVO", costInvoiceVO);
+			responseDTO = createServiceResponse(responseObjectsMap);
+		} else {
+			responseDTO = createServiceResponseError(responseObjectsMap,
+					"CostInvoice information receive failed By docid", errorMsg);
+		}
+		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+		return ResponseEntity.ok().body(responseDTO);
+
+	}
+
+	@GetMapping("/getDebitNoteByDocIdandScreenCode")
+	public ResponseEntity<ResponseDTO> getDebitNoteByDocIdandScreenCode(@RequestParam String ScreenCode,
+			@RequestParam String docId) {
+		String methodName = "getDebitNoteByDocIdandScreenCode()";
+		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+		String errorMsg = null;
+		Map<String, Object> responseObjectsMap = new HashMap<>();
+		ResponseDTO responseDTO = null;
+		CostDebitNoteVO costDebitNoteVO = new CostDebitNoteVO();
+		try {
+			costDebitNoteVO = costInvoiceService.getDebitNoteByDocIdandScreenCode(ScreenCode, docId);
+		} catch (Exception e) {
+			errorMsg = e.getMessage();
+			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+		}
+		if (StringUtils.isBlank(errorMsg)) {
+			responseObjectsMap.put(CommonConstant.STRING_MESSAGE,
+					"Cost Debit Note information get successfully By docid");
+			responseObjectsMap.put("costDebitNoteVO", costDebitNoteVO);
+			responseDTO = createServiceResponse(responseObjectsMap);
+		} else {
+			responseDTO = createServiceResponseError(responseObjectsMap,
+					"Cost Debit Note information receive failed By docid", errorMsg);
+		}
+		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+		return ResponseEntity.ok().body(responseDTO);
+
+	}
+
+	// COSTINVOICE REPORT
+
+	@GetMapping("/getCostInvoiceSummary")
+	public ResponseEntity<ResponseDTO> getCostInvoiceSummary(@RequestParam Long orgId,
+			@RequestParam(required = false) String fromDate, @RequestParam(required = false) String toDate,
+			@RequestParam String finYear, @RequestParam(required = false) String partyName,@RequestParam String branchCode) {
+		String methodName = "getCostInvoiceSummary()";
+		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+		String errorMsg = null;
+		Map<String, Object> responseObjectsMap = new HashMap<>();
+		ResponseDTO responseDTO = null;
+		List<Map<String, Object>> mapp = new ArrayList<>();
+
+		try {
+			mapp = costInvoiceService.getCostInvoiceSummary(orgId, fromDate,toDate, finYear,partyName,branchCode);
+		} catch (Exception e) {
+			errorMsg = e.getMessage();
+			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+		}
+
+		if (StringUtils.isBlank(errorMsg)) {
+			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "CostInvoice Summary retrieved successfully");
+			responseObjectsMap.put("cost", mapp);
+			responseDTO = createServiceResponse(responseObjectsMap);
+		} else {
+			responseDTO = createServiceResponseError(responseObjectsMap, "CostInvoice Summary to retrieve", errorMsg);
+		}
+
+		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+		return ResponseEntity.ok().body(responseDTO);
+	}
+	
+	@GetMapping("/getCostInvoiceSummaryDetails")
+	public ResponseEntity<ResponseDTO> getCostInvoiceSummaryDetails(@RequestParam Long orgId,
+			@RequestParam(required = false) String fromDate, @RequestParam(required = false) String toDate,
+			@RequestParam String finYear, @RequestParam(required = false) String partyName,@RequestParam String branchCode) {
+		String methodName = "getCostInvoiceSummaryDetails()";
+		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+		String errorMsg = null;
+		Map<String, Object> responseObjectsMap = new HashMap<>();
+		ResponseDTO responseDTO = null;
+		List<Map<String, Object>> mapp = new ArrayList<>();
+
+		try {
+			mapp = costInvoiceService.getCostInvoiceSummaryDetails(orgId, fromDate,toDate, finYear,partyName,branchCode);
+		} catch (Exception e) {
+			errorMsg = e.getMessage();
+			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+		}
+
+		if (StringUtils.isBlank(errorMsg)) {
+			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "CostInvoice Summary Details retrieved successfully");
+			responseObjectsMap.put("cost", mapp);
+			responseDTO = createServiceResponse(responseObjectsMap);
+		} else {
+			responseDTO = createServiceResponseError(responseObjectsMap, "CostInvoice Summary Details to retrieve ", errorMsg);
+		}
+
+		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+		return ResponseEntity.ok().body(responseDTO);
+	}
 
 }

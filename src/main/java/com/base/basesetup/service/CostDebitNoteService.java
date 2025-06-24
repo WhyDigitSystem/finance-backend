@@ -17,7 +17,7 @@ public interface CostDebitNoteService {
 
 	Map<String, Object> updateCreateCostDebitNote(@Valid CostDebitNoteDTO costDebitNoteDTO) throws ApplicationException;
 
-	List<CostDebitNoteVO> getCostDebitNoteByOrgId(Long orgId);
+	List<CostDebitNoteVO> getCostDebitNoteByOrgId(Long orgId,String finYear, String branchCode);
 
 	List<CostDebitNoteVO> getCostDebitNoteById(Long id);
 

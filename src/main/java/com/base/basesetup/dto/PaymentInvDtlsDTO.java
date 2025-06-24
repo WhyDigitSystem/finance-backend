@@ -28,25 +28,16 @@ public class PaymentInvDtlsDTO {
 	private String currency;
 
 	private BigDecimal exRate;
+	
+	private BigDecimal chargeAmt;
+	
+	 private BigDecimal gstAmount;
 
 	private BigDecimal amount;
 
-	private BigDecimal chargeAmt;
-
-	private BigDecimal outstanding;
+	private BigDecimal outStanding;
 
 	private BigDecimal settled;
 
-	private BigDecimal payExRate;
-
-	private BigDecimal txnSettled;
-
-	private BigDecimal gainOrLossAmt;
-
-	private String remarks;
-	
-	private LocalDate fromDate;
-
-	private LocalDate toDate;
 
 }

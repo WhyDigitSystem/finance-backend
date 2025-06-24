@@ -19,4 +19,6 @@ public interface CityRepo extends JpaRepository<CityVO, Long> {
 	boolean existsByCityCodeAndOrgId(String cityCode, Long orgId);
 
 	boolean existsByCityNameAndOrgId(String cityName, Long orgId);
+	
+	List<CityVO> findAllByStateAndCountryAndOrgId(String state, String country, Long orgId);
 }

@@ -8,6 +8,7 @@ import javax.validation.Valid;
 import org.springframework.stereotype.Service;
 
 import com.base.basesetup.dto.CostInvoiceDTO;
+import com.base.basesetup.entity.CostDebitNoteVO;
 import com.base.basesetup.entity.CostInvoiceVO;
 import com.base.basesetup.entity.PartyMasterVO;
 import com.base.basesetup.exception.ApplicationException;
@@ -17,7 +18,7 @@ public interface CostInvoiceService {
 
 	// CostInvoice
 
-	List<CostInvoiceVO> getAllCostInvoiceByOrgId(Long orgId);
+	List<CostInvoiceVO> getAllCostInvoiceByOrgId(Long orgId,String finYear, String branchCode);
 
 	Map<String, Object> updateCreateCostInvoice(@Valid CostInvoiceDTO costInvoiceDTO) throws ApplicationException;
 
@@ -60,4 +61,23 @@ public interface CostInvoiceService {
 			throws ApplicationException;
 
 	List<Map<String, Object>> getCreditDaysFromVendor(Long orgId, String supplierCode);
+
+	CostInvoiceVO getCostInvoiceById(Long id);
+
+	List<Map<String, Object>> getDsahboardCost(Long orgId, String billMonth, String finYear);
+	
+	// hyperlink for Cost  register
+		CostInvoiceVO getCostByDocIdandScreenCode(String ScreenCode, String docId);
+		//screencode
+		
+		CostDebitNoteVO getDebitNoteByDocIdandScreenCode(String ScreenCode, String docId);
+		
+		//COSTINVOICE SUMMARY
+
+		List<Map<String, Object>> getCostInvoiceSummary(Long orgId, String fromDate, String toDate, String finYear,
+				String partyName,String branchCode);
+
+		List<Map<String, Object>> getCostInvoiceSummaryDetails(Long orgId, String fromDate, String toDate,
+				String finYear, String partyName,String branchCode);
+		
 }

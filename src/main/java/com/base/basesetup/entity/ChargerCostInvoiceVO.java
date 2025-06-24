@@ -67,12 +67,15 @@ public class ChargerCostInvoiceVO {
 	private BigDecimal gstAmount;
 	@Column(name = "ledger", length = 150)
 	private String ledger;
+	@Column(name = "description")
+	private String description;
 	@Column(name = "govchargecode", length = 10)
 	private String govChargeCode;
 	@Column(name = "exempted", precision = 10, scale = 2)
 	private String exempted;
 	@Column(name = "taxable", length = 10)
 	private String taxable;
+	private String party;
 
 	@ManyToOne
 	@JsonBackReference

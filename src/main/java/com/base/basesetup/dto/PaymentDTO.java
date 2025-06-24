@@ -34,7 +34,6 @@ public class PaymentDTO {
 	private BigDecimal paymentAmt;
 	private String tdsAcc;
 	private BigDecimal tdsAmt;
-	private BigDecimal receiptAmt;
 	private String currency;
 	private BigDecimal currencyAmt;
 
@@ -42,12 +41,12 @@ public class PaymentDTO {
 	private String branchCode;
 	private String createdBy;
 
-	private boolean active;
-	private boolean cancel;
-	private String cancelRemarks;
 	private String finYear;
+	private String status;
 	
 
 	private List<PaymentInvDtlsDTO> paymentInvDtlsDTO;
+	
+//	private List<TdsPaymentDTO> tdsPaymentDTO;
 
 }

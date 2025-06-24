@@ -13,8 +13,8 @@ import com.base.basesetup.entity.CostDebitNoteVO;
 @Repository
 public interface CostDebitNoteRepo extends JpaRepository<CostDebitNoteVO, Long> {
 
-	@Query(value = "SELECT * FROM costdebitnote where orgid=?1", nativeQuery = true)
-	List<CostDebitNoteVO> getByCostDebitNoteByOrgId(Long orgId);
+	@Query(value = "SELECT * FROM costdebitnote where orgid=?1 and finyear=?2 and branchcode=?3", nativeQuery = true)
+	List<CostDebitNoteVO> getByCostDebitNoteByOrgId(Long orgId,String finYear, String branchCode);
 
 	@Query(value = "SELECT * FROM costdebitnote where costdebitnoteid=?1", nativeQuery = true)
 	List<CostDebitNoteVO> getByCostDebitNoteById(Long id);
@@ -56,10 +56,72 @@ public interface CostDebitNoteRepo extends JpaRepository<CostDebitNoteVO, Long> 
 
 	CostDebitNoteVO findByOrgIdAndIdAndDocId(Long orgId, Long id, String docId);
 
-	@Query(nativeQuery = true, value = "select accountgroupname,gstpercentage,currency from groupledger where orgid=?1 and gsttaxflag!='NA' and category='TAX' and gsttaxflag='INPUT TAX' and gsttype=?2 and gstpercentage IN(?3) order by gstpercentage desc")
-	Set<Object[]> findInterAndIntraDetailsForCostInvoicePosting(Long orgId, String gstType, String gstPercent);
-
+//	@Query(nativeQuery = true, value = "select accountgroupname,gstpercentage,currency from groupledger where orgid=?1 and gsttaxflag!='NA' and category='TAX' and gsttaxflag='INPUT TAX' and gsttype=?2 and gstpercentage IN(?3) order by gstpercentage desc")
+//	Set<Object[]> findInterAndIntraDetailsForCostInvoicePosting(Long orgId, String gstType, String gstPercent);
+//
 	@Query(nativeQuery = true, value = "select accountgroupname,gstpercentage,currency from groupledger where orgid=?1 and gsttaxflag!='NA' and category='TAX' and gsttaxflag='INPUT TAX' and gsttype=?2 and gstpercentage IN(?3) order by gstpercentage desc")
 	Set<Object[]> findInterAndIntraDetailsForCostInvoice(Long orgId, String gstType, List<String> gstPercent);
 
+	@Query(nativeQuery = true, value = "select  accountgroupname,gstpercentage,currency from groupledger where orgid=?1 and gsttaxflag!='NA' and category='TAX' and gsttaxflag='INPUT TAX' and gsttype=?2 and gstpercentage IN(?3) group by  accountgroupname,gstpercentage,currency order by gstpercentage desc")
+	Set<Object[]> findInterDetailsForCostDebitNotePosting(Long orgId, String gtsType, Double gstPercent);
+
+	@Query(nativeQuery = true, value = "select accountgroupname,gstpercentage,currency from groupledger where orgid=?1 and gsttaxflag!='NA' and category='TAX' and gsttaxflag='INPUT TAX' and gsttype=?2 and gstpercentage IN(?3) group by  accountgroupname,gstpercentage,currency order by gstpercentage desc")
+	Set<Object[]> findIntraDetailsForCostDebitNotePosting(Long orgId, String gtsType, Double intraPercent);
+	
+//	@Query(nativeQuery = true, value = "select accountgroupname,category from groupledger where orgid=?1 and gsttaxflag='NA' and category='RECEIVABLE A/C' and type='ACCOUNT'  and groupname='TDS'")
+//	Set<Object[]> getAccountNameFromTDSLedger(Long orgId);
+	
+	@Query(nativeQuery = true, value = "select accountgroupname,category from groupledger where orgid=?1 and gsttaxflag='NA' and category='PAYABLE A/C' and type='ACCOUNT'  and groupname='TDS'")
+	Set<Object[]> getAccountNameFromTDSLedger(Long orgId);
+	
+	@Query(nativeQuery = true, value = "SELECT \r\n"
+			+ "    SUM(\r\n"
+			+ "        CASE \r\n"
+			+ "            WHEN type = 'CostInvoice' THEN amount \r\n"
+			+ "            ELSE -amount \r\n"
+			+ "        END\r\n"
+			+ "    ) AS amount\r\n"
+			+ "FROM (\r\n"
+			+ "    SELECT \r\n"
+			+ "        'CostInvoice' AS type, \r\n"
+			+ "        SUM(a.totalcreditamount) AS amount \r\n"
+			+ "    FROM accounts a\r\n"
+			+ "    JOIN costinvoice t ON a.refno = t.docid \r\n"
+			+ "    WHERE t.docid = ?1 AND t.cancel = 'F'\r\n"
+			+ "\r\n"
+			+ "    UNION ALL\r\n"
+			+ "\r\n"
+			+ "    SELECT \r\n"
+			+ "        'DebitNote' AS type, \r\n"
+			+ "        SUM(a.totalcreditamount) AS amount \r\n"
+			+ "    FROM accounts a\r\n"
+			+ "    JOIN costdebitnote i ON a.refno = i.docid \r\n"
+			+ "    WHERE i.orginbill = ?1 AND i.cancel = 'F'\r\n"
+			+ "\r\n"
+			+ "    UNION ALL\r\n"
+			+ "\r\n"
+			+ "    SELECT \r\n"
+			+ "        'Payment' AS type, \r\n"
+			+ "        SUM(a.totalcreditamount) AS amount \r\n"
+			+ "    FROM accounts a\r\n"
+			+ "    JOIN payment r ON a.refno = r.docid \r\n"
+			+ "    JOIN paymentinvdtls r1 ON r.paymentid = r1.paymentid \r\n"
+			+ "    WHERE r.cancel = 'F' AND r1.refno = ?1\r\n"
+			+ "\r\n"
+			+ "    UNION ALL\r\n"
+			+ "\r\n"
+			+ "    SELECT \r\n"
+			+ "        'APAdjustmentsOffSet' AS type, \r\n"
+			+ "        SUM(a.totalcreditamount) AS amount \r\n"
+			+ "    FROM accounts a\r\n"
+			+ "    JOIN apadjustmentoffset r ON a.refno = r.docid \r\n"
+			+ "    JOIN apoffsetinvoicedetails r1 ON r.apadjustmentoffsetid = r1.apadjustmentoffsetid \r\n"
+			+ "    WHERE r.cancel = 'F' AND r1.refno = ?1\r\n"
+			+ ") AS sub")
+	Set<Object[]> getByAmount(String docId);
+	
+	@Query(nativeQuery = true, 
+		       value = "SELECT * FROM costdebitnote WHERE screencode = ?1 AND docid = ?2")
+		CostDebitNoteVO getDebitNoteByDocIdandScreenCode(String screenCode, String docId);
+	
 }
