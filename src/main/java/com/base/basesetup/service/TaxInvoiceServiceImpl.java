@@ -1080,9 +1080,9 @@ public class TaxInvoiceServiceImpl implements TaxInvoiceService {
 	}
 
 	@Override
-	public List<Map<String, Object>> getTaxinvoiceDetails(Long orgId, String finYear, String partyname, String fromDate,
+	public List<Map<String, Object>> getTaxinvoiceDetails(Long orgId, String partyname, String fromDate,
 			String toDate,String branchCode) {
-		Set<Object[]> chType  = taxInvoiceRepo.getTaxinvoiceDetails(orgId, finYear, partyname, fromDate,toDate,branchCode);
+		Set<Object[]> chType  = taxInvoiceRepo.getTaxinvoiceDetails(orgId, partyname, fromDate,toDate,branchCode);
 		return getTaxinvoiceDetails(chType);
 	}
 
@@ -1121,9 +1121,9 @@ public class TaxInvoiceServiceImpl implements TaxInvoiceService {
 	}
 
 	@Override
-	public List<Map<String, Object>> getTaxinvoiceSummary(Long orgId, String finYear, String partyname, String fromDate,
+	public List<Map<String, Object>> getTaxinvoiceSummary(Long orgId, String partyname, String fromDate,
 			String toDate,String branchCode) {
-		Set<Object[]> chType  = taxInvoiceRepo.getTaxinvoiceSummary(orgId, finYear, partyname, fromDate,toDate,branchCode);
+		Set<Object[]> chType  = taxInvoiceRepo.getTaxinvoiceSummary(orgId, partyname, fromDate,toDate,branchCode);
 		return getTaxinvoiceSummary(chType);
 	}
 

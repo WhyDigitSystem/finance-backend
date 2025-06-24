@@ -568,21 +568,20 @@ TaxInvoiceVO getTaxInvoiceByDocIdandScreenCode(String screenCode, String docId);
 		+ "    b.taxable,\r\n"
 		+ "    b.billamount,\r\n"
 		+ "    b.gstamount,\r\n"
-		+ "    b.billamount+b.gstamount as totalLcAmount\r\n"
+		+ "    b.billamount + b.gstamount AS totalLcAmount\r\n"
 		+ "FROM \r\n"
 		+ "    taxinvoice a,\r\n"
 		+ "    taxinvoicedetails b\r\n"
 		+ "WHERE \r\n"
 		+ "    a.taxinvoiceid = b.taxinvoiceid\r\n"
 		+ "    AND a.orgid = ?1\r\n"
-		+ "    AND (a.partyname = ?3 OR ?3 = 'ALL')\r\n"
-		+ "    AND a.finyear = ?2\r\n"
-		+ "    AND (?4 IS NULL OR a.vdate >= ?4)\r\n"
-		+ "    AND (?5 IS NULL OR a.vdate <= ?5)\r\n"
-		+ "  AND (a.branchcode = ?6 OR ?6 = 'ALL')\r\n"
+		+ "    AND (a.partyname = ?2 OR ?2 = 'ALL')\r\n"
+		+ "    AND (?3 IS NULL OR a.vdate >= ?3)\r\n"
+		+ "    AND (?4 IS NULL OR a.vdate <= ?4)\r\n"
+		+ "    AND (a.branchcode = ?5 OR ?5 = 'ALL')\r\n"
 		+ "ORDER BY \r\n"
 		+ "    a.createdon DESC")
-Set<Object[]> getTaxinvoiceDetails(Long orgId, String finYear, String partyname, String fromDate, String toDate,String branchCode);
+Set<Object[]> getTaxinvoiceDetails(Long orgId, String partyname, String fromDate, String toDate,String branchCode);
 
 @Query(nativeQuery = true, value = "SELECT \r\n"
 		+ "    a.finyear, \r\n"
@@ -603,14 +602,13 @@ Set<Object[]> getTaxinvoiceDetails(Long orgId, String finYear, String partyname,
 		+ "    taxinvoice a\r\n"
 		+ "WHERE \r\n"
 		+ "    a.orgid = ?1\r\n"
-		+ "    AND (a.partyname = ?3 OR ?3 = 'ALL')\r\n"
-		+ "    AND a.finyear = ?2\r\n"
-		+ "    AND (?4 IS NULL OR a.vdate >= ?4)\r\n"
-		+ "    AND (?5 IS NULL OR a.vdate <= ?5)\r\n"
-		+ "    AND (a.branchcode = ?6 OR ?6 = 'ALL')\r\n"
+		+ "    AND (a.partyname = ?2 OR ?2 = 'ALL')\r\n"
+		+ "    AND (?3 IS NULL OR a.vdate >= ?3)\r\n"
+		+ "    AND (?4 IS NULL OR a.vdate <= ?4)\r\n"
+		+ "    AND (a.branchcode = ?5 OR ?5 = 'ALL')\r\n"
 		+ "ORDER BY \r\n"
 		+ "    a.createdon DESC")
-Set<Object[]> getTaxinvoiceSummary(Long orgId, String finYear, String partyname, String fromDate, String toDate,String branchCode);
+Set<Object[]> getTaxinvoiceSummary(Long orgId, String partyname, String fromDate, String toDate,String branchCode);
  
 
 

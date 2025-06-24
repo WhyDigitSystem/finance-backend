@@ -1189,9 +1189,8 @@ public class CostInvoiceServiceImpl implements CostInvoiceService {
 	}
 
 	@Override
-	public List<Map<String, Object>> getCostInvoiceSummary(Long orgId, String fromDate, String toDate,
-			String finYear, String partyName,String branchCode) {
-		Set<Object[]> chType = costInvoiceRepo.getCostInvoiceSummary(orgId, fromDate,toDate, finYear,partyName,branchCode);
+	public List<Map<String, Object>> getCostInvoiceSummary(Long orgId, String fromDate, String toDate, String partyName,String branchCode) {
+		Set<Object[]> chType = costInvoiceRepo.getCostInvoiceSummary(orgId, fromDate,toDate,partyName,branchCode);
 		return getCostSummary(chType);
 	}
 
@@ -1227,9 +1226,8 @@ public class CostInvoiceServiceImpl implements CostInvoiceService {
 	}
 
 	@Override
-	public List<Map<String, Object>> getCostInvoiceSummaryDetails(Long orgId, String fromDate, String toDate,
-			String finYear, String partyName,String branchCode) {
-		Set<Object[]> chType = costInvoiceRepo.getCostInvoiceDetails(orgId, fromDate,toDate, finYear,partyName,branchCode);
+	public List<Map<String, Object>> getCostInvoiceSummaryDetails(Long orgId, String fromDate, String toDate, String partyName,String branchCode) {
+		Set<Object[]> chType = costInvoiceRepo.getCostInvoiceDetails(orgId, fromDate,toDate, partyName,branchCode);
 		return getCosteDetails(chType);
 	}
 

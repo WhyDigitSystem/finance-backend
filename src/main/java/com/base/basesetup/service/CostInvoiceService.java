@@ -74,10 +74,9 @@ public interface CostInvoiceService {
 		
 		//COSTINVOICE SUMMARY
 
-		List<Map<String, Object>> getCostInvoiceSummary(Long orgId, String fromDate, String toDate, String finYear,
+		List<Map<String, Object>> getCostInvoiceSummary(Long orgId, String fromDate, String toDate,
 				String partyName,String branchCode);
 
-		List<Map<String, Object>> getCostInvoiceSummaryDetails(Long orgId, String fromDate, String toDate,
-				String finYear, String partyName,String branchCode);
+		List<Map<String, Object>> getCostInvoiceSummaryDetails(Long orgId, String fromDate, String toDate, String partyName,String branchCode);
 		
 }
