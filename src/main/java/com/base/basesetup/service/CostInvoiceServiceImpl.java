@@ -1218,6 +1218,7 @@ public class CostInvoiceServiceImpl implements CostInvoiceService {
 				map.put("totalLcAmount", ch[14] != null ? new BigDecimal(ch[14].toString()) : BigDecimal.ZERO);
 				map.put("totalAmount", ch[15] != null ? new BigDecimal(ch[15].toString()) : BigDecimal.ZERO);
 				map.put("tdsAmount", ch[16] != null ? new BigDecimal(ch[16].toString()) : BigDecimal.ZERO);
+				map.put("approvestatus", ch[17] != null ? ch[17].toString() : "");
 				List1.add(map);
 			}
 		}

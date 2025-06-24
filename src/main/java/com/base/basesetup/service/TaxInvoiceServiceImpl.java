@@ -1144,7 +1144,7 @@ public class TaxInvoiceServiceImpl implements TaxInvoiceService {
 			map.put("totalchargeamountlc", ch[10] != null ? new BigDecimal(ch[10].toString()) : BigDecimal.ZERO);
 			map.put("totalinvamountlc",   ch[11] != null ? new BigDecimal(ch[11].toString()) : BigDecimal.ZERO);
 			map.put("totaltaxamountlc",    ch[12] != null ? new BigDecimal(ch[12].toString()) : BigDecimal.ZERO);
-			
+			map.put("approvestatus",       ch[13] != null ? ch[13].toString() : "");
 			
 			
 

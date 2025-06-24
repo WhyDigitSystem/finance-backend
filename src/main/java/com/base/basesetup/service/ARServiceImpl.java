@@ -834,6 +834,7 @@ public class ARServiceImpl implements ARService {
 			map.put("tdsAmount", ch[9] != null ? new BigDecimal(ch[9].toString()) : BigDecimal.ZERO);
 			map.put("onAccount", ch[10] != null ? new BigDecimal(ch[10].toString()) : BigDecimal.ZERO);
 			map.put("bankAccount", ch[11] != null ? ch[11].toString() : "");
+			map.put("approvedStatus", ch[12] != null ? ch[12].toString() : "");
 			List1.add(map);
 		}
 		return List1;

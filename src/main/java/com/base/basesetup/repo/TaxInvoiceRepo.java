@@ -598,6 +598,7 @@ Set<Object[]> getTaxinvoiceDetails(Long orgId, String finYear, String partyname,
 		+ "    a.totalchargeamountlc, \r\n"
 		+ "    a.totalinvamountlc, \r\n"
 		+ "    a.totaltaxamountlc\r\n"
+		+ "  a.approvestatus\\r\\n"
 		+ "FROM \r\n"
 		+ "    taxinvoice a\r\n"
 		+ "WHERE \r\n"
