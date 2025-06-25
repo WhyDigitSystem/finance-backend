@@ -321,7 +321,7 @@ public interface PartyMasterRepo extends JpaRepository<PartyMasterVO, Long> {
 	        + "    m AS (\r\n"
 	        + "        SELECT accountname \r\n"
 	        + "        FROM accountsdetails \r\n"
-	        + "        WHERE (accountname = ?6 or ?6='ALL')         \r\n"
+	        + "        WHERE (accountname = ?5 or ?5 ='ALL')         \r\n"
 	        + "        GROUP BY accountname\r\n"
 	        + "    ), \r\n"
 	        + "    b AS (\r\n"
@@ -352,7 +352,6 @@ public interface PartyMasterRepo extends JpaRepository<PartyMasterVO, Long> {
 	        + "\r\n"
 	        + "    SELECT \r\n"
 	        + "        1 AS ids, \r\n"
-	        + "        ?5 AS cfinyr,                 \r\n"
 	        + "        ?3 AS stdt,                   \r\n"
 	        + "        ?4 AS eddt,                   \r\n"
 	        + "        0 AS recordid, \r\n"
@@ -389,7 +388,6 @@ public interface PartyMasterRepo extends JpaRepository<PartyMasterVO, Long> {
 	        + "\r\n"
 	        + "    SELECT \r\n"
 	        + "        2 AS ids, \r\n"
-	        + "        ?5 AS cfinyr,                 \r\n"
 	        + "        ?3 AS stdt,                   \r\n"
 	        + "        ?4 AS eddt,                   \r\n"
 	        + "        t1.accountsid AS recordid, \r\n"
@@ -406,7 +404,7 @@ public interface PartyMasterRepo extends JpaRepository<PartyMasterVO, Long> {
 	        + "        SUM(t2.debitamount) AS ndbamount, \r\n"
 	        + "        SUM(t2.creditamount) AS ncramount, \r\n"
 	        + "        CASE \r\n"
-	        + "            WHEN UPPER(?7) = 'YES' THEN ' '   \r\n"
+	        + "            WHEN UPPER(?6) = 'YES' THEN ' '   \r\n"
 	        + "            ELSE CONCAT('Party : ', IFNULL(p.subledgername, ''), \r\n"
 	        + "                        IFNULL(CONCAT(' - Refno: ', t1.refno, ' Ref Date: ', t1.refdate), '')) \r\n"
 	        + "        END AS particulars,\r\n"
@@ -423,7 +421,6 @@ public interface PartyMasterRepo extends JpaRepository<PartyMasterVO, Long> {
 	        + "    WHERE \r\n"
 	        + "        t1.CANCEL = 'F' \r\n"
 	        + "        AND t1.docdate BETWEEN ?3 AND ?4  \r\n"
-	        + "        AND t1.finyear = ?5        \r\n"
 	        + "        AND t1.orgid = ?1                \r\n"
 	        + "    GROUP BY \r\n"
 	        + "        t1.accountsid, b.branch, t1.currency, t1.docdate, t1.docid, \r\n"
@@ -432,7 +429,7 @@ public interface PartyMasterRepo extends JpaRepository<PartyMasterVO, Long> {
 	        + "        b.branchid\r\n"
 	        + ") AS result \r\n"
 	        + "ORDER BY ids, voucher_date")
-	Set<Object[]> getLedgerReport(Long orgId, String branch, String fromdate, String toDate, String finYear,
+	Set<Object[]> getLedgerReport(Long orgId, String branch, String fromdate, String toDate, 
 			String accountName, String details);
 
 }
