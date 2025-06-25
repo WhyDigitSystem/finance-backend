@@ -896,9 +896,9 @@ public class APServiceImpl implements APService {
 	}
 
 	@Override
-	public List<Map<String, Object>> getPaymentDetails(Long orgId, String partyname, String fromDate,
+	public List<Map<String, Object>> getPaymentDetails(Long orgId, String finYear, String partyname, String fromDate,
 			String toDate, String branchCode) {
-		Set<Object[]> chType = paymentRepo.getPaymentDetails(orgId,  partyname, fromDate, toDate, branchCode);
+		Set<Object[]> chType = paymentRepo.getPaymentDetails(orgId, finYear, partyname, fromDate, toDate, branchCode);
 		return getPaymentDetails(chType);
 	}
 
@@ -934,9 +934,9 @@ public class APServiceImpl implements APService {
 	}
 
 	@Override
-	public List<Map<String, Object>> getPaymentSummary(Long orgId, String partyname, String fromDate,
+	public List<Map<String, Object>> getPaymentSummary(Long orgId, String finYear, String partyname, String fromDate,
 			String toDate, String branchCode) {
-		Set<Object[]> chType = paymentRepo.getPaymentSummary(orgId, partyname, fromDate, toDate, branchCode);
+		Set<Object[]> chType = paymentRepo.getPaymentSummary(orgId, finYear, partyname, fromDate, toDate, branchCode);
 		return getPaymentSummary(chType);
 	}
 
@@ -962,7 +962,7 @@ public class APServiceImpl implements APService {
 		}
 		return List1;
 	}
-
+	
 	@Override
 	public PaymentVO getPaymentByDocId(Long orgId, String docId) {
 		// TODO Auto-generated method stub

@@ -35,10 +35,10 @@ public interface APService {
 
 	List<Map<String, Object>> getAccountGroupNameByOrgIdForPayment(Long orgId);
 
-	List<Map<String, Object>> getPaymentDetails(Long orgId,  String partyname, String fromDate,
+	List<Map<String, Object>> getPaymentDetails(Long orgId,String finYear,  String partyname, String fromDate,
 			String toDate, String branchCode);
 
-	List<Map<String, Object>> getPaymentSummary(Long orgId,  String partyname, String fromDate,
+	List<Map<String, Object>> getPaymentSummary(Long orgId,String finYear,  String partyname, String fromDate,
 			String toDate, String branchCode);
 
 	String getPaymentDocId(Long orgId, String finYear, String branch, String branchCode);

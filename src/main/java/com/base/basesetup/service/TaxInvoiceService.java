@@ -30,9 +30,9 @@ public interface TaxInvoiceService {
 
 	List<Map<String, Object>> getChargeCodeByChargeType(Long orgId, String chargeType);
 	
-	List<Map<String, Object>> getTaxinvoiceDetails(Long orgId,String partyname,String fromDate, String toDate,String branchCode);
+	List<Map<String, Object>> getTaxinvoiceDetails(Long orgId,String finYear, String partyname,String fromDate, String toDate,String branchCode);
 	
-	List<Map<String, Object>> getTaxinvoiceSummary(Long orgId, String partyname,String fromDate, String toDate,String branchCode);
+	List<Map<String, Object>> getTaxinvoiceSummary(Long orgId,String finYear, String partyname,String fromDate, String toDate,String branchCode);
 
 	List<Map<String, Object>> getCurrencyAndExrates(Long orgId);
 

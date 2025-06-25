@@ -650,7 +650,7 @@ public class ApController extends BaseController {
 	}
 
 	@GetMapping("/getPaymentDetails")
-	public ResponseEntity<ResponseDTO> getPaymentDetails(@RequestParam Long orgId,
+	public ResponseEntity<ResponseDTO> getPaymentDetails(@RequestParam Long orgId,@RequestParam String finYear,
 			@RequestParam String partyname, String fromDate, String toDate, @RequestParam String branchCode) {
 		String methodName = "getPaymentDetails()";
 		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
@@ -659,7 +659,7 @@ public class ApController extends BaseController {
 		ResponseDTO responseDTO = null;
 		List<Map<String, Object>> paymentVO = new ArrayList<>();
 		try {
-			paymentVO = apService.getPaymentDetails(orgId,  partyname, fromDate, toDate, branchCode);
+			paymentVO = apService.getPaymentDetails(orgId,finYear,  partyname, fromDate, toDate, branchCode);
 		} catch (Exception e) {
 			errorMsg = e.getMessage();
 			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
@@ -678,7 +678,7 @@ public class ApController extends BaseController {
 	}
 
 	@GetMapping("/getPaymentSummary")
-	public ResponseEntity<ResponseDTO> getPaymentSummary(@RequestParam Long orgId,
+	public ResponseEntity<ResponseDTO> getPaymentSummary(@RequestParam Long orgId,@RequestParam String finYear,
 			@RequestParam String partyname, String fromDate, String toDate, @RequestParam String branchCode) {
 		String methodName = "getPaymentSummary()";
 		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
@@ -687,7 +687,7 @@ public class ApController extends BaseController {
 		ResponseDTO responseDTO = null;
 		List<Map<String, Object>> paymentVO = new ArrayList<>();
 		try {
-			paymentVO = apService.getPaymentSummary(orgId, partyname, fromDate, toDate, branchCode);
+			paymentVO = apService.getPaymentSummary(orgId,finYear, partyname, fromDate, toDate, branchCode);
 		} catch (Exception e) {
 			errorMsg = e.getMessage();
 			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);

@@ -1189,8 +1189,9 @@ public class CostInvoiceServiceImpl implements CostInvoiceService {
 	}
 
 	@Override
-	public List<Map<String, Object>> getCostInvoiceSummary(Long orgId, String fromDate, String toDate, String partyName,String branchCode) {
-		Set<Object[]> chType = costInvoiceRepo.getCostInvoiceSummary(orgId, fromDate,toDate,partyName,branchCode);
+	public List<Map<String, Object>> getCostInvoiceSummary(Long orgId, String fromDate, String toDate,
+			String finYear, String partyName,String branchCode) {
+		Set<Object[]> chType = costInvoiceRepo.getCostInvoiceSummary(orgId, fromDate,toDate, finYear,partyName,branchCode);
 		return getCostSummary(chType);
 	}
 
@@ -1226,8 +1227,9 @@ public class CostInvoiceServiceImpl implements CostInvoiceService {
 	}
 
 	@Override
-	public List<Map<String, Object>> getCostInvoiceSummaryDetails(Long orgId, String fromDate, String toDate, String partyName,String branchCode) {
-		Set<Object[]> chType = costInvoiceRepo.getCostInvoiceDetails(orgId, fromDate,toDate, partyName,branchCode);
+	public List<Map<String, Object>> getCostInvoiceSummaryDetails(Long orgId, String fromDate, String toDate,
+			String finYear, String partyName,String branchCode) {
+		Set<Object[]> chType = costInvoiceRepo.getCostInvoiceDetails(orgId, fromDate,toDate, finYear,partyName,branchCode);
 		return getCosteDetails(chType);
 	}
 
@@ -1266,12 +1268,12 @@ public class CostInvoiceServiceImpl implements CostInvoiceService {
 				map.put("vDate", ch[26] != null ? ch[26].toString() : "");
 				map.put("netAmount", ch[27] != null ? new BigDecimal(ch[27].toString()) : BigDecimal.ZERO);
 				map.put("gstPercentage", ch[28] != null ? new BigDecimal(ch[28].toString()) : BigDecimal.ZERO);
+				map.put("approvestatus", ch[29] != null ? ch[29].toString() : "");
 //				map.put("gstType", ch[29] != null ? ch[29].toString() : "");
 				
 				List1.add(map);
 			}
 		}
 		return List1;
-
 	}
 }

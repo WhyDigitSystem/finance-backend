@@ -26,9 +26,7 @@ import com.base.basesetup.dto.ArBillBalanceDTO;
 import com.base.basesetup.dto.ReceiptDTO;
 import com.base.basesetup.dto.ResponseDTO;
 import com.base.basesetup.entity.ArBillBalanceVO;
-import com.base.basesetup.entity.PaymentVO;
 import com.base.basesetup.entity.ReceiptVO;
-import com.base.basesetup.entity.TaxInvoiceVO;
 import com.base.basesetup.service.ARService;
 
 @CrossOrigin
@@ -480,8 +478,8 @@ public class ARController extends BaseController {
 
 	@GetMapping("/getReceiptDetails")
 	public ResponseEntity<ResponseDTO> getReceiptDetails(@RequestParam Long orgId,
-			@RequestParam(required = true) String partyname, String fromDate, String toDate,
-			@RequestParam String branchCode) {
+			@RequestParam(required = true) String finYear, @RequestParam(required = true) String partyname,
+			String fromDate, String toDate, @RequestParam String branchCode) {
 		String methodName = "getReceiptDetails()";
 		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
 		String errorMsg = null;
@@ -490,7 +488,7 @@ public class ARController extends BaseController {
 		List<Map<String, Object>> mapp = new ArrayList<>();
 
 		try {
-			mapp = arReceivableService.getReceiptDetails(orgId, partyname, fromDate, toDate, branchCode);
+			mapp = arReceivableService.getReceiptDetails(orgId, finYear, partyname, fromDate, toDate, branchCode);
 		} catch (Exception e) {
 			errorMsg = e.getMessage();
 			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
@@ -511,8 +509,8 @@ public class ARController extends BaseController {
 
 	@GetMapping("/getReceiptSummary")
 	public ResponseEntity<ResponseDTO> getReceiptSummary(@RequestParam Long orgId,
-			@RequestParam(required = true) String partyname, String fromDate, String toDate,
-			@RequestParam String branchCode) {
+			@RequestParam(required = true) String finYear, @RequestParam(required = true) String partyname,
+			String fromDate, String toDate, @RequestParam String branchCode) {
 		String methodName = "getReceiptSummary()";
 		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
 		String errorMsg = null;
@@ -521,7 +519,7 @@ public class ARController extends BaseController {
 		List<Map<String, Object>> mapp = new ArrayList<>();
 
 		try {
-			mapp = arReceivableService.getReceiptSummary(orgId, partyname, fromDate, toDate, branchCode);
+			mapp = arReceivableService.getReceiptSummary(orgId, finYear, partyname, fromDate, toDate, branchCode);
 		} catch (Exception e) {
 			errorMsg = e.getMessage();
 			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);

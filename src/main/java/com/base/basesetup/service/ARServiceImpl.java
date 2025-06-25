@@ -774,9 +774,9 @@ public class ARServiceImpl implements ARService {
 	// Report
 
 	@Override
-	public List<Map<String, Object>> getReceiptDetails(Long orgId, String partyname, String fromDate,
+	public List<Map<String, Object>> getReceiptDetails(Long orgId, String finYear, String partyname, String fromDate,
 			String toDate,String branchCode) {
-		Set<Object[]> chType = receiptRepo.getReceiptDetails(orgId,  partyname, fromDate, toDate,branchCode);
+		Set<Object[]> chType = receiptRepo.getReceiptDetails(orgId, finYear, partyname, fromDate, toDate,branchCode);
 		return getReceiptDetails(chType);
 	}
 
@@ -806,15 +806,16 @@ public class ARServiceImpl implements ARService {
 			map.put("settledAmount", ch[19] != null ? new BigDecimal(ch[19].toString()) : BigDecimal.ZERO); // 19
 			map.put("outStanding", ch[20] != null ? new BigDecimal(ch[20].toString()) : BigDecimal.ZERO);
 			map.put("tdsAmount1", ch[21] != null ? new BigDecimal(ch[21].toString()) : BigDecimal.ZERO); // 20
+			map.put("approvestatus", ch[22] != null ? ch[22].toString() : "");
 			List1.add(map);
 		}
 		return List1;
 	}
 
 	@Override
-	public List<Map<String, Object>> getReceiptSummary(Long orgId,  String partyname, String fromDate,
+	public List<Map<String, Object>> getReceiptSummary(Long orgId, String finYear, String partyname, String fromDate,
 			String toDate,String branchCode) {
-		Set<Object[]> chType = receiptRepo.getReceiptSummary(orgId,  partyname, fromDate, toDate,branchCode);
+		Set<Object[]> chType = receiptRepo.getReceiptSummary(orgId, finYear, partyname, fromDate, toDate,branchCode);
 		return getReceiptSummary(chType);
 	}
 
@@ -839,7 +840,6 @@ public class ARServiceImpl implements ARService {
 		}
 		return List1;
 	}
-	
 	
 	@Override
 	public ReceiptVO getReceiptByDocIdAndScreenCode(String docId) {
