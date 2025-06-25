@@ -400,7 +400,7 @@ public interface PartyMasterRepo extends JpaRepository<PartyMasterVO, Long> {
 	        + "        m.accountname AS m1, \r\n"
 	        + "        0 AS opbal, \r\n"
 	        + "        t1.currency, \r\n"
-	        + "        SUM(t2.bdebitamount) AS dbamount, \r\n"
+	        + "        SUM(t2.bdebitamou nt) AS dbamount, \r\n"
 	        + "        SUM(t2.bcreditamount) AS cramount, \r\n"
 	        + "        SUM(t2.debitamount) AS ndbamount, \r\n"
 	        + "        SUM(t2.creditamount) AS ncramount, \r\n"
