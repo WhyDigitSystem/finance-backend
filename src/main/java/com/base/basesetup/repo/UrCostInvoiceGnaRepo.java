@@ -76,5 +76,9 @@ public interface UrCostInvoiceGnaRepo extends JpaRepository<UrCostInvoiceGnaVO, 
 	@Query(nativeQuery = true, value = "select accountgroupname,category from groupledger where accountgroupname=?1")
 	Set<Object[]>  getLedgerPosting( String  accountName);
 
+	
+	@Query(nativeQuery = true, value = "select * from urcostinvoicegna where screencode=?1 and docid=?2")
+	UrCostInvoiceGnaVO getUrCostInvoiceByDocIdandScreenCode(String screenCode, String docId);
+
 
 }

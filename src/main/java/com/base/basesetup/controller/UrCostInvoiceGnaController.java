@@ -21,9 +21,8 @@ import com.base.basesetup.common.CommonConstant;
 import com.base.basesetup.common.UserConstants;
 import com.base.basesetup.dto.ResponseDTO;
 import com.base.basesetup.dto.UrCostInvoiceGnaDTO;
+import com.base.basesetup.entity.IrnCreditNoteVO;
 import com.base.basesetup.entity.PartyMasterVO;
-import com.base.basesetup.entity.PartyStateVO;
-import com.base.basesetup.entity.TaxInvoiceVO;
 import com.base.basesetup.entity.UrCostInvoiceGnaVO;
 import com.base.basesetup.service.UrCostInvoiceGnaService;
 
@@ -312,5 +311,33 @@ public class UrCostInvoiceGnaController extends BaseController {
 		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
 		return ResponseEntity.ok().body(responseDTO);
 	}
+	
+	@GetMapping("/getUrCostInvoiceByDocIdandScreenCode")
+	public ResponseEntity<ResponseDTO> getUrCostInvoiceByDocIdandScreenCode(@RequestParam String ScreenCode , @RequestParam String docId) {
+		String methodName = "getUrCostInvoiceByDocIdandScreenCode()";
+		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+		String errorMsg = null;
+		Map<String, Object> responseObjectsMap = new HashMap<>();
+		ResponseDTO responseDTO = null;
+		UrCostInvoiceGnaVO urCostInvoiceGnaVO = new UrCostInvoiceGnaVO();
+		try {
+			urCostInvoiceGnaVO = urCostInvoiceGnaService.getUrCostInvoiceByDocIdandScreenCode( ScreenCode, docId);
+		} catch (Exception e) {
+			errorMsg = e.getMessage();
+			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+		}
+		if (StringUtils.isBlank(errorMsg)) {
+			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "UR Cost Invoice information get successfully By docid");
+			responseObjectsMap.put("urCostInvoiceGnaVO", urCostInvoiceGnaVO);
+			responseDTO = createServiceResponse(responseObjectsMap);
+		} else {
+			responseDTO = createServiceResponseError(responseObjectsMap,
+					"UR Cost Invoice information receive failed By docid", errorMsg);
+		}
+		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+		return ResponseEntity.ok().body(responseDTO);
+
+	}
+	
 	
 }

@@ -25,6 +25,7 @@ import com.base.basesetup.dto.ResponseDTO;
 import com.base.basesetup.entity.CostInvoiceVO;
 import com.base.basesetup.entity.PartyMasterVO;
 import com.base.basesetup.entity.RCostInvoiceGnaVO;
+import com.base.basesetup.entity.UrCostInvoiceGnaVO;
 import com.base.basesetup.service.RCostInvoiceGnaService;
 
 @CrossOrigin
@@ -430,6 +431,31 @@ public class RCostInvoiceGnaController extends BaseController{
 		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
 		return ResponseEntity.ok().body(responseDTO);
 	}
-  
+	@GetMapping("/getRCostInvoiceGnaByDocIdandScreenCode")
+	public ResponseEntity<ResponseDTO> getRCostInvoiceGnaByDocIdandScreenCode(@RequestParam String ScreenCode , @RequestParam String docId) {
+		String methodName = "getRCostInvoiceGnaByDocIdandScreenCode()";
+		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+		String errorMsg = null;
+		Map<String, Object> responseObjectsMap = new HashMap<>();
+		ResponseDTO responseDTO = null;
+		RCostInvoiceGnaVO rCostInvoiceGnaVO = new RCostInvoiceGnaVO();
+		try {
+			rCostInvoiceGnaVO = rCostInvoiceGnaService.getRCostInvoiceGnaByDocIdandScreenCode( ScreenCode, docId);
+		} catch (Exception e) {
+			errorMsg = e.getMessage();
+			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+		}
+		if (StringUtils.isBlank(errorMsg)) {
+			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "R Cost Invoice information get successfully By docid");
+			responseObjectsMap.put("rCostInvoiceGnaVO", rCostInvoiceGnaVO);
+			responseDTO = createServiceResponse(responseObjectsMap);
+		} else {
+			responseDTO = createServiceResponseError(responseObjectsMap,
+					"R Cost Invoice information receive failed By docid", errorMsg);
+		}
+		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+		return ResponseEntity.ok().body(responseDTO);
+
+	}
 
 }

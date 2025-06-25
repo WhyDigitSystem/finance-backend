@@ -27,6 +27,7 @@ import com.base.basesetup.entity.ChargesUrCostInvoiceGnaVO;
 import com.base.basesetup.entity.DocumentTypeMappingDetailsVO;
 import com.base.basesetup.entity.MultipleDocIdGenerationDetailsVO;
 import com.base.basesetup.entity.PartyMasterVO;
+import com.base.basesetup.entity.TaxInvoiceVO;
 import com.base.basesetup.entity.TdsUrCostInvoiceGnaVO;
 import com.base.basesetup.entity.UrCostInvoiceGnaVO;
 import com.base.basesetup.exception.ApplicationException;
@@ -738,4 +739,12 @@ public class UrCostInvoiceGnaServiceImpl implements UrCostInvoiceGnaService {
 		}
 	}
 
+	//urcostinvoice hyperlink
+	
+	@Override
+	public UrCostInvoiceGnaVO getUrCostInvoiceByDocIdandScreenCode(String ScreenCode, String docId) {
+		// TODO Auto-generated method stub
+				return urCostInvoiceGnaRepo.getUrCostInvoiceByDocIdandScreenCode(ScreenCode, docId);
+	}
+	
 }

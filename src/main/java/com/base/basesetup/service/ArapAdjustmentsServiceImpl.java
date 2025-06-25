@@ -265,6 +265,36 @@ public class ArapAdjustmentsServiceImpl implements ArapAdjustmentsService{
 //	}
 //	
 //	
+
+	@Override
+	public List<Map<String, Object>> GetPendingRegisterDetails(String Partytype, String PartyName, String ScreenName,
+			Long orgId) {
+		Set<Object[]> mapp = arapAdjustmentsRepo.GetPendingRegisterDetails(Partytype,PartyName,ScreenName,orgId);
+		return GetPendingRegisterDetails(mapp);
+	}
+
+	
+	private List<Map<String, Object>> GetPendingRegisterDetails(Set<Object[]> customer) {
+		List<Map<String, Object>> apage = new ArrayList<>();
+		for (Object[] sup : customer) {
+			Map<String, Object> apageing = new HashMap<>();
+			apageing.put("docid", sup[0] != null ? sup[0].toString() : "");
+			apageing.put("docdate", sup[1] != null ? sup[1].toString() : "");
+			apageing.put("vid", sup[2] != null ? sup[2].toString() : "");
+			apageing.put("vdate", sup[3] != null ? sup[3].toString() : "");
+			apageing.put("approvestatus", sup[4] != null ? sup[4].toString() : "");
+			apageing.put("partyname", sup[5] != null ? sup[5].toString() : "");
+			apageing.put("partytype", sup[6] != null ? sup[6].toString() : "");
+			apageing.put("screenname", sup[7] != null ? sup[7].toString() : "");
+			apageing.put("orgid", sup[8] != null ? sup[8].toString() : "");
+			apageing.put("screencode", sup[9] != null ? sup[9].toString() : "");
+			apageing.put("status", sup[10] != null ? sup[10].toString() : "");
+			
+
+			apage.add(apageing);
+		}
+		return apage;
+		}
 	
 	}
 	
