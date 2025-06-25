@@ -831,7 +831,7 @@ public interface ArapAdjustmentsRepo extends JpaRepository<ArapAdjustmentsVO, Lo
 			+ "select docid,docdate,'','',approvestatus,p.partyname,p2.partytype,p.screenname,p.orgid,p.screencode,p.status  from payment p,partymaster p2  \r\n"
 			+ "where approvestatus is null and p.partyname =p2.partyname\r\n"
 			+ "union\r\n"
-			+ "select docid,docdate,supplierbillno,supplierbilldate,approvestatus,suppliername,p2.partytype,p.screenname,p.orgid,p.screencode,p.status  from urcostinvoicegna p,partymaster p2  \r\n"
+			+ "select docid,docdate,supplierbillno,supplierbilldate,approvestatus,suppliername,p2.partytype,p.screenname,p.orgid,p.screencode,p.mode  from urcostinvoicegna p,partymaster p2  \r\n"
 			+ "where approvestatus is null and p.suppliername =p2.partyname \r\n"
 			+ "union\r\n"
 			+ "select docid,docdate,supplierbillno,supplierbilldate,approvestatus,p.partyname,p2.partytype,p.screenname,p.orgid,p.screencode,p.mode  from rcostinvoicegna p,partymaster p2  \r\n"
