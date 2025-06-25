@@ -9,6 +9,7 @@ import com.base.basesetup.dto.RCostInvoiceGnaDTO;
 import com.base.basesetup.entity.CostInvoiceVO;
 import com.base.basesetup.entity.PartyMasterVO;
 import com.base.basesetup.entity.RCostInvoiceGnaVO;
+import com.base.basesetup.entity.TaxInvoiceVO;
 import com.base.basesetup.entity.TdsMasterVO;
 import com.base.basesetup.exception.ApplicationException;
 
@@ -48,7 +49,8 @@ public interface RCostInvoiceGnaService {
 	List<Map<String, Object>> getRegisterCostInvoiceReport(Long orgId, String branchCode, String fromDate,
 			String toDate, String partyCode, String finYear);
 
-
+	RCostInvoiceGnaVO getRCostInvoiceGnaByDocIdandScreenCode(String ScreenCode, String docId);
+	//screencode
 
 
 }

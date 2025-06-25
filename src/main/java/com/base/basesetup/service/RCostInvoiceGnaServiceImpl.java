@@ -846,4 +846,10 @@ public class RCostInvoiceGnaServiceImpl implements RCostInvoiceGnaService {
 		return List1;
 
 	}
+
+	@Override
+	public RCostInvoiceGnaVO getRCostInvoiceGnaByDocIdandScreenCode(String ScreenCode, String docId) {
+		// TODO Auto-generated method stub
+		return rCostInvoiceGnaRepo.getrCostInvoiceByDocIdandScreenCode(ScreenCode, docId);
+	}
 }

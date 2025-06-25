@@ -199,5 +199,8 @@ public interface RCostInvoiceGnaRepo extends JpaRepository<RCostInvoiceGnaVO, Lo
 			+ "    evdate")
 	Set<Object[]> findRegisterCostInvoiceReport(Long orgId, String branchCode, String fromDate,
 			String toDate,String partyCode, String finYear);
+
+	@Query(nativeQuery = true, value = "select * from rcostinvoicegna where screencode=?1 and docid=?2")
+	RCostInvoiceGnaVO getrCostInvoiceByDocIdandScreenCode(String screenCode, String docId);
 }
 	

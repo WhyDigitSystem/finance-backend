@@ -572,13 +572,13 @@ public interface ArapAdjustmentsRepo extends JpaRepository<ArapAdjustmentsVO, Lo
 			+ " 			 			           ORDER BY docdate  \r\n"
 			+ " 			 			                     )  \r\n"
 			+ " 			 SELECT 1 AS no, orgid, subledgercode, subledgername AS partyname, subledgername, partytype, branch, currency, creditdays, creditlimit, \r\n"
-			+ " 			 SUM(amount) AS amount, SUM(outstanding) AS outstanding, SUM(unadjusted) AS unadjusted, SUM(totaldue) AS totaldue  \r\n"
+			+ " 			 SUM(amount) AS amount, SUM(outstanding) AS outstanding, SUM(ABS(unadjusted)) AS unadjusted, SUM(totaldue) AS totaldue  \r\n"
 			+ " 			 FROM a where  ( branch = ?3 or ?3 = 'ALL' )   \r\n"
 			+ " 			 			                     and orgid =?4  \r\n"
 			+ " 			 			                     and (subledgername = ?2 or ?2 = 'ALL' ) GROUP BY orgid, subledgercode, subledgername, partytype, branch, currency, creditdays, creditlimit \r\n"
 			+ " 			 UNION \r\n"
 			+ " 			 SELECT 2 AS no, '' AS orgid, '' AS subledgercode, subledgername AS partyname, 'Total' AS subledgername, '' AS partytype, '' AS branch,'' currency,'' creditdays, '' creditlimit, \r\n"
-			+ " 			 SUM(amount) AS amount, SUM(outstanding) AS outstanding, SUM(unadjusted) AS unadjusted, SUM(totaldue) AS totaldue  \r\n"
+			+ " 			 SUM(amount) AS amount, SUM(outstanding) AS outstanding, SUM(ABS(unadjusted)) AS unadjusted, SUM(totaldue) AS totaldue  \r\n"
 			+ " 			 FROM a where ( branch = ?3 or ?3 = 'ALL' )   \r\n"
 			+ " 			 			                     and orgid =?4  \r\n"
 			+ " 			 			                     and (subledgername = ?2 or ?2 = 'ALL' ) GROUP BY subledgername, currency, creditdays, creditlimit \r\n"
@@ -803,12 +803,12 @@ public interface ArapAdjustmentsRepo extends JpaRepository<ArapAdjustmentsVO, Lo
 			+ "			             HAVING (a.amount + COALESCE(SUM(COALESCE(r.amount, 0)), 0)) != 0 \r\n"
 			+ "			           ORDER BY docdate \r\n" + "			                     ) \r\n"
 			+ "			                   SELECT 1 AS no, orgid, subledgercode, subledgername AS partyname, subledgername, partytype, branch, currency, creditdays, creditlimit,\r\n"
-			+ "SUM(amount) AS amount, SUM(outstanding) AS outstanding, SUM(unadjusted) AS unadjusted, SUM(totaldue) AS totaldue \r\n"
+			+ "SUM(amount) AS amount, SUM(outstanding) AS outstanding, SUM(ABS(unadjusted)) AS unadjusted, SUM(totaldue) AS totaldue \r\n"
 			+ "FROM a where  ( branch = ?3 or ?3 = 'ALL' )  \r\n" + "			                     and orgid =?4 \r\n"
 			+ "			                     and (subledgername = ?2 or ?2 = 'ALL' ) GROUP BY orgid, subledgercode, subledgername, partytype, branch, currency, creditdays, creditlimit\r\n"
 			+ "UNION\r\n"
 			+ "SELECT 2 AS no, '' AS orgid, '' AS subledgercode, subledgername AS partyname, 'Total' AS subledgername, '' AS partytype, '' AS branch,'' currency,'' creditdays, '' creditlimit,\r\n"
-			+ "SUM(amount) AS amount, SUM(outstanding) AS outstanding, SUM(unadjusted) AS unadjusted, SUM(totaldue) AS totaldue \r\n"
+			+ "SUM(amount) AS amount, SUM(outstanding) AS outstanding, SUM(ABS(unadjusted)) AS unadjusted, SUM(totaldue) AS totaldue \r\n"
 			+ "FROM a where ( branch = ?3 or ?3 = 'ALL' )  \r\n" + "			                     and orgid =?4 \r\n"
 			+ "			                     and (subledgername = ?2 or ?2 = 'ALL' ) GROUP BY subledgername, currency, creditdays, creditlimit\r\n"
 			+ "ORDER BY partyname, no")
@@ -817,6 +817,27 @@ public interface ArapAdjustmentsRepo extends JpaRepository<ArapAdjustmentsVO, Lo
 	@Query(nativeQuery = true, value = "select * from arapadjustments a where a.docid=?1  and a.refno=?2 and a.orgid=?3 and a.subledgercode=?4")
 	ArapAdjustmentsVO findByDocIdAndRefNoAndOrgIdAndSubledgerCode(String docId, String refNo, Long orgId,
 			String subledgerCode);
+
+	@Query(nativeQuery = true, value = "select docid,docdate,vid,vdate,approvestatus,partyname,partytype,screenname,orgid,screencode,status from (\r\n"
+			+ "select docid,docdate,vid,vdate,approvestatus,p.partyname,p2.partytype,p.screenname,p.orgid,p.screencode,p.status  from taxinvoice p,partymaster p2  \r\n"
+			+ "where approvestatus is null and p.partyname =p2.partyname \r\n"
+			+ "union\r\n"
+			+ "select docid,docdate,vid,vdate,approvestatus,suppliername,p2.partytype,p.screenname,p.orgid,p.screencode,p.mode  from costinvoice p,partymaster p2  \r\n"
+			+ "where approvestatus is null and p.suppliername =p2.partyname\r\n"
+			+ "union\r\n"
+			+ "select docid,docdate,'','',approvestatus,customername ,p2.partytype,p.screenname,p.orgid,p.screencode,p.status  from receipt p,partymaster p2  \r\n"
+			+ "where approvestatus is null and p.customername =p2.partyname\r\n"
+			+ "union\r\n"
+			+ "select docid,docdate,'','',approvestatus,p.partyname,p2.partytype,p.screenname,p.orgid,p.screencode,p.status  from payment p,partymaster p2  \r\n"
+			+ "where approvestatus is null and p.partyname =p2.partyname\r\n"
+			+ "union\r\n"
+			+ "select docid,docdate,supplierbillno,supplierbilldate,approvestatus,suppliername,p2.partytype,p.screenname,p.orgid,p.screencode,p.status  from urcostinvoicegna p,partymaster p2  \r\n"
+			+ "where approvestatus is null and p.suppliername =p2.partyname \r\n"
+			+ "union\r\n"
+			+ "select docid,docdate,supplierbillno,supplierbilldate,approvestatus,p.partyname,p2.partytype,p.screenname,p.orgid,p.screencode,p.mode  from rcostinvoicegna p,partymaster p2  \r\n"
+			+ "where approvestatus is null and p.partyname =p2.partyname ) a\r\n"
+			+ " where (partytype =?1 or ?1 = 'ALL') and (partyname =?2 or ?2 = 'ALL') and (screenname=?3 or ?3 ='ALL') and orgid=?4")
+	Set<Object[]> GetPendingRegisterDetails(String partytype, String partyName, String screenName, Long orgId);
 
 // 	Optional<ArapAdjustmentsVO> findByUniqueKeys(String partyCode, String docId, LocalDate docDate, String refNo, LocalDate refDate);
 

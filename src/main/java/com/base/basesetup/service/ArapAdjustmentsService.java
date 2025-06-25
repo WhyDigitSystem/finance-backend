@@ -36,4 +36,7 @@ public interface ArapAdjustmentsService {
 			@RequestParam(required = true)  Long orgId, 
 			@RequestParam(required = false) String pdate
 		);
+	
+	List<Map<String, Object>> GetPendingRegisterDetails(String Partytype , String PartyName ,String ScreenName,Long orgId);
+	
 }
