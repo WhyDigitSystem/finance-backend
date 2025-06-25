@@ -321,7 +321,7 @@ public interface PartyMasterRepo extends JpaRepository<PartyMasterVO, Long> {
 	        + "    m AS (\r\n"
 	        + "        SELECT accountname \r\n"
 	        + "        FROM accountsdetails \r\n"
-	        + "        WHERE accountname = ?6         \r\n"
+	        + "        WHERE (accountname = ?6 or ?6='ALL')         \r\n"
 	        + "        GROUP BY accountname\r\n"
 	        + "    ), \r\n"
 	        + "    b AS (\r\n"
