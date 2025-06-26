@@ -156,7 +156,7 @@ public class CostEstimationServiceImpl implements CostEstimationService {
 	
 	@Override
 	public String getCostEstimationDocId(Long orgId, String finYear, String branch, String branchCode) {
-		String ScreenCode = "TI";
+		String ScreenCode = "CE";
 		return  costEstimationRepo.getCostEstimationDocId(orgId, finYear, branchCode, ScreenCode);
 		
 	}
