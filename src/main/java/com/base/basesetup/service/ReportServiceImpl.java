@@ -877,7 +877,7 @@ public class ReportServiceImpl implements ReportService {
 			doctype.put("arApDetailsId", sup[1] != null ? sup[1].toString() : "");
 			doctype.put("branch", sup[2] != null ? sup[2].toString() : "");
 			doctype.put("subledgerCode", sup[3] != null ? sup[3].toString() : "");
-			doctype.put("subledgerName", sup[4] != null ? sup[4].toString() : "");
+			doctype.put("subledgerName", sup[26] != null ? sup[26].toString() : "");
 			doctype.put("partyType", sup[5] != null ? sup[5].toString() : "");
 			doctype.put("salesPerson", sup[6] != null ? sup[6].toString() : "");
 

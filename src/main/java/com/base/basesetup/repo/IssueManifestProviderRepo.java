@@ -957,11 +957,11 @@ public interface IssueManifestProviderRepo extends JpaRepository<IssueManifestPr
 			+ "         t.docdate,\r\n"
 			+ "         t.docid\r\n"
 			+ ") \r\n"
-			+ "SELECT sno,arapdetailsid,branch,subledgercode,subledgername as partyname,subledgername,partytype,salesperson,docid,docdate,\r\n"
-			+ "supprefno,suprefdate,duedate,refno,refdate,amount,outstanding,totaldue,unadjusted,ddays,mslab1,mslab2,mslab3,mslab4,mslab5,creditlimit,creditdays FROM a\r\n"
+			+ "SELECT sno,arapdetailsid,branch,subledgercode,subledgername,partytype,salesperson,docid,docdate,\r\n"
+			+ "supprefno,suprefdate,duedate,refno,refdate,amount,outstanding,totaldue,unadjusted,ddays,mslab1,mslab2,mslab3,mslab4,mslab5,creditlimit,creditdays,subledgername as partyname FROM a\r\n"
 			+ "union\r\n"
-			+ "SELECT 2 sno,null arapdetailsid,null branch,null subledgercode,'Total' as partyname, subledgername,null partytype,null salesperson,null docid,null docdate,\r\n"
-			+ "null supprefno,null suprefdate,null duedate,null refno,null refdate,sum(a.amount)amount,sum(a.outstanding)outstanding,sum(a.totaldue)totaldue,sum(a.unadjusted)unadjusted,null ddays,sum(a.mslab1)mslab1,sum(a.mslab2)mslab2,sum(a.mslab3)mslab3,sum(a.mslab4)mslab4,sum(a.mslab5)mslab5,null creditlimit,null creditdays FROM a\r\n"
+			+ "SELECT 2 sno,null arapdetailsid,null branch,null subledgercode, subledgername,null partytype,null salesperson,null docid,null docdate,\r\n"
+			+ "null supprefno,null suprefdate,null duedate,null refno,null refdate,sum(a.amount)amount,sum(a.outstanding)outstanding,sum(a.totaldue)totaldue,sum(a.unadjusted)unadjusted,null ddays,sum(a.mslab1)mslab1,sum(a.mslab2)mslab2,sum(a.mslab3)mslab3,sum(a.mslab4)mslab4,sum(a.mslab5)mslab5,null creditlimit,null creditdays,'Total' as partyname FROM a\r\n"
 			+ "group by a.subledgername\r\n"
 			+ "ORDER BY subledgername,sno asc")
 	Set<Object[]> getARAgeingReport(Long orgId, String branch, String partyName, String asOnDate, String base);
