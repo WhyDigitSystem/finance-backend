@@ -502,6 +502,8 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 //		partyMasterVO.setPartyCode(customerDTO.getCustomerCode());
 		partyMasterVO.setCurrency(customerDTO.getCurrency());
 		partyMasterVO.setPartyShortName(customerDTO.getShortName());
+		partyMasterVO.setCountry(customerDTO.getCountry());
+		
 
 		if (customerDTO.isApproved()) {
 			partyMasterVO.setActive(true);
@@ -590,7 +592,7 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 		partyMasterVO.setBussinessType(vendorDTO.getBussinessType());
 		partyMasterVO.setBussinessCate(vendorDTO.getBussinessCategory());
 		partyMasterVO.setAccountType(vendorDTO.getAccountsType());
-		partyMasterVO.setPartyShortName(partyMasterVO.getPartyShortName());
+		partyMasterVO.setPartyShortName(vendorDTO.getShortName());
 		partyMasterVO.setActive(vendorDTO.isActive());
 
 		if (vendorDTO.isApproved()) {
