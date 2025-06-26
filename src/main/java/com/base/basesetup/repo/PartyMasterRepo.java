@@ -86,7 +86,7 @@ public interface PartyMasterRepo extends JpaRepository<PartyMasterVO, Long> {
 			+ "        t1.refdate,\r\n"
 			+ "        t1.supplierrefno,\r\n"
 			+ "        t1.supplierrefdate,\r\n"
-			+ "        CONCAT_WS(' - ', t1.remarks, t1.sourcescreen)  AS Particulars,\r\n"
+			+ "        'Transaction' AS Particulars,\r\n"
 			+ "        t1.currency,\r\n"
 			+ "        SUM(t2.debitamount),\r\n"
 			+ "        SUM(t2.creditamount),\r\n"
@@ -183,8 +183,7 @@ public interface PartyMasterRepo extends JpaRepository<PartyMasterVO, Long> {
 			+ "    GROUP BY p.partycode, p.partyname\r\n"
 			+ "\r\n"
 			+ ") AS final_result\r\n"
-			+ "ORDER BY sort_order, CASE WHEN docdate IS NULL THEN NULL ELSE docdate END ASC\r\n"
-			+ "")
+			+ "ORDER BY sort_order, CASE WHEN docdate IS NULL THEN NULL ELSE docdate END ASC")
 	Set<Object[]> getAllPartyLedgerReport(Long orgId, String partyName, String partyType, String branch,
 			String fromDate, String toDate);
 
