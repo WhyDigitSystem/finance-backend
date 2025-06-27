@@ -326,7 +326,7 @@ public interface PartyMasterRepo extends JpaRepository<PartyMasterVO, Long> {
 			+ "    b AS (\r\n"
 			+ "        SELECT branchid, branch \r\n"
 			+ "        FROM branch \r\n"
-			+ "        WHERE TRIM(UPPER(branch)) = TRIM(UPPER(?2))  -- corrected logical match\r\n"
+			+ "        WHERE (branch =?2 or ?2='ALL')\r\n"
 			+ "    ), \r\n"
 			+ "    s AS (\r\n"
 			+ "        SELECT partycode, partyname \r\n"
