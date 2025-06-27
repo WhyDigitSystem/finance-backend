@@ -31,6 +31,8 @@ public class CostEstimationDTO {
 	private boolean active;
 	
 	private String department;
+	
+	private String status;
 
 	List<CostEstimationDetailsDTO> costEstimationDetailsDTO;
 }

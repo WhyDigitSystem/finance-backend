@@ -1,6 +1,8 @@
 package com.base.basesetup.service;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -17,13 +19,21 @@ import org.springframework.stereotype.Service;
 
 import com.base.basesetup.dto.CostEstimationDTO;
 import com.base.basesetup.dto.CostEstimationDetailsDTO;
+import com.base.basesetup.entity.AccountsDetailsVO;
+import com.base.basesetup.entity.AccountsVO;
+import com.base.basesetup.entity.ArapDetailsVO;
 import com.base.basesetup.entity.CostEstimationDetailsVO;
 import com.base.basesetup.entity.CostEstimationVO;
 import com.base.basesetup.entity.DocumentTypeMappingDetailsVO;
+import com.base.basesetup.entity.MultipleDocIdGenerationDetailsVO;
 import com.base.basesetup.exception.ApplicationException;
+import com.base.basesetup.repo.AccountsDetailsRepo;
+import com.base.basesetup.repo.AccountsRepo;
+import com.base.basesetup.repo.ArapDetailsRepo;
 import com.base.basesetup.repo.CostEstimationDetailsRepo;
 import com.base.basesetup.repo.CostEstimationRepo;
 import com.base.basesetup.repo.DocumentTypeMappingDetailsRepo;
+import com.base.basesetup.repo.MultipleDocIdGenerationDetailsRepo;
 
 @Service
 public class CostEstimationServiceImpl implements CostEstimationService {
@@ -38,6 +48,21 @@ public class CostEstimationServiceImpl implements CostEstimationService {
 
 	@Autowired
 	CostEstimationDetailsRepo costEstimationDetailsRepo;
+
+	@Autowired
+	AccountsRepo accountsRepo;
+
+	@Autowired
+	AccountsDetailsRepo accountsDetailsRepo;
+
+	@Autowired
+	MultipleDocIdGenerationDetailsRepo multipleDocIdGenerationDetailsRepo;
+
+	@Autowired
+	ArapDetailsRepo arapDetailsRepo;
+	
+	@Autowired
+	AmountInWordsConverterService amountInWordsConverterService;
 
 	// CostEstimation
 
@@ -103,6 +128,7 @@ public class CostEstimationServiceImpl implements CostEstimationService {
 		costEstimationVO.setFinYear(costEstimationDTO.getFinYear());
 		costEstimationVO.setBranchCode(costEstimationDTO.getBranchCode());
 		costEstimationVO.setOrgId(costEstimationDTO.getOrgId());
+		costEstimationVO.setStatus(costEstimationDTO.getStatus());
 		costEstimationVO.setDepartment(costEstimationDTO.getDepartment());
 
 		if (ObjectUtils.isNotEmpty(costEstimationVO.getId())) {
@@ -130,14 +156,14 @@ public class CostEstimationServiceImpl implements CostEstimationService {
 		}
 
 		costEstimationVO.setTotalAmount(totalAmount);
-
+		costEstimationVO.setAmountInWords(amountInWordsConverterService.convert(costEstimationVO.getTotalAmount()));
 		costEstimationVO.setCostEstimationDetailsVO(costEstimationDetailsVOs);
 
 	}
 
 	@Override
-	public List<Map<String, Object>> getAllEmployees(Long orgId,String department) {
-		Set<Object[]> customerName = costEstimationRepo.getAllEmployees(orgId,department);
+	public List<Map<String, Object>> getAllEmployees(Long orgId, String department) {
+		Set<Object[]> customerName = costEstimationRepo.getAllEmployees(orgId, department);
 		return getAllEmployees(customerName);
 	}
 
@@ -153,13 +179,174 @@ public class CostEstimationServiceImpl implements CostEstimationService {
 		return doctypeMappingDetails;
 	}
 
-	
 	@Override
 	public String getCostEstimationDocId(Long orgId, String finYear, String branch, String branchCode) {
 		String ScreenCode = "CE";
-		return  costEstimationRepo.getCostEstimationDocId(orgId, finYear, branchCode, ScreenCode);
-		
+		return costEstimationRepo.getCostEstimationDocId(orgId, finYear, branchCode, ScreenCode);
+
 	}
 
-	
+	@Override
+	public CostEstimationVO approveCostEstimation(Long orgId, Long id, String docId, String action, String actionBy)
+			throws ApplicationException {
+
+		CostEstimationVO costEstimationVO = costEstimationRepo.findByOrgIdAndIdAndDocId(orgId, id, docId);
+		String screenCode = "AC";
+		String sourceScreenCode = costEstimationVO.getScreenCode();
+
+		if ("Approved".equalsIgnoreCase(costEstimationVO.getApproveStatus())) {
+			throw new ApplicationException("This Invoice is already approved.");
+		} else if ("Rejected".equalsIgnoreCase(costEstimationVO.getApproveStatus())) {
+			throw new ApplicationException("This Invoice is already rejected.");
+		}
+
+		AccountsVO accountsVO = accountsRepo.findByRefNoAndRefDate(costEstimationVO.getDocId(),
+				costEstimationVO.getDocDate());
+
+		if (accountsVO != null) {
+			List<AccountsDetailsVO> oldDetails = accountsDetailsRepo.findByAccountsVO(accountsVO);
+			if (!oldDetails.isEmpty()) {
+				accountsDetailsRepo.deleteAll(oldDetails);
+			}
+		} else {
+
+			accountsVO = new AccountsVO();
+			String accountsDocId = accountsRepo.getCostEstimationDocId(costEstimationVO.getOrgId(),
+					costEstimationVO.getFinYear(), costEstimationVO.getBranchCode(), sourceScreenCode, screenCode);
+
+			MultipleDocIdGenerationDetailsVO mulDocId = multipleDocIdGenerationDetailsRepo
+					.findByOrgIdAndFinYearAndBranchCodeAndSourceScreenCodeAndScreenCode(costEstimationVO.getOrgId(),
+							costEstimationVO.getFinYear(), costEstimationVO.getBranchCode(), sourceScreenCode,
+							screenCode);
+
+			mulDocId.setLastno(mulDocId.getLastno() + 1);
+			multipleDocIdGenerationDetailsRepo.save(mulDocId);
+			accountsVO.setDocId(accountsDocId);
+		}
+
+		// Populate AccountsVO
+		accountsVO.setSourceId(costEstimationVO.getId());
+		accountsVO.setCreatedBy(costEstimationVO.getCreatedBy());
+		accountsVO.setModifiedBy(costEstimationVO.getUpdatedBy());
+		accountsVO.setCreatedon(costEstimationVO.getCommonDate().getModifiedon().toUpperCase());
+		accountsVO.setModifiedon(costEstimationVO.getCommonDate().getModifiedon().toUpperCase());
+		accountsVO.setFinYear(costEstimationVO.getFinYear());
+		accountsVO.setBranch(costEstimationVO.getBranch());
+		accountsVO.setBranchCode(costEstimationVO.getBranchCode());
+		accountsVO.setOrgId(costEstimationVO.getOrgId());
+		accountsVO.setRefNo(costEstimationVO.getDocId());
+		accountsVO.setRefDate(costEstimationVO.getDocDate());
+//	    accountsVO.setVId(costInvoiceVO.getVId());
+//	    accountsVO.setVDate(costInvoiceVO.getVDate());
+//	    accountsVO.setDueDate(costInvoiceVO.getDueDate());
+	    accountsVO.setAmountInWords(costEstimationVO.getAmountInWords());
+//	    accountsVO.setChargeableAmount(costInvoiceVO.getTotChargesLcAmt());
+//	    accountsVO.setSupplierRefNo(costInvoiceVO.getSupplierBillNo());
+//	    accountsVO.setCreditDays(costInvoiceVO.getCreditDays());
+		accountsVO.setSourceScreen(costEstimationVO.getScreenName());
+		accountsVO.setSourceScreenCode(costEstimationVO.getScreenCode());
+//	    accountsVO.setRemarks(costEstimationVO.getRemarks());
+		accountsVO.setTotalDebitAmount(costEstimationVO.getTotalAmount());
+		accountsVO.setTotalCreditAmount(costEstimationVO.getTotalAmount());
+
+		List<AccountsDetailsVO> accountsDetailsVOs = new ArrayList<>();
+
+		// PAYABLE A/C Entry
+		AccountsDetailsVO payableDetail = new AccountsDetailsVO();
+		payableDetail.setAccountName("PAYABLE A/C");
+		payableDetail.setACategory("PAYABLE A/C");
+		payableDetail.setDebitAmount(BigDecimal.ZERO);
+		payableDetail.setCreditAmount(costEstimationVO.getTotalAmount());
+		payableDetail.setNDebitAmount(BigDecimal.ZERO);
+		payableDetail.setNCreditAmount(costEstimationVO.getTotalAmount());
+		payableDetail.setBDebitAmount(BigDecimal.ZERO);
+		payableDetail.setBCrAmount(costEstimationVO.getTotalAmount());
+		payableDetail.setArapAmount(costEstimationVO.getTotalAmount());
+		payableDetail.setBArapAmount(costEstimationVO.getTotalAmount());
+		payableDetail.setNArapAmount(costEstimationVO.getTotalAmount());
+		payableDetail.setArapFlag(true);
+		payableDetail.setSubledgerName(costEstimationVO.getEmployeeName());
+		payableDetail.setSubLedgerCode(costEstimationVO.getEmployeeCode());
+		payableDetail.setGstflag(6);
+		payableDetail.setAccountsVO(accountsVO);
+		accountsDetailsVOs.add(payableDetail);
+
+		Map<String, BigDecimal> ledgerSumMap = new HashMap<>();
+		for (CostEstimationDetailsVO charge : costEstimationVO.getCostEstimationDetailsVO()) {
+			ledgerSumMap.merge(charge.getCategory(), charge.getAmount(), BigDecimal::add);
+		}
+
+		for (Map.Entry<String, BigDecimal> entry : ledgerSumMap.entrySet()) {
+			AccountsDetailsVO gstDetail = new AccountsDetailsVO();
+			gstDetail.setAccountName(entry.getKey());
+			gstDetail.setACategory(entry.getKey());
+			gstDetail.setDebitAmount(entry.getValue());
+			gstDetail.setNDebitAmount(entry.getValue());
+			gstDetail.setCreditAmount(BigDecimal.ZERO);
+			gstDetail.setNCreditAmount(BigDecimal.ZERO);
+			gstDetail.setBDebitAmount(entry.getValue());
+			gstDetail.setBCrAmount(BigDecimal.ZERO);
+			gstDetail.setArapAmount(BigDecimal.ZERO);
+			gstDetail.setBArapAmount(BigDecimal.ZERO);
+			gstDetail.setNArapAmount(BigDecimal.ZERO);
+			gstDetail.setArapFlag(false);
+			gstDetail.setSubledgerName("None");
+			gstDetail.setSubLedgerCode("None");
+//	        gstDetail.setACurrency(costInvoiceVO.getCurrency());
+//	        gstDetail.setAExRate(costInvoiceVO.getExRate());
+			gstDetail.setGstflag(3);
+			gstDetail.setAccountsVO(accountsVO);
+			accountsDetailsVOs.add(gstDetail);
+		}
+
+		accountsVO.setAccountsDetailsVO(accountsDetailsVOs);
+		AccountsVO savedAccountsVO = accountsRepo.save(accountsVO);
+
+		List<ArapDetailsVO> existingAraps = arapDetailsRepo.findByRefNo(savedAccountsVO.getRefNo());
+		if (!existingAraps.isEmpty()) {
+			arapDetailsRepo.deleteAll(existingAraps);
+		}
+
+		AccountsDetailsVO payableEntry = accountsDetailsRepo.findByAccountsVOAndGstflag(savedAccountsVO, 6);
+		ArapDetailsVO arapDetailsVO = new ArapDetailsVO();
+		arapDetailsVO.setSourceTransid(payableEntry.getId());
+		arapDetailsVO.setCreatedBy(savedAccountsVO.getCreatedBy());
+		arapDetailsVO.setUpdatedBy(savedAccountsVO.getModifiedBy());
+		arapDetailsVO.setBranch(savedAccountsVO.getBranch());
+		arapDetailsVO.setBranchCode(savedAccountsVO.getBranchCode());
+		arapDetailsVO.setFinYear(savedAccountsVO.getFinYear());
+		arapDetailsVO.setRefNo(savedAccountsVO.getRefNo());
+		arapDetailsVO.setRefDate(savedAccountsVO.getRefDate());
+		arapDetailsVO.setSubLedgerCode(payableEntry.getSubLedgerCode());
+		arapDetailsVO.setCurrency(payableEntry.getACurrency());
+		arapDetailsVO.setExRate(payableEntry.getAExRate());
+		arapDetailsVO.setAmount(payableEntry.getArapAmount());
+		arapDetailsVO.setBaseAmt(payableEntry.getArapAmount());
+		arapDetailsVO.setDueDate(savedAccountsVO.getDueDate());
+		arapDetailsVO.setCreditDays(savedAccountsVO.getCreditDays());
+		arapDetailsVO.setDocId(savedAccountsVO.getDocId());
+		arapDetailsVO.setDocDate(savedAccountsVO.getDocDate());
+		arapDetailsVO.setAccCurrency(savedAccountsVO.getCurrency());
+		arapDetailsVO.setExRate(savedAccountsVO.getExRate());
+		arapDetailsVO.setAccName(payableEntry.getAccountName());
+		arapDetailsVO.setActive(savedAccountsVO.isActive());
+		arapDetailsVO.setGstFlag(payableEntry.getGstflag());
+		arapDetailsVO.setSubLedgerName(payableEntry.getSubledgerName());
+		arapDetailsVO.setSalesType(savedAccountsVO.getSalesType());
+		arapDetailsVO.setNativeAmt(payableEntry.getArapAmount());
+		arapDetailsVO.setOrgId(savedAccountsVO.getOrgId());
+		arapDetailsRepo.save(arapDetailsVO);
+
+		// Final invoice updates
+		costEstimationVO.setPurVoucherNo(savedAccountsVO.getDocId());
+		costEstimationVO.setPurVoucherDate(savedAccountsVO.getDocDate());
+
+		costEstimationVO.setApproveStatus(action);
+		costEstimationVO.setApproveBy(actionBy);
+		costEstimationVO.setApproveOn(
+				LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd-MM-yyyy hh:mm:ss a")).toUpperCase());
+
+		return costEstimationRepo.save(costEstimationVO);
+	}
+
 }

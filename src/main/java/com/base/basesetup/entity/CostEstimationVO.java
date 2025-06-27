@@ -15,6 +15,8 @@ import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
+import org.springframework.format.annotation.DateTimeFormat;
+
 import com.base.basesetup.dto.CreatedUpdatedDate;
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
@@ -91,6 +93,24 @@ public class CostEstimationVO {
 	
 	@Column(name = "totalamount", precision = 10, scale = 2)
 	private BigDecimal totalAmount;
+	
+	@Column(name = "status", length = 20)
+	private String status;
+	
+//	APPROVED
+	@Column(name = "approvestatus", length = 20)
+	private String approveStatus;
+	@Column(name = "approveby", length = 20)
+	private String approveBy;
+	@DateTimeFormat(pattern = "dd-MM-yyyy hh:mm:ss a")
+	@Column(name = "approveon")
+	private String approveOn;
+	@Column(name="amountinwords")
+	private String amountInWords;
+	@Column(name = "purvoucherno", length = 50)
+	private String purVoucherNo;
+	@Column(name = "purvoucherdate")
+	private LocalDate purVoucherDate;
 	
 
 	@OneToMany(mappedBy = "costEstimationVO", cascade = CascadeType.ALL)

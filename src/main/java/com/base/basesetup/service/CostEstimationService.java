@@ -25,4 +25,7 @@ public interface CostEstimationService {
 
 	String getCostEstimationDocId(Long orgId, String finYear, String branch, String branchCode);
 
+	CostEstimationVO approveCostEstimation(Long orgId, Long id, String docId, String action, String actionBy)
+			throws ApplicationException;
+
 }

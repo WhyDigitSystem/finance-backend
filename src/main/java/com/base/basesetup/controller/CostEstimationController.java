@@ -21,11 +21,8 @@ import com.base.basesetup.common.CommonConstant;
 import com.base.basesetup.common.UserConstants;
 import com.base.basesetup.dto.CostEstimationDTO;
 import com.base.basesetup.dto.ResponseDTO;
-import com.base.basesetup.dto.TaxInvoiceDTO;
 import com.base.basesetup.entity.CostEstimationVO;
-import com.base.basesetup.entity.TaxInvoiceVO;
 import com.base.basesetup.service.CostEstimationService;
-import com.base.basesetup.service.TaxInvoiceService;
 
 @RestController
 @RequestMapping("/api/costEstimation")
@@ -53,12 +50,13 @@ public class CostEstimationController extends BaseController {
 			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
 		}
 		if (StringUtils.isBlank(errorMsg)) {
-			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "CostEstimation information get successfully ByOrgId");
+			responseObjectsMap.put(CommonConstant.STRING_MESSAGE,
+					"CostEstimation information get successfully ByOrgId");
 			responseObjectsMap.put("costEstimationVO", costEstimationVO);
 			responseDTO = createServiceResponse(responseObjectsMap);
 		} else {
-			responseDTO = createServiceResponseError(responseObjectsMap, "CostEstimation information receive failedByOrgId",
-					errorMsg);
+			responseDTO = createServiceResponseError(responseObjectsMap,
+					"CostEstimation information receive failedByOrgId", errorMsg);
 		}
 		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
 		return ResponseEntity.ok().body(responseDTO);
@@ -84,8 +82,8 @@ public class CostEstimationController extends BaseController {
 			responseObjectsMap.put("costEstimationVO", costEstimationVO);
 			responseDTO = createServiceResponse(responseObjectsMap);
 		} else {
-			responseDTO = createServiceResponseError(responseObjectsMap, "CostEstimation information receive failedByOrgId",
-					errorMsg);
+			responseDTO = createServiceResponseError(responseObjectsMap,
+					"CostEstimation information receive failedByOrgId", errorMsg);
 		}
 		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
 		return ResponseEntity.ok().body(responseDTO);
@@ -113,7 +111,7 @@ public class CostEstimationController extends BaseController {
 	}
 
 	@GetMapping("/getAllEmployees")
-	public ResponseEntity<ResponseDTO> getAllEmployees(@RequestParam Long orgId,@RequestParam String department) {
+	public ResponseEntity<ResponseDTO> getAllEmployees(@RequestParam Long orgId, @RequestParam String department) {
 		String methodName = "getAllEmployees()";
 		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
 		String errorMsg = null;
@@ -122,7 +120,7 @@ public class CostEstimationController extends BaseController {
 		List<Map<String, Object>> mapp = new ArrayList<>();
 
 		try {
-			mapp = costEstimationService.getAllEmployees(orgId,department);
+			mapp = costEstimationService.getAllEmployees(orgId, department);
 		} catch (Exception e) {
 			errorMsg = e.getMessage();
 			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
@@ -139,7 +137,7 @@ public class CostEstimationController extends BaseController {
 		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
 		return ResponseEntity.ok().body(responseDTO);
 	}
-	
+
 	@GetMapping("/getCostEstimationDocId")
 	public ResponseEntity<ResponseDTO> getCostEstimationDocId(@RequestParam Long orgId, @RequestParam String finYear,
 			@RequestParam String branch, @RequestParam String branchCode) {
@@ -159,7 +157,8 @@ public class CostEstimationController extends BaseController {
 		}
 
 		if (StringUtils.isBlank(errorMsg)) {
-			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "costEstimationDocid information retrieved successfully");
+			responseObjectsMap.put(CommonConstant.STRING_MESSAGE,
+					"costEstimationDocid information retrieved successfully");
 			responseObjectsMap.put("costEstimationDocId", mapp);
 			responseDTO = createServiceResponse(responseObjectsMap);
 		} else {
@@ -167,6 +166,28 @@ public class CostEstimationController extends BaseController {
 					"Failed to retrieve costEstimationDocid information", errorMsg);
 		}
 
+		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+		return ResponseEntity.ok().body(responseDTO);
+	}
+
+	@PutMapping("/approveCostEstimation")
+	public ResponseEntity<ResponseDTO> approveCostEstimation(@RequestParam Long orgId, @RequestParam Long id,
+			@RequestParam String docId, @RequestParam String action, @RequestParam String actionBy) {
+		String methodName = "approveCostEstimation()";
+		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+		String errorMsg = null;
+		Map<String, Object> responseObjectsMap = new HashMap<>();
+		ResponseDTO responseDTO = null;
+		try {
+			CostEstimationVO costEstimationVO = costEstimationService.approveCostEstimation(orgId, id, docId, action,
+					actionBy);
+			responseObjectsMap.put("costEstimationVO", costEstimationVO);
+			responseDTO = createServiceResponse(responseObjectsMap);
+		} catch (Exception e) {
+			errorMsg = e.getMessage();
+			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+			responseDTO = createServiceResponseError(responseObjectsMap, errorMsg, errorMsg);
+		}
 		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
 		return ResponseEntity.ok().body(responseDTO);
 	}
