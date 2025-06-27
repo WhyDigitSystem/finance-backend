@@ -623,6 +623,7 @@ public class ARServiceImpl implements ARService {
 		AccountsVO accountsVO = new AccountsVO();
 		accountsVO.setDocId(accountsDocId);
 		accountsVO.setSourceScreen(receiptVO.getScreenName());
+		accountsVO.setSourceScreenCode(receiptVO.getScreenCode());
 		accountsVO.setSourceId(receiptVO.getId());
 		accountsVO.setCreatedBy(receiptVO.getCreatedBy());
 		accountsVO.setModifiedBy(receiptVO.getUpdatedBy());
