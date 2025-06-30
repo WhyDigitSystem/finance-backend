@@ -290,7 +290,7 @@ public class ArapAdjustmentsServiceImpl implements ArapAdjustmentsService{
 			apageing.put("screencode", sup[9] != null ? sup[9].toString() : "");
 			apageing.put("status", sup[10] != null ? sup[10].toString() : "");
 			apageing.put("amount", sup[11] != null ? sup[11].toString() : "");
-			
+			apageing.put("sno", sup[12] != null ? sup[12].toString() : "");
 			
 
 			apage.add(apageing);
