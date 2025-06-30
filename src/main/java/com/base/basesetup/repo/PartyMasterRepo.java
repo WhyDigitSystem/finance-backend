@@ -164,7 +164,7 @@ public interface PartyMasterRepo extends JpaRepository<PartyMasterVO, Long> {
 			+ "             ELSE SUM(t2.debitamount) - SUM(t2.creditamount)\r\n"
 			+ "        END,\r\n"
 			+ "        CASE WHEN SUM(t2.debitamount) - SUM(t2.creditamount) >= 0 THEN 0\r\n"
-			+ "             ELSE SUM(t2.debitamount) - SUM(t2.creditamount)\r\n"
+			+ "             ELSE abs(SUM(t2.debitamount) - SUM(t2.creditamount))\r\n"
 			+ "        END,\r\n"
 			+ "        5\r\n"
 			+ "    FROM\r\n"
