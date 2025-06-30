@@ -69,7 +69,7 @@ public interface PartyTypeService {
 
 	List<Map<String, Object>> getCustomersAddressDetails(Long orgId);
 
-	List<Map<String, Object>> getLedgerReport(Long orgId,String branch, String fromdate, String toDate, String finYear,
+	List<Map<String, Object>> getLedgerReport(Long orgId,String branch, String fromdate, String toDate,
 			String accountName, String details);
 
 	

@@ -698,7 +698,7 @@ public class CostInvoiceController extends BaseController {
 
 	@GetMapping("/getCostInvoiceSummary")
 	public ResponseEntity<ResponseDTO> getCostInvoiceSummary(@RequestParam Long orgId,
-			@RequestParam(required = false) String fromDate, @RequestParam(required = false) String toDate, @RequestParam(required = false) String partyName,@RequestParam String branchCode) {
+			@RequestParam(required = false) String fromDate, @RequestParam(required = false) String toDate, @RequestParam String finYear , @RequestParam(required = false) String partyName,@RequestParam String branchCode) {
 		String methodName = "getCostInvoiceSummary()";
 		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
 		String errorMsg = null;
@@ -707,7 +707,7 @@ public class CostInvoiceController extends BaseController {
 		List<Map<String, Object>> mapp = new ArrayList<>();
 
 		try {
-			mapp = costInvoiceService.getCostInvoiceSummary(orgId, fromDate,toDate,partyName,branchCode);
+			mapp = costInvoiceService.getCostInvoiceSummary(orgId, fromDate,toDate,finYear, partyName,branchCode);
 		} catch (Exception e) {
 			errorMsg = e.getMessage();
 			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
@@ -727,7 +727,7 @@ public class CostInvoiceController extends BaseController {
 	
 	@GetMapping("/getCostInvoiceSummaryDetails")
 	public ResponseEntity<ResponseDTO> getCostInvoiceSummaryDetails(@RequestParam Long orgId,
-			@RequestParam(required = false) String fromDate, @RequestParam(required = false) String toDate,
+			@RequestParam(required = false) String fromDate, @RequestParam(required = false) String toDate, @RequestParam String finYear,
 			 @RequestParam(required = false) String partyName,@RequestParam String branchCode) {
 		String methodName = "getCostInvoiceSummaryDetails()";
 		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
@@ -737,7 +737,7 @@ public class CostInvoiceController extends BaseController {
 		List<Map<String, Object>> mapp = new ArrayList<>();
 
 		try {
-			mapp = costInvoiceService.getCostInvoiceSummaryDetails(orgId, fromDate,toDate,partyName,branchCode);
+			mapp = costInvoiceService.getCostInvoiceSummaryDetails(orgId, fromDate,toDate,finYear,partyName,branchCode);
 		} catch (Exception e) {
 			errorMsg = e.getMessage();
 			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);

@@ -647,7 +647,7 @@ public class PartyTypeController extends BaseController {
 	
 	@GetMapping("/getLedgerReport")
 	public ResponseEntity<ResponseDTO> getLedgerReport(@RequestParam(required = true) Long orgId,@RequestParam(required = true) String branch,@RequestParam(required = true) String fromdate,
-			@RequestParam(required = true) String toDate,@RequestParam(required = true) String finYear,@RequestParam(required = true) String accountName
+			@RequestParam(required = true) String toDate,@RequestParam(required = true) String accountName
 			,@RequestParam(required = true) String details) {
 		String methodName = "getLedgerReport()";
 		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
@@ -657,7 +657,7 @@ public class PartyTypeController extends BaseController {
 		List<Map<String, Object>> mapp = new ArrayList<>();
 
 		try {
-			mapp = partyTypeService.getLedgerReport(orgId,branch,fromdate,toDate,finYear,accountName,details);
+			mapp = partyTypeService.getLedgerReport(orgId,branch,fromdate,toDate,accountName,details);
 		} catch (Exception e) {
 			errorMsg = e.getMessage();
 			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);

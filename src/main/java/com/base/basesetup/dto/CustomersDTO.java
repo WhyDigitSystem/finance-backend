@@ -31,6 +31,7 @@ public class CustomersDTO {
 	private String shortName;
 //	private String customerCode;
 	private boolean approved;
+	private String country;
 	
 	private List<CustomersStateDTO> customersStateDTO = new ArrayList<>();
 	private List<CustomersAddressDTO> customersAddressDTO = new ArrayList<>();

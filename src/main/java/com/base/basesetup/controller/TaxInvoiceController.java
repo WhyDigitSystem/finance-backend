@@ -611,18 +611,16 @@ public class TaxInvoiceController extends BaseController {
 	}
 
 	
-	
 	@GetMapping("/getTaxinvoiceDetails")
-	public ResponseEntity<ResponseDTO> getTaxinvoiceDetails(@RequestParam Long orgId,  @RequestParam String partyname, String fromDate, String toDate,@RequestParam String branchCode) {
+	public ResponseEntity<ResponseDTO> getTaxinvoiceDetails(@RequestParam Long orgId, @RequestParam(required = true) String finYear, @RequestParam String partyname, String fromDate, String toDate,@RequestParam String branchCode) {
 		String methodName = "getTaxinvoiceDetails()";
 		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
 		String errorMsg = null;
 		Map<String, Object> responseObjectsMap = new HashMap<>();
 		ResponseDTO responseDTO = null;
 		List<Map<String, Object>> mapp = new ArrayList<>();
-
 		try {
-			mapp = taxInvoiceService.getTaxinvoiceDetails(orgId,  partyname, fromDate, toDate,branchCode);
+			mapp = taxInvoiceService.getTaxinvoiceDetails(orgId, finYear, partyname, fromDate, toDate,branchCode);
 		} catch (Exception e) {
 			errorMsg = e.getMessage();
 			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
@@ -642,7 +640,7 @@ public class TaxInvoiceController extends BaseController {
 
 	
 	@GetMapping("/getTaxinvoiceSummary")
-	public ResponseEntity<ResponseDTO> getTaxinvoiceSummary(@RequestParam Long orgId,@RequestParam
+	public ResponseEntity<ResponseDTO> getTaxinvoiceSummary(@RequestParam Long orgId, @RequestParam(required = true) String finYear,@RequestParam
 			String partyname, String fromDate, String toDate,@RequestParam String branchCode) {
 		String methodName = "getTaxinvoiceSummary()";
 		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
@@ -652,7 +650,7 @@ public class TaxInvoiceController extends BaseController {
 		List<Map<String, Object>> mapp = new ArrayList<>();
 
 		try {
-			mapp = taxInvoiceService.getTaxinvoiceSummary(orgId, partyname, fromDate, toDate,branchCode);
+			mapp = taxInvoiceService.getTaxinvoiceSummary(orgId, finYear, partyname, fromDate, toDate,branchCode);
 		} catch (Exception e) {
 			errorMsg = e.getMessage();
 			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);

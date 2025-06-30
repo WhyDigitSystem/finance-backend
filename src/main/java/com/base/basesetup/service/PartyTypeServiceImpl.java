@@ -502,6 +502,8 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 //		partyMasterVO.setPartyCode(customerDTO.getCustomerCode());
 		partyMasterVO.setCurrency(customerDTO.getCurrency());
 		partyMasterVO.setPartyShortName(customerDTO.getShortName());
+		partyMasterVO.setCountry(customerDTO.getCountry());
+		
 
 		if (customerDTO.isApproved()) {
 			partyMasterVO.setActive(true);
@@ -590,7 +592,7 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 		partyMasterVO.setBussinessType(vendorDTO.getBussinessType());
 		partyMasterVO.setBussinessCate(vendorDTO.getBussinessCategory());
 		partyMasterVO.setAccountType(vendorDTO.getAccountsType());
-		partyMasterVO.setPartyShortName(partyMasterVO.getPartyShortName());
+		partyMasterVO.setPartyShortName(vendorDTO.getShortName());
 		partyMasterVO.setActive(vendorDTO.isActive());
 
 		if (vendorDTO.isApproved()) {
@@ -1066,9 +1068,9 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 	}
 
 	@Override
-	public List<Map<String, Object>> getLedgerReport(Long orgId,String branch, String fromdate, String toDate, String finYear,
+	public List<Map<String, Object>> getLedgerReport(Long orgId,String branch, String fromdate, String toDate,
 			String accountName, String details) { 
-		Set<Object[]> chType = partyMasterRepo.getLedgerReport(orgId,branch,fromdate, toDate, finYear, accountName,details);
+		Set<Object[]> chType = partyMasterRepo.getLedgerReport(orgId,branch,fromdate, toDate, accountName,details);
 		return getLedgerReports(chType);
 	}
 
