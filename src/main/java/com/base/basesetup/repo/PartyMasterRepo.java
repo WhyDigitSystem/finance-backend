@@ -397,10 +397,10 @@ public interface PartyMasterRepo extends JpaRepository<PartyMasterVO, Long> {
 			+ "        m.accountname AS m1, \r\n"
 			+ "        0 AS opbal, \r\n"
 			+ "        t1.currency, \r\n"
-			+ "        SUM(t2.bdebitamount) AS dbamount, \r\n"
-			+ "        SUM(t2.bcreditamount) AS cramount, \r\n"
-			+ "        SUM(t2.debitamount) AS ndbamount, \r\n"
-			+ "        SUM(t2.creditamount) AS ncramount, \r\n"
+			+ "        t2.bdebitamount AS dbamount, \r\n"
+			+ "        t2.bcreditamount AS cramount, \r\n"
+			+ "        t2.debitamount AS ndbamount, \r\n"
+			+ "        t2.creditamount AS ncramount, \r\n"
 			+ "        CASE \r\n"
 			+ "            WHEN UPPER(?6) = 'YES' THEN CONCAT('Party : ', IFNULL(p.subledgername, ''), \r\n"
 			+ "		                      IFNULL(CONCAT(' - Refno: ', t1.refno, ' Ref Date: ', t1.refdate), ''))   \r\n"
@@ -424,7 +424,7 @@ public interface PartyMasterRepo extends JpaRepository<PartyMasterVO, Long> {
 			+ "        t1.accountsid, b.branch, t1.currency, t1.docdate, t1.docid, \r\n"
 			+ "        t1.refno, t1.refdate, t2.subledgername, p.subledgername, \r\n"
 			+ "        t1.currency, t1.exrate, m.accountname, s.partyname, \r\n"
-			+ "        b.branchid\r\n"
+			+ "        b.branchid,t2.bdebitamount,t2.bcreditamount,t2.debitamount,t2.creditamount\r\n"
 			+ ") AS result \r\n"
 			+ "ORDER BY ids, voucher_date")
 	Set<Object[]> getLedgerReport(Long orgId, String branch, String fromdate, String toDate, 
