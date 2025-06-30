@@ -66,7 +66,7 @@ public class RetrievalManifestProviderVO {
 	@Column(name = "notes")
 	private String notes;
 	@Column(name = "active")
-	private boolean active;
+	private boolean active = true;
 	@Column(name = "cancel")
 	private boolean cancel;
 	@Column(name = "createdby")
