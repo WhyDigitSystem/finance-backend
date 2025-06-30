@@ -740,7 +740,7 @@ public class ReportController extends BaseController {
 	
 @GetMapping("/getARAgeingReport")
 	public ResponseEntity<ResponseDTO> getARAgeingReport(@RequestParam Long orgId,
-			@RequestParam String branch, @RequestParam String partyName, @RequestParam(required = false) String asOnDate,@RequestParam(required = false) String base) {
+			@RequestParam String branch, @RequestParam String partyName, @RequestParam(required = true) String asOnDate,@RequestParam(required = true) String base) {
 		String methodName = "getARAgeingReport()";
 		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
 		String errorMsg = null;
