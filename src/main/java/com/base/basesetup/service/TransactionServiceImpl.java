@@ -3161,6 +3161,11 @@ public class TransactionServiceImpl implements TransactionService {
 		accountsVO.setAccountsDetailsVO(accountsDetailsVOs);
 
 		accountsDetailsRepo.saveAll(accountsDetailsVOs);
+		
+	    bankingDepositVO.setPurVoucherNo(accountsVO.getDocId());
+	    bankingDepositVO.setPurVoucherDate(accountsVO.getDocDate());
+
+	    bankingDepositVO = bankingDepositRepo.save(bankingDepositVO);
 
 		Map<String, Object> response = new HashMap<>();
 		response.put("bankingDepositVO", bankingDepositVO);
@@ -3404,6 +3409,11 @@ public class TransactionServiceImpl implements TransactionService {
 		accountsVO.setTotalDebitAmount(totalDepositAmount);
 
 		accountsDetailsRepo.saveAll(accountsDetailsVOs);
+		
+		bankingWithdrawalVO.setPurVoucherNo(accountsVO.getDocId());
+		bankingWithdrawalVO.setPurVoucherDate(accountsVO.getDocDate());
+
+		bankingWithdrawalVO = bankingWithdrawalRepo.save(bankingWithdrawalVO);
 
 
 
