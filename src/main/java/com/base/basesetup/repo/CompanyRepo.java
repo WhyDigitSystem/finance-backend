@@ -28,6 +28,7 @@ public interface CompanyRepo extends JpaRepository<CompanyVO, Long> {
 	@Query(nativeQuery = true, value = "select * from company  where companyid=?1")
 	List<CompanyVO> findByCompany(Long companyid);
 
-	@Query(nativeQuery =true,value ="select b.bankname,b.accountcode,b.accountno,b.ifsc,b.accounttype,b.beneficiaryname,b.branch from bankdetails b inner join company c where b.companyid=c.companyid and b.companyid=?1 and b.primaryaccount=1")
+	@Query(nativeQuery =true,value ="select b.bankname,b.accountcode,b.accountno,b.ifsc,b.accounttype,b.beneficiaryname,b.branch from bankdetails b inner join company c where\r\n"
+			+ " b.companyid=c.companyid and b.companyid=?1 and b.primaryaccount=0")
 	Set<Object[]> findCompanyBankDetails(Long orgId);
 }
