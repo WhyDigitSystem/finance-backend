@@ -792,6 +792,9 @@ public class APServiceImpl implements APService {
 		accountsVO.setCurrency(paymentVO.getCurrency());
 		accountsVO.setRemarks(paymentVO.getCancelRemarks());
 		accountsVO.setFinYear(paymentVO.getFinYear());
+		accountsVO.setSourceScreenCode(paymentVO.getScreenCode());
+		accountsVO.setModifiedon(paymentVO.getCommonDate().getModifiedon().toUpperCase());
+		accountsVO.setCreatedon(paymentVO.getCommonDate().getModifiedon().toUpperCase());
 //	        accountsVO.setTotalDebitAmount(dtlsVO.getSettled());
 //	        accountsVO.setTotalCreditAmount(dtlsVO.getSettled());
 

@@ -2835,8 +2835,8 @@ public class TransactionServiceImpl implements TransactionService {
 			accountsVO.setBranchCode(adjustmentJournalVO.getBranchCode());
 			accountsVO.setRefNo(adjustmentJournalVO.getDocId());
 			accountsVO.setRefDate(adjustmentJournalVO.getDocDate());
-//			accountsVO.setVId(savedReceiptVO.getVId());
-//			accountsVO.setVDate(savedReceiptVO.getVDate());
+			accountsVO.setVId(adjustmentJournalVO.getDocId());
+			accountsVO.setVDate(adjustmentJournalVO.getDocDate());
 			accountsVO.setCurrency(adjustmentJournalVO.getCurrency());
 			accountsVO.setExRate(adjustmentJournalVO.getExRate());
 			accountsVO.setRemarks(adjustmentJournalVO.getCancelRemarks());
@@ -3086,7 +3086,7 @@ public class TransactionServiceImpl implements TransactionService {
 		multipleDocIdGenerationDetailsRepo.save(multipleDocIdGenerationDetailsVO);
 
 		AccountsVO accountsVO = new AccountsVO();
-		accountsVO.setDocId(bankingDepositVO.getDocId());
+		accountsVO.setDocId(accountsDocId);
 		accountsVO.setSourceScreen(bankingDepositVO.getScreenName());
 		accountsVO.setSourceId(bankingDepositVO.getId());
 		accountsVO.setCreatedBy(bankingDepositVO.getCreatedBy());
@@ -3096,8 +3096,8 @@ public class TransactionServiceImpl implements TransactionService {
 		accountsVO.setBranchCode(bankingDepositVO.getBranchCode());
 		accountsVO.setRefNo(bankingDepositVO.getDocId());
 		accountsVO.setRefDate(bankingDepositVO.getDocDate());
-//		accountsVO.setVId(savedReceiptVO.getVId());
-//		accountsVO.setVDate(savedReceiptVO.getVDate());
+		accountsVO.setVId(bankingDepositVO.getDocId());
+		accountsVO.setVDate(bankingDepositVO.getDocDate());
 		accountsVO.setCurrency(bankingDepositVO.getCurrency());
 		accountsVO.setExRate(bankingDepositVO.getExchangeRate());
 		accountsVO.setRemarks(bankingDepositVO.getRemarks());

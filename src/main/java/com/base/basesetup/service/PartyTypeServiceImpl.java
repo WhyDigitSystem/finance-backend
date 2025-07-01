@@ -405,6 +405,7 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 			partyStateVO.setStateCode(partyStateDTO.getStateCode());
 			partyStateVO.setEmail(partyStateDTO.getEMail());
 			partyStateVO.setContactPhoneNo(partyStateDTO.getPhoneNo());
+			partyStateVO.setState(partyStateDTO.getState());
 			// partyStateVO.setPartyName(partyStateDTO.getCustomerName());
 			partyStateVO.setPartyMasterVO(partyMasterVO);
 			partyStateVOs.add(partyStateVO);
@@ -627,6 +628,7 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 			partyStateVO.setStateCode(vendorsStateDTO.getStateCode());
 			partyStateVO.setStateNo(vendorsStateDTO.getStateNo());
 			partyStateVO.setGstIn(vendorsStateDTO.getGstIn());
+			partyStateVO.setCountry(vendorsStateDTO.getCountry());
 			partyStateVO.setContactPerson(vendorsStateDTO.getContactPerson());
 			partyStateVO.setContactPhoneNo(vendorsStateDTO.getPhoneNo());
 			partyStateVO.setEmail(vendorsStateDTO.getEMail());
