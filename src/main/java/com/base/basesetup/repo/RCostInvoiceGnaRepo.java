@@ -13,8 +13,8 @@ import com.base.basesetup.entity.RCostInvoiceGnaVO;
 @Repository
 public interface RCostInvoiceGnaRepo extends JpaRepository<RCostInvoiceGnaVO, Long> {
 
-	@Query(nativeQuery = true, value = "select * from rcostinvoicegna where orgid=?1 and active=1 ")
-	List<RCostInvoiceGnaVO> getAllCostInvoiceByOrgId(Long orgId);
+	@Query(nativeQuery = true, value = "select * from rcostinvoicegna where orgid=?1 and finyear=?2 and branchcode=?3 ")
+	List<RCostInvoiceGnaVO> getAllCostInvoiceByOrgId(Long orgId,String finYear, String branchCode);
 
 	@Query(nativeQuery = true, value = "select * from rcostinvoicegna where rcostinvoicegnaid=?1 and active=1 ")
 	List<RCostInvoiceGnaVO> getAllRCostInvoiceGnaById(Long id);
@@ -202,5 +202,6 @@ public interface RCostInvoiceGnaRepo extends JpaRepository<RCostInvoiceGnaVO, Lo
 
 	@Query(nativeQuery = true, value = "select * from rcostinvoicegna where screencode=?1 and docid=?2")
 	RCostInvoiceGnaVO getrCostInvoiceByDocIdandScreenCode(String screenCode, String docId);
+
 }
 	

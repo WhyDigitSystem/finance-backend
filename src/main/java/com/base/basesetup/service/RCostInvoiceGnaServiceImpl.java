@@ -84,9 +84,9 @@ public class RCostInvoiceGnaServiceImpl implements RCostInvoiceGnaService {
 	MultipleDocIdGenerationDetailsRepo multipleDocIdGenerationDetailsRepo;
 
 	@Override
-	public List<RCostInvoiceGnaVO> getAllRCostInvoiceGnaByOrgId(Long orgId) {
+	public List<RCostInvoiceGnaVO> getAllRCostInvoiceGnaByOrgId(Long orgId, String finYear, String branchCode) {
 		List<RCostInvoiceGnaVO> rCostInvoiceGnaVO = new ArrayList<>();
-		rCostInvoiceGnaVO = rCostInvoiceGnaRepo.getAllCostInvoiceByOrgId(orgId);
+		rCostInvoiceGnaVO = rCostInvoiceGnaRepo.getAllCostInvoiceByOrgId(orgId, finYear,  branchCode);
 		return rCostInvoiceGnaVO;
 	}
 
