@@ -1108,6 +1108,11 @@ public class TransactionServiceImpl implements TransactionService {
 	    // Save all account details
 	    accountsDetailsRepo.saveAll(accountsDetailsVOs);
 
+	    generalJournalVO.setPurVoucherNo(accountsVO.getDocId());
+	    generalJournalVO.setPurVoucherDate(accountsVO.getDocDate());
+
+	    generalJournalVO = generalJournalRepo.save(generalJournalVO);
+	    
 	    // Prepare response
 	    Map<String, Object> response = new HashMap<>();
 	    response.put("generalJournalVO", generalJournalVO);

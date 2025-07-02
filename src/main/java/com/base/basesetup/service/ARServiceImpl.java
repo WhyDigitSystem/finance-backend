@@ -766,6 +766,9 @@ public class ARServiceImpl implements ARService {
 
 		arapDetailsRepo.save(arapDetailsVO);
 
+		receiptVO.setPurVoucherNo(savedAccountsVO.getDocId());
+		receiptVO.setPurVoucherDate(savedAccountsVO.getDocDate());
+	    
 		receiptVO.setApproveStatus(action);
 		receiptVO.setApproveBy(actionBy);
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy hh:mm:ss a");

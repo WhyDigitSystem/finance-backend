@@ -890,6 +890,9 @@ public class APServiceImpl implements APService {
 
 		arapDetailsRepo.save(arapDetailsVO);
 
+		paymentVO.setPurVoucherNo(savedAccountsVO.getDocId());
+		paymentVO.setPurVoucherDate(savedAccountsVO.getDocDate());
+		
 		paymentVO.setApproveStatus(action);
 		paymentVO.setApproveBy(actionBy);
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy hh:mm:ss a");
