@@ -66,14 +66,14 @@ public interface IssueManifestProviderRepo extends JpaRepository<IssueManifestPr
 	Set<Object[]> findMimSummaryReport(String type, Long orgId, String customerName, String finYear, String fromDate,
 			String toDate);
 
-	@Query(nativeQuery = true, value = "select transactionno,transactiondate,transportername,sender,0 as  amount,hsncode,SUM(kitqty)  from (\r\n"
-			+ "			      select  transactionno,transactiondate,transportername,sender,hsncode,kitqty,orgid,finyear  from rim a,rimdetails m where a.rimid =m.rimid \r\n"
-			+ "			     group by transactionno,transactiondate,transportername,sender,kitid,hsncode,kitqty,orgid,finyear\r\n"
+	@Query(nativeQuery = true, value = "select transactionno,transactiondate,transportername,sender,0 as  amount,hsncode,SUM(kitqty) ,receiver from (\r\n"
+			+ "			      select  transactionno,transactiondate,transportername,sender,hsncode,kitqty,orgid,finyear,receiver  from rim a,rimdetails m where a.rimid =m.rimid \r\n"
+			+ "			     group by transactionno,transactiondate,transportername,sender,kitid,hsncode,kitqty,orgid,finyear,receiver\r\n"
 			+ "			      order by transactionno,transactiondate) A  where \r\n"
 			+ "                  ?1 = 'RIM'\r\n" + "  AND a.orgid =?2\r\n" + "  AND (a.sender =?3 OR ?3 = 'ALL')\r\n"
 			+ "  AND a.finyear =?4\r\n" + "  AND (?5 IS NULL OR a.transactiondate >=?5)\r\n"
 			+ "  AND (?6  IS NULL OR a.transactiondate <=?6) \r\n"
-			+ " group by transactionno,transactiondate,transportername,sender,hsncode")
+			+ " group by transactionno,transactiondate,transportername,sender,hsncode,receiver")
 	Set<Object[]> findRimSummaryReport(String type, Long orgId, String customerName, String finYear, String fromDate,
 			String toDate);
 

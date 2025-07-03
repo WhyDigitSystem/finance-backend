@@ -858,6 +858,7 @@ public class ReportServiceImpl implements ReportService {
 			doctype.put("amount", sup[4] != null ? new BigDecimal(sup[4].toString()) : BigDecimal.ZERO);
 			doctype.put("hsnCode", sup[5] != null ? Long.parseLong(sup[5].toString()) : 0L);
 			doctype.put("kitQty", sup[6] != null ? new BigDecimal(sup[6].toString()) : BigDecimal.ZERO);
+			doctype.put("receiver", sup[7] != null ? sup[7].toString() : "");
 			list1.add(doctype);
 		}
 		return list1;
