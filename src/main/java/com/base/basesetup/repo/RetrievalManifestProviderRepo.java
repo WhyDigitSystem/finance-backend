@@ -51,7 +51,7 @@ public interface RetrievalManifestProviderRepo extends JpaRepository<RetrievalMa
 	
 	@Query(value = 
 			  "SELECT *\r\n"
-			  + "FROM finance_aip.rim a\r\n"
+			  + "FROM rim a\r\n"
 			  + "WHERE ?1 = 'RIM'\r\n"
 			  + "  AND a.orgid = ?2\r\n"
 			  + "  AND (a.sender = ?3 OR ?3 = 'ALL')\r\n"

@@ -39,7 +39,7 @@ public interface IssueManifestProviderRepo extends JpaRepository<IssueManifestPr
 //	List<IssueManifestProviderVO> findMIMReports(String type, Long orgId, String customerName, String finYear,
 //			String toDate, String fromDate);
 
-	@Query(value = "SELECT *\r\n" + "FROM finance_aip.mim a\r\n" + "WHERE ?1 = 'MIM'\r\n" + "  AND a.orgid =?2\r\n"
+	@Query(value = "SELECT *\r\n" + "FROM mim a\r\n" + "WHERE ?1 = 'MIM'\r\n" + "  AND a.orgid =?2\r\n"
 			+ "  AND (a.receiver =?3 OR ?3 = 'ALL')\r\n" + "  AND a.finyear = ?4\r\n"
 			+ "  AND (?6 IS NULL OR a.transactiondate >=?6)\r\n" + "  AND (?5 IS NULL OR a.transactiondate <= ?5)\r\n"
 			+ "  order by  a.transactionno ,a.transactiondate", nativeQuery = true)
@@ -55,14 +55,14 @@ public interface IssueManifestProviderRepo extends JpaRepository<IssueManifestPr
 //    nativeQuery = true)
 //List<RetrievalManifestProviderVO> findRIMReports(String type, Long orgId, String sender, String finYear, String toDate, String fromDate);
 
-	@Query(nativeQuery = true, value = "select transactionno,transactiondate,transportername,receiver,amount,hsncode,SUM(kitqty) as sum from (\r\n"
-			+ "			      select  transactionno,transactiondate,transportername,receiver,amount,hsncode,kitqty,orgid,finyear  from mim a,mimdetails m where a.mimid =m.mimid \r\n"
-			+ "			     group by transactionno,transactiondate,transportername,receiver,kitid,amount,hsncode,kitqty,orgid,finyear\r\n"
+	@Query(nativeQuery = true, value = "select transactionno,transactiondate,transportername,receiver,amount,hsncode,SUM(kitqty) as sum ,sender from (\r\n"
+			+ "			      select  transactionno,transactiondate,transportername,receiver,amount,hsncode,kitqty,orgid,finyear,sender  from mim a,mimdetails m where a.mimid =m.mimid \r\n"
+			+ "			     group by transactionno,transactiondate,transportername,receiver,kitid,amount,hsncode,kitqty,orgid,finyear,sender\r\n"
 			+ "			      order by transactionno,transactiondate) A  where \r\n"
 			+ "                  ?1 = 'MIM'\r\n" + "  AND a.orgid =?2\r\n" + "  AND (a.receiver =?3 OR ?3 = 'ALL')\r\n"
 			+ "  AND a.finyear =?4\r\n" + "  AND (?5 IS NULL OR a.transactiondate >=?5)\r\n"
 			+ "  AND (?6  IS NULL OR a.transactiondate <=?6) \r\n"
-			+ " group by transactionno,transactiondate,transportername,receiver,amount,hsncode")
+			+ " group by transactionno,transactiondate,transportername,receiver,amount,hsncode,sender")
 	Set<Object[]> findMimSummaryReport(String type, Long orgId, String customerName, String finYear, String fromDate,
 			String toDate);
 
