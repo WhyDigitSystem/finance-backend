@@ -312,5 +312,7 @@ public interface TransactionService {
 
 	List<Map<String, Object>> getAccountNameFromGroupLedgerGeneralfordepositandwithdraw(Long orgId);
 
+	List<Map<String, Object>> getIncomeAndExponseAndProfit(Long orgId, String partyName,String jobNo);
+
 
 }
