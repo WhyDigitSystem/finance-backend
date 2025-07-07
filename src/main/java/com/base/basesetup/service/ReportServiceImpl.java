@@ -642,9 +642,10 @@ public class ReportServiceImpl implements ReportService {
 			quotationDetailsVO.setTax(quotationDetailsDTO.getTax());
 
 			quotationDetailsVO.setAmount(quotationDetailsDTO.getQuantity().multiply(quotationDetailsDTO.getRate()));
-			taxAmount = quotationDetailsDTO.getTax().multiply(quotationDetailsDTO.getAmount())
+			taxAmount = quotationDetailsDTO.getTax().multiply(quotationDetailsVO.getAmount())
 					.divide(BigDecimal.valueOf(100));
 			quotationDetailsVO.setTaxAmount(taxAmount);
+			
 			subTotal = subTotal.add(quotationDetailsVO.getAmount());
 			totalTaxAmount = totalTaxAmount.add(quotationDetailsVO.getTaxAmount());
 

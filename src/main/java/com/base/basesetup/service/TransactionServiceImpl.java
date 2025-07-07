@@ -3,6 +3,7 @@ package com.base.basesetup.service;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -1510,13 +1511,13 @@ public class TransactionServiceImpl implements TransactionService {
 	@Override
 	public Map<String, Object> updateCreatePaymentVoucher(@Valid PaymentVoucherDTO paymentVoucherDTO)
 			throws ApplicationException {
-		PaymentVoucherVO paymentVoucherVO;
+		PaymentVoucherVO paymentVoucherVO  = new PaymentVoucherVO();
 		String message = null;
 		String screenCode = "PV";
 
 		if (ObjectUtils.isEmpty(paymentVoucherDTO.getId())) {
-			paymentVoucherVO = new PaymentVoucherVO();
-
+//			paymentVoucherVO = new PaymentVoucherVO();
+			getPaymentVoucherVOFromPaymentVoucherDTO(paymentVoucherDTO, paymentVoucherVO);
 			// GETDOCID API
 			String docId = paymentVoucherRepo.getpaymentVoucherDocId(paymentVoucherDTO.getOrgId(),
 					paymentVoucherDTO.getFinyear(), paymentVoucherDTO.getBranchCode(), screenCode);
@@ -1533,14 +1534,16 @@ public class TransactionServiceImpl implements TransactionService {
 			paymentVoucherVO.setUpdatedBy(paymentVoucherDTO.getCreatedBy());
 
 		} else {
+			
 			paymentVoucherVO = paymentVoucherRepo.findById(paymentVoucherDTO.getId())
 					.orElseThrow(() -> new ApplicationException("Invalid PaymentVoucher details"));
+			getPaymentVoucherVOFromPaymentVoucherDTO(paymentVoucherDTO, paymentVoucherVO);
 			paymentVoucherVO.setUpdatedBy(paymentVoucherDTO.getCreatedBy());
 
 			paymentVoucherVO.setUpdatedBy(paymentVoucherDTO.getCreatedBy());
 		}
 
-		getPaymentVoucherVOFromPaymentVoucherDTO(paymentVoucherDTO, paymentVoucherVO);
+//		getPaymentVoucherVOFromPaymentVoucherDTO(paymentVoucherDTO, paymentVoucherVO);
 		paymentVoucherRepo.save(paymentVoucherVO);
 
 		Map<String, Object> response = new HashMap<>();
@@ -2846,9 +2849,11 @@ public class TransactionServiceImpl implements TransactionService {
 			accountsVO.setExRate(adjustmentJournalVO.getExRate());
 			accountsVO.setRemarks(adjustmentJournalVO.getCancelRemarks());
 			accountsVO.setFinYear(adjustmentJournalVO.getFinYear());
+			
+			DecimalFormat formatter = new DecimalFormat("#,###.##");
 
-			accountsVO.setTotalDebitAmount(adjustmentJournalVO.getTotalDebitAmount());
-			accountsVO.setTotalCreditAmount(adjustmentJournalVO.getTotalDebitAmount());
+//			accountsVO.setTotalDebitAmount(formatter.format(adjustmentJournalVO.getTotalDebitAmount()));
+//			accountsVO.setTotalCreditAmount(formatter.format(adjustmentJournalVO.getTotalDebitAmount()));
 //			accountsVO.setCreditDays(taxInvoiceVO.getCreditDays());
 //			accountsVO.setAmountInWords(savedReceiptVO.getAmountInWords());
 //			accountsVO.setStTaxAmount(taxInvoiceVO.getTotalTaxableAmountLc());
@@ -2929,12 +2934,16 @@ public class TransactionServiceImpl implements TransactionService {
 			arapDetailsVO.setDocDate(savedAccountsVO.getDocDate());
 			arapDetailsVO.setAccCurrency(savedAccountsVO.getCurrency());
 			arapDetailsVO.setExRate(savedAccountsVO.getExRate());
+			arapDetailsVO.setOrgId(savedAccountsVO.getOrgId());
 			arapDetailsVO.setAccName(accountsDetailsVOs2.getAccountName());
 			arapDetailsVO.setGstFlag(accountsDetailsVOs2.getGstflag());
 			arapDetailsVO.setSubLedgerName(accountsDetailsVOs2.getSubledgerName());
 			arapDetailsVO.setSalesType(savedAccountsVO.getSalesType());
 			arapDetailsVO.setNativeAmt(accountsDetailsVOs2.getArapAmount());
 			arapDetailsRepo.save(arapDetailsVO);
+			adjustmentJournalVO.setPurVoucherNo(savedAccountsVO.getDocId());
+			adjustmentJournalVO.setPurVoucherDate(savedAccountsVO.getDocDate());
+			adjustmentJournalVO = adjustmentJournalRepo.save(adjustmentJournalVO);
 		}
 		
 		Map<String, Object> response = new HashMap<>();
@@ -3004,7 +3013,7 @@ public class TransactionServiceImpl implements TransactionService {
 		if (totalDebitAmount.compareTo(totalCreditAmount) != 0) {
 			throw new ApplicationException("Total Debit Amount and Total Credit Amount should be equal.");
 		}
-
+		
 		adjustmentJournalVO.setTotalDebitAmount(totalDebitAmount);
 		adjustmentJournalVO.setTotalCreditAmount(totalCreditAmount);
 		adjustmentJournalVO.setAccountParticularsVO(accountParticularsVOs);

@@ -50,7 +50,7 @@ public class QuotationVO {
 	private String customerAddress;
 	@Column(name = "active")
 	private boolean active = true;
-	@Column(name = "cancle")
+	@Column(name = "cancel")
 	private boolean cancel = false;
 	@Column(name = "orgid")
 	private Long orgId;

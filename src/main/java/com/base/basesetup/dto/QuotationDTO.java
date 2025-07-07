@@ -1,4 +1,4 @@
-package com.base.basesetup.dto;
+	package com.base.basesetup.dto;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -24,7 +24,7 @@ public class QuotationDTO {
 	private String finYear;
 	private String companyAddress;	
 	private String customerName;
-    private BigDecimal subTotal;
+//    private BigDecimal subTotal;
 
 	private List<QuotationDetailsDTO> quotationDetailsDTO;
 }

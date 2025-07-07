@@ -35,7 +35,7 @@ public class IssueManifestProviderVO {
 	private Long id;
 	@Column(name = "orgid")
 	private Long orgId;
-	@Column(name = "finyear")
+	@Column(name = "finyear",length=5)
 	private String finYear;
 	@Column(name = "transactionno")
 	private String transactionNo;
