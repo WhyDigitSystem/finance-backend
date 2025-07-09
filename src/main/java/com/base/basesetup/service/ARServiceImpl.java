@@ -597,10 +597,10 @@ public class ARServiceImpl implements ARService {
 			throw new ApplicationException("This Receipt Already Rejected");
 		}
 
-		// Only allow action if status is SUBMIT
-		if (!"SUBMIT".equalsIgnoreCase(receiptVO.getStatus())) {
-			throw new ApplicationException("Only SUBMIT Receipt can be approved or rejected.");
-		}
+//		// Only allow action if status is SUBMIT
+//		if (!"SUBMIT".equalsIgnoreCase(receiptVO.getStatus())) {
+//			throw new ApplicationException("Only SUBMIT Receipt can be approved or rejected.");
+//		}
 
 		String screenCode1 = "AC";
 		String sourceScreenCode = receiptVO.getScreenCode();

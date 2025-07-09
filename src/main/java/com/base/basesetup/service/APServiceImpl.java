@@ -759,9 +759,9 @@ public class APServiceImpl implements APService {
 		}
 
 		// Status must be SUBMIT
-		if (!"SUBMIT".equalsIgnoreCase(paymentVO.getStatus())) {
-			throw new ApplicationException("Only SUBMIT payments can be approved or rejected.");
-		}
+//		if (!"SUBMIT".equalsIgnoreCase(paymentVO.getStatus())) {
+//			throw new ApplicationException("Only SUBMIT payments can be approved or rejected.");
+//		}
 
 		String screenCode1 = "AC";
 		String sourceScreenCode = paymentVO.getScreenCode();

@@ -367,10 +367,10 @@ public class ArAdjustmentOffSetServiceImpl implements ArAdjustmentOffSetService 
 	    } else if ("Rejected".equals(receiptVO.getApproveStatus())) {
 	        throw new ApplicationException("This ArAdjustmentOffSet Already Rejected");
 	    }
-
-	    if (!"SUBMIT".equalsIgnoreCase(receiptVO.getStatus())) {
-	        throw new ApplicationException("Only SETTLED ArAdjustmentOffSet can be approved or rejected.");
-	    }
+//
+//	    if (!"SUBMIT".equalsIgnoreCase(receiptVO.getStatus())) {
+//	        throw new ApplicationException("Only SETTLED ArAdjustmentOffSet can be approved or rejected.");
+//	    }
 
 	    if (receiptVO.getApproveStatus() == null || 
 	        (!"Approved".equals(receiptVO.getApproveStatus()) && !"Rejected".equals(receiptVO.getApproveStatus()))) {
@@ -854,9 +854,9 @@ public class ArAdjustmentOffSetServiceImpl implements ArAdjustmentOffSetService 
 			throw new ApplicationException("This ApAdjustmentOffSet Already Rejected");
 		}
 
-		if (!"SUBMIT".equalsIgnoreCase(paymentVO.getStatus())) {
-			throw new ApplicationException("Only SETTLED ApAdjustmentOffSetVO can be approved or rejected.");
-		}
+//		if (!"SUBMIT".equalsIgnoreCase(paymentVO.getStatus())) {
+//			throw new ApplicationException("Only SETTLED ApAdjustmentOffSetVO can be approved or rejected.");
+//		}
 
 		if (paymentVO.getApproveStatus() == null || (!"Approved".equals(paymentVO.getApproveStatus())
 				&& !"Rejected".equals(paymentVO.getApproveStatus()))) {
