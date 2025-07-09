@@ -419,14 +419,36 @@ public class CostDebitNoteServiceImpl implements CostDebitNoteService {
 //					+ " must be less than or equal to COSTINVOICE  " + sumLcAmounts);
 //		}
 		
+//		
+//		if (netAmountBillCurr.compareTo(sumLcAmounts) <= 0) {
+//			costDebitNoteVO.setNetBillCurrAmt(netAmountBillCurr);
+//
+//		} else {
+//			throw new IllegalArgumentException("COSTDEBITNOTE " + netAmountBillCurr
+//					+ " must be less than or equal to COSTINVOICE  " + sumLcAmounts);
+//		}
 		
-		if (netAmountBillCurr.compareTo(sumLcAmounts) <= 0) {
-			costDebitNoteVO.setNetBillCurrAmt(netAmountBillCurr);
+		Set<Object[]> byOrginBillBased = costDebitNoteRepo.findByOrginBillBased(costDebitNoteDTO.getOrgId(),costDebitNoteDTO.getOrginBill());
 
-		} else {
-			throw new IllegalArgumentException("COSTDEBITNOTE " + netAmountBillCurr
-					+ " must be less than or equal to COSTINVOICE  " + sumLcAmounts);
+		for (Object[] ledger : byOrginBillBased) {
+		    BigDecimal remainingAmount =  (BigDecimal) ledger[4];
+
+		    if (netAmountBillCurr.compareTo(remainingAmount) <= 0) {
+		        if (netAmountBillCurr.compareTo(sumLcAmounts) <= 0) {
+		        	costDebitNoteVO.setNetBillCurrAmt(netAmountBillCurr);
+		        } else {
+		            throw new IllegalArgumentException("COSTDEBITNOTE" + netAmountBillCurr +
+		                    " must be less than or equal to COSTINVOICE " + sumLcAmounts);
+		        }
+		    } else {
+		        throw new IllegalArgumentException("CREDIT NOTE " + netAmountBillCurr +
+		                " must be less than or equal to REMAINING amount " + remainingAmount);
+		    }
 		}
+
+		
+		
+		
 
 		costDebitNoteVO.setActBillCurrAmt(actBillAmtBillCurr);
 		costDebitNoteVO.setActBillLcAmt(actBillAmtLc);

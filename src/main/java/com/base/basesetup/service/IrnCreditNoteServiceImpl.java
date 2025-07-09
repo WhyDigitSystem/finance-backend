@@ -390,6 +390,7 @@ public class IrnCreditNoteServiceImpl implements IrnCreditNoteService {
 //		BigDecimal roundedTotalInvAmountLC = totalInvAmountLC.setScale(0, RoundingMode.HALF_UP);
 //		BigDecimal roundOffAmountLC = roundedTotalInvAmountLC.subtract(originalTotalInvAmountLC);
 		
+		
 		TaxInvoiceVO taxInvoiceVO = taxInvoiceRepo.findByOrgIdAndDocId( irnCreditNoteDTO.getOrgId(), irnCreditNoteDTO.getOriginBillNo());
 		if (taxInvoiceVO == null) {
 		    new  ApplicationException("No TaxInvoice found for given orgId and docId");
@@ -400,14 +401,41 @@ public class IrnCreditNoteServiceImpl implements IrnCreditNoteService {
 //		System.out.println(totalInvAmountLc);
 //		System.out.println(roundedTotalInvAmountLC);
 		
-	
-		if (totalInvAmountLC.compareTo(totalInvAmountLc1) <= 0) {  
-			irnCreditNoteVO.setTotalInvAmountLc(totalInvAmountLC);
+//		      Set<Object[]> byOrginBillBased = irnCreditRepo.findByOrginBillBased(irnCreditNoteDTO.getOrgId());
+//		      for (Object[] ledger : byOrginBillBased) {
+//		    	  
+//	if(ledger[0].toBigDecimal().compareTo(totalInvAmountLC)>=0) {
+//		if (totalInvAmountLC.compareTo(totalInvAmountLc1) <= 0) {  
+//			irnCreditNoteVO.setTotalInvAmountLc(totalInvAmountLC);
+//
+//		} else {
+//		    throw new IllegalArgumentException("CREDIT NOTE " + totalInvAmountLC + " must be less than or equal to TAXINVOICE "+ totalInvAmountLc1);
+//		}
+//
+//		      }else {
+//		    	  throw new IllegalArgumentException("RemaingAmount" + ledger[0].toBigDecimal() + " must be less than or equal to TAXINVOICE "+ totalInvAmountLc1);
+//		    	  
+//		      }
+		
+		Set<Object[]> byOrginBillBased = irnCreditRepo.findByOrginBillBased(irnCreditNoteDTO.getOrgId(),irnCreditNoteDTO.getOriginBillNo());
 
-		} else {
-		    throw new IllegalArgumentException("CREDIT NOTE " + totalInvAmountLC + " must be less than or equal to TAXINVOICE "+ totalInvAmountLc1);
+		for (Object[] ledger : byOrginBillBased) {
+		    BigDecimal remainingAmount =  (BigDecimal) ledger[4];
+
+		    if (totalInvAmountLC.compareTo(remainingAmount) <= 0) {
+		        if (totalInvAmountLC.compareTo(totalInvAmountLc1) <= 0) {
+		            irnCreditNoteVO.setTotalInvAmountLc(totalInvAmountLC);
+		        } else {
+		            throw new IllegalArgumentException("CREDIT NOTE " + totalInvAmountLC +
+		                    " must be less than or equal to TAXINVOICE " + totalInvAmountLc1);
+		        }
+		    } else {
+		        throw new IllegalArgumentException("CREDIT NOTE " + totalInvAmountLC +
+		                " must be less than or equal to REMAINING amount " + remainingAmount);
+		    }
 		}
 
+		
 		
 		irnCreditNoteVO.setAmountInWords(amountInWordsConverterService.convert(irnCreditNoteVO.getTotalInvAmountLc()));
 //		irnCreditNoteVO.setRoundOffAmountLc(roundOffAmountLC);
