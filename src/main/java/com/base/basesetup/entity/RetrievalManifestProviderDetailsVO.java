@@ -41,6 +41,10 @@ public class RetrievalManifestProviderDetailsVO {
 	private String asset;
 	@Column(name = "assetqty")
 	private Long assetQty;
+	@Column(name = "actualqty")
+	private Long actualQty;
+	@Column(name = "shorttageqty")
+	private Long shortTageQty;
 
 	@ManyToOne
 	@JsonBackReference

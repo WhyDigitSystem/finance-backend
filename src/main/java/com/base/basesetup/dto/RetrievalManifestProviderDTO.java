@@ -47,6 +47,8 @@ public class RetrievalManifestProviderDTO {
 
 	private Long orgId;
 	
+	private String code;
+	
 	private List<RetrievalManifestProviderDetailsDTO> retrievalManifestProviderDetailsDTO;
 
 }

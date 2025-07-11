@@ -73,7 +73,9 @@ public class RetrievalManifestProviderVO {
 	private String createdBy;
 	@Column(name = "modifiedby")
 	private String updatedBy;
-
+	@Column(name = "code")
+	private String code;
+	
 	@JsonGetter("active")
 	public String getActive() {
 		return active ? "Active" : "In-Active";

@@ -64,6 +64,8 @@ public interface TaxInvoiceService {
 	//screencode
 	
 	IrnCreditNoteVO getCreditNoteByDocIdandScreenCode(String ScreenCode, String docId);
+
+	List<Map<String, Object>> getCurrencyFromPartyMaster(Long orgId,String partyCode);
 	
 
 }

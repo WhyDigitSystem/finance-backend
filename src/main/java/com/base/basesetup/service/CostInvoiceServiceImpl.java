@@ -317,8 +317,15 @@ public class CostInvoiceServiceImpl implements CostInvoiceService {
 			sumBillAmount = sumBillAmount.add(billAmount);
 
 //			GST AMOUNT CALCULATION
+			if(chargerCostInvoiceDTO.getCurrency().equals("INR")) {
 			gstAmount = lcAmount.multiply(gstPercent).divide(BigDecimal.valueOf(100));
+			}else{
+				gstAmount = fcAmount.multiply(gstPercent).divide(BigDecimal.valueOf(100));
+			}
+			
 			chargerCostInvoiceVO.setGstAmount(gstAmount);
+			
+			
 
 //			AGGREGATE IGST SUMS BY GST PERCENTAGE
 			if (costInvoiceDTO.getGstType().equalsIgnoreCase("INTER") && gstPercent.compareTo(BigDecimal.ZERO) > 0) {

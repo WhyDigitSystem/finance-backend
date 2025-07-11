@@ -408,6 +408,7 @@ public class ReportServiceImpl implements ReportService {
 		retrievalManifestProviderVO.setActive(retrievalManifestProviderDTO.isActive());
 		retrievalManifestProviderVO.setCancel(retrievalManifestProviderDTO.isCancel());
 		retrievalManifestProviderVO.setOrgId(retrievalManifestProviderDTO.getOrgId());
+		retrievalManifestProviderVO.setCode(retrievalManifestProviderDTO.getCode());
 		retrievalManifestProviderVO.setFinYear(retrievalManifestProviderDTO.getFinYear());
 
 		if (retrievalManifestProviderDTO.getId() != null) {
@@ -430,6 +431,8 @@ public class ReportServiceImpl implements ReportService {
 			retrievalManifestProviderDetailsVO.setKitId(detailsDTO.getKitId());
 			retrievalManifestProviderDetailsVO.setKitName(detailsDTO.getKitName());
 			retrievalManifestProviderDetailsVO.setKitQty(detailsDTO.getKitQty());
+			retrievalManifestProviderDetailsVO.setActualQty(detailsDTO.getActualQty());
+			retrievalManifestProviderDetailsVO.setShortTageQty(detailsDTO.getAssetQty() - detailsDTO.getActualQty());
 			retrievalManifestProviderDetailsVO.setHsnCode(detailsDTO.getHsnCode());
 			retrievalManifestProviderDetailsVO.setRetrievalManifestProviderVO(retrievalManifestProviderVO);
 			detailsVOs.add(retrievalManifestProviderDetailsVO);

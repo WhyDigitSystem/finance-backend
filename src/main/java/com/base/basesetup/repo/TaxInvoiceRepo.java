@@ -618,6 +618,9 @@ Set<Object[]> getTaxinvoiceDetails(Long orgId, String finYear, String partyname,
 Set<Object[]> getTaxinvoiceSummary(Long orgId, String finYear, String partyname, String fromDate, String toDate,String branchCode);
  
 
-
+@Query(nativeQuery = true, value = "select p.currency,d.sellingexrate from partymaster p ,vw_exrates d where \r\n"
+		+ " p.currency=d.currency  and p.orgid=d.orgid and p.orgid=?1\r\n"
+		+ " and  p.partycode=?2")
+Set<Object[]> getCurrencyFromPartyMaster(Long orgId, String partyCode);
 	
 }

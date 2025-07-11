@@ -282,9 +282,16 @@ public class TaxInvoiceServiceImpl implements TaxInvoiceService {
 			taxInvoiceDetailsVO.setBillAmount(billAmount);
 			totalChargeAmountBC = totalChargeAmountBC.add(billAmount);
 
+//			gstAmount = lcAmount.multiply(gstPercent).divide(BigDecimal.valueOf(100));
+			
+			if(taxInvoiceDetailsDTO.getCurrency().equals("INR")) {
 			gstAmount = lcAmount.multiply(gstPercent).divide(BigDecimal.valueOf(100));
+			}else{
+				gstAmount = fcAmount.multiply(gstPercent).divide(BigDecimal.valueOf(100));
+			}
+			
 			taxInvoiceDetailsVO.setGstAmount(gstAmount);
-			totalTaxAmountLC = totalTaxAmountLC.add(gstAmount);
+			totalTaxAmountLC = totalTaxAmountLC.add(lcAmount.multiply(gstPercent).divide(BigDecimal.valueOf(100)));
 			totalTaxAmountBC = totalTaxAmountBC.add(gstAmount);
 
 			taxInvoiceDetailsVO.setTaxInvoiceVO(taxInvoiceVO);
@@ -1149,6 +1156,24 @@ public class TaxInvoiceServiceImpl implements TaxInvoiceService {
 			map.put("totaltaxamountlc", ch[12] != null ? new BigDecimal(ch[12].toString()) : BigDecimal.ZERO);
 			map.put("approvestatus", ch[13] != null ? ch[13].toString() : "");
 
+			List1.add(map);
+		}
+		return List1;
+	}
+	
+	
+	@Override
+	public List<Map<String, Object>> getCurrencyFromPartyMaster(Long orgId,String partyCode) {
+		Set<Object[]> chType = taxInvoiceRepo.getCurrencyFromPartyMaster(orgId,partyCode);
+		return getCurrencyFromPartyMaster(chType);
+	}
+
+	private List<Map<String, Object>> getCurrencyFromPartyMaster(Set<Object[]> chType) {
+		List<Map<String, Object>> List1 = new ArrayList<>();
+		for (Object[] ch : chType) {
+			Map<String, Object> map = new HashMap<>();
+			map.put("currency", ch[0] != null ? ch[0].toString() : "");			
+			map.put("sellingRate", ch[1] != null ? new BigDecimal(ch[1].toString()) : BigDecimal.ZERO);
 			List1.add(map);
 		}
 		return List1;
