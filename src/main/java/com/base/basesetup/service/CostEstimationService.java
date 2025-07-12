@@ -21,7 +21,7 @@ public interface CostEstimationService {
 	Map<String, Object> updateCreateCostEstimation(@Valid CostEstimationDTO costEstimationDTO)
 			throws ApplicationException;
 
-	List<Map<String, Object>> getAllEmployees(Long orgId,String department);
+	List<Map<String, Object>> getAllEmployees(Long orgId);
 
 	String getCostEstimationDocId(Long orgId, String finYear, String branch, String branchCode);
 

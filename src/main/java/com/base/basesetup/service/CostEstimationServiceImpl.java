@@ -130,6 +130,8 @@ public class CostEstimationServiceImpl implements CostEstimationService {
 		costEstimationVO.setOrgId(costEstimationDTO.getOrgId());
 		costEstimationVO.setStatus(costEstimationDTO.getStatus());
 		costEstimationVO.setDepartment(costEstimationDTO.getDepartment());
+		costEstimationVO.setToDate(costEstimationDTO.getToDate());
+		costEstimationVO.setFromDate(costEstimationDTO.getFromDate());
 
 		if (ObjectUtils.isNotEmpty(costEstimationVO.getId())) {
 			List<CostEstimationDetailsVO> costEstimationDetailsVO1 = costEstimationDetailsRepo
@@ -162,8 +164,8 @@ public class CostEstimationServiceImpl implements CostEstimationService {
 	}
 
 	@Override
-	public List<Map<String, Object>> getAllEmployees(Long orgId, String department) {
-		Set<Object[]> customerName = costEstimationRepo.getAllEmployees(orgId, department);
+	public List<Map<String, Object>> getAllEmployees(Long orgId) {
+		Set<Object[]> customerName = costEstimationRepo.getAllEmployees(orgId);
 		return getAllEmployees(customerName);
 	}
 

@@ -283,13 +283,13 @@ public class TaxInvoiceServiceImpl implements TaxInvoiceService {
 			totalChargeAmountBC = totalChargeAmountBC.add(billAmount);
 
 //			gstAmount = lcAmount.multiply(gstPercent).divide(BigDecimal.valueOf(100));
-			
-			if(taxInvoiceDetailsDTO.getCurrency().equals("INR")) {
-			gstAmount = lcAmount.multiply(gstPercent).divide(BigDecimal.valueOf(100));
-			}else{
+
+			if (taxInvoiceDetailsDTO.getCurrency().equals("INR")) {
+				gstAmount = lcAmount.multiply(gstPercent).divide(BigDecimal.valueOf(100));
+			} else {
 				gstAmount = fcAmount.multiply(gstPercent).divide(BigDecimal.valueOf(100));
 			}
-			
+
 			taxInvoiceDetailsVO.setGstAmount(gstAmount);
 			totalTaxAmountLC = totalTaxAmountLC.add(lcAmount.multiply(gstPercent).divide(BigDecimal.valueOf(100)));
 			totalTaxAmountBC = totalTaxAmountBC.add(gstAmount);
@@ -401,11 +401,27 @@ public class TaxInvoiceServiceImpl implements TaxInvoiceService {
 		for (Map.Entry<String, BigDecimal> entry : ledgerSumMap.entrySet()) {
 			TaxInvoiceGstVO taxInvoiceGstVO = new TaxInvoiceGstVO();
 			taxInvoiceGstVO.setGstChargeAcc(entry.getKey());
-			taxInvoiceGstVO.setGstCrLcAmount(entry.getValue());
+			String gstLedger = entry.getKey();
+			BigDecimal creditAmountFC = entry.getValue();
+			
+			String currency = taxInvoiceVO.getBillCurr();
+			BigDecimal exRate = taxInvoiceVO.getBillCurrRate();
+
+			for (TaxInvoiceDetailsVO detailVO : taxInvoiceVO.getTaxInvoiceDetailsVO()) {
+				if (detailVO.getLedger().equalsIgnoreCase(gstLedger)) {
+					currency = detailVO.getCurrency();
+					exRate = detailVO.getExRate();
+					break;
+				}
+			}
+			BigDecimal creditAmountINR = "INR".equalsIgnoreCase(currency) ? creditAmountFC
+					: creditAmountFC.multiply(exRate).setScale(2, RoundingMode.HALF_UP);
+			
+			taxInvoiceGstVO.setGstCrLcAmount(creditAmountINR);
 			taxInvoiceGstVO.setGstDbBillAmount(BigDecimal.ZERO);
 			taxInvoiceGstVO.setGstDbLcAmount(BigDecimal.ZERO);
 			taxInvoiceGstVO.setGstSubledgerCode("None");
-			taxInvoiceGstVO.setGstCrBillAmount(entry.getValue());
+			taxInvoiceGstVO.setGstCrBillAmount(creditAmountFC);
 			taxInvoiceGstVO.setTaxInvoiceVO(taxInvoiceVO);
 			taxInvoiceGstVOList.add(taxInvoiceGstVO);
 		}
@@ -651,7 +667,6 @@ public class TaxInvoiceServiceImpl implements TaxInvoiceService {
 			accountsDetailsVO.setAccountsVO(accountsVO);
 			accountsDetailsVOs.add(accountsDetailsVO);
 
-			// Group and process GST-related ledgers
 			Map<String, BigDecimal> ledgerSumMap = new HashMap<>();
 			for (TaxInvoiceGstVO gstVO : taxInvoiceVO.getTaxInvoiceGstVO()) {
 				String ledger = gstVO.getGstChargeAcc();
@@ -660,36 +675,55 @@ public class TaxInvoiceServiceImpl implements TaxInvoiceService {
 				ledgerSumMap.put(ledger, ledgerSumMap.getOrDefault(ledger, BigDecimal.ZERO).add(lcAmount));
 			}
 
-			// Add GST ledger entries
 			for (Map.Entry<String, BigDecimal> entry : ledgerSumMap.entrySet()) {
+				String gstLedger = entry.getKey();
+				BigDecimal creditAmountFC = entry.getValue();
 				GroupLedgerVO groupLedgerVO = groupLedgerRepo.findByAccountGroupName(entry.getKey());
 
 				AccountsDetailsVO gstAccountDetailsVO = new AccountsDetailsVO();
 				gstAccountDetailsVO.setACategory(groupLedgerVO.getCategory());
-				gstAccountDetailsVO.setSubLedgerCode("None");
-				gstAccountDetailsVO.setNDebitAmount(BigDecimal.ZERO);
-				gstAccountDetailsVO.setDebitAmount(BigDecimal.ZERO);
-				gstAccountDetailsVO.setNCreditAmount(entry.getValue());
-				gstAccountDetailsVO.setCreditAmount(entry.getValue());
-				gstAccountDetailsVO.setArapFlag(false);
-				gstAccountDetailsVO.setArapAmount(BigDecimal.ZERO);
-				gstAccountDetailsVO.setBDebitAmount(BigDecimal.ZERO);
-				gstAccountDetailsVO.setBCrAmount(entry.getValue());
-				gstAccountDetailsVO.setBArapAmount(BigDecimal.ZERO);
 				gstAccountDetailsVO.setAccountName(groupLedgerVO.getAccountGroupName());
-				gstAccountDetailsVO.setACurrency(taxInvoiceVO.getBillCurr());
-				gstAccountDetailsVO.setAExRate(taxInvoiceVO.getBillCurrRate());
-				gstAccountDetailsVO.setSubledgerName("None");
 				gstAccountDetailsVO.setSubLedgerCode("None");
-				gstAccountDetailsVO.setNArapAmount(BigDecimal.ZERO);
+				gstAccountDetailsVO.setSubledgerName("None");
 				gstAccountDetailsVO.setGstflag(3);
+				gstAccountDetailsVO.setArapFlag(false);
+
+				String currency = taxInvoiceVO.getBillCurr();
+				BigDecimal exRate = taxInvoiceVO.getBillCurrRate();
+
+				for (TaxInvoiceDetailsVO detailVO : taxInvoiceVO.getTaxInvoiceDetailsVO()) {
+					if (detailVO.getLedger().equalsIgnoreCase(gstLedger)) {
+						currency = detailVO.getCurrency();
+						exRate = detailVO.getExRate();
+						break;
+					}
+				}
+				BigDecimal creditAmountINR = "INR".equalsIgnoreCase(currency) ? creditAmountFC
+						: creditAmountFC.multiply(exRate).setScale(2, RoundingMode.HALF_UP);
+				gstAccountDetailsVO.setACurrency(currency);
+				gstAccountDetailsVO.setAExRate(exRate);
+				
+				gstAccountDetailsVO.setCreditAmount(creditAmountFC);
+				if(!taxInvoiceVO.getBillCurr().equals("INR")) {
+				gstAccountDetailsVO.setBCrAmount(creditAmountFC);
+				gstAccountDetailsVO.setNCreditAmount(creditAmountFC);
+				
+				}
+					gstAccountDetailsVO.setBCrAmount(creditAmountINR);
+					gstAccountDetailsVO.setNCreditAmount(creditAmountINR);
+				
+				gstAccountDetailsVO.setDebitAmount(BigDecimal.ZERO);
+				gstAccountDetailsVO.setNDebitAmount(BigDecimal.ZERO);
+				gstAccountDetailsVO.setBDebitAmount(BigDecimal.ZERO);
+				gstAccountDetailsVO.setArapAmount(BigDecimal.ZERO);
+				gstAccountDetailsVO.setBArapAmount(BigDecimal.ZERO);
+				gstAccountDetailsVO.setNArapAmount(BigDecimal.ZERO);
 				gstAccountDetailsVO.setAccountsVO(accountsVO);
 				accountsDetailsVOs.add(gstAccountDetailsVO);
 			}
 
 			accountsVO.setAccountsDetailsVO(accountsDetailsVOs);
 
-			// Save AccountsVO and update TaxInvoiceVO
 			AccountsVO savedAccountsVO = accountsRepo.save(accountsVO);
 			int gstflag = 1;
 
@@ -1160,11 +1194,10 @@ public class TaxInvoiceServiceImpl implements TaxInvoiceService {
 		}
 		return List1;
 	}
-	
-	
+
 	@Override
-	public List<Map<String, Object>> getCurrencyFromPartyMaster(Long orgId,String partyCode) {
-		Set<Object[]> chType = taxInvoiceRepo.getCurrencyFromPartyMaster(orgId,partyCode);
+	public List<Map<String, Object>> getCurrencyFromPartyMaster(Long orgId, String partyCode) {
+		Set<Object[]> chType = taxInvoiceRepo.getCurrencyFromPartyMaster(orgId, partyCode);
 		return getCurrencyFromPartyMaster(chType);
 	}
 
@@ -1172,7 +1205,7 @@ public class TaxInvoiceServiceImpl implements TaxInvoiceService {
 		List<Map<String, Object>> List1 = new ArrayList<>();
 		for (Object[] ch : chType) {
 			Map<String, Object> map = new HashMap<>();
-			map.put("currency", ch[0] != null ? ch[0].toString() : "");			
+			map.put("currency", ch[0] != null ? ch[0].toString() : "");
 			map.put("sellingRate", ch[1] != null ? new BigDecimal(ch[1].toString()) : BigDecimal.ZERO);
 			List1.add(map);
 		}

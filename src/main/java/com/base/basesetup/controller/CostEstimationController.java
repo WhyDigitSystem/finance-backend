@@ -111,7 +111,7 @@ public class CostEstimationController extends BaseController {
 	}
 
 	@GetMapping("/getAllEmployees")
-	public ResponseEntity<ResponseDTO> getAllEmployees(@RequestParam Long orgId, @RequestParam String department) {
+	public ResponseEntity<ResponseDTO> getAllEmployees(@RequestParam Long orgId) {
 		String methodName = "getAllEmployees()";
 		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
 		String errorMsg = null;
@@ -120,7 +120,7 @@ public class CostEstimationController extends BaseController {
 		List<Map<String, Object>> mapp = new ArrayList<>();
 
 		try {
-			mapp = costEstimationService.getAllEmployees(orgId, department);
+			mapp = costEstimationService.getAllEmployees(orgId);
 		} catch (Exception e) {
 			errorMsg = e.getMessage();
 			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);

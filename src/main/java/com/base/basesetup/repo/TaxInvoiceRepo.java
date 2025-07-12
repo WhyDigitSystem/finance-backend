@@ -623,4 +623,7 @@ Set<Object[]> getTaxinvoiceSummary(Long orgId, String finYear, String partyname,
 		+ " and  p.partycode=?2")
 Set<Object[]> getCurrencyFromPartyMaster(Long orgId, String partyCode);
 	
+//@Query(nativeQuery = true, value = "select a1.currency,a1.lcamount,a1.billamount  from taxinvoice a ,taxinvoicedetails a1 where a.taxinvoiceid=a.taxinvoiceid and a1.ledger=?1")
+//Set<Object[]> getCurrency(String entryKey);
+	
 }
