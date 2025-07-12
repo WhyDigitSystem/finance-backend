@@ -339,7 +339,7 @@ public class TaxInvoiceServiceImpl implements TaxInvoiceService {
 		Map<Integer, BigDecimal> gstSumMap = new HashMap<>();
 		for (TaxInvoiceDetailsVO detailsVO : taxInvoiceDetailsVOs) {
 			int gst = detailsVO.getGSTPercent();
-			BigDecimal gstAmount = detailsVO.getGstAmount();
+			BigDecimal gstAmount = detailsVO.getTlcAmount();
 
 			gstSumMap.put(gst, gstSumMap.getOrDefault(gst, BigDecimal.ZERO).add(gstAmount));
 		}
@@ -389,7 +389,7 @@ public class TaxInvoiceServiceImpl implements TaxInvoiceService {
 		Map<String, BigDecimal> ledgerSumMap = new HashMap<>();
 		for (TaxInvoiceDetailsVO detailsVO : taxInvoiceDetailsVOs) {
 			String ledger = detailsVO.getLedger();
-			BigDecimal lcAmount = detailsVO.getLcAmount();
+			BigDecimal lcAmount = detailsVO.getBillAmount();
 
 			ledgerSumMap.put(ledger, ledgerSumMap.getOrDefault(ledger, BigDecimal.ZERO).add(lcAmount));
 		}
@@ -655,7 +655,7 @@ public class TaxInvoiceServiceImpl implements TaxInvoiceService {
 			Map<String, BigDecimal> ledgerSumMap = new HashMap<>();
 			for (TaxInvoiceGstVO gstVO : taxInvoiceVO.getTaxInvoiceGstVO()) {
 				String ledger = gstVO.getGstChargeAcc();
-				BigDecimal lcAmount = gstVO.getGstCrLcAmount();
+				BigDecimal lcAmount = gstVO.getGstCrBillAmount();
 
 				ledgerSumMap.put(ledger, ledgerSumMap.getOrDefault(ledger, BigDecimal.ZERO).add(lcAmount));
 			}
