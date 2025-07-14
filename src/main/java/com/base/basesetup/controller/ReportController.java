@@ -797,6 +797,70 @@ public class ReportController extends BaseController {
 		return ResponseEntity.ok().body(responseDTO);
 	}
 	
+  @GetMapping("/getIssueManifestProviderDocId")
+	public ResponseEntity<ResponseDTO> getIssueManifestProviderDocId(@RequestParam Long orgId, @RequestParam String finYear,
+			@RequestParam String branch, @RequestParam String branchCode) {
+
+		String methodName = "getIssueManifestProviderDocId()";
+		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+		String errorMsg = null;
+		Map<String, Object> responseObjectsMap = new HashMap<>();
+		ResponseDTO responseDTO = null;
+		String mapp = "";
+
+		try {
+			mapp = reportService.getIssueManifestProviderDocId(orgId, finYear, branch, branchCode);
+		} catch (Exception e) {
+			errorMsg = e.getMessage();
+			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+		}
+
+		if (StringUtils.isBlank(errorMsg)) {
+			responseObjectsMap.put(CommonConstant.STRING_MESSAGE,
+					"IssueManifestProviderDocId information retrieved successfully");
+			responseObjectsMap.put("issueManifestProviderDocId", mapp);
+			responseDTO = createServiceResponse(responseObjectsMap);
+		} else {
+			responseDTO = createServiceResponseError(responseObjectsMap,
+					"Failed to retrieve IssueManifestProviderDocId information", errorMsg);
+		}
+
+		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+		return ResponseEntity.ok().body(responseDTO);
+	}
+
+  @GetMapping("/getRetrievalManifestProviderDocId")
+	public ResponseEntity<ResponseDTO> getRetrievalManifestProviderDocId(@RequestParam Long orgId, @RequestParam String finYear,
+			@RequestParam String branch, @RequestParam String branchCode) {
+
+		String methodName = "getRetrievalManifestProviderDocId()";
+		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+		String errorMsg = null;
+		Map<String, Object> responseObjectsMap = new HashMap<>();
+		ResponseDTO responseDTO = null;
+		String mapp = "";
+
+		try {
+			mapp = reportService.getRetrievalManifestProviderDocId(orgId, finYear, branch, branchCode);
+		} catch (Exception e) {
+			errorMsg = e.getMessage();
+			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+		}
+
+		if (StringUtils.isBlank(errorMsg)) {
+			responseObjectsMap.put(CommonConstant.STRING_MESSAGE,
+					"RetrievalManifestProviderDocId information retrieved successfully");
+			responseObjectsMap.put("retrievalManifestProviderDocId", mapp);
+			responseDTO = createServiceResponse(responseObjectsMap);
+		} else {
+			responseDTO = createServiceResponseError(responseObjectsMap,
+					"Failed to retrieve RetrievalManifestProviderDocId information", errorMsg);
+		}
+
+		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+		return ResponseEntity.ok().body(responseDTO);
+	}
+
 	
 //	@GetMapping("/findRIMMIMReports")
 //	public ResponseEntity<ResponseDTO> findRIMMIMReports(@RequestParam String type,@RequestParam Long orgId,
