@@ -61,4 +61,7 @@ public interface RetrievalManifestProviderRepo extends JpaRepository<RetrievalMa
 			  nativeQuery = true)
 List<RetrievalManifestProviderVO> findRIMReports(String type, Long orgId, String sender, String finYear, String toDate, String fromDate);
 
+	@Query(nativeQuery = true,value="select concat(prefixfield,lpad(lastno,4,0)) AS docid from documenttypemappingdetails where orgid=?1 and finyear=?2 and branchcode=?3 and screencode=?4")
+	String getRetrievalManifestProviderDocId(Long orgId, String finYear, String branchCode, String screenCode);
+
 }

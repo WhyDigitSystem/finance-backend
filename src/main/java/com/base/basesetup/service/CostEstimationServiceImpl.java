@@ -1,5 +1,6 @@
 package com.base.basesetup.service;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -16,6 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.base.basesetup.dto.CostEstimationDTO;
 import com.base.basesetup.dto.CostEstimationDetailsDTO;
@@ -60,7 +62,7 @@ public class CostEstimationServiceImpl implements CostEstimationService {
 
 	@Autowired
 	ArapDetailsRepo arapDetailsRepo;
-	
+
 	@Autowired
 	AmountInWordsConverterService amountInWordsConverterService;
 
@@ -132,6 +134,7 @@ public class CostEstimationServiceImpl implements CostEstimationService {
 		costEstimationVO.setDepartment(costEstimationDTO.getDepartment());
 		costEstimationVO.setToDate(costEstimationDTO.getToDate());
 		costEstimationVO.setFromDate(costEstimationDTO.getFromDate());
+		costEstimationVO.setApprovalRemarks(costEstimationDTO.getApprovalRemarks());
 
 		if (ObjectUtils.isNotEmpty(costEstimationVO.getId())) {
 			List<CostEstimationDetailsVO> costEstimationDetailsVO1 = costEstimationDetailsRepo
@@ -241,7 +244,7 @@ public class CostEstimationServiceImpl implements CostEstimationService {
 //	    accountsVO.setVId(costInvoiceVO.getVId());
 //	    accountsVO.setVDate(costInvoiceVO.getVDate());
 //	    accountsVO.setDueDate(costInvoiceVO.getDueDate());
-	    accountsVO.setAmountInWords(costEstimationVO.getAmountInWords());
+		accountsVO.setAmountInWords(costEstimationVO.getAmountInWords());
 //	    accountsVO.setChargeableAmount(costInvoiceVO.getTotChargesLcAmt());
 //	    accountsVO.setSupplierRefNo(costInvoiceVO.getSupplierBillNo());
 //	    accountsVO.setCreditDays(costInvoiceVO.getCreditDays());
@@ -350,5 +353,57 @@ public class CostEstimationServiceImpl implements CostEstimationService {
 
 		return costEstimationRepo.save(costEstimationVO);
 	}
+
+	
+	@Override
+	public CostEstimationVO uploadImageCostEstimationDetail(MultipartFile file, Long costEstimationId, Long detailId) throws IOException {
+	    CostEstimationVO costEstimationVO = costEstimationRepo.findById(costEstimationId)
+	        .orElseThrow(() -> new RuntimeException("CostEstimation not found"));
+
+	    CostEstimationDetailsVO detail = costEstimationDetailsRepo.findById(detailId)
+	        .orElseThrow(() -> new RuntimeException("Detail not found"));
+
+	    if (!detail.getCostEstimationVO().getId().equals(costEstimationVO.getId())) {
+	        throw new IllegalArgumentException("Detail does not belong to the specified cost estimation.");
+	    }
+
+	    detail.setImage(file.getBytes());
+	    costEstimationDetailsRepo.save(detail);
+
+	    return costEstimationRepo.save(costEstimationVO);
+	}
+
+
+//	@Override
+//	public CostEstimationVO uploadMultipleImagesToCostEstimationDetails(MultipartFile[] files, Long costEstimationId,
+//	        List<Long> costEstmationDetailsId) {
+//
+//	    CostEstimationVO costEstimationVO = costEstimationRepo.findById(costEstimationId)
+//	            .orElseThrow(() -> new RuntimeException("CostEstimation not found with ID: " + costEstimationId));
+//
+//	    if (files.length != costEstmationDetailsId.size()) {
+//	        throw new IllegalArgumentException("Each file must have a corresponding detail ID.");
+//	    }
+//
+//	    for (int i = 0; i < files.length; i++) {
+//	        MultipartFile file = files[i];
+//	        Long detailId = costEstmationDetailsId.get(i);
+//
+//	        CostEstimationDetailsVO detail = costEstimationDetailsRepo.findById(detailId)
+//	                .orElseThrow(() -> new RuntimeException("CostEstimationDetail not found with ID: " + detailId));
+//
+//	        try {
+//	            detail.setImage(file.getBytes());
+//	        } catch (IOException e) {
+//	            throw new RuntimeException("Failed to read image file for detail ID: " + detailId, e);
+//	        }
+//
+//	        detail.setCostEstimationVO(costEstimationVO);
+//	        costEstimationDetailsRepo.save(detail);
+//	    }
+//
+//	    return costEstimationVO;
+//	}
+//
 
 }

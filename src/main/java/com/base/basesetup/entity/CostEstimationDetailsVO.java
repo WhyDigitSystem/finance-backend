@@ -8,6 +8,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
@@ -43,6 +44,10 @@ public class CostEstimationDetailsVO {
 
 	@Column(name = "amount", precision = 10, scale = 2)
 	private BigDecimal amount;
+	
+	@Lob
+	@Column(name = "image", columnDefinition = "LONGBLOB") // Ensure the column is LONGBLOB
+	private byte[] image;
 
 	@ManyToOne
 	@JsonBackReference

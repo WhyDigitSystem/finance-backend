@@ -40,6 +40,8 @@ public class CostEstimationDTO {
 	private LocalDate fromDate;
 	
 	private LocalDate toDate;
+	
+	private String approvalRemarks;
 
 	List<CostEstimationDetailsDTO> costEstimationDetailsDTO;
 }

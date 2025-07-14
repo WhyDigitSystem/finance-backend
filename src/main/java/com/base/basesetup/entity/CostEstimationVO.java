@@ -102,6 +102,9 @@ public class CostEstimationVO {
 	@Column(name = "todate")
 	private LocalDate toDate;
 	
+	@Column(name = "approvalremarks")
+	private String approvalRemarks;
+	
 	
 //	APPROVED
 	@Column(name = "approvestatus", length = 20)
