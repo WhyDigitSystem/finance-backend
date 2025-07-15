@@ -5,6 +5,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -69,9 +70,9 @@ public class CostEstimationServiceImpl implements CostEstimationService {
 	// CostEstimation
 
 	@Override
-	public List<CostEstimationVO> getAllCostEstimationByOrgId(Long orgId) {
+	public List<CostEstimationVO> getAllCostEstimationByOrgId(Long orgId,String finYear, String branchCode) {
 
-		return costEstimationRepo.getAllCostEstimationByOrgId(orgId);
+		return costEstimationRepo.getAllCostEstimationByOrgId(orgId, finYear,  branchCode);
 	}
 
 	@Override
@@ -355,24 +356,128 @@ public class CostEstimationServiceImpl implements CostEstimationService {
 	}
 
 	
+//	@Override
+//	@Transactional
+//	public String uploadImageCostEstimationDetail(List<MultipartFile> files, Long costEstimationId,List<Long>detailsId ) throws IOException {
+//		
+//		for(MultipartFile file:files) {
+//		
+//	    CostEstimationVO costEstimationVO = costEstimationRepo.findById(costEstimationId)
+//	        .orElseThrow(() -> new RuntimeException("CostEstimation not found"));
+//
+//	    List<CostEstimationDetailsVO> detail = costEstimationDetailsRepo.findBycostEstimationVO(costEstimationVO);
+//
+//	    if (!detail.getCostEstimationVO().getId().equals(costEstimationVO.getId())) {
+//	        throw new IllegalArgumentException("Detail does not belong to the specified cost estimation.");
+//	    }
+//
+//	    detail.setImage(file.getBytes());
+//	    costEstimationDetailsRepo.save(detail);
+//		}
+//
+//	    return "File Uploaded Sucessfully";
+//	}
+	
 	@Override
-	public CostEstimationVO uploadImageCostEstimationDetail(MultipartFile file, Long costEstimationId, Long detailId) throws IOException {
-	    CostEstimationVO costEstimationVO = costEstimationRepo.findById(costEstimationId)
-	        .orElseThrow(() -> new RuntimeException("CostEstimation not found"));
+	public String uploadImageCostEstimationDetail(List<MultipartFile> files, Long costEstimationId, List<Long> detailsId) throws IOException {
 
-	    CostEstimationDetailsVO detail = costEstimationDetailsRepo.findById(detailId)
-	        .orElseThrow(() -> new RuntimeException("Detail not found"));
-
-	    if (!detail.getCostEstimationVO().getId().equals(costEstimationVO.getId())) {
-	        throw new IllegalArgumentException("Detail does not belong to the specified cost estimation.");
+	    if (files.size() != detailsId.size()) {
+	        throw new IllegalArgumentException("Mismatch between number of files and detail IDs.");
 	    }
 
-	    detail.setImage(file.getBytes());
-	    costEstimationDetailsRepo.save(detail);
+	    CostEstimationVO costEstimationVO = costEstimationRepo.findById(costEstimationId)
+	            .orElseThrow(() -> new RuntimeException("CostEstimation not found"));
 
-	    return costEstimationRepo.save(costEstimationVO);
+	    for (int i = 0; i < files.size(); i++) {
+	        MultipartFile file = files.get(i);
+	        Long detailId = detailsId.get(i);
+
+	        CostEstimationDetailsVO detail = costEstimationDetailsRepo.findById(detailId)
+	                .orElseThrow(() -> new RuntimeException("CostEstimationDetail not found with ID: " + detailId));
+
+	        if (!detail.getCostEstimationVO().getId().equals(costEstimationVO.getId())) {
+	            throw new IllegalArgumentException("Detail with ID " + detailId + " does not belong to the specified cost estimation.");
+	        }
+
+	        detail.setImage(file.getBytes());
+	        costEstimationDetailsRepo.save(detail);
+	    }
+
+	    return "Files uploaded successfully";
 	}
 
+
+	
+	@Override
+	public List<Map<String, Object>> getCostEstimationDetails(Long orgId, String finYear, String employeeName, String fromDate,
+			String toDate, String branchCode) {
+		Set<Object[]> chType = costEstimationRepo.getCostEstimationDetails(orgId, finYear, employeeName, fromDate, toDate,
+				branchCode);
+		return getCostEstimationDetails(chType);
+	}
+
+	private List<Map<String, Object>> getCostEstimationDetails(Set<Object[]> chType) {
+		List<Map<String, Object>> List1 = new ArrayList<>();
+		for (Object[] ch : chType) {
+			Map<String, Object> map = new HashMap<>();
+			map.put("finyear", ch[0] != null ? ch[0].toString() : ""); 
+			map.put("docId", ch[1] != null ? ch[1].toString() : ""); 
+			map.put("docdate", ch[2] != null ? ch[2].toString() : ""); 
+			map.put("employeeName", ch[3] != null ? ch[3].toString() : ""); 
+			map.put("employeeCode", ch[4] != null ? ch[4].toString() : ""); // 4
+			map.put("fromDate", ch[5] != null ? ch[5].toString() : ""); // 5
+			map.put("toDate", ch[6] != null ? ch[6].toString() : ""); // 6
+			map.put("approvalremarks", ch[7] != null ? ch[7].toString() : ""); // 7
+			map.put("totalAmount", ch[8] != null ? new BigDecimal(ch[8].toString()) : BigDecimal.ZERO); // 8
+			map.put("particulars", ch[9] != null ? ch[9].toString() : ""); // 9
+			map.put("category", ch[10] != null ?  ch[10].toString() : ""); // 10
+//			map.put("category", ch[11] != null ?  ch[11].toString() : ""); // 11
+			map.put("remarks", ch[11] != null ?  ch[11].toString() : ""); // 12
+			map.put("amount", ch[12] != null ? new BigDecimal(ch[12].toString()) : BigDecimal.ZERO); // 13
+			 if (ch[13] != null && ch[13] instanceof byte[]) {
+		            byte[] imageBytes = (byte[]) ch[13];
+		            String base64Image = Base64.getEncoder().encodeToString(imageBytes);
+		            map.put("image", "data:image/jpeg;base64," + base64Image); 
+		        } else {
+		            map.put("image", "");
+		        }
+			map.put("approvestatus", ch[14] != null ? ch[14].toString() : ""); 		
+			List1.add(map);
+		}
+		return List1;
+	}
+
+	@Override
+	public List<Map<String, Object>> getCostEstimationSummary(Long orgId, String finYear, String employeeName, String fromDate,
+			String toDate, String branchCode) {
+		Set<Object[]> chType = costEstimationRepo.getCostEstimationSummary(orgId, finYear, employeeName, fromDate, toDate,
+				branchCode);
+		return getCostEstimationSummary(chType);
+	}
+
+	private List<Map<String, Object>> getCostEstimationSummary(Set<Object[]> chType) {
+		List<Map<String, Object>> List1 = new ArrayList<>();
+		for (Object[] ch : chType) {
+			Map<String, Object> map = new HashMap<>();
+			map.put("finyear", ch[0] != null ? ch[0].toString() : "");
+			map.put("docId", ch[1] != null ? ch[1].toString() : "");
+			map.put("docDate", ch[2] != null ? ch[2].toString() : "");
+			map.put("employeeName", ch[3] != null ? ch[3].toString() : "");
+			map.put("employeeCode", ch[4] != null ? ch[4].toString() : "");
+			map.put("fromDate", ch[5] != null ? ch[5].toString() : ""); // 5
+			map.put("toDate", ch[6] != null ? ch[6].toString() : ""); // 6
+			map.put("approvalremarks", ch[7] != null ? ch[7].toString() : ""); // 7
+			map.put("totalAmount", ch[8] != null ? new BigDecimal(ch[8].toString()) : BigDecimal.ZERO); // 8
+			map.put("approvestatus", ch[9] != null ? ch[9].toString() : "");
+//			map.put("totalchargeamountlc", ch[10] != null ? new BigDecimal(ch[10].toString()) : BigDecimal.ZERO);
+//			map.put("totalinvamountlc", ch[11] != null ? new BigDecimal(ch[11].toString()) : BigDecimal.ZERO);
+//			map.put("totaltaxamountlc", ch[12] != null ? new BigDecimal(ch[12].toString()) : BigDecimal.ZERO);
+//			map.put("approvestatus", ch[13] != null ? ch[13].toString() : "");
+
+			List1.add(map);
+		}
+		return List1;
+	}
 
 //	@Override
 //	public CostEstimationVO uploadMultipleImagesToCostEstimationDetails(MultipartFile[] files, Long costEstimationId,

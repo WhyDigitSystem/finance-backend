@@ -369,7 +369,7 @@ public class RCostInvoiceGnaServiceImpl implements RCostInvoiceGnaService {
 			lcAmt = chargeRCostInvoiceGnaDTO.getExRate().multiply(chargeRCostInvoiceGnaDTO.getRate());
 
 			gstAmt = lcAmt.multiply(BigDecimal.valueOf(chargeRCostInvoiceGnaDTO.getGstPer()))
-					.divide(BigDecimal.valueOf(100), RoundingMode.HALF_UP);
+					.divide(BigDecimal.valueOf(100));
 			chargeRCostInvoiceGnaVO.setGstAmt(gstAmt);
 			gstAmount1=billAmount.multiply(BigDecimal.valueOf(chargeRCostInvoiceGnaDTO.getGstPer()))
 					.divide(BigDecimal.valueOf(100));

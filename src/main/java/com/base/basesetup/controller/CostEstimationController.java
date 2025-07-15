@@ -39,7 +39,7 @@ public class CostEstimationController extends BaseController {
 	// TaxInvoice
 
 	@GetMapping("/getAllCostEstimationByOrgId")
-	public ResponseEntity<ResponseDTO> getAllCostEstimationByOrgId(@RequestParam Long orgId) {
+	public ResponseEntity<ResponseDTO> getAllCostEstimationByOrgId(@RequestParam Long orgId,@RequestParam String finYear,@RequestParam String branchCode) {
 		String methodName = "getAllCostEstimationByOrgId()";
 		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
 		String errorMsg = null;
@@ -47,7 +47,7 @@ public class CostEstimationController extends BaseController {
 		ResponseDTO responseDTO = null;
 		List<CostEstimationVO> costEstimationVO = new ArrayList<>();
 		try {
-			costEstimationVO = costEstimationService.getAllCostEstimationByOrgId(orgId);
+			costEstimationVO = costEstimationService.getAllCostEstimationByOrgId(orgId, finYear,  branchCode);
 		} catch (Exception e) {
 			errorMsg = e.getMessage();
 			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
@@ -197,9 +197,9 @@ public class CostEstimationController extends BaseController {
 	
 	@PostMapping("/uploadImageCostEstimationDetail")
 	public ResponseEntity<ResponseDTO> uploadImageCostEstimationDetail(
-	        @RequestParam MultipartFile file,
+	        @RequestParam List<MultipartFile> file,
 	        @RequestParam Long costEstimationId,
-	        @RequestParam Long costEstimationDetailsId) {
+	        @RequestParam List<Long> costEstimationDetailsId) {
 
 	    String methodName = "uploadImageCostEstimationDetail()";
 	    LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
@@ -208,7 +208,7 @@ public class CostEstimationController extends BaseController {
 	    String errorMsg = null;
 
 	    try {
-	        CostEstimationVO costEstimationVO = costEstimationService
+	        String costEstimationVO = costEstimationService
 	                .uploadImageCostEstimationDetail(file, costEstimationId, costEstimationDetailsId);
 
 	        responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "CostEstimation Successfully Uploaded");
@@ -222,6 +222,63 @@ public class CostEstimationController extends BaseController {
 
 	    LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
 	    return ResponseEntity.ok().body(responseDTO);
+	}
+	
+	@GetMapping("/getCostEstimationDetails")
+	public ResponseEntity<ResponseDTO> getCostEstimationDetails(@RequestParam Long orgId, @RequestParam(required = true) String finYear, @RequestParam String employeeName, String fromDate, String toDate,@RequestParam String branchCode) {
+		String methodName = "getCostEstimationDetails()";
+		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+		String errorMsg = null;
+		Map<String, Object> responseObjectsMap = new HashMap<>();
+		ResponseDTO responseDTO = null;
+		List<Map<String, Object>> mapp = new ArrayList<>();
+		try {
+			mapp = costEstimationService.getCostEstimationDetails(orgId, finYear, employeeName, fromDate, toDate,branchCode);
+		} catch (Exception e) {
+			errorMsg = e.getMessage();
+			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+		}
+
+		if (StringUtils.isBlank(errorMsg)) {
+			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "tax CostEstimationDetails retrieved successfully");
+			responseObjectsMap.put("mapp", mapp);
+			responseDTO = createServiceResponse(responseObjectsMap);
+		} else {
+			responseDTO = createServiceResponseError(responseObjectsMap, "Failed to retrieve CostEstimationDetails", errorMsg);
+		}
+
+		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+		return ResponseEntity.ok().body(responseDTO);
+	}
+
+	
+	@GetMapping("/getCostEstimationSummary")
+	public ResponseEntity<ResponseDTO> getCostEstimationSummary(@RequestParam Long orgId, @RequestParam(required = true) String finYear,@RequestParam
+			String employeeName, String fromDate, String toDate,@RequestParam String branchCode) {
+		String methodName = "getCostEstimationSummary()";
+		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+		String errorMsg = null;
+		Map<String, Object> responseObjectsMap = new HashMap<>();
+		ResponseDTO responseDTO = null;
+		List<Map<String, Object>> mapp = new ArrayList<>();
+
+		try {
+			mapp = costEstimationService.getCostEstimationSummary(orgId, finYear, employeeName, fromDate, toDate,branchCode);
+		} catch (Exception e) {
+			errorMsg = e.getMessage();
+			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+		}
+
+		if (StringUtils.isBlank(errorMsg)) {
+			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "CostEstimation summary retrieved successfully");
+			responseObjectsMap.put("mapp", mapp);
+			responseDTO = createServiceResponse(responseObjectsMap);
+		} else {
+			responseDTO = createServiceResponseError(responseObjectsMap, "Failed to retrieve CostEstimation summary", errorMsg);
+		}
+
+		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+		return ResponseEntity.ok().body(responseDTO);
 	}
 
 }

@@ -16,7 +16,7 @@ import com.base.basesetup.exception.ApplicationException;
 @Service
 public interface CostEstimationService {
 
-	List<CostEstimationVO> getAllCostEstimationByOrgId(Long orgId);
+	List<CostEstimationVO> getAllCostEstimationByOrgId(Long orgId,String finYear, String branchCode);
 
 	CostEstimationVO getAllCostEstimationById(Long id);
 
@@ -31,7 +31,16 @@ public interface CostEstimationService {
 			throws ApplicationException;
 
 
-	CostEstimationVO uploadImageCostEstimationDetail(MultipartFile file, Long costEstimationId, Long costEstimationDetailsId) throws IOException;
+
+	List<Map<String, Object>> getCostEstimationDetails(Long orgId, String finYear, String employeeName, String fromDate,
+			String toDate, String branchCode);
+
+	List<Map<String, Object>> getCostEstimationSummary(Long orgId, String finYear, String employeeName, String fromDate,
+			String toDate, String branchCode);
+
+
+	String uploadImageCostEstimationDetail(List<MultipartFile> files, Long costEstimationId, List<Long> detailsId)
+			throws IOException;
 
 	
 //	CostEstimationVO uploadMultipleImagesToCostEstimationDetails(MultipartFile[] files, Long costEstimationId, List<Long> costEstmationDetailsId);
