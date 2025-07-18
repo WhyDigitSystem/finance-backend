@@ -254,7 +254,7 @@ public class TaxInvoiceServiceImpl implements TaxInvoiceService {
 
 			if (!taxInvoiceDetailsDTO.getCurrency().equals("INR")) {
 				BigDecimal rate = taxInvoiceDetailsDTO.getRate(); // BigDecimal type is expected here
-				BigDecimal qty = BigDecimal.valueOf(taxInvoiceDetailsDTO.getQty()); // Convert qty to BigDecimal
+				BigDecimal qty = taxInvoiceDetailsDTO.getQty(); // Convert qty to BigDecimal
 
 				fcAmount = rate.multiply(qty);
 
@@ -266,7 +266,7 @@ public class TaxInvoiceServiceImpl implements TaxInvoiceService {
 			}
 
 			BigDecimal exRate = taxInvoiceDetailsDTO.getExRate();// Assuming getExRate() returns BigDecimal
-			BigDecimal qty = BigDecimal.valueOf(taxInvoiceDetailsDTO.getQty());
+			BigDecimal qty = taxInvoiceDetailsDTO.getQty();
 			BigDecimal rate = taxInvoiceDetailsDTO.getRate();
 			lcAmount = exRate.multiply(qty.multiply(rate));
 			taxInvoiceDetailsVO.setLcAmount(lcAmount);
@@ -277,7 +277,7 @@ public class TaxInvoiceServiceImpl implements TaxInvoiceService {
 			tlcAmount = lcAmount.multiply(gstPercent).divide(BigDecimal.valueOf(100));
 			taxInvoiceDetailsVO.setTlcAmount(tlcAmount);
 
-			billAmount = lcAmount.divide(exRate, RoundingMode.HALF_UP); // Ensure you specify a RoundingMode when
+			billAmount = lcAmount.divide(exRate); // Ensure you specify a RoundingMode when
 																		// dividing
 			taxInvoiceDetailsVO.setBillAmount(billAmount);
 			totalChargeAmountBC = totalChargeAmountBC.add(billAmount);
@@ -336,95 +336,177 @@ public class TaxInvoiceServiceImpl implements TaxInvoiceService {
 
 		taxInvoiceVO.setTaxInvoiceAnnexureVO(invoiceAnnexureVOs);
 
+//		Map<Integer, BigDecimal> gstSumMap = new HashMap<>();
+//		for (TaxInvoiceDetailsVO detailsVO : taxInvoiceDetailsVOs) {
+//			int gst = detailsVO.getGSTPercent();
+//			BigDecimal gstAmount = detailsVO.getTlcAmount();
+//
+//			gstSumMap.put(gst, gstSumMap.getOrDefault(gst, BigDecimal.ZERO).add(gstAmount));
+//		}
+//
+//		Map<Double, BigDecimal> updatedGstSumMap = new HashMap<>();
+//		if (taxInvoiceDTO.getGstType().equals("INTRA")) {
+//			for (Map.Entry<Integer, BigDecimal> entry : gstSumMap.entrySet()) {
+//				double halfGst = entry.getKey() / 2; // Divide GST by 2
+//				BigDecimal halfGstAmount = entry.getValue().divide(BigDecimal.valueOf(2), 2, RoundingMode.UNNECESSARY); // Divide
+//																														// GST
+//																														// Amount
+//																														// by
+//																														// 2
+//				updatedGstSumMap.put(halfGst, halfGstAmount);
+//			}
+//		} else {
+//			for (Map.Entry<Integer, BigDecimal> entry : gstSumMap.entrySet()) {
+//				double gst = entry.getKey(); // Keep the original GST percentage
+//				BigDecimal gstAmount = entry.getValue(); // Keep the original GST amount
+//				updatedGstSumMap.put(gst, gstAmount); //
+//			}
+//
+//		}
+//
+//		Map<String, BigDecimal> taxDetailsMap = new HashMap<>();
+//		for (Map.Entry<Double, BigDecimal> entry : updatedGstSumMap.entrySet()) {
+//			List<GroupLedgerVO> groupLedgerVOs = groupLedgerRepo.getTaxLedgerDetails(taxInvoiceDTO.getOrgId(),
+//					taxInvoiceDTO.getGstType(), entry.getKey());
+//			for (GroupLedgerVO groupLedgerVO : groupLedgerVOs) {
+//				taxDetailsMap.put(groupLedgerVO.getAccountGroupName(), entry.getValue());
+//			}
+//		}
+//		List<TaxInvoiceGstVO> taxInvoiceGstVOList = new ArrayList<>();
+//		for (Map.Entry<String, BigDecimal> entry : taxDetailsMap.entrySet()) {
+//			TaxInvoiceGstVO taxInvoiceGstVO = new TaxInvoiceGstVO();
+//			taxInvoiceGstVO.setGstChargeAcc(entry.getKey());
+//			taxInvoiceGstVO.setGstCrLcAmount(entry.getValue());
+//			taxInvoiceGstVO.setGstDbBillAmount(BigDecimal.ZERO);
+//			taxInvoiceGstVO.setGstDbLcAmount(BigDecimal.ZERO);
+//			taxInvoiceGstVO.setGstSubledgerCode("None");
+//			taxInvoiceGstVO.setGstCrBillAmount(entry.getValue());
+//			taxInvoiceGstVO.setTaxInvoiceVO(taxInvoiceVO);
+//			taxInvoiceGstVOList.add(taxInvoiceGstVO);
+//		}
+////		taxInvoiceVO.setTaxInvoiceGstVO(taxInvoiceGstVOList);
+//
+//		Map<String, BigDecimal> ledgerSumMap = new HashMap<>();
+//		for (TaxInvoiceDetailsVO detailsVO : taxInvoiceDetailsVOs) {
+//			String ledger = detailsVO.getLedger();
+//			BigDecimal lcAmount = detailsVO.getBillAmount();
+//
+//			ledgerSumMap.put(ledger, ledgerSumMap.getOrDefault(ledger, BigDecimal.ZERO).add(lcAmount));
+//		}
+////		if (ObjectUtils.isNotEmpty(taxInvoiceVO.getId())) {
+////			List<TaxInvoiceGstVO> taxInvoiceGstVO1 = taxInvoiceGstRepo.findByTaxInvoiceVO(taxInvoiceVO);
+////			taxInvoiceGstRepo.deleteAll(taxInvoiceGstVO1);
+////		}
+//
+//		for (Map.Entry<String, BigDecimal> entry : ledgerSumMap.entrySet()) {
+//			TaxInvoiceGstVO taxInvoiceGstVO = new TaxInvoiceGstVO();
+//			taxInvoiceGstVO.setGstChargeAcc(entry.getKey());
+//			String gstLedger = entry.getKey();
+//			BigDecimal creditAmountFC = entry.getValue();
+//			
+//			String currency = taxInvoiceVO.getBillCurr();
+//			BigDecimal exRate = taxInvoiceVO.getBillCurrRate();
+//
+//			for (TaxInvoiceDetailsVO detailVO : taxInvoiceVO.getTaxInvoiceDetailsVO()) {
+//				if (detailVO.getLedger().equalsIgnoreCase(gstLedger)) {
+//					currency = detailVO.getCurrency();
+//					exRate = detailVO.getExRate();
+//					break;
+//				}
+//			}
+//			BigDecimal creditAmountINR = "INR".equalsIgnoreCase(currency) ? creditAmountFC
+//					: creditAmountFC.multiply(exRate).setScale(2);
+//			
+//			taxInvoiceGstVO.setGstCrLcAmount(creditAmountINR);
+//			taxInvoiceGstVO.setGstDbBillAmount(BigDecimal.ZERO);
+//			taxInvoiceGstVO.setGstDbLcAmount(BigDecimal.ZERO);
+//			taxInvoiceGstVO.setGstSubledgerCode("None");
+//			taxInvoiceGstVO.setGstCrBillAmount(creditAmountFC);
+//			taxInvoiceGstVO.setTaxInvoiceVO(taxInvoiceVO);
+//			taxInvoiceGstVOList.add(taxInvoiceGstVO);
+//		}
+		
+		
 		Map<Integer, BigDecimal> gstSumMap = new HashMap<>();
-		for (TaxInvoiceDetailsVO detailsVO : taxInvoiceDetailsVOs) {
-			int gst = detailsVO.getGSTPercent();
-			BigDecimal gstAmount = detailsVO.getTlcAmount();
-
-			gstSumMap.put(gst, gstSumMap.getOrDefault(gst, BigDecimal.ZERO).add(gstAmount));
+		for (TaxInvoiceDetailsVO vo : taxInvoiceDetailsVOs) {
+		    int gst = vo.getGSTPercent();
+		    BigDecimal gstAmt = vo.getTlcAmount();
+		    gstSumMap.put(gst, gstSumMap.getOrDefault(gst, BigDecimal.ZERO).add(gstAmt));
 		}
 
 		Map<Double, BigDecimal> updatedGstSumMap = new HashMap<>();
-		if (taxInvoiceDTO.getGstType().equals("INTRA")) {
-			for (Map.Entry<Integer, BigDecimal> entry : gstSumMap.entrySet()) {
-				double halfGst = entry.getKey() / 2; // Divide GST by 2
-				BigDecimal halfGstAmount = entry.getValue().divide(BigDecimal.valueOf(2), 2, RoundingMode.UNNECESSARY); // Divide
-																														// GST
-																														// Amount
-																														// by
-																														// 2
-				updatedGstSumMap.put(halfGst, halfGstAmount);
-			}
+		if ("INTRA".equalsIgnoreCase(taxInvoiceDTO.getGstType())) {
+		    for (Map.Entry<Integer, BigDecimal> entry : gstSumMap.entrySet()) {
+		        double halfGst = entry.getKey() / 2.0;
+		        BigDecimal halfGstAmount = entry.getValue().divide(BigDecimal.valueOf(2));
+		        updatedGstSumMap.put(halfGst, halfGstAmount);
+		    }
 		} else {
-			for (Map.Entry<Integer, BigDecimal> entry : gstSumMap.entrySet()) {
-				double gst = entry.getKey(); // Keep the original GST percentage
-				BigDecimal gstAmount = entry.getValue(); // Keep the original GST amount
-				updatedGstSumMap.put(gst, gstAmount); //
-			}
-
+		    for (Map.Entry<Integer, BigDecimal> entry : gstSumMap.entrySet()) {
+		        updatedGstSumMap.put((double) entry.getKey(), entry.getValue());
+		    }
 		}
 
+		// Ledger-wise GST entries
 		Map<String, BigDecimal> taxDetailsMap = new HashMap<>();
 		for (Map.Entry<Double, BigDecimal> entry : updatedGstSumMap.entrySet()) {
-			List<GroupLedgerVO> groupLedgerVOs = groupLedgerRepo.getTaxLedgerDetails(taxInvoiceDTO.getOrgId(),
-					taxInvoiceDTO.getGstType(), entry.getKey());
-			for (GroupLedgerVO groupLedgerVO : groupLedgerVOs) {
-				taxDetailsMap.put(groupLedgerVO.getAccountGroupName(), entry.getValue());
-			}
+		    List<GroupLedgerVO> groupLedgers = groupLedgerRepo.getTaxLedgerDetails(
+		            taxInvoiceDTO.getOrgId(), taxInvoiceDTO.getGstType(), entry.getKey());
+		    for (GroupLedgerVO groupLedgerVO : groupLedgers) {
+		        taxDetailsMap.put(groupLedgerVO.getAccountGroupName(), entry.getValue());
+		    }
 		}
+
 		List<TaxInvoiceGstVO> taxInvoiceGstVOList = new ArrayList<>();
 		for (Map.Entry<String, BigDecimal> entry : taxDetailsMap.entrySet()) {
-			TaxInvoiceGstVO taxInvoiceGstVO = new TaxInvoiceGstVO();
-			taxInvoiceGstVO.setGstChargeAcc(entry.getKey());
-			taxInvoiceGstVO.setGstCrLcAmount(entry.getValue());
-			taxInvoiceGstVO.setGstDbBillAmount(BigDecimal.ZERO);
-			taxInvoiceGstVO.setGstDbLcAmount(BigDecimal.ZERO);
-			taxInvoiceGstVO.setGstSubledgerCode("None");
-			taxInvoiceGstVO.setGstCrBillAmount(entry.getValue());
-			taxInvoiceGstVO.setTaxInvoiceVO(taxInvoiceVO);
-			taxInvoiceGstVOList.add(taxInvoiceGstVO);
+		    TaxInvoiceGstVO gstVO = new TaxInvoiceGstVO();
+		    gstVO.setGstChargeAcc(entry.getKey());
+		    gstVO.setGstCrLcAmount(entry.getValue());
+		    gstVO.setGstDbBillAmount(BigDecimal.ZERO);
+		    gstVO.setGstDbLcAmount(BigDecimal.ZERO);
+		    gstVO.setGstSubledgerCode("None");
+		    gstVO.setGstCrBillAmount(entry.getValue());
+		    gstVO.setTaxInvoiceVO(taxInvoiceVO);
+		    taxInvoiceGstVOList.add(gstVO);
 		}
-//		taxInvoiceVO.setTaxInvoiceGstVO(taxInvoiceGstVOList);
 
+		// Ledger-wise bill mapping (for credit)
 		Map<String, BigDecimal> ledgerSumMap = new HashMap<>();
-		for (TaxInvoiceDetailsVO detailsVO : taxInvoiceDetailsVOs) {
-			String ledger = detailsVO.getLedger();
-			BigDecimal lcAmount = detailsVO.getBillAmount();
-
-			ledgerSumMap.put(ledger, ledgerSumMap.getOrDefault(ledger, BigDecimal.ZERO).add(lcAmount));
+		for (TaxInvoiceDetailsVO vo : taxInvoiceDetailsVOs) {
+		    String ledger = vo.getLedger();
+		    BigDecimal billAmt = vo.getBillAmount();
+		    ledgerSumMap.put(ledger, ledgerSumMap.getOrDefault(ledger, BigDecimal.ZERO).add(billAmt));
 		}
-//		if (ObjectUtils.isNotEmpty(taxInvoiceVO.getId())) {
-//			List<TaxInvoiceGstVO> taxInvoiceGstVO1 = taxInvoiceGstRepo.findByTaxInvoiceVO(taxInvoiceVO);
-//			taxInvoiceGstRepo.deleteAll(taxInvoiceGstVO1);
-//		}
 
 		for (Map.Entry<String, BigDecimal> entry : ledgerSumMap.entrySet()) {
-			TaxInvoiceGstVO taxInvoiceGstVO = new TaxInvoiceGstVO();
-			taxInvoiceGstVO.setGstChargeAcc(entry.getKey());
-			String gstLedger = entry.getKey();
-			BigDecimal creditAmountFC = entry.getValue();
-			
-			String currency = taxInvoiceVO.getBillCurr();
-			BigDecimal exRate = taxInvoiceVO.getBillCurrRate();
+		    TaxInvoiceGstVO gstVO = new TaxInvoiceGstVO();
+		    gstVO.setGstChargeAcc(entry.getKey());
+		    
+		    String ledger = entry.getKey();
+		    BigDecimal billAmtFC = entry.getValue();
 
-			for (TaxInvoiceDetailsVO detailVO : taxInvoiceVO.getTaxInvoiceDetailsVO()) {
-				if (detailVO.getLedger().equalsIgnoreCase(gstLedger)) {
-					currency = detailVO.getCurrency();
-					exRate = detailVO.getExRate();
-					break;
-				}
-			}
-			BigDecimal creditAmountINR = "INR".equalsIgnoreCase(currency) ? creditAmountFC
-					: creditAmountFC.multiply(exRate).setScale(2, RoundingMode.HALF_UP);
-			
-			taxInvoiceGstVO.setGstCrLcAmount(creditAmountINR);
-			taxInvoiceGstVO.setGstDbBillAmount(BigDecimal.ZERO);
-			taxInvoiceGstVO.setGstDbLcAmount(BigDecimal.ZERO);
-			taxInvoiceGstVO.setGstSubledgerCode("None");
-			taxInvoiceGstVO.setGstCrBillAmount(creditAmountFC);
-			taxInvoiceGstVO.setTaxInvoiceVO(taxInvoiceVO);
-			taxInvoiceGstVOList.add(taxInvoiceGstVO);
+		    String currency = taxInvoiceVO.getBillCurr();
+		    BigDecimal exRate = taxInvoiceVO.getBillCurrRate();
+
+		    for (TaxInvoiceDetailsVO vo : taxInvoiceDetailsVOs) {
+		        if (ledger.equalsIgnoreCase(vo.getLedger())) {
+		            currency = vo.getCurrency();
+		            exRate = vo.getExRate();
+		            break;
+		        }
+		    }
+
+		    BigDecimal billAmtINR = "INR".equalsIgnoreCase(currency) ? billAmtFC : billAmtFC.multiply(exRate);
+		    gstVO.setGstCrLcAmount(billAmtINR);
+		    gstVO.setGstDbBillAmount(BigDecimal.ZERO);
+		    gstVO.setGstDbLcAmount(BigDecimal.ZERO);
+		    gstVO.setGstSubledgerCode("None");
+		    gstVO.setGstCrBillAmount(billAmtFC);
+		    gstVO.setTaxInvoiceVO(taxInvoiceVO);
+		    taxInvoiceGstVOList.add(gstVO);
 		}
+		
+		
 		taxInvoiceVO.setTaxInvoiceGstVO(taxInvoiceGstVOList);
 
 		totalInvAmountLC = totalChargeAmountLC.add(totalTaxAmountLC);
