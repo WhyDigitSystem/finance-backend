@@ -692,6 +692,8 @@ public class TaxInvoiceServiceImpl implements TaxInvoiceService {
 			multipleDocIdGenerationDetailsVO.setLastno(multipleDocIdGenerationDetailsVO.getLastno() + 1);
 			multipleDocIdGenerationDetailsRepo.save(multipleDocIdGenerationDetailsVO);
 
+			int creditDays = taxInvoiceVO.getCreditDays();
+			LocalDate dueDate = LocalDate.now().plusDays(creditDays);
 			// Create AccountsVO object and populate its fields
 			AccountsVO accountsVO = new AccountsVO();
 			accountsVO.setDocId(accountsDocId);
@@ -708,6 +710,7 @@ public class TaxInvoiceServiceImpl implements TaxInvoiceService {
 			accountsVO.setRefNo(taxInvoiceVO.getDocId());
 			accountsVO.setRefDate(taxInvoiceVO.getDocDate());
 			accountsVO.setVId(taxInvoiceVO.getVId());
+			accountsVO.setDueDate(dueDate);
 			accountsVO.setVDate(taxInvoiceVO.getVDate());
 			accountsVO.setCurrency(taxInvoiceVO.getBillCurr());
 			accountsVO.setExRate(taxInvoiceVO.getBillCurrRate());
@@ -843,11 +846,8 @@ public class TaxInvoiceServiceImpl implements TaxInvoiceService {
 			taxInvoiceVO.setInvoiceNo(savedAccountsVO.getDocId());
 			taxInvoiceVO.setInvoiceDate(savedAccountsVO.getDocDate());
 
-			LocalDate vDate = taxInvoiceVO.getVDate() != null ? taxInvoiceVO.getVDate() : taxInvoiceVO.getDocDate();
-			int creditDays = taxInvoiceVO.getCreditDays();
-			LocalDate dueDate = vDate.plusDays(creditDays);
+			
 			// Save dueDate in your entity
-			savedAccountsVO.setDueDate(dueDate);
 			taxInvoiceVO.setDueDate(dueDate);
 			taxInvoiceVO.setApproveStatus(action);
 			taxInvoiceVO.setApproveBy(actionBy);
