@@ -405,6 +405,7 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 			partyStateVO.setStateCode(partyStateDTO.getStateCode());
 			partyStateVO.setEmail(partyStateDTO.getEMail());
 			partyStateVO.setContactPhoneNo(partyStateDTO.getPhoneNo());
+			partyStateVO.setState(partyStateDTO.getState());
 			// partyStateVO.setPartyName(partyStateDTO.getCustomerName());
 			partyStateVO.setPartyMasterVO(partyMasterVO);
 			partyStateVOs.add(partyStateVO);
@@ -502,6 +503,8 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 //		partyMasterVO.setPartyCode(customerDTO.getCustomerCode());
 		partyMasterVO.setCurrency(customerDTO.getCurrency());
 		partyMasterVO.setPartyShortName(customerDTO.getShortName());
+		partyMasterVO.setCountry(customerDTO.getCountry());
+		
 
 		if (customerDTO.isApproved()) {
 			partyMasterVO.setActive(true);
@@ -590,7 +593,7 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 		partyMasterVO.setBussinessType(vendorDTO.getBussinessType());
 		partyMasterVO.setBussinessCate(vendorDTO.getBussinessCategory());
 		partyMasterVO.setAccountType(vendorDTO.getAccountsType());
-		partyMasterVO.setPartyShortName(partyMasterVO.getPartyShortName());
+		partyMasterVO.setPartyShortName(vendorDTO.getShortName());
 		partyMasterVO.setActive(vendorDTO.isActive());
 
 		if (vendorDTO.isApproved()) {
@@ -618,11 +621,14 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 		for (VendorsStateDTO vendorsStateDTO : vendorDTO.getVendorStateDTO()) {
 
 			PartyStateVO partyStateVO = new PartyStateVO();
+			
+			partyStateVO.setCountry(vendorsStateDTO.getCountry());
 
 			partyStateVO.setState(vendorsStateDTO.getState());
 			partyStateVO.setStateCode(vendorsStateDTO.getStateCode());
 			partyStateVO.setStateNo(vendorsStateDTO.getStateNo());
 			partyStateVO.setGstIn(vendorsStateDTO.getGstIn());
+			partyStateVO.setCountry(vendorsStateDTO.getCountry());
 			partyStateVO.setContactPerson(vendorsStateDTO.getContactPerson());
 			partyStateVO.setContactPhoneNo(vendorsStateDTO.getPhoneNo());
 			partyStateVO.setEmail(vendorsStateDTO.getEMail());
@@ -637,7 +643,9 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 		List<PartyAddressVO> addressVOs = new ArrayList<>();
 		for (VendorsAddressDTO vendorsAddressDTO : vendorDTO.getVendorAddressDTO()) {
 			PartyAddressVO partyAddressVO = new PartyAddressVO();
+			
 
+			partyAddressVO.setCountry(vendorsAddressDTO.getCountry());
 			partyAddressVO.setState(vendorsAddressDTO.getState());
 			partyAddressVO.setCity(vendorsAddressDTO.getCity());
 			partyAddressVO.setBusinessPlace(vendorsAddressDTO.getBussinesPlace());
@@ -666,7 +674,7 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 			PartySpecialTDSVO.setTdsWithSec(specialTdsDTO.getWhSection());
 			PartySpecialTDSVO.setSection(specialTdsDTO.getSection());
 			PartySpecialTDSVO.setRateFrom(specialTdsDTO.getRateFrom());
-			PartySpecialTDSVO.setRateTo(specialTdsDTO.getRateTo());
+			PartySpecialTDSVO.setRateTo(specialTdsDTO.getRateTo()); 
 			PartySpecialTDSVO.setTdsWithPer(specialTdsDTO.getWhPercentage());
 			PartySpecialTDSVO.setSurchargePer(specialTdsDTO.getSurPercentage());
 			PartySpecialTDSVO.setEdPercentage(specialTdsDTO.getEdPercentage());
@@ -882,23 +890,19 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 		List<Map<String, Object>> List1 = new ArrayList<>();
 		for (Object[] ch : chType) {
 			Map<String, Object> map = new HashMap<>();
-			map.put("Sno", ch[0].toString());
-			map.put("RecoredId", ch[1] != null ? ch[1].toString() : "");
-			map.put("Vid", ch[2] != null ? ch[2].toString() : "");
-			map.put("Vdate", ch[3] != null ? ch[3].toString() : "");
-			map.put("RefNo", ch[4] != null ? ch[4].toString() : "");
-			map.put("RefDate", ch[5] != null ? ch[5].toString() : "");
-			map.put("SupplierRefNo", ch[6] != null ? ch[6].toString() : "");
-			map.put("SupplierRefDate", ch[7] != null ? ch[7].toString() : ""); // Handle as string, empty if null
-			map.put("PartyCode", ch[8] != null ? ch[8].toString() : "");
-			map.put("PartyName", ch[9] != null ? ch[9].toString() : "");
-			map.put("Currency", ch[10] != null ? ch[10].toString() : "");
-			map.put("OpBal", ch[11] != null ? new BigDecimal(ch[11].toString()) : BigDecimal.ZERO);
-			map.put("DbAmount", ch[12] != null ? new BigDecimal(ch[12].toString()) : BigDecimal.ZERO);
-			map.put("CrAmount", ch[13] != null ? new BigDecimal(ch[13].toString()) : BigDecimal.ZERO);
-			map.put("BillDbAmount", ch[14] != null ? new BigDecimal(ch[14].toString()) : BigDecimal.ZERO);
-			map.put("BillCrAmount", ch[15] != null ? new BigDecimal(ch[15].toString()) : BigDecimal.ZERO);
-			map.put("ClBal", ch[16] != null ? new BigDecimal(ch[16].toString()) : BigDecimal.ZERO);
+			map.put("Sno", ch[0] != null ? ch[0].toString() : null);
+			map.put("DocId", ch[1] != null ? ch[1].toString() : null);
+			map.put("DocDate", ch[2] != null ? ch[2].toString() : null);
+			map.put("RefNo", ch[3] != null ? ch[3].toString() : null);
+			map.put("RefDate", ch[4] != null ? ch[4].toString() : null);
+			map.put("SuppRefNo", ch[5] != null ? ch[5].toString() : null);
+			map.put("SuppRefName", ch[6] != null ? ch[6].toString() : null);
+			map.put("Particulars", ch[7] != null ? ch[7].toString() : null);
+			map.put("Currency", ch[8] != null ? ch[8].toString() : null);
+			map.put("DbAmount", ch[9] != null ? new BigDecimal(ch[9].toString()) : BigDecimal.ZERO);
+			map.put("CrAmount", ch[10] != null ? new BigDecimal(ch[10].toString()) : BigDecimal.ZERO);
+			map.put("SortOrder", ch[11] != null ? ch[11].toString() : null);
+
 			List1.add(map);
 		}
 		return List1;
@@ -934,6 +938,45 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 	}
 
 	@Override
+	public List<Map<String, Object>> getAllTransporters(Long orgId) {
+	    Set<Object[]> chType = partyMasterRepo.getAllTransprtersReport(orgId);
+	    return getAllTransporterData(chType);
+	}
+
+	private List<Map<String, Object>> getAllTransporterData(Set<Object[]> chType) {
+	    List<Map<String, Object>> resultList = new ArrayList<>();
+	    for (Object[] ch : chType) {
+	        Map<String, Object> map = new HashMap<>();
+	        map.put("partyCode", ch[0] != null ? ch[0].toString() : "");
+	        map.put("partyName", ch[1] != null ? ch[1].toString() : "");
+	        map.put("partyShortName", ch[2] != null ? ch[2].toString() : "");
+	        resultList.add(map);
+	    }
+	    return resultList;
+	}
+
+	
+	
+//	@Override
+//	public List<PartyMasterVO> getAllTransporters(Long orgId) {
+//		Set<Object[]> chType = partyMasterRepo.getAllTransprtersReport(orgId);
+//		return getAllTransprters(chType);
+//	}
+//
+//	private List<PartyMasterVO> getAllTransprters(Set<Object[]> chType) {
+//		Map<String, Object> list1 = new ArrayList<>();
+//	    for (Object[] ch : chType) {
+//	        PartyMasterVO vo = new PartyMasterVO();
+//	        vo.put("partyName", ch[0].toString());
+//			vo.put("amt", ch[1] != null ? ch[1].toString() : "");
+//	        list1.add(vo);
+//	    }
+//	    return list1;
+//	}
+
+	
+	
+	@Override
 	public List<Map<String, Object>> getAccountNameFromGroup(Long orgId) {
 		Set<Object[]> chType = partyMasterRepo.getAccountNameFromGroup(orgId);
 		return getAccountName(chType);
@@ -955,7 +998,7 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 			String branchCode) {
 		Set<Object[]> chType = partyMasterRepo.getMonthlyAndYearWiseData(orgId, month, finYear, branchCode);
 		return getMonthlyAndYear(chType);
-	}
+	}  
 
 	private List<Map<String, Object>> getMonthlyAndYear(Set<Object[]> chType) {
 		List<Map<String, Object>> List1 = new ArrayList<>();
@@ -983,11 +1026,81 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 		for (Object[] ch : chType) {
 			Map<String, Object> map = new HashMap<>();
 			map.put("product", ch[0] != null ? ch[0].toString() : "");
-			map.put("amt", ch[1] != null ? ch[1].toString() : "");
+			map.put("amt", ch[1] != null ? ch[1].toString() : ""); 
 			List1.add(map);
 		}
 		return List1;
 
 	}
 
+	@Override
+	public List<Map<String, Object>> getVedorsAddressDetails(Long orgId) {
+		Set<Object[]> chType = partyMasterRepo.getVedorsAddressDetails(orgId);
+		return getVedorsAddressDetails(chType);
+	}
+
+	private List<Map<String, Object>> getVedorsAddressDetails(Set<Object[]> chType) {
+		List<Map<String, Object>> List1 = new ArrayList<>();
+		for (Object[] ch : chType) {
+			Map<String, Object> map = new HashMap<>();
+			map.put("partyName", ch[0] != null ? ch[0].toString() : "");
+			map.put("FullAddress", ch[1] != null ? ch[1].toString() : "");
+			map.put("gstin", ch[2] != null ? ch[2].toString() : "");
+			List1.add(map);
+		}
+		return List1;
+	}
+
+	@Override
+	public List<Map<String, Object>> getCustomersAddressDetails(Long orgId) {
+		Set<Object[]> chType = partyMasterRepo.getCustomersAddressDetails(orgId);
+		return getCustomersAddressDetails(chType);
+	}
+
+	private List<Map<String, Object>> getCustomersAddressDetails(Set<Object[]> chType) {
+		List<Map<String, Object>> List1 = new ArrayList<>();
+		for (Object[] ch : chType) {
+			Map<String, Object> map = new HashMap<>();
+			map.put("partyName", ch[0] != null ? ch[0].toString() : "");
+			map.put("FullAddress", ch[1] != null ? ch[1].toString() : "");
+			map.put("gstin", ch[2] != null ? ch[2].toString() : "");
+			List1.add(map);
+		}
+		return List1;
+	}
+
+	@Override
+	public List<Map<String, Object>> getLedgerReport(Long orgId,String branch, String fromdate, String toDate,
+			String accountName, String details) { 
+		Set<Object[]> chType = partyMasterRepo.getLedgerReport(orgId,branch,fromdate, toDate, accountName,details);
+		return getLedgerReports(chType);
+	}
+
+	private List<Map<String, Object>> getLedgerReports(Set<Object[]> chType) {
+		List<Map<String, Object>> List1 = new ArrayList<>();
+		for (Object[] ch : chType) {
+			Map<String, Object> map = new HashMap<>();
+			map.put("Ids", ch[0] != null ? ch[0].toString() : 0);
+			map.put("finyear", ch[1] != null ? ch[1].toString() : 0);
+			map.put("startDate", ch[2] != null ? ch[2].toString() : "");
+			map.put("endDate", ch[3] != null ? ch[3].toString() : "");
+			map.put("recordId", ch[4] != null ? ch[4].toString() : 0);
+			map.put("branch", ch[5] != null ? ch[5].toString() : "");
+			map.put("voucherDate", ch[6] != null ?  ch[6].toString() : "");
+			map.put("voucherNumber", ch[7] != null ? ch[7].toString() : ""); // Handle as string, empty if null
+			map.put("accountName", ch[8] != null ?  ch[8].toString() : "");
+			map.put("obBal", ch[9] != null ? new BigDecimal(ch[9].toString()) : BigDecimal.ZERO);
+			map.put("currency", ch[10] != null ? ch[10].toString() : "");
+			map.put("dbAmnt", ch[11] != null ? new BigDecimal(ch[11].toString()) : BigDecimal.ZERO);
+			map.put("crAmnt", ch[12] != null ? new BigDecimal(ch[12].toString()) : BigDecimal.ZERO);
+			map.put("ndbAmnt", ch[13] != null ? new BigDecimal(ch[13].toString()) : BigDecimal.ZERO);
+			map.put("ncrAmnt", ch[14] != null ? new BigDecimal(ch[14].toString()) : BigDecimal.ZERO);
+			map.put("particulars", ch[15] != null ? ch[15].toString() : "");
+			map.put("partyName", ch[16] != null ? ch[16].toString() : "");
+			map.put("narration", ch[17] != null ? ch[17].toString() : "");
+			map.put("tStruct", ch[18] != null ? ch[18].toString() : "");
+			List1.add(map);
+		}
+		return List1;
+	}
 }

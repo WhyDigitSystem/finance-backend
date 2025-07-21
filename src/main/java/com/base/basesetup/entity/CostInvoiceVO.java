@@ -84,7 +84,7 @@ public class CostInvoiceVO {
 	@Column(name = "orgid", length = 15)
 	private Long orgId;
 	@Column(name = "active")
-	private boolean active;
+	private boolean active = true;
 	@Column(name = "modifiedby", length = 25)
 	private String updatedBy;
 	@Column(name = "createdby", length = 25)

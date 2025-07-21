@@ -233,7 +233,10 @@ public class ArapAdjustmentsController extends BaseController {
 	
 	
 	@GetMapping("/GetArapAdjustments")
-	public ResponseEntity<ResponseDTO> GetArapAdjustments(@RequestParam (required=true) String asondt,@RequestParam (required=true)String partyName,@RequestParam (required=false) String branch,@RequestParam (required=true)Long orgId,@RequestParam (required=false)String pdate) {
+	public ResponseEntity<ResponseDTO> GetArapAdjustments(@RequestParam(required = true) String Asondate, 
+			@RequestParam(required = true) String partyname,@RequestParam(required = true) String branch,  
+			@RequestParam(required = true)  Long orgId, 
+			@RequestParam(required = false) String pdate) {
 		String methodName = "GetArapAdjustments()"; 
 		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
 		String errorMsg = null;
@@ -241,23 +244,50 @@ public class ArapAdjustmentsController extends BaseController {
 		ResponseDTO responseDTO = null;
 		List<Map<String, Object>> mapp = new ArrayList<>();
 		try {
-			mapp = arapAdjustmentsService.GetArapAdjustments(asondt, partyName,branch ,orgId,pdate);
+			mapp = arapAdjustmentsService.GetArapAdjustments(Asondate, partyname,branch,orgId,pdate);
 		} catch (Exception e) {
 			errorMsg = e.getMessage();
 			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
 		}
 		if (StringUtils.isBlank(errorMsg)) {
-			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "Arap Adjustments Details get successfully ");
+			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "Arap outstanding Details get successfully ");
 			responseObjectsMap.put("mapp", mapp);
 			responseDTO = createServiceResponse(responseObjectsMap);
 		} else {
 			responseDTO = createServiceResponseError(responseObjectsMap,
-					"Arap Adjustments Details  failed ", errorMsg);
+					"Arap outstanding Details  failed ", errorMsg);
 		}
 		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
 		return ResponseEntity.ok().body(responseDTO);
 
 	}
 	
+	@GetMapping("/GetPendingRegisterDetails")
+	public ResponseEntity<ResponseDTO>  GetPendingRegisterDetails(@RequestParam String Partytype ,@RequestParam String PartyName , @RequestParam String ScreenName,
+	@RequestParam Long orgId,@RequestParam String finYear) {
+		String methodName = "GetArapAgeing()";
+		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+		String errorMsg = null;
+		Map<String, Object> responseObjectsMap = new HashMap<>();
+		ResponseDTO responseDTO = null;
+		List<Map<String, Object>> mapp = new ArrayList<>();
+		try {
+			mapp = arapAdjustmentsService.GetPendingRegisterDetails(Partytype,PartyName,ScreenName,orgId,finYear);
+		} catch (Exception e) {
+			errorMsg = e.getMessage();
+			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+		}
+		if (StringUtils.isBlank(errorMsg)) {
+			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "Pending Register Details get successfully ");
+			responseObjectsMap.put("mapp", mapp);
+			responseDTO = createServiceResponse(responseObjectsMap);
+		} else {
+			responseDTO = createServiceResponseError(responseObjectsMap,
+					"Pending Register Details  failed ", errorMsg);
+		}
+		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+		return ResponseEntity.ok().body(responseDTO);
+
+	}
 	
 }

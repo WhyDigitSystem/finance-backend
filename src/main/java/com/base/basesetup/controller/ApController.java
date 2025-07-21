@@ -40,7 +40,8 @@ public class ApController extends BaseController {
 	public static final Logger LOGGER = LoggerFactory.getLogger(ApController.class);
 
 	@GetMapping("/getAllPaymentByOrgId")
-	public ResponseEntity<ResponseDTO> getAllPaymentByOrgId(@RequestParam Long orgId,@RequestParam String finYear,@RequestParam String branchCode) {
+	public ResponseEntity<ResponseDTO> getAllPaymentByOrgId(@RequestParam Long orgId, @RequestParam String finYear,
+			@RequestParam String branchCode) {
 		String methodName = "getAllPaymentByOrgId()";
 		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
 		String errorMsg = null;
@@ -48,7 +49,7 @@ public class ApController extends BaseController {
 		ResponseDTO responseDTO = null;
 		List<PaymentVO> paymentVO = new ArrayList<>();
 		try {
-			paymentVO = apService.getAllPaymentByOrgId(orgId,finYear,branchCode);
+			paymentVO = apService.getAllPaymentByOrgId(orgId, finYear, branchCode);
 		} catch (Exception e) {
 			errorMsg = e.getMessage();
 			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
@@ -65,7 +66,6 @@ public class ApController extends BaseController {
 		return ResponseEntity.ok().body(responseDTO);
 
 	}
-
 
 	@GetMapping("/getPaymentById")
 	public ResponseEntity<ResponseDTO> getPaymentById(@RequestParam Long id) {
@@ -94,7 +94,7 @@ public class ApController extends BaseController {
 	}
 
 	@PutMapping("/updateCreatePayment")
-	public ResponseEntity<ResponseDTO> updateCreatePayment( @RequestBody PaymentDTO paymentDTO) {
+	public ResponseEntity<ResponseDTO> updateCreatePayment(@RequestBody PaymentDTO paymentDTO) {
 		String methodName = "updateCreatePayment()";
 		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
 		String errorMsg = null;
@@ -289,7 +289,8 @@ public class ApController extends BaseController {
 	}
 
 	@GetMapping("/getPartyNameAndCodeForPayment")
-	public ResponseEntity<ResponseDTO> getPartyNameAndCodeForPayment(@RequestParam Long orgId,@RequestParam String partyName) {
+	public ResponseEntity<ResponseDTO> getPartyNameAndCodeForPayment(@RequestParam Long orgId,
+			@RequestParam String partyName) {
 		String methodName = "getPartyNameAndCodeForPayment()";
 		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
 		String errorMsg = null;
@@ -297,7 +298,7 @@ public class ApController extends BaseController {
 		ResponseDTO responseDTO = null;
 		List<Map<String, Object>> party = new ArrayList<>();
 		try {
-			party = apService.getPartyNameAndCodeForPayment(orgId,partyName);
+			party = apService.getPartyNameAndCodeForPayment(orgId, partyName);
 		} catch (Exception e) {
 			errorMsg = e.getMessage();
 			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
@@ -457,7 +458,7 @@ public class ApController extends BaseController {
 //		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
 //		return ResponseEntity.ok().body(responseDTO);
 //	}
-	
+
 	@GetMapping("/getPartyNameAndPartyCode")
 	public ResponseEntity<ResponseDTO> getPartyNameAndPartyCode(@RequestParam Long orgId) {
 		String methodName = "getPartyNameAndPartyCode()";
@@ -482,13 +483,10 @@ public class ApController extends BaseController {
 		}
 		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
 		return ResponseEntity.ok().body(responseDTO);
-	}	
-			
-	
-	
-	
+	}
+
 	@GetMapping("/getPaymentFillGrid")
-	public ResponseEntity<ResponseDTO> getPaymentFillGrid( Long orgId, String partyCode,String branchCode) {
+	public ResponseEntity<ResponseDTO> getPaymentFillGrid(Long orgId, String partyCode, String branchCode) {
 		String methodName = "getPaymentFillGrid()";
 		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
 		String errorMsg = null;
@@ -496,24 +494,23 @@ public class ApController extends BaseController {
 		ResponseDTO responseDTO = null;
 		List<Map<String, Object>> paymentfillgrid = new ArrayList<>();
 		try {
-			paymentfillgrid = apService.getPaymentFillGrid(orgId,partyCode, branchCode);
+			paymentfillgrid = apService.getPaymentFillGrid(orgId, partyCode, branchCode);
 		} catch (Exception e) {
 			errorMsg = e.getMessage();
 			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
 		}
 		if (StringUtils.isBlank(errorMsg)) {
-			responseObjectsMap.put(CommonConstant.STRING_MESSAGE,
-					" Payment fillgrid information get successfully");
+			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, " Payment fillgrid information get successfully");
 			responseObjectsMap.put("paymentfillgrid", paymentfillgrid);
 			responseDTO = createServiceResponse(responseObjectsMap);
 		} else {
-			responseDTO = createServiceResponseError(responseObjectsMap,
-					"Payment fillgrid  information receive failed", errorMsg);
+			responseDTO = createServiceResponseError(responseObjectsMap, "Payment fillgrid  information receive failed",
+					errorMsg);
 		}
 		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
 		return ResponseEntity.ok().body(responseDTO);
 	}
-			
+
 //	@GetMapping("/getarapoffsetadjustmentFillGrid")
 //	public ResponseEntity<ResponseDTO> getarapoffsetadjustmentFillGrid(Long orgId, String partyCode,String branchCode, String docDate,String docId) {
 //		String methodName = "getarapoffsetadjustmentFillGrid()";
@@ -540,69 +537,199 @@ public class ApController extends BaseController {
 //		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
 //		return ResponseEntity.ok().body(responseDTO);
 //	}
-			
-	
-// ap ageing
-			
-			
-			
-			@GetMapping("/getAPAgeing")
-			public ResponseEntity<ResponseDTO> getAPAgeing( @RequestParam(required = true) String Asondate,@RequestParam(required = true) String partyname,@RequestParam(required = false) String pdate,@RequestParam(required = true) Long orgId) {
-				String methodName = "getAPAgeing()";
-				LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
-				String errorMsg = null;
-				Map<String, Object> responseObjectsMap = new HashMap<>();
-				ResponseDTO responseDTO = null;
-				List<Map<String, Object>> APAgeing = new ArrayList<>();
-				try {
-					APAgeing = apService.getAPAgeing(Asondate, partyname, pdate, orgId);
-				} catch (Exception e) {
-					errorMsg = e.getMessage();
-					LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
-				}
-				if (StringUtils.isBlank(errorMsg)) {
-					responseObjectsMap.put(CommonConstant.STRING_MESSAGE,
-							"Ap ageing information get successfully");
-					responseObjectsMap.put("APAgeing", APAgeing);
-					responseDTO = createServiceResponse(responseObjectsMap);
-				} else {
-					responseDTO = createServiceResponseError(responseObjectsMap,
-							"Ap ageing information receive failed", errorMsg);
-				}
-				LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
-				return ResponseEntity.ok().body(responseDTO);
-			}
-		
-			
-			// Ap Outstanding 
-			
-			@GetMapping("/getAPOutstanding")
-			public ResponseEntity<ResponseDTO> getAPOutstanding( @RequestParam(required = true) String Asondate,@RequestParam(required = true) String partyname,@RequestParam(required = false) String pdate,@RequestParam(required = true) Long orgId) {
-				String methodName = "getAPOutstanding()";
-				LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
-				String errorMsg = null;
-				Map<String, Object> responseObjectsMap = new HashMap<>();
-				ResponseDTO responseDTO = null;
-				List<Map<String, Object>> APOutstanding = new ArrayList<>();
-				try {
-					APOutstanding = apService.getAPOutstanding(Asondate, partyname, pdate, orgId);
-				} catch (Exception e) {
-					errorMsg = e.getMessage();
-					LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
-				}
-				if (StringUtils.isBlank(errorMsg)) {
-					responseObjectsMap.put(CommonConstant.STRING_MESSAGE,
-							"AP Outstanding information get successfully");
-					responseObjectsMap.put("APOutstanding", APOutstanding);
-					responseDTO = createServiceResponse(responseObjectsMap);
-				} else {
-					responseDTO = createServiceResponseError(responseObjectsMap,
-							"AP Outstanding information receive failed", errorMsg);
-				}
-				LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
-				return ResponseEntity.ok().body(responseDTO);
-			}
-		
 
+// ap ageing
+
+	@GetMapping("/getAPAgeing")
+	public ResponseEntity<ResponseDTO> getAPAgeing(@RequestParam(required = true) String Asondate,
+			@RequestParam(required = true) String partyname, @RequestParam(required = false) String pdate,
+			@RequestParam(required = true) Long orgId) {
+		String methodName = "getAPAgeing()";
+		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+		String errorMsg = null;
+		Map<String, Object> responseObjectsMap = new HashMap<>();
+		ResponseDTO responseDTO = null;
+		List<Map<String, Object>> APAgeing = new ArrayList<>();
+		try {
+			APAgeing = apService.getAPAgeing(Asondate, partyname, pdate, orgId);
+		} catch (Exception e) {
+			errorMsg = e.getMessage();
+			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+		}
+		if (StringUtils.isBlank(errorMsg)) {
+			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "Ap ageing information get successfully");
+			responseObjectsMap.put("APAgeing", APAgeing);
+			responseDTO = createServiceResponse(responseObjectsMap);
+		} else {
+			responseDTO = createServiceResponseError(responseObjectsMap, "Ap ageing information receive failed",
+					errorMsg);
+		}
+		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+		return ResponseEntity.ok().body(responseDTO);
+	}
+
+	// Ap Outstanding
+
+	@GetMapping("/getAPOutstanding")
+	public ResponseEntity<ResponseDTO> getAPOutstanding(@RequestParam(required = true) String Asondate, 
+			@RequestParam(required = true) String partyname,@RequestParam(required = true) String branch,  
+			@RequestParam(required = true)  Long orgId, 
+			@RequestParam(required = false) String pdate
+		) {
+		String methodName = "getAPOutstanding()";
+		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+		String errorMsg = null;
+		Map<String, Object> responseObjectsMap = new HashMap<>();
+		ResponseDTO responseDTO = null;
+		List<Map<String, Object>> APOutstanding = new ArrayList<>();
+		try {
+			APOutstanding = apService.getAPOutstanding(Asondate, partyname,branch,orgId,pdate);
+		} catch (Exception e) {
+			errorMsg = e.getMessage();
+			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+		}
+		if (StringUtils.isBlank(errorMsg)) {
+			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "AP Outstanding information get successfully");
+			responseObjectsMap.put("APOutstanding", APOutstanding);
+			responseDTO = createServiceResponse(responseObjectsMap);
+		} else {
+			responseDTO = createServiceResponseError(responseObjectsMap, "AP Outstanding information receive failed",
+					errorMsg);
+		}
+		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+		return ResponseEntity.ok().body(responseDTO);
+	}
+
+	@GetMapping("/getAllPaymentByOrgIdAndBranchCode")
+	public ResponseEntity<ResponseDTO> getAllPaymentByOrgIdAndBranchCode(@RequestParam Long orgId,
+			@RequestParam String branchCode, String partyName) {
+		String methodName = "getAllPaymentByOrgIdAndBranchCode()";
+		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+		String errorMsg = null;
+		Map<String, Object> responseObjectsMap = new HashMap<>();
+		ResponseDTO responseDTO = null;
+		List<Map<String, Object>> paymentVO = new ArrayList<>();
+		try {
+			paymentVO = apService.getAllPaymentByOrgIdAndBranchCode(orgId, branchCode, partyName);
+		} catch (Exception e) {
+			errorMsg = e.getMessage();
+			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+		}
+		if (StringUtils.isBlank(errorMsg)) {
+			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "Payment information get successfully By OrgId");
+			responseObjectsMap.put("paymentVO", paymentVO);
+			responseDTO = createServiceResponse(responseObjectsMap);
+		} else {
+			responseDTO = createServiceResponseError(responseObjectsMap, "Payment information receive failed By OrgId",
+					errorMsg);
+		}
+		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+		return ResponseEntity.ok().body(responseDTO);
+
+	}
+
+	@PutMapping("/approvePayment")
+	public ResponseEntity<ResponseDTO> approvePayment(@RequestParam Long orgId, @RequestParam Long id,
+			@RequestParam String docId, @RequestParam String action, @RequestParam String actionBy) {
+		String methodName = "approvePayment()";
+		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+		String errorMsg = null;
+		Map<String, Object> responseObjectsMap = new HashMap<>();
+		ResponseDTO responseDTO = null;
+		try {
+			PaymentVO taxInvoiceVO = apService.approvePayment(orgId, id, docId, action, actionBy);
+			responseObjectsMap.put("taxInvoiceVO", taxInvoiceVO);
+			responseDTO = createServiceResponse(responseObjectsMap);
+		} catch (Exception e) {
+			errorMsg = e.getMessage();
+			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+			responseDTO = createServiceResponseError(responseObjectsMap, errorMsg, errorMsg);
+		}
+		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+		return ResponseEntity.ok().body(responseDTO);
+	}
+
+	@GetMapping("/getPaymentDetails")
+	public ResponseEntity<ResponseDTO> getPaymentDetails(@RequestParam Long orgId,@RequestParam String finYear,
+			@RequestParam String partyname, String fromDate, String toDate, @RequestParam String branchCode) {
+		String methodName = "getPaymentDetails()";
+		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+		String errorMsg = null;
+		Map<String, Object> responseObjectsMap = new HashMap<>();
+		ResponseDTO responseDTO = null;
+		List<Map<String, Object>> paymentVO = new ArrayList<>();
+		try {
+			paymentVO = apService.getPaymentDetails(orgId,finYear,  partyname, fromDate, toDate, branchCode);
+		} catch (Exception e) {
+			errorMsg = e.getMessage();
+			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+		}
+		if (StringUtils.isBlank(errorMsg)) {
+			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "Payment Details  information get successfully ");
+			responseObjectsMap.put("paymentVO", paymentVO);
+			responseDTO = createServiceResponse(responseObjectsMap);
+		} else {
+			responseDTO = createServiceResponseError(responseObjectsMap, "Payment Details information receive failed ",
+					errorMsg);
+		}
+		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+		return ResponseEntity.ok().body(responseDTO);
+
+	}
+
+	@GetMapping("/getPaymentSummary")
+	public ResponseEntity<ResponseDTO> getPaymentSummary(@RequestParam Long orgId,@RequestParam String finYear,
+			@RequestParam String partyname, String fromDate, String toDate, @RequestParam String branchCode) {
+		String methodName = "getPaymentSummary()";
+		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+		String errorMsg = null;
+		Map<String, Object> responseObjectsMap = new HashMap<>();
+		ResponseDTO responseDTO = null;
+		List<Map<String, Object>> paymentVO = new ArrayList<>();
+		try {
+			paymentVO = apService.getPaymentSummary(orgId,finYear, partyname, fromDate, toDate, branchCode);
+		} catch (Exception e) {
+			errorMsg = e.getMessage();
+			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+		}
+		if (StringUtils.isBlank(errorMsg)) {
+			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "Payment Summary information get successfully ");
+			responseObjectsMap.put("paymentVO", paymentVO);
+			responseDTO = createServiceResponse(responseObjectsMap);
+		} else {
+			responseDTO = createServiceResponseError(responseObjectsMap, "Payment Summary information receive failed",
+					errorMsg);
+		}
+		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+		return ResponseEntity.ok().body(responseDTO);
+
+	}
+
+	@GetMapping("/getPaymentByDocId")
+	public ResponseEntity<ResponseDTO> getPaymentByDocId(@RequestParam Long orgId, @RequestParam String docId) {
+		String methodName = "getPaymentByDocId()";
+		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+		String errorMsg = null;
+		Map<String, Object> responseObjectsMap = new HashMap<>();
+		ResponseDTO responseDTO = null;
+		PaymentVO taxInvoiceVO = new PaymentVO();
+		try {
+			taxInvoiceVO = apService.getPaymentByDocId(orgId, docId);
+		} catch (Exception e) {
+			errorMsg = e.getMessage();
+			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+		}
+		if (StringUtils.isBlank(errorMsg)) {
+			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "payment information get successfully By docid");
+			responseObjectsMap.put("PaymentVO", taxInvoiceVO);
+			responseDTO = createServiceResponse(responseObjectsMap);
+		} else {
+			responseDTO = createServiceResponseError(responseObjectsMap, "payment information receive failed By docid",
+					errorMsg);
+		}
+		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+		return ResponseEntity.ok().body(responseDTO);
+
+	}
 
 }

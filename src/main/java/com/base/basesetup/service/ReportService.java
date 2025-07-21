@@ -31,11 +31,17 @@ public interface ReportService {
 	
 		Map<String, Object> createUpdateIssuemanifest(IssueManifestProviderDTO issueManifestProviderDTO) throws ApplicationException;
 		
-		List<IssueManifestProviderVO> getAllIssueManifestProvider();
+		List<IssueManifestProviderVO> getAllIssueManifestProvider(Long orgId, Long finYear);
 		
 		Optional<IssueManifestProviderVO> getAllIssueManifestProviderById(Long id);
 
 		List<IssueManifestProviderVO> getAllIssueManifestProviderForPendingIssueRequest(Long orgId);
+		
+		List<Map<String, Object>> getFillGridForTaxInvoice(Long orgId);
+		
+		List<Map<String, Object>> getMimFillGridgettransaction(Long orgId,String Receiver,String docId);
+		
+		List<Map<String, Object>> getMimFillGridgetKitDetails(Long orgId, String TransactionNo);
 		
 		//RETERIVELMANIFEST
 		
@@ -56,7 +62,7 @@ public interface ReportService {
 		
 		//quation
 		
-		List<Map<String, Object>> getQuotationByorgId(Long orgId);
+		List<QuotationVO> getQuotationByorgId(Long orgId);
 
 		Optional<QuotationVO> getQutationById(Long id);
 
@@ -67,6 +73,39 @@ public interface ReportService {
 
 		List<Map<String, Object>> getPaymentRegisterReport(Long orgId, String partyCode, String branchCode,
 				String finYear, String fromDate, String toDate);
+
+		List<Map<String, Object>> getOrginBillNoBased(Long orgId, String orginBillNo);
+
+		List<Map<String, Object>> getMimReportDetails(String type, Long orgId, String customerName, String finYear,
+				String toDate, String fromDate);
+
+		List<IssueManifestProviderVO> findMIMReports(String type, Long orgId, String customerName, String finYear,
+				String toDate, String fromDate);
+
+		List<RetrievalManifestProviderVO> findRIMReports(String type, Long orgId, String customerName, String finYear,
+				String toDate, String fromDate);
+
+		List<Map<String, Object>> findMimSummaryReport(String type, Long orgId, String customerName, String finYear,
+				String fromDate, String toDate);
+
+		List<Map<String, Object>> findRimSummaryReport(String type, Long orgId, String customerName, String finYear,
+				String fromDate, String toDate);
+
+		List<Map<String, Object>> getARAgeingReport(Long orgId, String branch, String partyName, String asOnDate,
+				String base);
+
+		List<Map<String, Object>> getApAgeing(Long orgId, String branch, String partyname, String asdate,
+				String baseType);
+
+		String getIssueManifestProviderDocId(Long orgId, String finYear, String branch, String branchCode);
+
+		String getRetrievalManifestProviderDocId(Long orgId, String finYear, String branch, String branchCode);
+
+
+//		List<RetrievalManifestProviderVO> findRIMMIMReports(String type, Long orgId, String customerName,
+//				String finYear, String toDate, String fromDate);
+
+		
 
 		
 	

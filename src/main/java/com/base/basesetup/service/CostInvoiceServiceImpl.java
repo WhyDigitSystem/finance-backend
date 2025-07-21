@@ -3,6 +3,7 @@ package com.base.basesetup.service;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -26,19 +27,20 @@ import com.base.basesetup.entity.AccountsDetailsVO;
 import com.base.basesetup.entity.AccountsVO;
 import com.base.basesetup.entity.ArapDetailsVO;
 import com.base.basesetup.entity.ChargerCostInvoiceVO;
+import com.base.basesetup.entity.CostDebitNoteVO;
 import com.base.basesetup.entity.CostInvoiceVO;
 import com.base.basesetup.entity.DocumentTypeMappingDetailsVO;
 import com.base.basesetup.entity.GroupLedgerVO;
 import com.base.basesetup.entity.MultipleDocIdGenerationDetailsVO;
 import com.base.basesetup.entity.PartyMasterVO;
 import com.base.basesetup.entity.TdsCostInvoiceVO;
-import com.base.basesetup.entity.TdsUrCostInvoiceGnaVO;
 import com.base.basesetup.exception.ApplicationException;
 import com.base.basesetup.repo.AccountsDetailsRepo;
 import com.base.basesetup.repo.AccountsRepo;
 import com.base.basesetup.repo.ArapDetailsRepo;
 import com.base.basesetup.repo.ChargeTypeRequestRepo;
 import com.base.basesetup.repo.ChargerCostInvoiceRepo;
+import com.base.basesetup.repo.CostDebitNoteRepo;
 import com.base.basesetup.repo.CostInvoiceRepo;
 import com.base.basesetup.repo.DocumentTypeMappingDetailsRepo;
 import com.base.basesetup.repo.GroupLedgerRepo;
@@ -83,6 +85,8 @@ public class CostInvoiceServiceImpl implements CostInvoiceService {
 	@Autowired
 	AmountInWordsConverterService amountInWordsConverterService;
 
+	@Autowired
+	CostDebitNoteRepo costDebitNoteRepo;
 	// costInvoice
 
 	@Override
@@ -313,8 +317,15 @@ public class CostInvoiceServiceImpl implements CostInvoiceService {
 			sumBillAmount = sumBillAmount.add(billAmount);
 
 //			GST AMOUNT CALCULATION
+			if(chargerCostInvoiceDTO.getCurrency().equals("INR")) {
 			gstAmount = lcAmount.multiply(gstPercent).divide(BigDecimal.valueOf(100));
+			}else{
+				gstAmount = fcAmount.multiply(gstPercent).divide(BigDecimal.valueOf(100));
+			}
+			
 			chargerCostInvoiceVO.setGstAmount(gstAmount);
+			
+			
 
 //			AGGREGATE IGST SUMS BY GST PERCENTAGE
 			if (costInvoiceDTO.getGstType().equalsIgnoreCase("INTER") && gstPercent.compareTo(BigDecimal.ZERO) > 0) {
@@ -622,6 +633,7 @@ public class CostInvoiceServiceImpl implements CostInvoiceService {
 			Map<String, Object> map = new HashMap<>();
 			map.put("jobNo", ch[0] != null ? ch[0].toString() : ""); // Empty string if null
 			map.put("customerName", ch[1] != null ? ch[1].toString() : "");
+			map.put("shortName", ch[2] != null ? ch[2].toString() : "");
 			List1.add(map);
 		}
 		return List1;
@@ -1096,6 +1108,7 @@ public class CostInvoiceServiceImpl implements CostInvoiceService {
 	    arapDetailsVO.setAccCurrency(savedAccountsVO.getCurrency());
 	    arapDetailsVO.setExRate(savedAccountsVO.getExRate());
 	    arapDetailsVO.setAccName(payableEntry.getAccountName());
+	    arapDetailsVO.setActive(savedAccountsVO.isActive());
 	    arapDetailsVO.setGstFlag(payableEntry.getGstflag());
 	    arapDetailsVO.setSubLedgerName(payableEntry.getSubledgerName());
 	    arapDetailsVO.setSalesType(savedAccountsVO.getSalesType());
@@ -1106,6 +1119,13 @@ public class CostInvoiceServiceImpl implements CostInvoiceService {
 	    // Final invoice updates
 	    costInvoiceVO.setPurVoucherNo(savedAccountsVO.getDocId());
 	    costInvoiceVO.setPurVoucherDate(savedAccountsVO.getDocDate());
+	    
+		LocalDate vDate = costInvoiceVO.getVDate()!=null?costInvoiceVO.getVDate():costInvoiceVO.getDocDate();
+		int creditDays = costInvoiceVO.getCreditDays();
+		LocalDate dueDate = vDate.plusDays(creditDays);
+		// Save dueDate in your entity
+		savedAccountsVO.setDueDate(dueDate);
+		costInvoiceVO.setDueDate(dueDate);
 	    costInvoiceVO.setApproveStatus(action);
 	    costInvoiceVO.setApproveBy(actionBy);
 	    costInvoiceVO.setApproveOn(LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd-MM-yyyy hh:mm:ss a")).toUpperCase());
@@ -1161,5 +1181,106 @@ public class CostInvoiceServiceImpl implements CostInvoiceService {
 		}
 		return List1;
 
+	}
+
+	@Override
+	public CostInvoiceVO getCostByDocIdandScreenCode(String ScreenCode, String docId) {
+		// TODO Auto-generated method stub
+		return costInvoiceRepo.getCostByDocIdandScreenCode(ScreenCode, docId);
+	}
+
+	@Override
+	public CostDebitNoteVO getDebitNoteByDocIdandScreenCode(String ScreenCode, String docId) {
+		// TODO Auto-generated method stub
+		return costDebitNoteRepo.getDebitNoteByDocIdandScreenCode(ScreenCode, docId);
+	}
+
+	@Override
+	public List<Map<String, Object>> getCostInvoiceSummary(Long orgId, String fromDate, String toDate,
+			String finYear, String partyName,String branchCode) {
+		Set<Object[]> chType = costInvoiceRepo.getCostInvoiceSummary(orgId, fromDate,toDate, finYear,partyName,branchCode);
+		return getCostSummary(chType);
+	}
+
+	private List<Map<String, Object>> getCostSummary(Set<Object[]> chType) {
+		List<Map<String, Object>> List1 = new ArrayList<>();
+		for (Object[] ch : chType) {
+			if (ch != null) {
+				Map<String, Object> map = new HashMap<>();
+				map.put("finYear", ch[0] != null ? ch[0].toString() : "");
+				map.put("docId", ch[1] != null ? ch[1].toString() : "");
+				map.put("docDate", ch[2] != null ? ch[2].toString() : "");
+				map.put("vId", ch[3] != null ? ch[3].toString() : "");
+				map.put("purVoucherNo", ch[4] != null ? ch[4].toString() : "");
+				map.put("purVoucherDate", ch[5] != null ? ch[5].toString() : "");
+				map.put("supplierCode", ch[6] != null ? ch[6].toString() : "");
+				map.put("supplierName", ch[7] != null ? ch[7].toString() : "");
+				map.put("supplierPlace", ch[8] != null ? ch[8].toString() : "");
+				map.put("gstType", ch[9] != null ? ch[9].toString() : "");
+		
+				map.put("totChargeLcAmt", ch[10] != null ? new BigDecimal(ch[10].toString()) : BigDecimal.ZERO);
+				map.put("payment", ch[11] != null ? ch[11].toString() : "");
+				map.put("vDate", ch[12] != null ? ch[12].toString() : "");
+				map.put("gstAmount", ch[13] != null ? new BigDecimal(ch[13].toString()) : BigDecimal.ZERO);
+				map.put("totalLcAmount", ch[14] != null ? new BigDecimal(ch[14].toString()) : BigDecimal.ZERO);
+				map.put("totalAmount", ch[15] != null ? new BigDecimal(ch[15].toString()) : BigDecimal.ZERO);
+				map.put("tdsAmount", ch[16] != null ? new BigDecimal(ch[16].toString()) : BigDecimal.ZERO);
+				map.put("approvestatus", ch[17] != null ? ch[17].toString() : "");
+				List1.add(map);
+			}
+		}
+		return List1;
+
+	}
+
+	@Override
+	public List<Map<String, Object>> getCostInvoiceSummaryDetails(Long orgId, String fromDate, String toDate,
+			String finYear, String partyName,String branchCode) {
+		Set<Object[]> chType = costInvoiceRepo.getCostInvoiceDetails(orgId, fromDate,toDate, finYear,partyName,branchCode);
+		return getCosteDetails(chType);
+	}
+
+	private List<Map<String, Object>> getCosteDetails(Set<Object[]> chType) {
+		List<Map<String, Object>> List1 = new ArrayList<>();
+		for (Object[] ch : chType) {
+			if (ch != null) {
+				Map<String, Object> map = new HashMap<>();
+		
+				map.put("finYear", ch[0] != null ? ch[0].toString() : "");
+				map.put("docId", ch[1] != null ? ch[1].toString() : "");
+				map.put("docDate", ch[2] != null ? ch[2].toString() : "");
+				map.put("vId", ch[3] != null ? ch[3].toString() : "");
+				map.put("purVoucherNo", ch[4] != null ? ch[4].toString() : "");
+				map.put("purVoucherDate", ch[5] != null ? ch[5].toString() : "");
+				map.put("supplierCode", ch[6] != null ? ch[6].toString() : "");
+				map.put("party", ch[7] != null ? ch[7].toString() : "");
+				map.put("description", ch[8] != null ? ch[8].toString() : "");
+				map.put("supplierName", ch[9] != null ? ch[9].toString() : "");
+				map.put("supplierPlace", ch[10] != null ? ch[10].toString() : "");
+				map.put("gstType", ch[11] != null ? ch[11].toString() : "");
+				map.put("mode", ch[12] != null ? ch[12].toString() : "");
+				map.put("totChargesLcAmt", ch[13] != null ? new BigDecimal(ch[13].toString()) : BigDecimal.ZERO);
+				map.put("payment", ch[14] != null ? ch[14].toString() : "");
+				map.put("section", ch[15] != null ? ch[15].toString() : "");
+				map.put("totalTds", ch[16] != null ? new BigDecimal(ch[16].toString()) : BigDecimal.ZERO);
+				map.put("jobNo", ch[17] != null ? ch[17].toString() : "");
+				map.put("chargeCode", ch[18] != null ? ch[18].toString() : "");
+				map.put("chargerName", ch[19] != null ? ch[19].toString() : "");
+				map.put("ledger", ch[20] != null ? ch[20].toString() : "");
+				map.put("lcAmt", ch[21] != null ? new BigDecimal(ch[21].toString()) : BigDecimal.ZERO);
+				map.put("gst", ch[22] != null ? new BigDecimal(ch[22].toString()) : BigDecimal.ZERO);
+				map.put("qty", ch[23] != null ? new BigDecimal(ch[23].toString()) : BigDecimal.ZERO);
+				map.put("rate", ch[24] != null ? new BigDecimal(ch[24].toString()) : BigDecimal.ZERO);
+				map.put("toalLcAmount", ch[25] != null ? new BigDecimal(ch[25].toString()) : BigDecimal.ZERO);
+				map.put("vDate", ch[26] != null ? ch[26].toString() : "");
+				map.put("netAmount", ch[27] != null ? new BigDecimal(ch[27].toString()) : BigDecimal.ZERO);
+				map.put("gstPercentage", ch[28] != null ? new BigDecimal(ch[28].toString()) : BigDecimal.ZERO);
+				map.put("approvestatus", ch[29] != null ? ch[29].toString() : "");
+//				map.put("gstType", ch[29] != null ? ch[29].toString() : "");
+				
+				List1.add(map);
+			}
+		}
+		return List1;
 	}
 }

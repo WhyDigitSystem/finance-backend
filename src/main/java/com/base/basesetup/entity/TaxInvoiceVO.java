@@ -165,6 +165,12 @@ public class TaxInvoiceVO {
 	@Column(name = "billingremarks",length = 30)
 	private String billingRemarks;
 	private double annexureSubTotal;
+	@Column(name = "transactionno")
+	private String trasactionNo;
+	@Column(name = "totalqty")
+	private Long totalQty;
+	@Column(name = "partyshortname")
+	private String partyShortName;
 
 	
 

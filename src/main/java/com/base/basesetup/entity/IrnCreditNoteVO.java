@@ -158,6 +158,8 @@ public class IrnCreditNoteVO {
 	private String billingRemarks;
 	@Column(name="partyid")
 	private String partyId;
+	@Column(name = "remainingamount", precision = 10, scale = 2)
+	private BigDecimal remainingAmount;
 	
 	@OneToMany(mappedBy = "irnCreditNoteVO", cascade = CascadeType.ALL)
 	@JsonManagedReference

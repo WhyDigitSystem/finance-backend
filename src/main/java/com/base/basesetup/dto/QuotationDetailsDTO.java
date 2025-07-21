@@ -1,5 +1,7 @@
 package com.base.basesetup.dto;
 
+import java.math.BigDecimal;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -8,15 +10,14 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class QuotationDetailsDTO {
-
 	private Long id;
-
 	private String description;
-
-	private Long unit;
-
-	private Long pricre;
-
-	private Long total;
+    private BigDecimal quantity;
+    private BigDecimal rate;
+    private BigDecimal amount;
+    private BigDecimal tax;
+//    private BigDecimal taxAmount;
+//    private BigDecimal subTotal;
+//    private BigDecimal baseAmount;
 
 }

@@ -113,6 +113,86 @@ public interface PaymentRepo extends JpaRepository<PaymentVO, Long> {
 			+ "    a.chargableamt,\r\n"
 			+ "    a.tdsamt,n.settamt having SUM(d.actbillcurramt - COALESCE(h.actbillcurramt, 0)) - COALESCE(n.settamt, 0)>0")
 	Set<Object[]> getPaymentFillGrid(Long orgId, String partyCode,String branchCode);
+	
+	@Query(nativeQuery = true, value = "SELECT p.onaccount - COALESCE(SUM(a2.settled), 0) AS netAmount,p.docid,p.docdate FROM payment p LEFT JOIN apadjustmentoffset a1 ON p.docid = a1.paymentdocid \r\n"
+			+ "LEFT JOIN apoffsetinvoicedetails a2 ON a2.apadjustmentoffsetid = a1.apadjustmentoffsetid\r\n"
+			+ "		WHERE p.orgid =?1 AND p.branchcode =?2 AND p.cancel = 0 AND p.partyname =?3 AND p.approvestatus = 'Approved' AND \r\n"
+			+ "		p.onaccount > 0 GROUP BY p.onaccount,  p.docid,p.docdate  HAVING p.onaccount - COALESCE(SUM(a2.settled), 0) > 0")
+	Set<Object[]> getAllPaymentByOrgIdAndBranchCode(Long orgId, String branchCode,String partyName);
+
+	PaymentVO findByOrgIdAndIdAndDocId(Long orgId, Long id, String docId);
+
+	
+	@Query(nativeQuery = true, value = "SELECT   \r\n"
+			+ "    a.finyear,  \r\n"
+			+ "    b.invno,  \r\n"
+			+ "    b.invdate,  \r\n"
+			+ "    a.docid,  \r\n"
+			+ "    a.docdate,  \r\n"
+			+ "    b.refno,  \r\n"
+			+ "    b.refdate,  \r\n"
+			+ "    a.partyname,  \r\n"
+			+ "    a.partycode,  \r\n"
+			+ "    a.paymentamt,  \r\n"
+			+ "    a.netamount,  \r\n"
+			+ "    a.onaccount,  \r\n"
+			+ "    a.chequeno,  \r\n"
+			+ "    a.chequedate,  \r\n"
+			+ "    a.tdsamt,  \r\n"
+			+ "    b.amount,  \r\n"
+			+ "    b.gstamount,  \r\n"
+			+ "    b.chargeamt,  \r\n"
+			+ "    b.settled,  \r\n"
+			+ "    b.outstanding,\r\n"
+			+ "    a.status,\r\n"
+			+ "    case when a.approvestatus is null then 'Not Appproved' else a.approvestatus end as approvestatus  \r\n"
+			+ "FROM   \r\n"
+			+ "    payment a,  \r\n"
+			+ "    paymentinvdtls b  \r\n"
+			+ "WHERE   \r\n"
+			+ "    a.paymentid = b.paymentid  \r\n"
+			+ "    AND a.orgid = ?1 \r\n"
+			+ "    AND (a.partyname = ?3 OR ?3= 'ALL')  \r\n"
+			+ "    AND a.finyear = ?2  \r\n"
+			+ "    AND (?4 IS NULL OR a.docdate >=?4)  \r\n"
+			+ "    AND (?5 IS NULL OR a.docdate <=?5)  \r\n"
+			+ "    and (a.branchcode =?6  OR ?6 = 'ALL')\r\n"
+			+ "ORDER BY   \r\n"
+			+ "    a.createdon DESC")
+	Set<Object[]> getPaymentDetails(Long orgId, String finYear, String partyname, String fromDate, String toDate, String branchCode);
+
+	
+	@Query(nativeQuery = true, value = "SELECT   \r\n"
+			+ "    a.finyear,   \r\n"
+			+ "    a.docid,   \r\n"
+			+ "    a.docdate,   \r\n"
+			+ "    a.partyname,  \r\n"
+			+ "    a.partycode,  \r\n"
+			+ "    a.chequeno,   \r\n"
+			+ "    a.chequedate,   \r\n"
+			+ "    a.paymentamt,   \r\n"
+			+ "    a.netamount,  \r\n"
+			+ "    a.tdsamt,   \r\n"
+			+ "    a.onaccount,   \r\n"
+			+ "    a.bankcashacc,\r\n"
+			+ "    a.status,\r\n"
+			+ "    case when\r\n"
+			+ "    a.approvestatus is null then 'Not Appproved' else a.approvestatus end as approvestatus\r\n"
+			+ "FROM   \r\n"
+			+ "    payment a  \r\n"
+			+ "WHERE   \r\n"
+			+ "    a.orgid = ?1  \r\n"
+			+ "    AND (a.partyname = ?3 OR ?3 = 'ALL')  \r\n"
+			+ "    AND a.finyear = ?2  \r\n"
+			+ "    AND (?4 IS NULL OR a.docdate >= ?4)  \r\n"
+			+ "    AND (?5 IS NULL OR a.docdate <= ?5)  \r\n"
+			+ "    and (a.branchcode = ?6 OR ?6 = 'ALL')\r\n"
+			+ "ORDER BY   \r\n"
+			+ "    a.createdon DESC")
+	Set<Object[]> getPaymentSummary(Long orgId, String finYear, String partyname, String fromDate, String toDate,String branchCode);
+
+	@Query(nativeQuery = true, value = "select * from payment where orgid=?1 and docid=?2")
+	PaymentVO findAllPaymentByDocId(Long orgId, String docId);
 
 
 }

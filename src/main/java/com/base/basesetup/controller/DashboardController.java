@@ -1,4 +1,4 @@
-package com.base.basesetup.controller;
+ package com.base.basesetup.controller;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -482,6 +482,37 @@ public class DashboardController extends BaseController {
 		} else {
 			responseDTO = createServiceResponseError(responseObjectsMap,
 					"Payment  MonthWise Data Information Reterive Failed", errorMsg);
+		}
+
+		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+		return ResponseEntity.ok().body(responseDTO);
+	}
+
+	@GetMapping("/getTrailBalanceReport")
+	public ResponseEntity<ResponseDTO> getTrailBalanceReport(@RequestParam(required = true) String startDate,
+			@RequestParam(required = true) String endDate, @RequestParam(required = true) String branch,@RequestParam(required = true) String message, @RequestParam(required = true) String finYear) {
+		String methodName = "getTrailBalanceReport()";
+		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+		String errorMsg = null;
+		Map<String, Object> responseObjectsMap = new HashMap<>();
+		ResponseDTO responseDTO = null;
+		List<Map<String, Object>> receiptAmont = new ArrayList<>();
+
+		try {
+			receiptAmont = dashboardService.getTrailBalanceReport(startDate,endDate, branch, message, finYear);
+		} catch (Exception e) {
+			errorMsg = e.getMessage();
+			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+		}
+
+		if (StringUtils.isBlank(errorMsg)) {
+			responseObjectsMap.put(CommonConstant.STRING_MESSAGE,
+					"TrailBalance From  Data Information  retrieved successfully");
+			responseObjectsMap.put("Payment", receiptAmont);
+			responseDTO = createServiceResponse(responseObjectsMap);
+		} else {
+			responseDTO = createServiceResponseError(responseObjectsMap,
+					"TrailBalance From Data Information Reterive Failed", errorMsg);
 		}
 
 		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);

@@ -101,10 +101,10 @@ public class BankingWithdrawalVO {
 	private String updatedBy;
 
 	@Column(name = "active")
-	private boolean active;
+	private boolean active=true;
 
 	@Column(name = "cancel")
-	private boolean cancel;
+	private boolean cancel=false;
 
 	@Column(name = "cancelremarks", length = 50)
 	private String cancelRemarks;
@@ -120,6 +120,12 @@ public class BankingWithdrawalVO {
 
 	@Column(name = "screenname", length = 25)
 	private String screenName = "BANKINGWITHDRAWAL";
+	
+	@Column(name = "purvoucherno", length = 50)
+	private String purVoucherNo;
+	@Column(name = "purvoucherdate")
+	private LocalDate purVoucherDate;
+	
     
 	@OneToMany(mappedBy = "bankingWithdrawalVO", cascade = CascadeType.ALL)
 	@JsonManagedReference

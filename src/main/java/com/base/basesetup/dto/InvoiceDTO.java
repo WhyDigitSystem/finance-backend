@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 public class InvoiceDTO {
 
 	private Long id;
+	private String finYear;
 	private Long orgId;
 	private String createdBy;
 	private String poDate;
@@ -19,14 +20,10 @@ public class InvoiceDTO {
 	private String companyAddress;
 	private String vendorAddress;
 	private String deliveryAddress;
+	private String remarks;
 	private String termsAndConditions;
-	private Long subtotal;
-	private Integer sgst;
-	private Integer cgst;
-	private Long total;
-	private String gstType;
-	private Integer igst;
-	private String modifiedBy;
+	private String vendorName;
+	private String gstIn;
 
 
 	

@@ -1,6 +1,7 @@
 package com.base.basesetup.repo;
 
 import java.util.List;
+
 import java.util.Set;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -113,7 +114,7 @@ public interface TaxInvoiceRepo extends JpaRepository<TaxInvoiceVO, Long> {
 			+ "    )\r\n"
 			+ "    AND a.orgid = ?3\r\n"
 			+ "    AND (a.branchcode = ?4 OR ?4 = 'ALL')\r\n"
-			+ "    AND (e.partycode = ?5 OR ?5 = 'ALL')\r\n"
+			+ "    AND (e.partycode = ?5 OR ?5 = 'ALL') and a.finyear=?6\r\n"
 			+ "GROUP BY\r\n"
 			+ "    a.orgid, a.branchcode, a.vid, a.vdate, a.joborderno, c.docid, c.docdate, \r\n"
 			+ "    e.partyshortname, e.controllingoff, a.billcurr, a.billcurrrate, a.totalinvamountbc, \r\n"
@@ -161,7 +162,7 @@ public interface TaxInvoiceRepo extends JpaRepository<TaxInvoiceVO, Long> {
 			+ "    )\r\n"
 			+ "    AND a.orgid = ?3\r\n"
 			+ "    AND (a.branchcode = ?4 OR ?4 = 'ALL')\r\n"
-			+ "    AND (e.partycode = ?5 OR ?5 = 'ALL')\r\n"
+			+ "    AND (e.partycode = ?5 OR ?5 = 'ALL') and a.finyear=?6\r\n"
 			+ "GROUP BY\r\n"
 			+ "    a.orgid, a.branchcode, a.vid, a.vdate, a.jobno, e.partyshortname, e.controllingoff, \r\n"
 			+ "    a.billcurr, a.billcurrrate, a.totalinvamountbc, a.totalinvamountlc, \r\n"
@@ -171,7 +172,7 @@ public interface TaxInvoiceRepo extends JpaRepository<TaxInvoiceVO, Long> {
 			+ "ORDER BY\r\n"
 			+ "    vid, vdate")
 	Set<Object[]> getReportDetailsForSalesRegister( String fromDate, String toDate, Long orgId,
-			String branchCode, String partyCode);
+			String branchCode, String partyCode, String finYear);
 
 	@Query(nativeQuery = true,value = "SELECT SUM(a.amount) \r\n"
 			+ "FROM (\r\n"
@@ -469,9 +470,160 @@ public interface TaxInvoiceRepo extends JpaRepository<TaxInvoiceVO, Long> {
 			+ "ORDER BY MONTH(docdate)\r\n"
 			+ ")a  where monthname =?3")
 	Set<Object[]> getRevenueMonthWisePayment(Long orgId, Long finYear, String monthName);	
+	
 
+//	@Query(nativeQuery = true,value="select * from taxinvoice a,irncreditnote a1  where a.orgid=a1.orgid and a.partycode=a1.partycode and a.docid=a1.originbillno\r\n"
+//			+ " and a.approvestatus=a1.approvestatus and a.orgid=?1 and a.partyname=?2")
+//	List<TaxInvoiceVO> getCheck(Long orgId, String party);
+
+	
+	@Query(nativeQuery = true, value = "SELECT \r\n"
+			+ "    a.transactionno,\r\n"
+			+ "    a.transactiondate,\r\n"
+			+ "    m.kitid,\r\n"
+			+ "    m.kitname,\r\n"
+			+ "    m.kitqty\r\n"
+			+ "FROM \r\n"
+			+ "    mim a\r\n"
+			+ "LEFT JOIN \r\n"
+			+ "    mimdetails m ON a.mimid = m.mimid\r\n"
+			+ "WHERE \r\n"
+			+ "    a.transactionno NOT IN (\r\n"
+			+ "        SELECT transno FROM taxinvoiceannexure\r\n"
+			+ "    )\r\n"
+			+ "    AND a.cancel = 0\r\n"
+			+ "    AND a.orgid = ?1\r\n"
+			+ "")
+		Set<Object[]> getFillGridForTaxInvoice(Long orgId);
+		
+		
+		@Query(nativeQuery = true, value = "SELECT transactionno\r\n"
+				+ "FROM taxinvoice\r\n"
+				+ "WHERE (?3 IS NOT NULL AND docid = ?3)\r\n"
+				+ "\r\n"
+				+ "UNION\r\n"
+				+ "\r\n"
+				+ "SELECT a.transactionno\r\n"
+				+ "FROM mim a\r\n"
+				+ "WHERE (\r\n"
+				+ "        ?3 IS NULL \r\n"
+				+ "        OR NOT EXISTS (\r\n"
+				+ "            SELECT 1 \r\n"
+				+ "            FROM taxinvoice b \r\n"
+				+ "            WHERE b.docid = ?3\r\n"
+				+ "        )\r\n"
+				+ "    )\r\n"
+				+ "AND a.cancel = 0\r\n"
+				+ "AND a.receiver = ?2\r\n"
+				+ "AND a.orgid = ?1\r\n"
+				+ "AND a.transactionno NOT IN (\r\n"
+				+ "    SELECT ax.transno\r\n"
+				+ "    FROM taxinvoiceannexure ax\r\n"
+				+ "    JOIN taxinvoice b ON ax.taxinvoiceid = b.taxinvoiceid\r\n"
+				+ "    WHERE b.approvestatus = 'Approved'\r\n"
+				+ ")\r\n"
+				+ "")
+	Set<Object[]> getMimFillGridgettransaction(Long orgId,String Receiver,String docId);
+
+
+@Query(nativeQuery = true, value = "SELECT a.transactionno, a.transactiondate, m.kitid, m.kitname, m.kitqty \r\n"
+		+ "FROM mim a\r\n"
+		+ "LEFT JOIN mimdetails m ON a.mimid = m.mimid\r\n"
+		+ "WHERE a.transactionno NOT IN (select  transno from taxinvoiceannexure a, taxinvoice b where a.taxinvoiceid = b.taxinvoiceid and approvestatus ='Approved')\r\n"
+		+ "AND a.cancel = 0\r\n"
+		+ "AND a.orgid = ?1\r\n"
+		+ "AND FIND_IN_SET(a.transactionno, ?2)\r\n"
+		+ "GROUP BY a.transactionno, a.transactiondate, m.kitid, m.kitname, m.kitqty, a.cancel")
+Set<Object[]> getMimFillGridgetKitDetails(Long orgId, String transactionNo);
+
+@Query(nativeQuery = true, value = "SELECT originbillno, vid, totalinvamountlc  FROM irncreditnote WHERE orgid =?1 AND originbillno =?2 AND approvestatus is Null")
+Set<Object[]> getOrginBillNoBased(Long orgId, String orginBillNo);
+
+
+@Query(nativeQuery = true, value = "select * from taxinvoice where screencode=?1 and docid=?2")
+TaxInvoiceVO getTaxInvoiceByDocIdandScreenCode(String screenCode, String docId);
+
+@Query(nativeQuery = true, value = "SELECT \r\n"
+		+ "    a.finyear,\r\n"
+		+ "    a.Vid,\r\n"
+		+ "    a.Vdate,\r\n"
+		+ "    a.docid,\r\n"
+		+ "    a.docdate,\r\n"
+		+ "    a.invoiceno,\r\n"
+		+ "    a.invoicedate,\r\n"
+		+ "    a.gsttype,\r\n"
+		+ "    a.partyname,\r\n"
+		+ "    a.placeofsupply,\r\n"
+		+ "    a.totalchargeamountlc,\r\n"
+		+ "    a.totalinvamountlc,\r\n"
+		+ "    a.totaltaxamountlc,\r\n"
+		+ "    b.chargetype,\r\n"
+		+ "    b.chargecode,\r\n"
+		+ "    b.chargename,\r\n"
+		+ "    b.description,\r\n"
+		+ "    b.currency,\r\n"
+		+ "    b.gstpercent,\r\n"
+		+ "    b.qty,\r\n"
+		+ "    b.rate,\r\n"
+		+ "    b.taxable,\r\n"
+		+ "    b.billamount,\r\n"
+		+ "    b.gstamount,\r\n"
+		+ "    b.billamount + b.gstamount AS totalLcAmount,\r\n"
+		+ "    CASE \r\n"
+		+ "        WHEN a.approvestatus IS NULL THEN 'Not Appproved' \r\n"
+		+ "        ELSE a.approvestatus \r\n"
+		+ "    END AS approvestatus\r\n"
+		+ "FROM \r\n"
+		+ "    taxinvoice a,\r\n"
+		+ "    taxinvoicedetails b\r\n"
+		+ "WHERE \r\n"
+		+ "    a.taxinvoiceid = b.taxinvoiceid\r\n"
+		+ "    AND a.orgid = ?1\r\n"
+		+ "    AND (a.partyname = ?3 OR ?3 = 'ALL')\r\n"
+		+ "    AND a.finyear = ?2\r\n"
+		+ "    AND (?4 IS NULL OR a.vdate >= ?4)\r\n"
+		+ "    AND (?5 IS NULL OR a.vdate <= ?5)\r\n"
+		+ "    AND (a.branchcode = ?6 OR ?6 = 'ALL')\r\n"
+		+ "ORDER BY \r\n"
+		+ "    a.createdon DESC")
+Set<Object[]> getTaxinvoiceDetails(Long orgId, String finYear, String partyname, String fromDate, String toDate,String branchCode);
+
+@Query(nativeQuery = true, value = "SELECT \r\n"
+		+ "    a.finyear, \r\n"
+		+ "    a.Vid, \r\n"
+		+ "    a.Vdate, \r\n"
+		+ "    a.docid, \r\n"
+		+ "    a.docdate, \r\n"
+		+ "    a.invoiceno, \r\n"
+		+ "    a.invoicedate, \r\n"
+		+ "    a.gsttype,\r\n"
+		+ "    a.partyname, \r\n"
+		+ "    a.placeofsupply, \r\n"
+		+ "    a.totalchargeamountlc, \r\n"
+		+ "    a.totalinvamountlc, \r\n"
+		+ "    a.totaltaxamountlc,\r\n"
+		+ "    case when\r\n"
+		+ "    a.approvestatus is null then 'Not Appproved' else a.approvestatus end as approvestatus\r\n"
+		+ "FROM \r\n"
+		+ "    taxinvoice a\r\n"
+		+ "WHERE \r\n"
+		+ "    a.orgid = ?1\r\n"
+		+ "    AND (a.partyname = ?3 OR ?3 = 'ALL')\r\n"
+		+ "    AND a.finyear = ?2\r\n"
+		+ "    AND (?4 IS NULL OR a.vdate >= ?4)\r\n"
+		+ "    AND (?5 IS NULL OR a.vdate <= ?5)\r\n"
+		+ "    AND (a.branchcode = ?6 OR ?6 = 'ALL')\r\n"
+		+ "ORDER BY \r\n"
+		+ "    a.createdon DESC")
+Set<Object[]> getTaxinvoiceSummary(Long orgId, String finYear, String partyname, String fromDate, String toDate,String branchCode);
  
 
-
+@Query(nativeQuery = true, value = "select p.currency,d.sellingexrate from partymaster p ,vw_exrates d where \r\n"
+		+ " p.currency=d.currency  and p.orgid=d.orgid and p.orgid=?1\r\n"
+		+ " and  p.partycode=?2")
+Set<Object[]> getCurrencyFromPartyMaster(Long orgId, String partyCode);
+	
+//@Query(nativeQuery = true, value = "select a1.currency,a1.lcamount,a1.billamount  from taxinvoice a ,taxinvoicedetails a1 where a.taxinvoiceid=a.taxinvoiceid and a1.ledger=?1")
+//Set<Object[]> getCurrency(String entryKey);
 	
 }

@@ -8,8 +8,11 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class VendorsStateDTO {
+	
+	
 
 	private Long id;
+	private String country;
 	private String state;
 	private String stateCode;
 	private Long stateNo;

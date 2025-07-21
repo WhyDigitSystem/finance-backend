@@ -13,14 +13,18 @@ import lombok.NoArgsConstructor;
 public class IssueManifestProviderDTO {
 
 	private Long id;
-
-	private String transactionNo;
-
-	private LocalDate transactionDate;
+	
+	private String finYear;
+	
+	private String branch;
 
 	private LocalDate dispatchDate;
 
 	private String transactionType;
+	
+	private String fromWarehouse;
+
+	private String warehouseAddress;
 
 	private String sender;
 
@@ -47,8 +51,14 @@ public class IssueManifestProviderDTO {
 	private boolean cancel;
 
 	private String createdBy;
+	
+	private String receiverName;
 
 	private Long orgId;
+
+	private String locationUnit;
+	
+	private String branchCode;
 	
 	private List<IssueManifestProviderDetailsDTO> issueManifestProviderDetailsDTO;
 	

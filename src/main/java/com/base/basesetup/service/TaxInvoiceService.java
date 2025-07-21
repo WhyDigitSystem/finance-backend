@@ -3,11 +3,11 @@ package com.base.basesetup.service;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
 import com.base.basesetup.dto.TaxInvoiceDTO;
+import com.base.basesetup.entity.IrnCreditNoteVO;
 import com.base.basesetup.entity.PartyMasterVO;
 import com.base.basesetup.entity.TaxInvoiceVO;
 import com.base.basesetup.exception.ApplicationException;
@@ -29,6 +29,10 @@ public interface TaxInvoiceService {
 	List<Map<String, Object>> getChargeType(Long orgId);
 
 	List<Map<String, Object>> getChargeCodeByChargeType(Long orgId, String chargeType);
+	
+	List<Map<String, Object>> getTaxinvoiceDetails(Long orgId,String finYear, String partyname,String fromDate, String toDate,String branchCode);
+	
+	List<Map<String, Object>> getTaxinvoiceSummary(Long orgId,String finYear, String partyname,String fromDate, String toDate,String branchCode);
 
 	List<Map<String, Object>> getCurrencyAndExrates(Long orgId);
 
@@ -51,10 +55,17 @@ public interface TaxInvoiceService {
 	List<Map<String, Object>> getJobCardForTaxInvoice(Long orgId, String partyCode);
 
 	List<Map<String, Object>> getReportDetailsForSalesRegister(String fromDate, String toDate,
-			Long orgId, String branchCode, String partyCode);
+			Long orgId, String branchCode, String partyCode,String finYear);
 
 	List<Map<String, Object>> getDsahboardRevenue(Long orgId, String billMonth, String finYear);
 
+	// hyperlink for sales register
+	TaxInvoiceVO getTaxInvoiceByDocIdandScreenCode(String ScreenCode, String docId);
+	//screencode
+	
+	IrnCreditNoteVO getCreditNoteByDocIdandScreenCode(String ScreenCode, String docId);
 
+	List<Map<String, Object>> getCurrencyFromPartyMaster(Long orgId,String partyCode);
+	
 
 }

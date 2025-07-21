@@ -34,7 +34,6 @@ public class PaymentDTO {
 	private BigDecimal paymentAmt;
 	private String tdsAcc;
 	private BigDecimal tdsAmt;
-	private BigDecimal receiptAmt;
 	private String currency;
 	private BigDecimal currencyAmt;
 
@@ -43,6 +42,7 @@ public class PaymentDTO {
 	private String createdBy;
 
 	private String finYear;
+	private String status;
 	
 
 	private List<PaymentInvDtlsDTO> paymentInvDtlsDTO;

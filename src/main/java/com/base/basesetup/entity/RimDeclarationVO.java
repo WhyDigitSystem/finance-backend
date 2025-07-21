@@ -1,18 +1,12 @@
 package com.base.basesetup.entity;
 
-import java.util.List;
-
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
-
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -36,10 +30,10 @@ public class RimDeclarationVO {
 	private String note1Bold="rental model and not sale to customer.";
 	private String note2="2.No E-Way Bill is required for Empty Cargo Containers. Refer, Rule 14 of Central Goods and Services Tax (Second Amendment) Rules, 2018.";
 	
-	@OneToMany(mappedBy = "rimDeclarationVO",cascade = CascadeType.ALL)
-	@JsonManagedReference
-	private List<RetrievalManifestProviderVO> retrievalManifestProviderVO;
-	
+//	@OneToMany(mappedBy = "rimDeclarationVO", fetch = FetchType.LAZY)
+//    @JsonManagedReference
+//    private List<RetrievalManifestProviderVO> retrievalManifestProviderVOs;
+//	
 	
 
 }
