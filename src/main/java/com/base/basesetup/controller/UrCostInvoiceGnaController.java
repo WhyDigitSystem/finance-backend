@@ -339,5 +339,33 @@ public class UrCostInvoiceGnaController extends BaseController {
 
 	}
 	
+	@GetMapping("/getChargeAccountFromChargeLedger")
+	public ResponseEntity<ResponseDTO> getChargeAccountFromChargeLedger(@RequestParam Long orgId,@RequestParam String chargeLedger) {
+		String methodName = "getChargeAccountFromChargeLedger()";
+		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+		String errorMsg = null;
+		Map<String, Object> responseObjectsMap = new HashMap<>();
+		ResponseDTO responseDTO = null;
+		List<Map<String, Object>> mapp = new ArrayList<>();
+
+		try {
+			mapp = urCostInvoiceGnaService.getChargeAccountFromChargeLedger(orgId,chargeLedger);
+		} catch (Exception e) {
+			errorMsg = e.getMessage();
+			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+		}
+
+		if (StringUtils.isBlank(errorMsg)) {
+			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "ChargeLedger  retrieved successfully");
+			responseObjectsMap.put("chargeCodeVO", mapp);
+			responseDTO = createServiceResponse(responseObjectsMap);
+		} else {
+			responseDTO = createServiceResponseError(responseObjectsMap, "Failed to retrieve ChargeLedger ", errorMsg);
+		}
+
+		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+		return ResponseEntity.ok().body(responseDTO);
+	}
+	
 	
 }
