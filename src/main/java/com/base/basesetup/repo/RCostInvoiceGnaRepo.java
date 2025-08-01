@@ -126,7 +126,7 @@ public interface RCostInvoiceGnaRepo extends JpaRepository<RCostInvoiceGnaVO, Lo
 			+ "        JOIN tdscostinvoice d ON a.costinvoiceid = d.costinvoiceid\r\n"
 			+ "    WHERE \r\n"
 			+ "        a.cancel = 'F'\r\n"
-			+ "        AND a.orgid = 202502\r\n"
+			+ "        AND a.orgid =?1 \r\n"
 			+ "       AND (?2 = 'ALL' OR a.branchcode = ?2)\r\n"
 			+ "        AND ((?3 IS NULL AND ?4 IS NULL) OR c.vdate BETWEEN DATE(?3) AND DATE(?4))\r\n"
 			+ "        AND (?5 = 'ALL' OR a.suppliercode = ?5)and a.finyear=?6 group by a.branchcode,\r\n"
