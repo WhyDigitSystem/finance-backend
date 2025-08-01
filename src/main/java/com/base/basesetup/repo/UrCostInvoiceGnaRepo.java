@@ -80,5 +80,8 @@ public interface UrCostInvoiceGnaRepo extends JpaRepository<UrCostInvoiceGnaVO, 
 	@Query(nativeQuery = true, value = "select * from urcostinvoicegna where screencode=?1 and docid=?2")
 	UrCostInvoiceGnaVO getUrCostInvoiceByDocIdandScreenCode(String screenCode, String docId);
 
+	@Query(nativeQuery = true,value = "select accountgroupname from groupledger where orgid=?1 and groupname=?2  and active = true  order by accountgroupname")
+	Set<Object[]> getChargeAccountFromChargeLedger(Long orgId, String chargeLedger);
+
 
 }

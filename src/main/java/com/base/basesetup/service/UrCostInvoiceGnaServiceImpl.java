@@ -748,4 +748,19 @@ public class UrCostInvoiceGnaServiceImpl implements UrCostInvoiceGnaService {
 				return urCostInvoiceGnaRepo.getUrCostInvoiceByDocIdandScreenCode(ScreenCode, docId);
 	}
 	
+	@Override
+	public List<Map<String, Object>> getChargeAccountFromChargeLedger(Long orgId,String chargeLedger) {
+		Set<Object[]> chCode = urCostInvoiceGnaRepo.getChargeAccountFromChargeLedger(orgId,chargeLedger);
+		return getChargeAccount(chCode);
+	}
+
+	private List<Map<String, Object>> getChargeAccount(Set<Object[]> chCode) {
+		List<Map<String, Object>> List1 = new ArrayList<>();
+		for (Object[] ch : chCode) {
+			Map<String, Object> map = new HashMap<>();
+			map.put("chargeAccount", ch[0] != null ? ch[0].toString() : ""); // Empty string if null
+			List1.add(map);
+		}
+		return List1;
+	}
 }
