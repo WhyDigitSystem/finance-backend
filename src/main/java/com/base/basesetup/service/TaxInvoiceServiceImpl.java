@@ -187,7 +187,7 @@ public class TaxInvoiceServiceImpl implements TaxInvoiceService {
 		taxInvoiceVO.setRecipientGSTIN(taxInvoiceDTO.getRecipientGSTIN().toUpperCase());
 		taxInvoiceVO.setPlaceOfSupply(taxInvoiceDTO.getPlaceOfSupply().toUpperCase());
 		taxInvoiceVO.setAddressType(taxInvoiceDTO.getAddressType().toUpperCase());
-		taxInvoiceVO.setAddress(taxInvoiceDTO.getAddress().toUpperCase());
+		taxInvoiceVO.setAddress(taxInvoiceDTO.getAddress());
 		taxInvoiceVO.setPinCode(taxInvoiceDTO.getPinCode());
 		taxInvoiceVO.setStatus(taxInvoiceDTO.getStatus().toUpperCase());
 		taxInvoiceVO.setGstType(taxInvoiceDTO.getGstType().toUpperCase());
