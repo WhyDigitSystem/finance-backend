@@ -577,12 +577,12 @@ public interface ArapAdjustmentsRepo extends JpaRepository<ArapAdjustmentsVO, Lo
 			+ " 			 			                     and orgid =?4  \r\n"
 			+ " 			 			                     and (subledgername = ?2 or ?2 = 'ALL' ) GROUP BY orgid, subledgercode, subledgername, partytype, branch, currency, creditdays, creditlimit \r\n"
 			+ " 			 UNION \r\n"
-			+ " 			 SELECT 2 AS no, '' AS orgid, '' AS subledgercode, subledgername AS partyname, 'Total' AS subledgername, '' AS partytype, '' AS branch,'' currency,'' creditdays, '' creditlimit, \r\n"
+			+ " 			 SELECT 2 AS no, '' AS orgid, '' AS subledgercode, '' AS partyname, 'Total' AS subledgername, '' AS partytype, '' AS branch,'' currency,'' creditdays, '' creditlimit, \r\n"
 			+ " 			 SUM(amount) AS amount, SUM(outstanding) AS outstanding, SUM(ABS(unadjusted)) AS unadjusted, SUM(totaldue) AS totaldue  \r\n"
 			+ " 			 FROM a where ( branch = ?3 or ?3 = 'ALL' )   \r\n"
 			+ " 			 			                     and orgid =?4  \r\n"
-			+ " 			 			                     and (subledgername = ?2 or ?2 = 'ALL' ) GROUP BY subledgername, currency, creditdays, creditlimit \r\n"
-			+ " 			 ORDER BY partyname, no")
+			+ " 			 			                     and (subledgername = ?2 or ?2 = 'ALL' )\r\n"
+			+ " 			 ORDER BY  no,partyname")
 	Set<Object[]> findArapAdjustments(String Asondate, String partyname, String branch, Long orgId, String pdate);
 
 	@Query(nativeQuery = true, value = "SELECT  orgid, \r\n" + "    arapdetailsid,\r\n" + "    doctypecode,\r\n"
@@ -807,11 +807,11 @@ public interface ArapAdjustmentsRepo extends JpaRepository<ArapAdjustmentsVO, Lo
 			+ "FROM a where  ( branch = ?3 or ?3 = 'ALL' )  \r\n" + "			                     and orgid =?4 \r\n"
 			+ "			                     and (subledgername = ?2 or ?2 = 'ALL' ) GROUP BY orgid, subledgercode, subledgername, partytype, branch, currency, creditdays, creditlimit\r\n"
 			+ "UNION\r\n"
-			+ "SELECT 2 AS no, '' AS orgid, '' AS subledgercode, subledgername AS partyname, 'Total' AS subledgername, '' AS partytype, '' AS branch,'' currency,'' creditdays, '' creditlimit,\r\n"
+			+ "SELECT 2 AS no, '' AS orgid, '' AS subledgercode, '' AS partyname, 'Total' AS subledgername, '' AS partytype, '' AS branch,'' currency,'' creditdays, '' creditlimit,\r\n"
 			+ "SUM(amount) AS amount, SUM(outstanding) AS outstanding, SUM(ABS(unadjusted)) AS unadjusted, SUM(totaldue) AS totaldue \r\n"
 			+ "FROM a where ( branch = ?3 or ?3 = 'ALL' )  \r\n" + "			                     and orgid =?4 \r\n"
-			+ "			                     and (subledgername = ?2 or ?2 = 'ALL' ) GROUP BY subledgername, currency, creditdays, creditlimit\r\n"
-			+ "ORDER BY partyname, no")
+			+ "			                     and (subledgername = ?2 or ?2 = 'ALL' )\r\n"
+			+ "ORDER BY  no,partyname")
 	Set<Object[]> findAPOutstanding(String Asondate, String partyname, String branch, Long orgId, String pdate);
 
 	@Query(nativeQuery = true, value = "select * from arapadjustments a where a.docid=?1  and a.refno=?2 and a.orgid=?3 and a.subledgercode=?4")
