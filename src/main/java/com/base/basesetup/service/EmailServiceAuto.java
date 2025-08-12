@@ -1,6 +1,7 @@
 package com.base.basesetup.service;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -13,6 +14,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.mail.MessagingException;
@@ -203,6 +205,21 @@ public class EmailServiceAuto {
 
 	private String getBaseName(String fileName) {
 		return fileName.substring(0, fileName.lastIndexOf('.'));
+	}
+	
+	public List<Map<String, Object>> getEmployeeEmail(Long orgId, String employeeCodeOrEmail) {
+		Set<Object[]> chType = employeeRepository.getEmployeeEmail(orgId, employeeCodeOrEmail);
+		return getEmployeeEmail(chType);
+	}
+
+	private List<Map<String, Object>> getEmployeeEmail(Set<Object[]> chType) {
+		List<Map<String, Object>> List1 = new ArrayList<>();
+		for (Object[] ch : chType) {
+			Map<String, Object> map = new HashMap<>();
+			map.put("email", ch[0] != null ? ch[0].toString() : "");
+			List1.add(map);
+		}
+		return List1;
 	}
 
 }

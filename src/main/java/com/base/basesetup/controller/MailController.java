@@ -5,9 +5,12 @@ import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
@@ -19,10 +22,14 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.base.basesetup.common.CommonConstant;
+import com.base.basesetup.common.UserConstants;
 import com.base.basesetup.dto.EmailRequestDTO;
+import com.base.basesetup.dto.ResponseDTO;
 import com.base.basesetup.service.EmailServiceAuto;
 
 import lombok.extern.slf4j.Slf4j;
@@ -151,4 +158,32 @@ public class MailController extends BaseController {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Error sending emails: " + e.getMessage(), e);
 		}
 	}
+	
+	@GetMapping("/getEmployeeEmail")
+	public ResponseEntity<ResponseDTO> getEmployeeEmail(@RequestParam Long orgId,  @RequestParam String employeeCodeOrEmail) {
+		String methodName = "getEmployeeEmail()";
+		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+		String errorMsg = null;
+		Map<String, Object> responseObjectsMap = new HashMap<>();
+		ResponseDTO responseDTO = null;
+		List<Map<String, Object>> mapp = new ArrayList<>();
+		try {
+			mapp = emailServiceAuto.getEmployeeEmail(orgId,employeeCodeOrEmail);
+		} catch (Exception e) {
+			errorMsg = e.getMessage();
+			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+		}
+
+		if (StringUtils.isBlank(errorMsg)) {
+			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "Email Details retrieved successfully");
+			responseObjectsMap.put("mapp", mapp);
+			responseDTO = createServiceResponse(responseObjectsMap);
+		} else {
+			responseDTO = createServiceResponseError(responseObjectsMap, "Email to retrieve tax invoice Details", errorMsg);
+		}
+
+		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+		return ResponseEntity.ok().body(responseDTO);
+	}
+
 }
