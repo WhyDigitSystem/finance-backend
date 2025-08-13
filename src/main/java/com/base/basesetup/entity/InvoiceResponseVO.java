@@ -34,7 +34,7 @@ public class InvoiceResponseVO {
 	private String docid;
 	
 	@Lob
-	@Column(columnDefinition = "BLOB")
+	@Column(columnDefinition = "LONGTEXT")
 	private String response;
 	
 	private String iserror;

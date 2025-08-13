@@ -39,7 +39,7 @@ public class EwayBillResponseVO {
 	private CreatedUpdatedDate createdUpdatedDate = new CreatedUpdatedDate();
 	
 	@Lob
-	@Column(columnDefinition = "BLOB")
+	@Column(columnDefinition = "LONGTEXT")
 	private String response;
 	
 	

@@ -193,7 +193,7 @@ public class EInvoiceVO {
 	private String ewbvalidtill;
 		
 	@Lob
-	@Column(columnDefinition = "BLOB")
+	@Column(columnDefinition = "LONGTEXT")
 	private String signedqrcode;
 	
 	

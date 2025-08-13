@@ -37,11 +37,11 @@ public class IRNResponseVO {
 	private String Irn;
 
 	@Lob
-	@Column(columnDefinition = "BLOB")
+	@Column(columnDefinition = "LONGTEXT")
 	private String SignedInvoice;
 
 	@Lob
-	@Column(columnDefinition = "BLOB")
+	@Column(columnDefinition = "LONGTEXT")
 	private String SignedQRCode;
 
 	private String status;
