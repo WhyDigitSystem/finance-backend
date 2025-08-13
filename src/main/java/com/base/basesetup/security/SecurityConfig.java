@@ -40,7 +40,7 @@ public class SecurityConfig {
 						"/api/arreceivable/**", "/api/transaction/**", "/api/GlobalParam/**", "/api/payable/**","/api/kitController/**",
 						"/api/documentType/**", "/api/taxInvoice/**", "/api/arapAdjustments/**","/api/reportController/**",
 						"/api/costdebitnote/**", "/api/costInvoice/**","/api/irnCreditNote/**","/api/multipleDocIdGeneration/**","/api/sampleExcel/**"
-						,"/api/rCostInvoiceGna/**","/api/UrCostInvoiceGna/**","/api/offSetcontroller/**","/api/aradjustmentoffset/**","/api/warehouser/**","/api/costEstimation/**","/api/mail/**","/api/qrbarcode/**")
+						,"/api/rCostInvoiceGna/**","/api/UrCostInvoiceGna/**","/api/offSetcontroller/**","/api/aradjustmentoffset/**","/api/warehouser/**","/api/costEstimation/**","/api/mail/**","/api/qrbarcode/**","/api/ticketcontroller/**")
 
 
 
