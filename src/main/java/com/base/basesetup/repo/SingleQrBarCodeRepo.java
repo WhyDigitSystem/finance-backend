@@ -16,5 +16,7 @@ public interface SingleQrBarCodeRepo extends JpaRepository<SingleQrBarCodeVO, Lo
 
 	@Query(nativeQuery = true, value = "select * from singleqrbarcode where singleqrbarcodeid=?1")
 	SingleQrBarCodeVO findSingleQrBarCodeById(Long id);
+
+	boolean existsByQrBarCodeValueAndOrgId(String qrBarCodeValue, Long orgId);
 	
 }

@@ -344,13 +344,29 @@ public class QrBarCodeServiceImpl implements QrBarCodeService {
 			singleQrBarCodeVO = singleQrBarCodeRepo.findById(singleQrBarCodeDTO.getId())
 					.orElseThrow(() -> new ApplicationException("Invalid QrBarCode details"));
 
+			
 			singleQrBarCodeVO.setUpdatedBy(singleQrBarCodeDTO.getCreatedBy());
+			
+			if (!singleQrBarCodeVO.getQrBarCodeValue().equalsIgnoreCase(singleQrBarCodeDTO.getQrBarCodeValue())) {
+				if (singleQrBarCodeRepo.existsByQrBarCodeValueAndOrgId(singleQrBarCodeDTO.getQrBarCodeValue(), singleQrBarCodeDTO.getOrgId())) {
+					String errorMessage = String.format("This QrBarCodeValue: %s Already Exists in This Organization",
+							singleQrBarCodeDTO.getQrBarCodeValue());
+					throw new ApplicationException(errorMessage);
+				}
+				singleQrBarCodeVO.setQrBarCodeValue(singleQrBarCodeDTO.getQrBarCodeValue().toUpperCase());
+			}
+
 			createUpdateSingleQrBarCodeVOBySingleQrBarCodeDTO(singleQrBarCodeDTO, singleQrBarCodeVO);
 
 			message = "SingleQrBarCode updated Successfully";
 
 		} else {
 
+			if (singleQrBarCodeRepo.existsByQrBarCodeValueAndOrgId(singleQrBarCodeDTO.getQrBarCodeValue(), singleQrBarCodeDTO.getOrgId())) {
+				String errorMessage = String.format("This QrBarCode: %s Already Exists in This Organization",
+						singleQrBarCodeDTO.getQrBarCodeValue());
+				throw new ApplicationException(errorMessage);
+			}
 			createUpdateSingleQrBarCodeVOBySingleQrBarCodeDTO(singleQrBarCodeDTO, singleQrBarCodeVO);
 
 			singleQrBarCodeVO.setUpdatedBy(singleQrBarCodeDTO.getCreatedBy());
@@ -370,7 +386,7 @@ public class QrBarCodeServiceImpl implements QrBarCodeService {
 	private void createUpdateSingleQrBarCodeVOBySingleQrBarCodeDTO(@Valid SingleQrBarCodeDTO singleQrBarCodeDTO,
 			SingleQrBarCodeVO singleQrBarCodeVO) throws ApplicationException {
 
-		singleQrBarCodeVO.setQrBarCodeValue(singleQrBarCodeDTO.getQrBarCodeValue());
+		singleQrBarCodeVO.setQrBarCodeValue(singleQrBarCodeDTO.getQrBarCodeValue().toUpperCase());
 		singleQrBarCodeVO.setCount(singleQrBarCodeDTO.getCount());
 		singleQrBarCodeVO.setOrgId(singleQrBarCodeDTO.getOrgId());
 		singleQrBarCodeVO.setCancel(singleQrBarCodeDTO.isCancel());
