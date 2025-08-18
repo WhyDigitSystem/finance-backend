@@ -1,6 +1,5 @@
 	package com.base.basesetup.dto;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 

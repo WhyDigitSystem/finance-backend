@@ -22,9 +22,7 @@ import com.base.basesetup.common.CommonConstant;
 import com.base.basesetup.common.UserConstants;
 import com.base.basesetup.dto.OffSetDTO;
 import com.base.basesetup.dto.ResponseDTO;
-import com.base.basesetup.dto.TaxInvoiceDTO;
 import com.base.basesetup.entity.OffSetVO;
-import com.base.basesetup.entity.TaxInvoiceVO;
 import com.base.basesetup.service.OffSetService;
 
 @CrossOrigin

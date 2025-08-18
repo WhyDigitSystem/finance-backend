@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service;
 
 import com.base.basesetup.dto.UrCostInvoiceGnaDTO;
 import com.base.basesetup.entity.PartyMasterVO;
-import com.base.basesetup.entity.TaxInvoiceVO;
 import com.base.basesetup.entity.UrCostInvoiceGnaVO;
 import com.base.basesetup.exception.ApplicationException;
 

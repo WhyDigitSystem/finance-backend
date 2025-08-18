@@ -139,6 +139,28 @@ public class Views {
     			+ "    WHERE b.cancel = 0\r\n"
     			+ ") j \r\n"
     			+ "    ON h.orgid = j.orgid AND h.docid = j.docid");
+    	
+    	jdbcTemplate.execute("CREATE OR REPLACE  VIEW EINVOICEGENARATE\r\n"
+    			+ "(\r\n"
+    			+ "   DOCID,\r\n"
+    			+ "   DOCDATE\r\n"
+    			+ ")\r\n"
+    			+ "AS\r\n"
+    			+ "     SELECT docid, docdate\r\n"
+    			+ "       FROM einvoice\r\n"
+    			+ "      WHERE geneinvoice = 1 AND apicall = 0 AND ackno IS NULL\r\n"
+    			+ "   GROUP BY docid, docdate");
+    	
+    	jdbcTemplate.execute("CREATE OR REPLACE VIEW EWAYBILLGENERATE\r\n"
+    			+ "(\r\n"
+    			+ "   DOCID,\r\n"
+    			+ "   DOCDATE\r\n"
+    			+ ")\r\n"
+    			+ "AS\r\n"
+    			+ "     SELECT docid, docdate\r\n"
+    			+ "       FROM einvoice e\r\n"
+    			+ "      WHERE genewaybill = 1 AND eapicall = 0 AND ewbno IS NULL\r\n"
+    			+ "   GROUP BY docid, docdate");
    }
     
     

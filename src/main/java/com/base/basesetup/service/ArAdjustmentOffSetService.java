@@ -12,7 +12,6 @@ import com.base.basesetup.dto.ArAdjustmentOffSetDTO;
 import com.base.basesetup.entity.ApAdjustmentOffSetVO;
 import com.base.basesetup.entity.ArAdjustmentOffSetVO;
 import com.base.basesetup.entity.PaymentVO;
-import com.base.basesetup.entity.ReceiptVO;
 import com.base.basesetup.exception.ApplicationException;
 
 @Service
