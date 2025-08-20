@@ -47,7 +47,9 @@ public class EmailServiceAuto {
 	@Value("${email.bcc.address:}")
 	private String bccAddress;
 
-	@Value("${pdf.directory.path:C:/Users/Lenovo/Desktop/Email}")
+//	@Value("${pdf.directory.path:C:/Users/Lenovo/Desktop/Email}")
+	//244 Server
+	@Value("${pdf.directory.path:C:/Users/Administrator/Desktop/Email}")
 	public void setWatchDirectory(String path) {
 		this.watchDirectory = path;
 	}

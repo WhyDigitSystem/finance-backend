@@ -33,10 +33,10 @@ public interface CostEstimationService {
 
 
 	List<Map<String, Object>> getCostEstimationDetails(Long orgId, String finYear, String employeeName, String fromDate,
-			String toDate, String branchCode);
+			String toDate, String branchCode,String category);
 
 	List<Map<String, Object>> getCostEstimationSummary(Long orgId, String finYear, String employeeName, String fromDate,
-			String toDate, String branchCode);
+			String toDate, String branchCode,String category);
 
 
 	String uploadImageCostEstimationDetail(List<MultipartFile> files, Long costEstimationId, List<Long> detailsId)

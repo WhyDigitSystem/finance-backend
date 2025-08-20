@@ -224,7 +224,7 @@ public class CostEstimationController extends BaseController {
 	}
 	
 	@GetMapping("/getCostEstimationDetails")
-	public ResponseEntity<ResponseDTO> getCostEstimationDetails(@RequestParam Long orgId, @RequestParam(required = true) String finYear, @RequestParam String employeeName, String fromDate, String toDate,@RequestParam String branchCode) {
+	public ResponseEntity<ResponseDTO> getCostEstimationDetails(@RequestParam Long orgId, @RequestParam(required = true) String finYear, @RequestParam String employeeName, String fromDate, String toDate,@RequestParam String branchCode,@RequestParam String category) {
 		String methodName = "getCostEstimationDetails()";
 		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
 		String errorMsg = null;
@@ -232,7 +232,7 @@ public class CostEstimationController extends BaseController {
 		ResponseDTO responseDTO = null;
 		List<Map<String, Object>> mapp = new ArrayList<>();
 		try {
-			mapp = costEstimationService.getCostEstimationDetails(orgId, finYear, employeeName, fromDate, toDate,branchCode);
+			mapp = costEstimationService.getCostEstimationDetails(orgId, finYear, employeeName, fromDate, toDate,branchCode,category);
 		} catch (Exception e) {
 			errorMsg = e.getMessage();
 			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
@@ -253,7 +253,7 @@ public class CostEstimationController extends BaseController {
 	
 	@GetMapping("/getCostEstimationSummary")
 	public ResponseEntity<ResponseDTO> getCostEstimationSummary(@RequestParam Long orgId, @RequestParam(required = true) String finYear,@RequestParam
-			String employeeName, String fromDate, String toDate,@RequestParam String branchCode) {
+			String employeeName, String fromDate, String toDate,@RequestParam String branchCode,@RequestParam String category) {
 		String methodName = "getCostEstimationSummary()";
 		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
 		String errorMsg = null;
@@ -262,7 +262,7 @@ public class CostEstimationController extends BaseController {
 		List<Map<String, Object>> mapp = new ArrayList<>();
 
 		try {
-			mapp = costEstimationService.getCostEstimationSummary(orgId, finYear, employeeName, fromDate, toDate,branchCode);
+			mapp = costEstimationService.getCostEstimationSummary(orgId, finYear, employeeName, fromDate, toDate,branchCode,category);
 		} catch (Exception e) {
 			errorMsg = e.getMessage();
 			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
