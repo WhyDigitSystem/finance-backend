@@ -410,9 +410,9 @@ public class CostEstimationServiceImpl implements CostEstimationService {
 	
 	@Override
 	public List<Map<String, Object>> getCostEstimationDetails(Long orgId, String finYear, String employeeName, String fromDate,
-			String toDate, String branchCode) {
+			String toDate, String branchCode,String category) {
 		Set<Object[]> chType = costEstimationRepo.getCostEstimationDetails(orgId, finYear, employeeName, fromDate, toDate,
-				branchCode);
+				branchCode, category);
 		return getCostEstimationDetails(chType);
 	}
 
@@ -449,9 +449,9 @@ public class CostEstimationServiceImpl implements CostEstimationService {
 
 	@Override
 	public List<Map<String, Object>> getCostEstimationSummary(Long orgId, String finYear, String employeeName, String fromDate,
-			String toDate, String branchCode) {
+			String toDate, String branchCode,String category) {
 		Set<Object[]> chType = costEstimationRepo.getCostEstimationSummary(orgId, finYear, employeeName, fromDate, toDate,
-				branchCode);
+				branchCode, category);
 		return getCostEstimationSummary(chType);
 	}
 
