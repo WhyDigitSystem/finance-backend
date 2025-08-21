@@ -482,7 +482,7 @@ public class EInvoiceServiceImpl implements EInvoiceService {
 			// Call the service method with the collected docIds
 			if (!docIds.isEmpty()) {
 				System.out.println(" Process Success.");
-				createEinvoice(docIds);
+//				createEinvoice(docIds);
 
 			} else {
 				System.out.println("No docIds found to process.");
