@@ -787,8 +787,8 @@ public class APServiceImpl implements APService {
 		accountsVO.setBranchCode(paymentVO.getBranchCode());
 		accountsVO.setRefNo(paymentVO.getDocId());
 		accountsVO.setRefDate(paymentVO.getDocDate());
-		accountsVO.setVId(paymentVO.getDocId());
-		accountsVO.setVDate(paymentVO.getDocDate());
+		accountsVO.setVId(paymentVO.getChequeNo());
+		accountsVO.setVDate(paymentVO.getChequeDate());
 		accountsVO.setCurrency(paymentVO.getCurrency());
 		accountsVO.setRemarks(paymentVO.getCancelRemarks());
 		accountsVO.setFinYear(paymentVO.getFinYear());

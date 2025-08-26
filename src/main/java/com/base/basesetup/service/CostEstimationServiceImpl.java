@@ -242,8 +242,8 @@ public class CostEstimationServiceImpl implements CostEstimationService {
 		accountsVO.setOrgId(costEstimationVO.getOrgId());
 		accountsVO.setRefNo(costEstimationVO.getDocId());
 		accountsVO.setRefDate(costEstimationVO.getDocDate());
-//	    accountsVO.setVId(costInvoiceVO.getVId());
-//	    accountsVO.setVDate(costInvoiceVO.getVDate());
+	    accountsVO.setVId(costEstimationVO.getDocId());
+	    accountsVO.setVDate(costEstimationVO.getDocDate());
 //	    accountsVO.setDueDate(costInvoiceVO.getDueDate());
 		accountsVO.setAmountInWords(costEstimationVO.getAmountInWords());
 //	    accountsVO.setChargeableAmount(costInvoiceVO.getTotChargesLcAmt());
@@ -251,7 +251,7 @@ public class CostEstimationServiceImpl implements CostEstimationService {
 //	    accountsVO.setCreditDays(costInvoiceVO.getCreditDays());
 		accountsVO.setSourceScreen(costEstimationVO.getScreenName());
 		accountsVO.setSourceScreenCode(costEstimationVO.getScreenCode());
-//	    accountsVO.setRemarks(costEstimationVO.getRemarks());
+	    accountsVO.setRemarks(costEstimationVO.getApprovalRemarks());
 		accountsVO.setTotalDebitAmount(costEstimationVO.getTotalAmount());
 		accountsVO.setTotalCreditAmount(costEstimationVO.getTotalAmount());
 

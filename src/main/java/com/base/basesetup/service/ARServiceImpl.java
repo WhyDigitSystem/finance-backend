@@ -634,8 +634,8 @@ public class ARServiceImpl implements ARService {
 		accountsVO.setBranchCode(receiptVO.getBranchCode());
 		accountsVO.setRefNo(receiptVO.getDocId());
 		accountsVO.setRefDate(receiptVO.getDocDate());
-		accountsVO.setVId(receiptVO.getDocId());
-		accountsVO.setVDate(receiptVO.getDocDate());
+		accountsVO.setVId(receiptVO.getChequeUtiNo());
+		accountsVO.setVDate(receiptVO.getChequeUtiDate());
 		accountsVO.setCurrency(currency);
 		accountsVO.setExRate(BigDecimal.ONE);
 		accountsVO.setRemarks(receiptVO.getRemarks());
