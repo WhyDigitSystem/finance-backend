@@ -89,4 +89,7 @@ public interface APService {
 	PaymentVO approvePayment(Long orgId, Long id, String docId, String action, String actionBy)
 			throws ApplicationException;
 
+	List<Map<String, Object>> getPaybaleTdsDetailsReport(Long orgId, String partyName, String finYear, String fromDate,
+			String toDate, String branchName);
+
 }

@@ -853,5 +853,75 @@ public class ARServiceImpl implements ARService {
 	  return receiptRepo.getReceiptByDocId(docId);
 	
 	}
+	
+	//ReportTds
+	
+	@Override
+	public List<Map<String, Object>> getReceivableTdsDetailsReport(Long orgId, String partyName, String finYear, String fromDate,
+			String toDate,String branchName) {
+		Set<Object[]> chType = receiptRepo.getReceivableTdsDetailsReport(orgId, partyName, finYear, fromDate, toDate,branchName);
+		return getReceivableTdsDetailsReport(chType);
+	}
+
+	private List<Map<String, Object>> getReceivableTdsDetailsReport(Set<Object[]> chType) {
+		List<Map<String, Object>> List1 = new ArrayList<>();
+		for (Object[] ch : chType) {
+			Map<String, Object> map = new HashMap<>();
+			map.put("sNo", ch[0] != null ? ch[0].toString() : "");
+			map.put("docId", ch[1] != null ? ch[1].toString() : "");
+			map.put("docDate", ch[2] != null ? ch[2].toString() : "");
+			map.put("refNo", ch[3] != null ? ch[3].toString() : "");
+			map.put("refDate", ch[4] != null ? ch[4].toString() : "");
+			map.put("accountName", ch[5] != null ? ch[5].toString() : "");
+			map.put("customerName", ch[6] != null ? ch[6].toString() : "");
+			map.put("partyType", ch[7] != null ? ch[7].toString() : "");
+			map.put("gstNo", ch[8] != null ? ch[8].toString() : "");
+			map.put("panNo", ch[9] != null ? ch[9].toString() : "");
+			map.put("tanNo", ch[10] != null ? ch[10].toString() : "");
+			map.put("tdsAmount", ch[11] != null ? new BigDecimal(ch[11].toString()) : BigDecimal.ZERO);
+			
+//			map.put("gstAmount", ch[12] != null ? new BigDecimal(ch[12].toString()) : BigDecimal.ZERO);
+//			map.put("chargeAmount", ch[13] != null ? new BigDecimal(ch[13].toString()) : BigDecimal.ZERO);
+//			map.put("billAmount", ch[14] != null ? new BigDecimal(ch[14].toString()) : BigDecimal.ZERO);
+//			map.put("totalAmountLc", ch[15] != null ? new BigDecimal(ch[15].toString()) : BigDecimal.ZERO);
+			List1.add(map);
+		}
+		return List1;
+	}
+	
+//	
+//	@Override
+//	public List<Map<String, Object>> getReceivableTdsDetailsReport(Long orgId, String partyName, String finYear, String fromDate,
+//			String toDate,String branchName) {
+//		Set<Object[]> chType = receiptRepo.getReceivableTdsDetailsReport(orgId, partyName, finYear, fromDate, toDate,branchName);
+//		return getReceivableTdsDetailsReport(chType);
+//	}
+//
+//	private List<Map<String, Object>> getReceivableTdsDetailsReport(Set<Object[]> chType) {
+//		List<Map<String, Object>> List1 = new ArrayList<>();
+//		for (Object[] ch : chType) {
+//			Map<String, Object> map = new HashMap<>();
+//			map.put("sNo", ch[0] != null ? ch[0].toString() : "");
+//			map.put("docId", ch[1] != null ? ch[1].toString() : "");
+//			map.put("docDate", ch[2] != null ? ch[2].toString() : "");
+//			map.put("refNo", ch[3] != null ? ch[3].toString() : "");
+//			map.put("refDate", ch[4] != null ? ch[4].toString() : "");
+//			map.put("accountName", ch[5] != null ? ch[5].toString() : "");
+//			map.put("customerName", ch[6] != null ? ch[6].toString() : "");
+//			map.put("partyType", ch[7] != null ? ch[7].toString() : "");
+//			map.put("gstNo", ch[8] != null ? ch[8].toString() : "");
+//			map.put("panNo", ch[9] != null ? ch[9].toString() : "");
+//			map.put("tanNo", ch[10] != null ? ch[10].toString() : "");
+//			map.put("tdsAmount", ch[11] != null ? new BigDecimal(ch[11].toString()) : BigDecimal.ZERO);
+//			
+////			map.put("gstAmount", ch[12] != null ? new BigDecimal(ch[12].toString()) : BigDecimal.ZERO);
+////			map.put("amount", ch[13] != null ? new BigDecimal(ch[13].toString()) : BigDecimal.ZERO);
+////			map.put("chargeAmount", ch[14] != null ? new BigDecimal(ch[14].toString()) : BigDecimal.ZERO);
+////			map.put("netAmount", ch[15] != null ? new BigDecimal(ch[15].toString()) : BigDecimal.ZERO);
+//			List1.add(map);
+//		}
+//		return List1;
+//	}
+
 
 }
