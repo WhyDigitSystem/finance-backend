@@ -36,7 +36,7 @@ public interface UrCostInvoiceGnaRepo extends JpaRepository<UrCostInvoiceGnaVO, 
 			+ "           a1.orgid=?1  and a1.partymasterid=b.partymasterid and a.orgid=a1.orgid and a1.partycode=?2  order by a.currency")
 	Set<Object[]> getCurrencyAndExrateFromParty(Long orgId, String supplierCode);
 
-	@Query(nativeQuery = true, value = "select accountgroupname from groupledger where orgid=?1 and category in ('OTHERS','TAX','BANK') and active = true  order by accountgroupname")
+	@Query(nativeQuery = true, value = "select accountgroupname from groupledger where orgid=?1 and category in ('OTHERS','TAX','BANK') and type='Group' and  coalist='Expense' and groupname is not null  order by accountgroupname")
 	Set<Object[]> getChargeLedgerFromGroup(Long orgId);
 
 	@Query(nativeQuery = true, value = "select a.sectionname ,b.tcspercentage  from tdsmaster a , tdsmaster2 b where a.tdsmasterid=b.tdsmaster2id and a.orgid=?1 and a.section=?2 and a.active = 1  order by sectionname")
@@ -79,7 +79,7 @@ public interface UrCostInvoiceGnaRepo extends JpaRepository<UrCostInvoiceGnaVO, 
 	@Query(nativeQuery = true, value = "select * from urcostinvoicegna where screencode=?1 and docid=?2")
 	UrCostInvoiceGnaVO getUrCostInvoiceByDocIdandScreenCode(String screenCode, String docId);
 
-	@Query(nativeQuery = true,value = "select accountgroupname from groupledger where orgid=?1 and groupname=?2  and active = true  order by accountgroupname")
+	@Query(nativeQuery = true,value = "select accountgroupname from groupledger where orgid=?1 and groupname=?2  and type='ACCOUNT'  and active = 1  group by accountgroupname  order by accountgroupname")
 	Set<Object[]> getChargeAccountFromChargeLedger(Long orgId, String chargeLedger);
 
 

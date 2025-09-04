@@ -577,7 +577,7 @@ public class UrCostInvoiceGnaServiceImpl implements UrCostInvoiceGnaService {
 			List<ChargesUrCostInvoiceGnaVO> gstChargeList = urCostInvoiceGnaVO.getChargesUrCostInvoiceGnaVO();
 
 			for (ChargesUrCostInvoiceGnaVO gstVO : gstChargeList) {
-				String chargeLedger = gstVO.getChargeLedger();
+				String chargeLedger = gstVO.getChargeAccount();
 				String gstType = urCostInvoiceGnaVO.getGstType();
 				Long orgId1 = urCostInvoiceGnaVO.getOrgId();
 

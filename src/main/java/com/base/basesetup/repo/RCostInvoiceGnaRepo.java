@@ -28,7 +28,7 @@ public interface RCostInvoiceGnaRepo extends JpaRepository<RCostInvoiceGnaVO, Lo
 	@Query(value = "select a from PartyMasterVO a where a.orgId=?1 and a.partyType=?2 and a.active=true and a.gstRegistered='YES'")
 	List<PartyMasterVO> getAllVendorFromPartyMaster(Long orgId, String partyType);
 	
-	@Query(nativeQuery = true,value = "select accountgroupname from groupledger where orgid=?1 and category in ('OTHERS','TAX') and active = 1  order by accountgroupname")
+	@Query(nativeQuery = true,value = "select accountgroupname from groupledger where orgid=?1  and  type='ACCOUNT' and coalist='EXPENSE'  and active = 1 group by accountgroupname order by accountgroupname")
 	Set<Object[]> getChargeLedgerFromGroup(Long orgId);
 
 	@Query(nativeQuery = true,value = "select a.sectionname ,b.tcspercentage  from tdsmaster a , tdsmaster2 b where a.tdsmasterid=b.tdsmaster2id and a.orgid=?1 and a.section=?2 and a.active = 1  order by sectionname")

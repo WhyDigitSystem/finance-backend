@@ -983,14 +983,14 @@ public interface ReceiptRepo extends JpaRepository<ReceiptVO, Long> {
 			+ "ORDER BY subledgername,sno asc")
 	Set<Object[]> getApAgeing(Long orgId, String branch, String partyname, String asdate, String baseType);
 	
-	@Query(nativeQuery = true, value = "select 1 as sno, a.docid,a.docdate,a.refno,a.refdate,a1.accountname,r.customername,p.partytype,p.gstin,p.panno,p.tanno,r.tdsamt	 from accounts a,accountsdetails a1,receipt r, partymaster p,branch b\r\n"
+	@Query(nativeQuery = true, value = "select 1 as sno, a.vid,a.vdate,a.refno,a.refdate,a1.accountname,r.customername,p.partytype,p.gstin,p.panno,p.tanno,r.tdsamt	 from accounts a,accountsdetails a1,receipt r, partymaster p,branch b\r\n"
 			+ " where b.branch=r.branch and   p.partyname=r.customername  and  a.accountsid=a1.accountsid and a.refno=r.docid and a.sourcescreencode in('RT') and a1.accountname='TDS RECEIVABLE' and (b.branch=?6 or ?6='ALL')\r\n"
-			+ " and (r.customername=?2 or ?2='ALL') and a.docdate between ?4 and ?5 and r.finyear=?3 and r.orgid=?1 group by sno, a.docid,a.docdate,a.refno,a.refdate,a1.accountname,r.customername,p.partytype,p.gstin,p.panno,p.tanno,r.tdsamt\r\n"
+			+ " and (r.customername=?2 or ?2='ALL') and a.docdate between ?4 and ?5 and r.finyear=?3 and r.orgid=?1 group by sno, a.vid,a.vdate,a.refno,a.refdate,a1.accountname,r.customername,p.partytype,p.gstin,p.panno,p.tanno,r.tdsamt\r\n"
 			+ " union\r\n"
 			+ "SELECT \r\n"
 			+ "    2 AS sno,\r\n"
-			+ "    '' AS docid,\r\n"
-			+ "    NULL AS docdate,\r\n"
+			+ "    '' AS vid,\r\n"
+			+ "    NULL AS vdate,\r\n"
 			+ "    '' AS refno,\r\n"
 			+ "    NULL AS refdate,\r\n"
 			+ "    '' AS accountname,\r\n"
@@ -1017,7 +1017,7 @@ public interface ReceiptRepo extends JpaRepository<ReceiptVO, Long> {
 			+ "GROUP BY \r\n"
 			+ "    p.partytype\r\n"
 			+ "ORDER BY \r\n"
-			+ "    sno, docdate")
+			+ "    sno, vdate")
 	Set<Object[]> getReceivableTdsDetailsReport(Long orgId,String partyName,String finYear,String fromDate,String toDate,String branchName);
 	
 	

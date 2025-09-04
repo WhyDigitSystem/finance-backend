@@ -75,4 +75,8 @@ public interface TaxInvoiceService {
 	List<Map<String, Object>> getRevenueGstReport(Long orgId, String partyName, String finYear, String fromDate,
 			String toDate);
 
+	//Profit/Loss
+	
+	List<Map<String, Object>> getProfitAndLossReport(Long orgId, String fromDate, String toDate);
+
 }

@@ -788,8 +788,8 @@ public class APServiceImpl implements APService {
 		accountsVO.setBranchCode(paymentVO.getBranchCode());
 		accountsVO.setRefNo(paymentVO.getDocId());
 		accountsVO.setRefDate(paymentVO.getDocDate());
-		accountsVO.setVId(paymentVO.getChequeNo());
-		accountsVO.setVDate(paymentVO.getChequeDate());
+		accountsVO.setVId(paymentVO.getDocId());
+		accountsVO.setVDate(paymentVO.getDocDate());
 		accountsVO.setCurrency(paymentVO.getCurrency());
 		accountsVO.setRemarks(paymentVO.getCancelRemarks());
 		accountsVO.setFinYear(paymentVO.getFinYear());
@@ -1007,7 +1007,7 @@ public class APServiceImpl implements APService {
 			map.put("billAmount", ch[14] != null ? new BigDecimal(ch[14].toString()) : BigDecimal.ZERO);
 			map.put("totalAmountLc", ch[15] != null ? new BigDecimal(ch[15].toString()) : BigDecimal.ZERO);
 			map.put("tdsPercentage", ch[16] != null ? new BigDecimal(ch[16].toString()) : BigDecimal.ZERO);
-			map.put("totalAmountLc", ch[17] != null ? ch[17].toString() : 0);
+			map.put("gstPercentage", ch[17] != null ? ch[17].toString() : 0);
 			List1.add(map);
 		}
 		return List1;

@@ -1325,4 +1325,25 @@ public class TaxInvoiceServiceImpl implements TaxInvoiceService {
 		return List1;
 	}
 	
+	
+	//Profit&Loss
+	
+	@Override
+	public List<Map<String, Object>> getProfitAndLossReport(Long orgId,  String fromDate,
+			String toDate) {
+		Set<Object[]> chType = taxInvoiceRepo.getProfitAndLossReport(orgId, fromDate, toDate);
+		return getProfitAndLossReport(chType);
+	}
+
+	private List<Map<String, Object>> getProfitAndLossReport(Set<Object[]> chType) {
+		List<Map<String, Object>> List1 = new ArrayList<>();
+		for (Object[] ch : chType) {
+			Map<String, Object> map = new HashMap<>();
+			map.put("sNo", ch[0] != null ? ch[0].toString() : "");
+			map.put("accountName", ch[1] != null ? ch[1].toString() : "");
+			map.put("amount", ch[2] != null ? new BigDecimal(ch[2].toString()) : BigDecimal.ZERO);
+			List1.add(map);
+		}
+		return List1;
+	}
 }
