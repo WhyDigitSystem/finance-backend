@@ -268,8 +268,8 @@ public class ArapAdjustmentsServiceImpl implements ArapAdjustmentsService{
 
 	@Override
 	public List<Map<String, Object>> GetPendingRegisterDetails(String Partytype, String PartyName, String ScreenName,
-			Long orgId) {
-		Set<Object[]> mapp = arapAdjustmentsRepo.GetPendingRegisterDetails(Partytype,PartyName,ScreenName,orgId);
+			Long orgId,String finYear) {
+		Set<Object[]> mapp = arapAdjustmentsRepo.GetPendingRegisterDetails(Partytype,PartyName,ScreenName,orgId,finYear);
 		return GetPendingRegisterDetails(mapp);
 	}
 
@@ -291,6 +291,7 @@ public class ArapAdjustmentsServiceImpl implements ArapAdjustmentsService{
 			apageing.put("status", sup[10] != null ? sup[10].toString() : "");
 			apageing.put("amount", sup[11] != null ? sup[11].toString() : "");
 			apageing.put("sno", sup[12] != null ? sup[12].toString() : "");
+			apageing.put("finyear", sup[13] != null ? sup[13].toString() : "");
 			
 
 			apage.add(apageing);

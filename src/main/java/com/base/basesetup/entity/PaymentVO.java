@@ -164,6 +164,10 @@ public class PaymentVO {
 	@Column(name="approveon")
 	private String approveOn;
     
+	@Column(name = "purvoucherno", length = 50)
+	private String purVoucherNo;
+	@Column(name = "purvoucherdate")
+	private LocalDate purVoucherDate;
 	
 	@OneToMany(mappedBy = "paymentVO", cascade = CascadeType.ALL)
 	@JsonManagedReference

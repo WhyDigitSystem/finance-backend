@@ -23,6 +23,7 @@ import com.base.basesetup.dto.QuotationDetailsDTO;
 import com.base.basesetup.dto.RetrievalManifestProviderDTO;
 import com.base.basesetup.dto.RetrievalManifestProviderDetailsDTO;
 import com.base.basesetup.entity.DeclarationAndNotesVO;
+import com.base.basesetup.entity.DocumentTypeMappingDetailsVO;
 import com.base.basesetup.entity.InvoiceProductLinesVO;
 import com.base.basesetup.entity.InvoiceVO;
 import com.base.basesetup.entity.IssueManifestProviderDetailsVO;
@@ -32,6 +33,7 @@ import com.base.basesetup.entity.QuotationVO;
 import com.base.basesetup.entity.RetrievalManifestProviderDetailsVO;
 import com.base.basesetup.entity.RetrievalManifestProviderVO;
 import com.base.basesetup.exception.ApplicationException;
+import com.base.basesetup.repo.DocumentTypeMappingDetailsRepo;
 import com.base.basesetup.repo.InvoiceProductLinesRepo;
 import com.base.basesetup.repo.InvoiceRepo;
 import com.base.basesetup.repo.IssueManifestProviderDetailsRepo;
@@ -80,6 +82,9 @@ public class ReportServiceImpl implements ReportService {
 
 	@Autowired
 	QuotationDetailsRepo quotationDetailsRepo;
+	
+	@Autowired
+	DocumentTypeMappingDetailsRepo documentTypeMappingDetailsRepo;
 
 	// Invoice
 	@Override
@@ -189,75 +194,65 @@ public class ReportServiceImpl implements ReportService {
 	@Override
 	public Map<String, Object> createUpdateIssuemanifest(IssueManifestProviderDTO issueManifestProviderDTO)
 			throws ApplicationException {
+		
+		String screenCode = "MIM";
+		IssueManifestProviderVO issueManifestProviderVO = new IssueManifestProviderVO();
+		String message;
+		if (ObjectUtils.isNotEmpty(issueManifestProviderDTO.getId())) {
+
+			issueManifestProviderVO = issueManifestProviderRepo.findById(issueManifestProviderDTO.getId())
+					.orElseThrow(() -> new ApplicationException("MIM not found"));
+			issueManifestProviderVO.setUpdatedBy(issueManifestProviderDTO.getCreatedBy());
+			message = "IssueManifestProvider Updated Successfully";
+		} else {
+
+			String docId = issueManifestProviderRepo.getIssueManifestProviderDocId(issueManifestProviderDTO.getOrgId(), issueManifestProviderDTO.getFinYear(),
+					issueManifestProviderDTO.getBranchCode(), screenCode);
+			issueManifestProviderVO.setTransactionNo(docId);
+
+			// GETDOCID LASTNO +1
+			DocumentTypeMappingDetailsVO documentTypeMappingDetailsVO = documentTypeMappingDetailsRepo
+					.findByOrgIdAndFinYearAndBranchCodeAndScreenCode(issueManifestProviderDTO.getOrgId(),
+							issueManifestProviderDTO.getFinYear(), issueManifestProviderDTO.getBranchCode(), screenCode);
+			documentTypeMappingDetailsVO.setLastno(documentTypeMappingDetailsVO.getLastno() + 1);
+			documentTypeMappingDetailsRepo.save(documentTypeMappingDetailsVO);
+
+			issueManifestProviderVO.setCreatedBy(issueManifestProviderDTO.getCreatedBy());
+			issueManifestProviderVO.setUpdatedBy(issueManifestProviderDTO.getCreatedBy());
+			message = "IssueManifestProvider Created Successfully";
+		}
+		
 //		IssueManifestProviderVO issueManifestProviderVO = new IssueManifestProviderVO();
 //		String message = null;
-//		if (issueManifestProviderDTO.getId() != null) {
-//			// Update existing entity
+//		if (ObjectUtils.isEmpty(issueManifestProviderDTO.getId())) {
+//			if (issueManifestProviderRepo.existsByOrgIdAndTransactionNo(issueManifestProviderDTO.getOrgId(),
+//					issueManifestProviderDTO.getTransactionNo())) {
+//				String errorMessage = String.format("The TransactionNo: %s already exists This Organization.",
+//						issueManifestProviderDTO.getTransactionNo());
+//				throw new ApplicationException(errorMessage);
+//			}
+//			issueManifestProviderVO = new IssueManifestProviderVO();
+//			issueManifestProviderVO.setCreatedBy(issueManifestProviderDTO.getCreatedBy());
+//			issueManifestProviderVO.setUpdatedBy(issueManifestProviderDTO.getCreatedBy());
+//			message = "IssueManifestProvider Creation SuccessFully";
+//		} else {
+//
 //			issueManifestProviderVO = issueManifestProviderRepo.findById(issueManifestProviderDTO.getId())
 //					.orElseThrow(() -> new ApplicationException(
-//							"This Id Not Found Any Information, Invalid Id: " + issueManifestProviderDTO.getId()));
+//							"IssueManifestProvider not found with id: " + issueManifestProviderDTO.getId()));
 //			issueManifestProviderVO.setUpdatedBy(issueManifestProviderDTO.getCreatedBy());
 //			if (!issueManifestProviderVO.getTransactionNo().equals(issueManifestProviderDTO.getTransactionNo())) {
 //				if (issueManifestProviderRepo.existsByOrgIdAndTransactionNo(issueManifestProviderDTO.getOrgId(),
 //						issueManifestProviderDTO.getTransactionNo())) {
-//					throw new ApplicationException("TransactionNo already Exists");
+//					String errorMessage = String.format("The TransactionNo: %s already exists This Organization.",
+//							issueManifestProviderDTO.getTransactionNo());
+//					throw new ApplicationException(errorMessage);
 //				}
 //				issueManifestProviderVO.setTransactionNo(issueManifestProviderDTO.getTransactionNo());
-//
 //			}
-//			message = "IssueManifestProvider Updation Sucessfully";
-//
-//		} else {
-//
-//			issueManifestProviderVO = new IssueManifestProviderVO();
-//			issueManifestProviderVO.setCreatedBy(issueManifestProviderDTO.getCreatedBy());
-//			issueManifestProviderVO.setUpdatedBy(issueManifestProviderDTO.getCreatedBy());
-//			if (issueManifestProviderRepo.existsByOrgIdAndTransactionNo(issueManifestProviderDTO.getOrgId(),
-//					issueManifestProviderDTO.getTransactionNo())) {
-//				throw new ApplicationException("TransactionNo already Exists");
-//			}
-//			issueManifestProviderVO.setTransactionNo(issueManifestProviderDTO.getTransactionNo());
-//			message = "IssueManifestProvider Creatrion Sucessfully";
+//			message = "IssueManifestProvider Update Successfully";
 //		}
-//		getIssueManifestProviderVOFromIssueManifestProviderDTO(issueManifestProviderVO, issueManifestProviderDTO);
-//		issueManifestProviderRepo.save(issueManifestProviderVO);
-//
-//		// Prepare the response
-//		Map<String, Object> response = new HashMap<>();
-//		response.put("message", message);
-//		response.put("issueManifestProviderVO", issueManifestProviderVO);
-//		return response;
-
-		IssueManifestProviderVO issueManifestProviderVO = new IssueManifestProviderVO();
-		String message = null;
-		if (ObjectUtils.isEmpty(issueManifestProviderDTO.getId())) {
-			if (issueManifestProviderRepo.existsByOrgIdAndTransactionNo(issueManifestProviderDTO.getOrgId(),
-					issueManifestProviderDTO.getTransactionNo())) {
-				String errorMessage = String.format("The TransactionNo: %s already exists This Organization.",
-						issueManifestProviderDTO.getTransactionNo());
-				throw new ApplicationException(errorMessage);
-			}
-			issueManifestProviderVO = new IssueManifestProviderVO();
-			issueManifestProviderVO.setCreatedBy(issueManifestProviderDTO.getCreatedBy());
-			issueManifestProviderVO.setUpdatedBy(issueManifestProviderDTO.getCreatedBy());
-			message = "IssueManifestProvider Creation SuccessFully";
-		} else {
-
-			issueManifestProviderVO = issueManifestProviderRepo.findById(issueManifestProviderDTO.getId())
-					.orElseThrow(() -> new ApplicationException(
-							"IssueManifestProvider not found with id: " + issueManifestProviderDTO.getId()));
-			issueManifestProviderVO.setUpdatedBy(issueManifestProviderDTO.getCreatedBy());
-			if (!issueManifestProviderVO.getTransactionNo().equals(issueManifestProviderDTO.getTransactionNo())) {
-				if (issueManifestProviderRepo.existsByOrgIdAndTransactionNo(issueManifestProviderDTO.getOrgId(),
-						issueManifestProviderDTO.getTransactionNo())) {
-					String errorMessage = String.format("The TransactionNo: %s already exists This Organization.",
-							issueManifestProviderDTO.getTransactionNo());
-					throw new ApplicationException(errorMessage);
-				}
-				issueManifestProviderVO.setTransactionNo(issueManifestProviderDTO.getTransactionNo());
-			}
-			message = "IssueManifestProvider Update Successfully";
-		}
+	
 
 		getIssueManifestProviderVOFromIssueManifestProviderDTO(issueManifestProviderVO, issueManifestProviderDTO);
 		issueManifestProviderRepo.save(issueManifestProviderVO);
@@ -271,7 +266,6 @@ public class ReportServiceImpl implements ReportService {
 	private IssueManifestProviderVO getIssueManifestProviderVOFromIssueManifestProviderDTO(
 			IssueManifestProviderVO issueManifestProviderVO, IssueManifestProviderDTO issueManifestProviderDTO)
 			throws ApplicationException {
-		issueManifestProviderVO.setTransactionDate(issueManifestProviderDTO.getTransactionDate());
 		issueManifestProviderVO.setDispatchDate(issueManifestProviderDTO.getDispatchDate());
 		issueManifestProviderVO.setTransactionType(issueManifestProviderDTO.getTransactionType());
 		issueManifestProviderVO.setFromWarehouse(issueManifestProviderDTO.getFromWarehouse());
@@ -288,11 +282,12 @@ public class ReportServiceImpl implements ReportService {
 		issueManifestProviderVO.setVehicleNo(issueManifestProviderDTO.getVehicleNo());
 		issueManifestProviderVO.setDriverPhoneNo(issueManifestProviderDTO.getDriverPhoneNo());
 		issueManifestProviderVO.setLocationUnit(issueManifestProviderDTO.getLocationUnit());
-		issueManifestProviderVO.setTransactionNo(issueManifestProviderDTO.getTransactionNo());
 		issueManifestProviderVO.setActive(issueManifestProviderDTO.isActive());
 		issueManifestProviderVO.setCancel(issueManifestProviderDTO.isCancel());
 		issueManifestProviderVO.setOrgId(issueManifestProviderDTO.getOrgId());
 		issueManifestProviderVO.setFinYear(issueManifestProviderDTO.getFinYear());
+		issueManifestProviderVO.setBranch(issueManifestProviderDTO.getBranch());
+		issueManifestProviderVO.setBranchCode(issueManifestProviderDTO.getBranchCode());
 
 		if (ObjectUtils.isNotEmpty(issueManifestProviderDTO.getId())) {
 
@@ -343,42 +338,80 @@ public class ReportServiceImpl implements ReportService {
 
 		return issueManifestProviderRepo.findById(id);
 	}
+	
+	
+	@Override
+	public String getIssueManifestProviderDocId(Long orgId, String finYear, String branch, String branchCode) {
+		String ScreenCode = "MIM";
+		String result = issueManifestProviderRepo.getIssueManifestProviderDocId(orgId, finYear, branchCode, ScreenCode);
+		return result;
+	}
+	
+	
 
 	@Override
 	public Map<String, Object> createUpdateRetrievalManifest(RetrievalManifestProviderDTO retrievalManifestProviderDTO)
 			throws ApplicationException {
-		RetrievalManifestProviderVO retrievalManifestProviderVO = null;
-		String message = null;
-		if (retrievalManifestProviderDTO.getId() != null) {
-			// Update existing entity
+//		RetrievalManifestProviderVO retrievalManifestProviderVO = null;
+//		String message = null;
+//		if (retrievalManifestProviderDTO.getId() != null) {
+//			// Update existing entity
+//			retrievalManifestProviderVO = retrievalManifestProviderRepo.findById(retrievalManifestProviderDTO.getId())
+//					.orElseThrow(() -> new ApplicationException(
+//							"This Id Not Found Any Information, Invalid Id: " + retrievalManifestProviderDTO.getId()));
+//			retrievalManifestProviderVO.setUpdatedBy(retrievalManifestProviderDTO.getCreatedBy());
+//
+//			if (!retrievalManifestProviderVO.getTransactionNo()
+//					.equals(retrievalManifestProviderDTO.getTransactionNo())) {
+//				if (retrievalManifestProviderRepo.existsByOrgIdAndTransactionNo(retrievalManifestProviderDTO.getOrgId(),
+//						retrievalManifestProviderDTO.getTransactionNo())) {
+//					throw new ApplicationException("TransactionNo already Exists");
+//				}
+//				retrievalManifestProviderVO.setTransactionNo(retrievalManifestProviderDTO.getTransactionNo());
+//
+//			}
+//			message = "IssueManifestProvider Updation Sucessfully";
+//
+//		} else {
+//
+//			retrievalManifestProviderVO = new RetrievalManifestProviderVO();
+//			retrievalManifestProviderVO.setCreatedBy(retrievalManifestProviderDTO.getCreatedBy());
+//			retrievalManifestProviderVO.setUpdatedBy(retrievalManifestProviderDTO.getCreatedBy());
+//			if (retrievalManifestProviderRepo.existsByOrgIdAndTransactionNo(retrievalManifestProviderDTO.getOrgId(),
+//					retrievalManifestProviderDTO.getTransactionNo())) {
+//				throw new ApplicationException("TransactionNo already Exists");
+//			}
+//			retrievalManifestProviderVO.setTransactionNo(retrievalManifestProviderDTO.getTransactionNo());
+//			message = "IssueManifestProvider Creatrion Sucessfully";
+//		}
+		
+		String screenCode = "RM";
+		RetrievalManifestProviderVO retrievalManifestProviderVO = new RetrievalManifestProviderVO();
+		String message;
+		if (ObjectUtils.isNotEmpty(retrievalManifestProviderDTO.getId())) {
+
 			retrievalManifestProviderVO = retrievalManifestProviderRepo.findById(retrievalManifestProviderDTO.getId())
-					.orElseThrow(() -> new ApplicationException(
-							"This Id Not Found Any Information, Invalid Id: " + retrievalManifestProviderDTO.getId()));
+					.orElseThrow(() -> new ApplicationException("RIM found"));
 			retrievalManifestProviderVO.setUpdatedBy(retrievalManifestProviderDTO.getCreatedBy());
-
-			if (!retrievalManifestProviderVO.getTransactionNo()
-					.equals(retrievalManifestProviderDTO.getTransactionNo())) {
-				if (retrievalManifestProviderRepo.existsByOrgIdAndTransactionNo(retrievalManifestProviderDTO.getOrgId(),
-						retrievalManifestProviderDTO.getTransactionNo())) {
-					throw new ApplicationException("TransactionNo already Exists");
-				}
-				retrievalManifestProviderVO.setTransactionNo(retrievalManifestProviderDTO.getTransactionNo());
-
-			}
-			message = "IssueManifestProvider Updation Sucessfully";
-
+			message = "RetrievalManifestProvider Updated Successfully";
 		} else {
 
-			retrievalManifestProviderVO = new RetrievalManifestProviderVO();
+			String docId = retrievalManifestProviderRepo.getRetrievalManifestProviderDocId(retrievalManifestProviderDTO.getOrgId(), retrievalManifestProviderDTO.getFinYear(),
+					retrievalManifestProviderDTO.getBranchCode(), screenCode);
+			retrievalManifestProviderVO.setTransactionNo(docId);
+
+			// GETDOCID LASTNO +1
+			DocumentTypeMappingDetailsVO documentTypeMappingDetailsVO = documentTypeMappingDetailsRepo
+					.findByOrgIdAndFinYearAndBranchCodeAndScreenCode(retrievalManifestProviderDTO.getOrgId(),
+							retrievalManifestProviderDTO.getFinYear(), retrievalManifestProviderDTO.getBranchCode(), screenCode);
+			documentTypeMappingDetailsVO.setLastno(documentTypeMappingDetailsVO.getLastno() + 1);
+			documentTypeMappingDetailsRepo.save(documentTypeMappingDetailsVO);
+
 			retrievalManifestProviderVO.setCreatedBy(retrievalManifestProviderDTO.getCreatedBy());
 			retrievalManifestProviderVO.setUpdatedBy(retrievalManifestProviderDTO.getCreatedBy());
-			if (retrievalManifestProviderRepo.existsByOrgIdAndTransactionNo(retrievalManifestProviderDTO.getOrgId(),
-					retrievalManifestProviderDTO.getTransactionNo())) {
-				throw new ApplicationException("TransactionNo already Exists");
-			}
-			retrievalManifestProviderVO.setTransactionNo(retrievalManifestProviderDTO.getTransactionNo());
-			message = "IssueManifestProvider Creatrion Sucessfully";
+			message = "RetrievalManifestProvider Created Successfully";
 		}
+		
 		getRetrievalManifestProviderVOFromRetrievalManifestProviderDTO(retrievalManifestProviderVO,
 				retrievalManifestProviderDTO);
 		retrievalManifestProviderRepo.save(retrievalManifestProviderVO);
@@ -394,7 +427,6 @@ public class ReportServiceImpl implements ReportService {
 			RetrievalManifestProviderVO retrievalManifestProviderVO,
 			RetrievalManifestProviderDTO retrievalManifestProviderDTO) throws ApplicationException {
 
-		retrievalManifestProviderVO.setTransactionDate(retrievalManifestProviderDTO.getTransactionDate());
 		retrievalManifestProviderVO.setDispatchDate(retrievalManifestProviderDTO.getDispatchDate());
 		retrievalManifestProviderVO.setTransactionType(retrievalManifestProviderDTO.getTransactionType());
 		retrievalManifestProviderVO.setSender(retrievalManifestProviderDTO.getSender());
@@ -408,7 +440,11 @@ public class ReportServiceImpl implements ReportService {
 		retrievalManifestProviderVO.setActive(retrievalManifestProviderDTO.isActive());
 		retrievalManifestProviderVO.setCancel(retrievalManifestProviderDTO.isCancel());
 		retrievalManifestProviderVO.setOrgId(retrievalManifestProviderDTO.getOrgId());
+		retrievalManifestProviderVO.setReceiverGst(retrievalManifestProviderDTO.getReceiverGst());
+		retrievalManifestProviderVO.setCode(retrievalManifestProviderDTO.getCode());
 		retrievalManifestProviderVO.setFinYear(retrievalManifestProviderDTO.getFinYear());
+		retrievalManifestProviderVO.setBranch(retrievalManifestProviderDTO.getBranch());
+		retrievalManifestProviderVO.setBranchCode(retrievalManifestProviderDTO.getBranchCode());
 
 		if (retrievalManifestProviderDTO.getId() != null) {
 
@@ -430,6 +466,8 @@ public class ReportServiceImpl implements ReportService {
 			retrievalManifestProviderDetailsVO.setKitId(detailsDTO.getKitId());
 			retrievalManifestProviderDetailsVO.setKitName(detailsDTO.getKitName());
 			retrievalManifestProviderDetailsVO.setKitQty(detailsDTO.getKitQty());
+			retrievalManifestProviderDetailsVO.setActualQty(detailsDTO.getActualQty());
+			retrievalManifestProviderDetailsVO.setShortTageQty(detailsDTO.getAssetQty() - detailsDTO.getActualQty());
 			retrievalManifestProviderDetailsVO.setHsnCode(detailsDTO.getHsnCode());
 			retrievalManifestProviderDetailsVO.setRetrievalManifestProviderVO(retrievalManifestProviderVO);
 			detailsVOs.add(retrievalManifestProviderDetailsVO);
@@ -448,6 +486,14 @@ public class ReportServiceImpl implements ReportService {
 	@Override
 	public Optional<RetrievalManifestProviderVO> getRetrievalManifestProviderById(Long id) {
 		return retrievalManifestProviderRepo.findById(id);
+	}
+	
+	
+	@Override
+	public String getRetrievalManifestProviderDocId(Long orgId, String finYear, String branch, String branchCode) {
+		String ScreenCode = "RM";
+		String result = retrievalManifestProviderRepo.getRetrievalManifestProviderDocId(orgId, finYear, branchCode, ScreenCode);
+		return result;
 	}
 
 	// DECLARATION PART
@@ -642,9 +688,10 @@ public class ReportServiceImpl implements ReportService {
 			quotationDetailsVO.setTax(quotationDetailsDTO.getTax());
 
 			quotationDetailsVO.setAmount(quotationDetailsDTO.getQuantity().multiply(quotationDetailsDTO.getRate()));
-			taxAmount = quotationDetailsDTO.getTax().multiply(quotationDetailsDTO.getAmount())
+			taxAmount = quotationDetailsDTO.getTax().multiply(quotationDetailsVO.getAmount())
 					.divide(BigDecimal.valueOf(100));
 			quotationDetailsVO.setTaxAmount(taxAmount);
+			
 			subTotal = subTotal.add(quotationDetailsVO.getAmount());
 			totalTaxAmount = totalTaxAmount.add(quotationDetailsVO.getTaxAmount());
 
@@ -833,6 +880,8 @@ public class ReportServiceImpl implements ReportService {
 			doctype.put("amount", sup[4] != null ? new BigDecimal(sup[4].toString()) : BigDecimal.ZERO);
 			doctype.put("hsnCode", sup[5] != null ? Long.parseLong(sup[5].toString()) : 0L);
 			doctype.put("kitQty", sup[6] != null ? new BigDecimal(sup[6].toString()) : BigDecimal.ZERO);
+			doctype.put("sender", sup[7] != null ? sup[7].toString() : "");
+			doctype.put("wareHouse", sup[8] != null ? sup[8].toString() : "");
 			list1.add(doctype);
 		}
 		return list1;
@@ -857,6 +906,7 @@ public class ReportServiceImpl implements ReportService {
 			doctype.put("amount", sup[4] != null ? new BigDecimal(sup[4].toString()) : BigDecimal.ZERO);
 			doctype.put("hsnCode", sup[5] != null ? Long.parseLong(sup[5].toString()) : 0L);
 			doctype.put("kitQty", sup[6] != null ? new BigDecimal(sup[6].toString()) : BigDecimal.ZERO);
+			doctype.put("receiver", sup[7] != null ? sup[7].toString() : "");
 			list1.add(doctype);
 		}
 		return list1;

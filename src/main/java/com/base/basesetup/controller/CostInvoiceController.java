@@ -1,6 +1,5 @@
 package com.base.basesetup.controller;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -27,7 +26,6 @@ import com.base.basesetup.dto.CostInvoiceDTO;
 import com.base.basesetup.dto.ResponseDTO;
 import com.base.basesetup.entity.CostDebitNoteVO;
 import com.base.basesetup.entity.CostInvoiceVO;
-import com.base.basesetup.entity.IrnCreditNoteVO;
 import com.base.basesetup.entity.PartyMasterVO;
 import com.base.basesetup.service.CostInvoiceService;
 
@@ -749,6 +747,36 @@ public class CostInvoiceController extends BaseController {
 			responseDTO = createServiceResponse(responseObjectsMap);
 		} else {
 			responseDTO = createServiceResponseError(responseObjectsMap, "CostInvoice Summary Details to retrieve ", errorMsg);
+		}
+
+		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+		return ResponseEntity.ok().body(responseDTO);
+	}
+	
+	
+	@GetMapping("/getCostGstReport")
+	public ResponseEntity<ResponseDTO> getCostGstReport(@RequestParam Long orgId, @RequestParam String partyName,
+			@RequestParam String finYear, @RequestParam String fromDate, @RequestParam String toDate) {
+		String methodName = "getCostGstReport()";
+		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+		String errorMsg = null;
+		Map<String, Object> responseObjectsMap = new HashMap<>();
+		ResponseDTO responseDTO = null;
+		List<Map<String, Object>> mapp = new ArrayList<>();
+
+		try {
+			mapp = costInvoiceService.getCostGstReport(orgId, partyName, finYear, fromDate, toDate);
+		} catch (Exception e) {
+			errorMsg = e.getMessage();
+			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+		}
+
+		if (StringUtils.isBlank(errorMsg)) {
+			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "CostGstReport retrieved successfully");
+			responseObjectsMap.put("mapp", mapp);
+			responseDTO = createServiceResponse(responseObjectsMap);
+		} else {
+			responseDTO = createServiceResponseError(responseObjectsMap, "Failed to retrieve  CostGstReport", errorMsg);
 		}
 
 		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);

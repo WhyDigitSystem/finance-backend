@@ -18,7 +18,6 @@ import javax.persistence.Table;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import com.base.basesetup.dto.CreatedUpdatedDate;
-import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import lombok.AllArgsConstructor;
@@ -181,6 +180,11 @@ public class ReceiptVO {
 	@DateTimeFormat(pattern = "dd-MM-yyyy hh:mm:ss a")
 	@Column(name="approveon")
 	private String approveOn;
+	
+	@Column(name = "purvoucherno", length = 50)
+	private String purVoucherNo;
+	@Column(name = "purvoucherdate")
+	private LocalDate purVoucherDate;
 
 	@OneToMany(mappedBy = "receiptVO", cascade = CascadeType.ALL)
 	@JsonManagedReference

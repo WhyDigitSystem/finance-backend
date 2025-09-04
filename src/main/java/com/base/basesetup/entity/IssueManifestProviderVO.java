@@ -35,12 +35,12 @@ public class IssueManifestProviderVO {
 	private Long id;
 	@Column(name = "orgid")
 	private Long orgId;
-	@Column(name = "finyear")
+	@Column(name = "finyear",length=5)
 	private String finYear;
 	@Column(name = "transactionno")
 	private String transactionNo;
 	@Column(name = "transactiondate")
-	private LocalDate transactionDate;
+	private LocalDate transactionDate =LocalDate.now();
 	@Column(name = "dispatchdate")
 	private LocalDate dispatchDate;
 	@Column(name = "transactiontype")
@@ -93,6 +93,14 @@ public class IssueManifestProviderVO {
 	private String receiverName;
 	@Column(name = "locationunit")
 	private String locationUnit;
+	@Column(name = "branchcode",length = 10)
+	private String branchCode;
+	@Column(name = "branch")
+	private String branch;
+	@Column(name = "screencode",length = 30)
+	private String screenCode="MIM";
+	@Column(name = "screenname",length = 30)
+	private String screenName="ISSUEMANIFESTPROVIDER";
 
 
 	@JsonGetter("active")

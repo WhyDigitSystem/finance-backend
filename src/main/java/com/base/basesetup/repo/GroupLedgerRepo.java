@@ -61,7 +61,7 @@ GroupLedgerVO getOrgIdAndSubAccountCode(Long orgId, String parentCode);
 		+ "LEFT JOIN \r\n"
 		+ "    groupledger c ON c.parentcode = b.accountcode AND c.orgid = b.orgid\r\n"
 		+ "WHERE \r\n"
-		+ "    a.orgid = 202502 AND a.accountcode < 100\r\n"
+		+ "    a.orgid = ?1 AND a.accountcode < 100\r\n"
 		+ "ORDER BY \r\n"
 		+ "    CAST(a.accountcode AS UNSIGNED) ASC,\r\n"
 		+ "    CAST(b.accountcode AS UNSIGNED) ASC,\r\n"

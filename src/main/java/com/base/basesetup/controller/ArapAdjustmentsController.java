@@ -263,7 +263,8 @@ public class ArapAdjustmentsController extends BaseController {
 	}
 	
 	@GetMapping("/GetPendingRegisterDetails")
-	public ResponseEntity<ResponseDTO>  GetPendingRegisterDetails(String Partytype , String PartyName ,String ScreenName,Long orgId) {
+	public ResponseEntity<ResponseDTO>  GetPendingRegisterDetails(@RequestParam String Partytype ,@RequestParam String PartyName , @RequestParam String ScreenName,
+	@RequestParam Long orgId,@RequestParam String finYear) {
 		String methodName = "GetArapAgeing()";
 		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
 		String errorMsg = null;
@@ -271,7 +272,7 @@ public class ArapAdjustmentsController extends BaseController {
 		ResponseDTO responseDTO = null;
 		List<Map<String, Object>> mapp = new ArrayList<>();
 		try {
-			mapp = arapAdjustmentsService.GetPendingRegisterDetails(Partytype,PartyName,ScreenName,orgId);
+			mapp = arapAdjustmentsService.GetPendingRegisterDetails(Partytype,PartyName,ScreenName,orgId,finYear);
 		} catch (Exception e) {
 			errorMsg = e.getMessage();
 			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);

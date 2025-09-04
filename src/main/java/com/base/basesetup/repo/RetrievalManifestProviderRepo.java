@@ -51,7 +51,7 @@ public interface RetrievalManifestProviderRepo extends JpaRepository<RetrievalMa
 	
 	@Query(value = 
 			  "SELECT *\r\n"
-			  + "FROM finance_aip.rim a\r\n"
+			  + "FROM rim a\r\n"
 			  + "WHERE ?1 = 'RIM'\r\n"
 			  + "  AND a.orgid = ?2\r\n"
 			  + "  AND (a.sender = ?3 OR ?3 = 'ALL')\r\n"
@@ -60,5 +60,8 @@ public interface RetrievalManifestProviderRepo extends JpaRepository<RetrievalMa
 			  + "  AND (?5 IS NULL OR a.transactiondate <= ?5) order by a.transactionno , a.transactiondate",
 			  nativeQuery = true)
 List<RetrievalManifestProviderVO> findRIMReports(String type, Long orgId, String sender, String finYear, String toDate, String fromDate);
+
+	@Query(nativeQuery = true,value="select concat(prefixfield,lpad(lastno,4,0)) AS docid from documenttypemappingdetails where orgid=?1 and finyear=?2 and branchcode=?3 and screencode=?4")
+	String getRetrievalManifestProviderDocId(Long orgId, String finYear, String branchCode, String screenCode);
 
 }

@@ -571,11 +571,9 @@ public class ApController extends BaseController {
 	// Ap Outstanding
 
 	@GetMapping("/getAPOutstanding")
-	public ResponseEntity<ResponseDTO> getAPOutstanding(@RequestParam(required = true) String Asondate, 
-			@RequestParam(required = true) String partyname,@RequestParam(required = true) String branch,  
-			@RequestParam(required = true)  Long orgId, 
-			@RequestParam(required = false) String pdate
-		) {
+	public ResponseEntity<ResponseDTO> getAPOutstanding(@RequestParam(required = true) String Asondate,
+			@RequestParam(required = true) String partyname, @RequestParam(required = true) String branch,
+			@RequestParam(required = true) Long orgId, @RequestParam(required = false) String pdate) {
 		String methodName = "getAPOutstanding()";
 		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
 		String errorMsg = null;
@@ -583,7 +581,7 @@ public class ApController extends BaseController {
 		ResponseDTO responseDTO = null;
 		List<Map<String, Object>> APOutstanding = new ArrayList<>();
 		try {
-			APOutstanding = apService.getAPOutstanding(Asondate, partyname,branch,orgId,pdate);
+			APOutstanding = apService.getAPOutstanding(Asondate, partyname, branch, orgId, pdate);
 		} catch (Exception e) {
 			errorMsg = e.getMessage();
 			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
@@ -650,7 +648,7 @@ public class ApController extends BaseController {
 	}
 
 	@GetMapping("/getPaymentDetails")
-	public ResponseEntity<ResponseDTO> getPaymentDetails(@RequestParam Long orgId,@RequestParam String finYear,
+	public ResponseEntity<ResponseDTO> getPaymentDetails(@RequestParam Long orgId, @RequestParam String finYear,
 			@RequestParam String partyname, String fromDate, String toDate, @RequestParam String branchCode) {
 		String methodName = "getPaymentDetails()";
 		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
@@ -659,7 +657,7 @@ public class ApController extends BaseController {
 		ResponseDTO responseDTO = null;
 		List<Map<String, Object>> paymentVO = new ArrayList<>();
 		try {
-			paymentVO = apService.getPaymentDetails(orgId,finYear,  partyname, fromDate, toDate, branchCode);
+			paymentVO = apService.getPaymentDetails(orgId, finYear, partyname, fromDate, toDate, branchCode);
 		} catch (Exception e) {
 			errorMsg = e.getMessage();
 			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
@@ -678,7 +676,7 @@ public class ApController extends BaseController {
 	}
 
 	@GetMapping("/getPaymentSummary")
-	public ResponseEntity<ResponseDTO> getPaymentSummary(@RequestParam Long orgId,@RequestParam String finYear,
+	public ResponseEntity<ResponseDTO> getPaymentSummary(@RequestParam Long orgId, @RequestParam String finYear,
 			@RequestParam String partyname, String fromDate, String toDate, @RequestParam String branchCode) {
 		String methodName = "getPaymentSummary()";
 		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
@@ -687,7 +685,7 @@ public class ApController extends BaseController {
 		ResponseDTO responseDTO = null;
 		List<Map<String, Object>> paymentVO = new ArrayList<>();
 		try {
-			paymentVO = apService.getPaymentSummary(orgId,finYear, partyname, fromDate, toDate, branchCode);
+			paymentVO = apService.getPaymentSummary(orgId, finYear, partyname, fromDate, toDate, branchCode);
 		} catch (Exception e) {
 			errorMsg = e.getMessage();
 			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
@@ -730,6 +728,37 @@ public class ApController extends BaseController {
 		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
 		return ResponseEntity.ok().body(responseDTO);
 
+	}
+
+	@GetMapping("/getPaybaleTdsDetailsReport")
+	public ResponseEntity<ResponseDTO> getPaybaleTdsDetailsReport(@RequestParam Long orgId,
+			@RequestParam String partyName, @RequestParam String finYear, @RequestParam String fromDate,
+			@RequestParam String toDate, @RequestParam String branchName) {
+		String methodName = "getPaybaleTdsDetailsReport()";
+		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+		String errorMsg = null;
+		Map<String, Object> responseObjectsMap = new HashMap<>();
+		ResponseDTO responseDTO = null;
+		List<Map<String, Object>> mapp = new ArrayList<>();
+
+		try {
+			mapp = apService.getPaybaleTdsDetailsReport(orgId, partyName, finYear, fromDate, toDate, branchName);
+		} catch (Exception e) {
+			errorMsg = e.getMessage();
+			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+		}
+
+		if (StringUtils.isBlank(errorMsg)) {
+			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "PaybleTdsReport retrieved successfully");
+			responseObjectsMap.put("mapp", mapp);
+			responseDTO = createServiceResponse(responseObjectsMap);
+		} else {
+			responseDTO = createServiceResponseError(responseObjectsMap, "Failed to retrieve  PaybleTdsReport",
+					errorMsg);
+		}
+
+		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+		return ResponseEntity.ok().body(responseDTO);
 	}
 
 }

@@ -16,7 +16,6 @@ import com.base.basesetup.dto.RolesDTO;
 import com.base.basesetup.dto.RolesPermissionHeaderDTO;
 import com.base.basesetup.dto.SignUpFormDTO;
 import com.base.basesetup.dto.UserResponseDTO;
-import com.base.basesetup.entity.ItemMasterVO;
 import com.base.basesetup.entity.ResponsibilityVO;
 import com.base.basesetup.entity.RolesPermissionHeaderVO;
 import com.base.basesetup.entity.RolesVO;

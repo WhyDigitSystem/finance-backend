@@ -1,5 +1,6 @@
 package com.base.basesetup.dto;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import lombok.AllArgsConstructor;
@@ -33,6 +34,12 @@ public class CostEstimationDTO {
 	private String department;
 	
 	private String status;
+	
+	private LocalDate fromDate;
+	
+	private LocalDate toDate;
+	
+	private String approvalRemarks;
 
 	List<CostEstimationDetailsDTO> costEstimationDetailsDTO;
 }

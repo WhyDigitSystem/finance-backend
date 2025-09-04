@@ -1,9 +1,11 @@
 package com.base.basesetup.service;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,6 +18,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.base.basesetup.dto.CostEstimationDTO;
 import com.base.basesetup.dto.CostEstimationDetailsDTO;
@@ -60,16 +63,16 @@ public class CostEstimationServiceImpl implements CostEstimationService {
 
 	@Autowired
 	ArapDetailsRepo arapDetailsRepo;
-	
+
 	@Autowired
 	AmountInWordsConverterService amountInWordsConverterService;
 
 	// CostEstimation
 
 	@Override
-	public List<CostEstimationVO> getAllCostEstimationByOrgId(Long orgId) {
+	public List<CostEstimationVO> getAllCostEstimationByOrgId(Long orgId,String finYear, String branchCode) {
 
-		return costEstimationRepo.getAllCostEstimationByOrgId(orgId);
+		return costEstimationRepo.getAllCostEstimationByOrgId(orgId, finYear,  branchCode);
 	}
 
 	@Override
@@ -130,6 +133,9 @@ public class CostEstimationServiceImpl implements CostEstimationService {
 		costEstimationVO.setOrgId(costEstimationDTO.getOrgId());
 		costEstimationVO.setStatus(costEstimationDTO.getStatus());
 		costEstimationVO.setDepartment(costEstimationDTO.getDepartment());
+		costEstimationVO.setToDate(costEstimationDTO.getToDate());
+		costEstimationVO.setFromDate(costEstimationDTO.getFromDate());
+		costEstimationVO.setApprovalRemarks(costEstimationDTO.getApprovalRemarks());
 
 		if (ObjectUtils.isNotEmpty(costEstimationVO.getId())) {
 			List<CostEstimationDetailsVO> costEstimationDetailsVO1 = costEstimationDetailsRepo
@@ -162,8 +168,8 @@ public class CostEstimationServiceImpl implements CostEstimationService {
 	}
 
 	@Override
-	public List<Map<String, Object>> getAllEmployees(Long orgId, String department) {
-		Set<Object[]> customerName = costEstimationRepo.getAllEmployees(orgId, department);
+	public List<Map<String, Object>> getAllEmployees(Long orgId) {
+		Set<Object[]> customerName = costEstimationRepo.getAllEmployees(orgId);
 		return getAllEmployees(customerName);
 	}
 
@@ -236,16 +242,16 @@ public class CostEstimationServiceImpl implements CostEstimationService {
 		accountsVO.setOrgId(costEstimationVO.getOrgId());
 		accountsVO.setRefNo(costEstimationVO.getDocId());
 		accountsVO.setRefDate(costEstimationVO.getDocDate());
-//	    accountsVO.setVId(costInvoiceVO.getVId());
-//	    accountsVO.setVDate(costInvoiceVO.getVDate());
+	    accountsVO.setVId(costEstimationVO.getDocId());
+	    accountsVO.setVDate(costEstimationVO.getDocDate());
 //	    accountsVO.setDueDate(costInvoiceVO.getDueDate());
-	    accountsVO.setAmountInWords(costEstimationVO.getAmountInWords());
+		accountsVO.setAmountInWords(costEstimationVO.getAmountInWords());
 //	    accountsVO.setChargeableAmount(costInvoiceVO.getTotChargesLcAmt());
 //	    accountsVO.setSupplierRefNo(costInvoiceVO.getSupplierBillNo());
 //	    accountsVO.setCreditDays(costInvoiceVO.getCreditDays());
 		accountsVO.setSourceScreen(costEstimationVO.getScreenName());
 		accountsVO.setSourceScreenCode(costEstimationVO.getScreenCode());
-//	    accountsVO.setRemarks(costEstimationVO.getRemarks());
+	    accountsVO.setRemarks(costEstimationVO.getApprovalRemarks());
 		accountsVO.setTotalDebitAmount(costEstimationVO.getTotalAmount());
 		accountsVO.setTotalCreditAmount(costEstimationVO.getTotalAmount());
 
@@ -348,5 +354,161 @@ public class CostEstimationServiceImpl implements CostEstimationService {
 
 		return costEstimationRepo.save(costEstimationVO);
 	}
+
+	
+//	@Override
+//	@Transactional
+//	public String uploadImageCostEstimationDetail(List<MultipartFile> files, Long costEstimationId,List<Long>detailsId ) throws IOException {
+//		
+//		for(MultipartFile file:files) {
+//		
+//	    CostEstimationVO costEstimationVO = costEstimationRepo.findById(costEstimationId)
+//	        .orElseThrow(() -> new RuntimeException("CostEstimation not found"));
+//
+//	    List<CostEstimationDetailsVO> detail = costEstimationDetailsRepo.findBycostEstimationVO(costEstimationVO);
+//
+//	    if (!detail.getCostEstimationVO().getId().equals(costEstimationVO.getId())) {
+//	        throw new IllegalArgumentException("Detail does not belong to the specified cost estimation.");
+//	    }
+//
+//	    detail.setImage(file.getBytes());
+//	    costEstimationDetailsRepo.save(detail);
+//		}
+//
+//	    return "File Uploaded Sucessfully";
+//	}
+	
+	@Override
+	public String uploadImageCostEstimationDetail(List<MultipartFile> files, Long costEstimationId, List<Long> detailsId) throws IOException {
+
+	    if (files.size() != detailsId.size()) {
+	        throw new IllegalArgumentException("Mismatch between number of files and detail IDs.");
+	    }
+
+	    CostEstimationVO costEstimationVO = costEstimationRepo.findById(costEstimationId)
+	            .orElseThrow(() -> new RuntimeException("CostEstimation not found"));
+
+	    for (int i = 0; i < files.size(); i++) {
+	        MultipartFile file = files.get(i);
+	        Long detailId = detailsId.get(i);
+
+	        CostEstimationDetailsVO detail = costEstimationDetailsRepo.findById(detailId)
+	                .orElseThrow(() -> new RuntimeException("CostEstimationDetail not found with ID: " + detailId));
+
+	        if (!detail.getCostEstimationVO().getId().equals(costEstimationVO.getId())) {
+	            throw new IllegalArgumentException("Detail with ID " + detailId + " does not belong to the specified cost estimation.");
+	        }
+
+	        detail.setImage(file.getBytes());
+	        costEstimationDetailsRepo.save(detail);
+	    }
+
+	    return "Files uploaded successfully";
+	}
+
+
+	
+	@Override
+	public List<Map<String, Object>> getCostEstimationDetails(Long orgId, String finYear, String employeeName, String fromDate,
+			String toDate, String branchCode,String category) {
+		Set<Object[]> chType = costEstimationRepo.getCostEstimationDetails(orgId, finYear, employeeName, fromDate, toDate,
+				branchCode, category);
+		return getCostEstimationDetails(chType);
+	}
+
+	private List<Map<String, Object>> getCostEstimationDetails(Set<Object[]> chType) {
+		List<Map<String, Object>> List1 = new ArrayList<>();
+		for (Object[] ch : chType) {
+			Map<String, Object> map = new HashMap<>();
+			map.put("finyear", ch[0] != null ? ch[0].toString() : ""); 
+			map.put("docId", ch[1] != null ? ch[1].toString() : ""); 
+			map.put("docdate", ch[2] != null ? ch[2].toString() : ""); 
+			map.put("employeeName", ch[3] != null ? ch[3].toString() : ""); 
+			map.put("employeeCode", ch[4] != null ? ch[4].toString() : ""); // 4
+			map.put("fromDate", ch[5] != null ? ch[5].toString() : ""); // 5
+			map.put("toDate", ch[6] != null ? ch[6].toString() : ""); // 6
+			map.put("approvalremarks", ch[7] != null ? ch[7].toString() : ""); // 7
+			map.put("totalAmount", ch[8] != null ? new BigDecimal(ch[8].toString()) : BigDecimal.ZERO); // 8
+			map.put("particulars", ch[9] != null ? ch[9].toString() : ""); // 9
+			map.put("category", ch[10] != null ?  ch[10].toString() : ""); // 10
+//			map.put("category", ch[11] != null ?  ch[11].toString() : ""); // 11
+			map.put("remarks", ch[11] != null ?  ch[11].toString() : ""); // 12
+			map.put("amount", ch[12] != null ? new BigDecimal(ch[12].toString()) : BigDecimal.ZERO); // 13
+			 if (ch[13] != null && ch[13] instanceof byte[]) {
+		            byte[] imageBytes = (byte[]) ch[13];
+		            String base64Image = Base64.getEncoder().encodeToString(imageBytes);
+		            map.put("image", "data:image/jpeg;base64," + base64Image); 
+		        } else {
+		            map.put("image", "");
+		        }
+			map.put("approvestatus", ch[14] != null ? ch[14].toString() : ""); 		
+			List1.add(map);
+		}
+		return List1;
+	}
+
+	@Override
+	public List<Map<String, Object>> getCostEstimationSummary(Long orgId, String finYear, String employeeName, String fromDate,
+			String toDate, String branchCode,String category) {
+		Set<Object[]> chType = costEstimationRepo.getCostEstimationSummary(orgId, finYear, employeeName, fromDate, toDate,
+				branchCode, category);
+		return getCostEstimationSummary(chType);
+	}
+
+	private List<Map<String, Object>> getCostEstimationSummary(Set<Object[]> chType) {
+		List<Map<String, Object>> List1 = new ArrayList<>();
+		for (Object[] ch : chType) {
+			Map<String, Object> map = new HashMap<>();
+			map.put("finyear", ch[0] != null ? ch[0].toString() : "");
+			map.put("docId", ch[1] != null ? ch[1].toString() : "");
+			map.put("docDate", ch[2] != null ? ch[2].toString() : "");
+			map.put("employeeName", ch[3] != null ? ch[3].toString() : "");
+			map.put("employeeCode", ch[4] != null ? ch[4].toString() : "");
+			map.put("fromDate", ch[5] != null ? ch[5].toString() : ""); // 5
+			map.put("toDate", ch[6] != null ? ch[6].toString() : ""); // 6
+			map.put("approvalremarks", ch[7] != null ? ch[7].toString() : ""); // 7
+			map.put("totalAmount", ch[8] != null ? new BigDecimal(ch[8].toString()) : BigDecimal.ZERO); // 8
+			map.put("approvestatus", ch[9] != null ? ch[9].toString() : "");
+//			map.put("totalchargeamountlc", ch[10] != null ? new BigDecimal(ch[10].toString()) : BigDecimal.ZERO);
+//			map.put("totalinvamountlc", ch[11] != null ? new BigDecimal(ch[11].toString()) : BigDecimal.ZERO);
+//			map.put("totaltaxamountlc", ch[12] != null ? new BigDecimal(ch[12].toString()) : BigDecimal.ZERO);
+//			map.put("approvestatus", ch[13] != null ? ch[13].toString() : "");
+
+			List1.add(map);
+		}
+		return List1;
+	}
+
+//	@Override
+//	public CostEstimationVO uploadMultipleImagesToCostEstimationDetails(MultipartFile[] files, Long costEstimationId,
+//	        List<Long> costEstmationDetailsId) {
+//
+//	    CostEstimationVO costEstimationVO = costEstimationRepo.findById(costEstimationId)
+//	            .orElseThrow(() -> new RuntimeException("CostEstimation not found with ID: " + costEstimationId));
+//
+//	    if (files.length != costEstmationDetailsId.size()) {
+//	        throw new IllegalArgumentException("Each file must have a corresponding detail ID.");
+//	    }
+//
+//	    for (int i = 0; i < files.length; i++) {
+//	        MultipartFile file = files[i];
+//	        Long detailId = costEstmationDetailsId.get(i);
+//
+//	        CostEstimationDetailsVO detail = costEstimationDetailsRepo.findById(detailId)
+//	                .orElseThrow(() -> new RuntimeException("CostEstimationDetail not found with ID: " + detailId));
+//
+//	        try {
+//	            detail.setImage(file.getBytes());
+//	        } catch (IOException e) {
+//	            throw new RuntimeException("Failed to read image file for detail ID: " + detailId, e);
+//	        }
+//
+//	        detail.setCostEstimationVO(costEstimationVO);
+//	        costEstimationDetailsRepo.save(detail);
+//	    }
+//
+//	    return costEstimationVO;
+//	}
+//
 
 }

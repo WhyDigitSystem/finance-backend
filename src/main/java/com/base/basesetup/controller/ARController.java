@@ -564,4 +564,33 @@ public class ARController extends BaseController {
 		return ResponseEntity.ok().body(responseDTO);
 
 	}
+	
+	@GetMapping("/getReceivableTdsDetailsReport")
+	public ResponseEntity<ResponseDTO> getReceivableTdsDetailsReport(@RequestParam Long orgId, @RequestParam String partyName,
+			@RequestParam String finYear, @RequestParam String fromDate, @RequestParam String toDate,@RequestParam String branchName) {
+		String methodName = "getReceivableTdsDetailsReport()";
+		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+		String errorMsg = null;
+		Map<String, Object> responseObjectsMap = new HashMap<>();
+		ResponseDTO responseDTO = null;
+		List<Map<String, Object>> mapp = new ArrayList<>();
+
+		try {
+			mapp = arReceivableService.getReceivableTdsDetailsReport(orgId, partyName, finYear, fromDate, toDate,branchName);
+		} catch (Exception e) {
+			errorMsg = e.getMessage();
+			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+		}
+
+		if (StringUtils.isBlank(errorMsg)) {
+			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "ReceivableReport retrieved successfully");
+			responseObjectsMap.put("mapp", mapp);
+			responseDTO = createServiceResponse(responseObjectsMap);
+		} else {
+			responseDTO = createServiceResponseError(responseObjectsMap, "Failed to retrieve  ReceivableReport", errorMsg);
+		}
+
+		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+		return ResponseEntity.ok().body(responseDTO);
+	}
 }

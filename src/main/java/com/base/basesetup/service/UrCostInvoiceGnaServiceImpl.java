@@ -27,7 +27,6 @@ import com.base.basesetup.entity.ChargesUrCostInvoiceGnaVO;
 import com.base.basesetup.entity.DocumentTypeMappingDetailsVO;
 import com.base.basesetup.entity.MultipleDocIdGenerationDetailsVO;
 import com.base.basesetup.entity.PartyMasterVO;
-import com.base.basesetup.entity.TaxInvoiceVO;
 import com.base.basesetup.entity.TdsUrCostInvoiceGnaVO;
 import com.base.basesetup.entity.UrCostInvoiceGnaVO;
 import com.base.basesetup.exception.ApplicationException;
@@ -578,7 +577,7 @@ public class UrCostInvoiceGnaServiceImpl implements UrCostInvoiceGnaService {
 			List<ChargesUrCostInvoiceGnaVO> gstChargeList = urCostInvoiceGnaVO.getChargesUrCostInvoiceGnaVO();
 
 			for (ChargesUrCostInvoiceGnaVO gstVO : gstChargeList) {
-				String chargeLedger = gstVO.getChargeLedger();
+				String chargeLedger = gstVO.getChargeAccount();
 				String gstType = urCostInvoiceGnaVO.getGstType();
 				Long orgId1 = urCostInvoiceGnaVO.getOrgId();
 
@@ -748,4 +747,19 @@ public class UrCostInvoiceGnaServiceImpl implements UrCostInvoiceGnaService {
 				return urCostInvoiceGnaRepo.getUrCostInvoiceByDocIdandScreenCode(ScreenCode, docId);
 	}
 	
+	@Override
+	public List<Map<String, Object>> getChargeAccountFromChargeLedger(Long orgId,String chargeLedger) {
+		Set<Object[]> chCode = urCostInvoiceGnaRepo.getChargeAccountFromChargeLedger(orgId,chargeLedger);
+		return getChargeAccount(chCode);
+	}
+
+	private List<Map<String, Object>> getChargeAccount(Set<Object[]> chCode) {
+		List<Map<String, Object>> List1 = new ArrayList<>();
+		for (Object[] ch : chCode) {
+			Map<String, Object> map = new HashMap<>();
+			map.put("chargeAccount", ch[0] != null ? ch[0].toString() : ""); // Empty string if null
+			List1.add(map);
+		}
+		return List1;
+	}
 }

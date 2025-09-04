@@ -21,7 +21,7 @@ public class TaxInvoiceDetailsDTO {
 	private String chargeName;
 	private String taxable;
 	private String description;
-	private int qty;
+	private BigDecimal qty;
 	private BigDecimal rate;
 	private String currency;
 	private BigDecimal exRate;

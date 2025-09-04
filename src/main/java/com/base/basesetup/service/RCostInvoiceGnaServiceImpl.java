@@ -84,9 +84,9 @@ public class RCostInvoiceGnaServiceImpl implements RCostInvoiceGnaService {
 	MultipleDocIdGenerationDetailsRepo multipleDocIdGenerationDetailsRepo;
 
 	@Override
-	public List<RCostInvoiceGnaVO> getAllRCostInvoiceGnaByOrgId(Long orgId) {
+	public List<RCostInvoiceGnaVO> getAllRCostInvoiceGnaByOrgId(Long orgId, String finYear, String branchCode) {
 		List<RCostInvoiceGnaVO> rCostInvoiceGnaVO = new ArrayList<>();
-		rCostInvoiceGnaVO = rCostInvoiceGnaRepo.getAllCostInvoiceByOrgId(orgId);
+		rCostInvoiceGnaVO = rCostInvoiceGnaRepo.getAllCostInvoiceByOrgId(orgId, finYear,  branchCode);
 		return rCostInvoiceGnaVO;
 	}
 
@@ -369,7 +369,7 @@ public class RCostInvoiceGnaServiceImpl implements RCostInvoiceGnaService {
 			lcAmt = chargeRCostInvoiceGnaDTO.getExRate().multiply(chargeRCostInvoiceGnaDTO.getRate());
 
 			gstAmt = lcAmt.multiply(BigDecimal.valueOf(chargeRCostInvoiceGnaDTO.getGstPer()))
-					.divide(BigDecimal.valueOf(100), RoundingMode.HALF_UP);
+					.divide(BigDecimal.valueOf(100));
 			chargeRCostInvoiceGnaVO.setGstAmt(gstAmt);
 			gstAmount1=billAmount.multiply(BigDecimal.valueOf(chargeRCostInvoiceGnaDTO.getGstPer()))
 					.divide(BigDecimal.valueOf(100));

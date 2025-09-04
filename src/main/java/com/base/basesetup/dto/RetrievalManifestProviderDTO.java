@@ -15,10 +15,6 @@ public class RetrievalManifestProviderDTO {
 	
 	private String finYear;
 
-	private String transactionNo;
-
-	private LocalDate transactionDate;
-
 	private LocalDate dispatchDate;
 
 	private String transactionType;
@@ -32,6 +28,8 @@ public class RetrievalManifestProviderDTO {
 	private String receiverAddress;
 
 	private String senderGst;
+	
+	private String receiverGst;
 
 	private String transporterName;
 
@@ -46,6 +44,12 @@ public class RetrievalManifestProviderDTO {
 	private String createdBy;
 
 	private Long orgId;
+	
+	private String code;
+	
+	private String branchCode;
+
+	private String branch;
 	
 	private List<RetrievalManifestProviderDetailsDTO> retrievalManifestProviderDetailsDTO;
 

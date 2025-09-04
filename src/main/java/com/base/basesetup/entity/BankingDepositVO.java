@@ -101,10 +101,10 @@ public class BankingDepositVO {
 	private String updatedBy;
 
 	@Column(name = "active")
-	private boolean active;
+	private boolean active=true;
 
 	@Column(name = "cancel")
-	private boolean cancel;
+	private boolean cancel=false;
 
 	@Column(name = "cancelremarks", length = 50)
 	private String cancelRemarks;
@@ -117,6 +117,11 @@ public class BankingDepositVO {
 
 	@Column(name = "screenname", length = 25)
 	private String screenName = "BANKINGDEPOSIT";
+	
+	@Column(name = "purvoucherno", length = 50)
+	private String purVoucherNo;
+	@Column(name = "purvoucherdate")
+	private LocalDate purVoucherDate;
 	
     
 	@OneToMany(mappedBy = "bankingDepositVO", cascade = CascadeType.ALL)

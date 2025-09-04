@@ -10,7 +10,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import javax.validation.Valid;
 
@@ -27,14 +26,12 @@ import com.base.basesetup.entity.AccountsDetailsVO;
 import com.base.basesetup.entity.AccountsVO;
 import com.base.basesetup.entity.ArapDetailsVO;
 import com.base.basesetup.entity.ChargerCostDebitNoteVO;
-import com.base.basesetup.entity.ChargerCostInvoiceVO;
 import com.base.basesetup.entity.CostDebitNoteVO;
 import com.base.basesetup.entity.CostInvoiceVO;
 import com.base.basesetup.entity.DocumentTypeMappingDetailsVO;
 import com.base.basesetup.entity.GroupLedgerVO;
 import com.base.basesetup.entity.MultipleDocIdGenerationDetailsVO;
 import com.base.basesetup.entity.TdsCostDebitNoteVO;
-import com.base.basesetup.entity.TdsCostInvoiceVO;
 import com.base.basesetup.exception.ApplicationException;
 import com.base.basesetup.repo.AccountsDetailsRepo;
 import com.base.basesetup.repo.AccountsRepo;
@@ -419,14 +416,36 @@ public class CostDebitNoteServiceImpl implements CostDebitNoteService {
 //					+ " must be less than or equal to COSTINVOICE  " + sumLcAmounts);
 //		}
 		
+//		
+//		if (netAmountBillCurr.compareTo(sumLcAmounts) <= 0) {
+//			costDebitNoteVO.setNetBillCurrAmt(netAmountBillCurr);
+//
+//		} else {
+//			throw new IllegalArgumentException("COSTDEBITNOTE " + netAmountBillCurr
+//					+ " must be less than or equal to COSTINVOICE  " + sumLcAmounts);
+//		}
 		
-		if (netAmountBillCurr.compareTo(sumLcAmounts) <= 0) {
-			costDebitNoteVO.setNetBillCurrAmt(netAmountBillCurr);
+		Set<Object[]> byOrginBillBased = costDebitNoteRepo.findByOrginBillBased(costDebitNoteDTO.getOrgId(),costDebitNoteDTO.getOrginBill());
 
-		} else {
-			throw new IllegalArgumentException("COSTDEBITNOTE " + netAmountBillCurr
-					+ " must be less than or equal to COSTINVOICE  " + sumLcAmounts);
+		for (Object[] ledger : byOrginBillBased) {
+		    BigDecimal remainingAmount =  (BigDecimal) ledger[4];
+
+		    if (netAmountBillCurr.compareTo(remainingAmount) <= 0) {
+		        if (netAmountBillCurr.compareTo(sumLcAmounts) <= 0) {
+		        	costDebitNoteVO.setNetBillCurrAmt(netAmountBillCurr);
+		        } else {
+		            throw new IllegalArgumentException("COSTDEBITNOTE" + netAmountBillCurr +
+		                    " must be less than or equal to COSTINVOICE " + sumLcAmounts);
+		        }
+		    } else {
+		        throw new IllegalArgumentException("CREDIT NOTE " + netAmountBillCurr +
+		                " must be less than or equal to REMAINING amount " + remainingAmount);
+		    }
 		}
+
+		
+		
+		
 
 		costDebitNoteVO.setActBillCurrAmt(actBillAmtBillCurr);
 		costDebitNoteVO.setActBillLcAmt(actBillAmtLc);

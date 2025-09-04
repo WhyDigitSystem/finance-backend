@@ -13,8 +13,8 @@ import com.base.basesetup.entity.RCostInvoiceGnaVO;
 @Repository
 public interface RCostInvoiceGnaRepo extends JpaRepository<RCostInvoiceGnaVO, Long> {
 
-	@Query(nativeQuery = true, value = "select * from rcostinvoicegna where orgid=?1 and active=1 ")
-	List<RCostInvoiceGnaVO> getAllCostInvoiceByOrgId(Long orgId);
+	@Query(nativeQuery = true, value = "select * from rcostinvoicegna where orgid=?1 and finyear=?2 and branchcode=?3 ")
+	List<RCostInvoiceGnaVO> getAllCostInvoiceByOrgId(Long orgId,String finYear, String branchCode);
 
 	@Query(nativeQuery = true, value = "select * from rcostinvoicegna where rcostinvoicegnaid=?1 and active=1 ")
 	List<RCostInvoiceGnaVO> getAllRCostInvoiceGnaById(Long id);
@@ -28,7 +28,7 @@ public interface RCostInvoiceGnaRepo extends JpaRepository<RCostInvoiceGnaVO, Lo
 	@Query(value = "select a from PartyMasterVO a where a.orgId=?1 and a.partyType=?2 and a.active=true and a.gstRegistered='YES'")
 	List<PartyMasterVO> getAllVendorFromPartyMaster(Long orgId, String partyType);
 	
-	@Query(nativeQuery = true,value = "select accountgroupname from groupledger where orgid=?1 and category in ('OTHERS','TAX') and active = 1  order by accountgroupname")
+	@Query(nativeQuery = true,value = "select accountgroupname from groupledger where orgid=?1  and  type='ACCOUNT' and coalist='EXPENSE'  and active = 1 group by accountgroupname order by accountgroupname")
 	Set<Object[]> getChargeLedgerFromGroup(Long orgId);
 
 	@Query(nativeQuery = true,value = "select a.sectionname ,b.tcspercentage  from tdsmaster a , tdsmaster2 b where a.tdsmasterid=b.tdsmaster2id and a.orgid=?1 and a.section=?2 and a.active = 1  order by sectionname")
@@ -126,7 +126,7 @@ public interface RCostInvoiceGnaRepo extends JpaRepository<RCostInvoiceGnaVO, Lo
 			+ "        JOIN tdscostinvoice d ON a.costinvoiceid = d.costinvoiceid\r\n"
 			+ "    WHERE \r\n"
 			+ "        a.cancel = 'F'\r\n"
-			+ "        AND a.orgid = 202502\r\n"
+			+ "        AND a.orgid =?1 \r\n"
 			+ "       AND (?2 = 'ALL' OR a.branchcode = ?2)\r\n"
 			+ "        AND ((?3 IS NULL AND ?4 IS NULL) OR c.vdate BETWEEN DATE(?3) AND DATE(?4))\r\n"
 			+ "        AND (?5 = 'ALL' OR a.suppliercode = ?5)and a.finyear=?6 group by a.branchcode,\r\n"
@@ -202,5 +202,6 @@ public interface RCostInvoiceGnaRepo extends JpaRepository<RCostInvoiceGnaVO, Lo
 
 	@Query(nativeQuery = true, value = "select * from rcostinvoicegna where screencode=?1 and docid=?2")
 	RCostInvoiceGnaVO getrCostInvoiceByDocIdandScreenCode(String screenCode, String docId);
+
 }
 	

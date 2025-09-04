@@ -40,7 +40,7 @@ public class RetrievalManifestProviderVO {
 	@Column(name = "transactionno")
 	private String transactionNo;
 	@Column(name = "transactiondate")
-	private LocalDate transactionDate;
+	private LocalDate transactionDate=LocalDate.now();
 	@Column(name = "dispatchdate")
 	private LocalDate dispatchDate;
 	@Column(name = "transactiontype")
@@ -55,6 +55,8 @@ public class RetrievalManifestProviderVO {
 	private String receiverAddress;
 	@Column(name = "sendergst")
 	private String senderGst;
+	@Column(name = "receivergst")
+	private String receiverGst;
 	@Column(name = "transportername")
 	private String transporterName;
 	@Column(name = "vehicleeno")
@@ -73,7 +75,18 @@ public class RetrievalManifestProviderVO {
 	private String createdBy;
 	@Column(name = "modifiedby")
 	private String updatedBy;
+	@Column(name = "code")
+	private String code;
+	@Column(name = "branchcode",length = 10)
+	private String branchCode;
+	@Column(name = "branch")
+	private String branch;
+	@Column(name = "screencode",length = 30)
+	private String screenCode="RM";
+	@Column(name = "screenname",length = 30)
+	private String screenName="RETRIEVALMANIFESTPROVIDER";
 
+	
 	@JsonGetter("active")
 	public String getActive() {
 		return active ? "Active" : "In-Active";
