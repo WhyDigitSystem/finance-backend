@@ -440,6 +440,7 @@ public class ReportServiceImpl implements ReportService {
 		retrievalManifestProviderVO.setActive(retrievalManifestProviderDTO.isActive());
 		retrievalManifestProviderVO.setCancel(retrievalManifestProviderDTO.isCancel());
 		retrievalManifestProviderVO.setOrgId(retrievalManifestProviderDTO.getOrgId());
+		retrievalManifestProviderVO.setReceiverGst(retrievalManifestProviderDTO.getReceiverGst());
 		retrievalManifestProviderVO.setCode(retrievalManifestProviderDTO.getCode());
 		retrievalManifestProviderVO.setFinYear(retrievalManifestProviderDTO.getFinYear());
 		retrievalManifestProviderVO.setBranch(retrievalManifestProviderDTO.getBranch());

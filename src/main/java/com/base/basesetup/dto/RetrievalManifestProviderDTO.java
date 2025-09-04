@@ -28,6 +28,8 @@ public class RetrievalManifestProviderDTO {
 	private String receiverAddress;
 
 	private String senderGst;
+	
+	private String receiverGst;
 
 	private String transporterName;
 
