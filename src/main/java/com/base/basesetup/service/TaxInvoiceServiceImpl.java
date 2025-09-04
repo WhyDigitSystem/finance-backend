@@ -1339,9 +1339,28 @@ public class TaxInvoiceServiceImpl implements TaxInvoiceService {
 		List<Map<String, Object>> List1 = new ArrayList<>();
 		for (Object[] ch : chType) {
 			Map<String, Object> map = new HashMap<>();
-			map.put("sNo", ch[0] != null ? ch[0].toString() : "");
-			map.put("accountName", ch[1] != null ? ch[1].toString() : "");
-			map.put("amount", ch[2] != null ? new BigDecimal(ch[2].toString()) : BigDecimal.ZERO);
+			map.put("groupName", ch[0] != null ? ch[0].toString() : "");
+			map.put("amount", ch[1] != null ? new BigDecimal(ch[1].toString()) : BigDecimal.ZERO);
+			List1.add(map);
+		}
+		return List1;
+	}
+	
+	
+	@Override
+	public List<Map<String, Object>> getNetProfit(Long orgId,  String fromDate,
+			String toDate,String groupName) {
+		Set<Object[]> chType = taxInvoiceRepo.getNetProfit(orgId, fromDate, toDate,groupName);
+		return getNetProfit(chType);
+	}
+
+	private List<Map<String, Object>> getNetProfit(Set<Object[]> chType) {
+		List<Map<String, Object>> List1 = new ArrayList<>();
+		for (Object[] ch : chType) {
+			Map<String, Object> map = new HashMap<>();
+			map.put("accountName", ch[2] != null ? ch[2].toString() : "");
+			map.put("groupName", ch[1] != null ? ch[1].toString() : "");
+			map.put("amounts", ch[0] != null ? new BigDecimal(ch[0].toString()) : BigDecimal.ZERO);
 			List1.add(map);
 		}
 		return List1;

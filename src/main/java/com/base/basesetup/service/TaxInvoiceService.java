@@ -79,4 +79,6 @@ public interface TaxInvoiceService {
 	
 	List<Map<String, Object>> getProfitAndLossReport(Long orgId, String fromDate, String toDate);
 
+	List<Map<String, Object>> getNetProfit(Long orgId, String fromDate, String toDate, String groupName);
+
 }
