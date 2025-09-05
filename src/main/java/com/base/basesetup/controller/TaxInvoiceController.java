@@ -763,10 +763,10 @@ public class TaxInvoiceController extends BaseController {
 		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
 		return ResponseEntity.ok().body(responseDTO);
 	}
-	
+
 	@GetMapping("/getNetProfit")
 	public ResponseEntity<ResponseDTO> getNetProfit(@RequestParam Long orgId, @RequestParam String fromDate,
-			@RequestParam String toDate,@RequestParam String groupName) {
+			@RequestParam String toDate, @RequestParam String groupName) {
 		String methodName = "getNetProfit()";
 		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
 		String errorMsg = null;
@@ -775,7 +775,7 @@ public class TaxInvoiceController extends BaseController {
 		List<Map<String, Object>> mapp = new ArrayList<>();
 
 		try {
-			mapp = taxInvoiceService.getNetProfit(orgId, fromDate, toDate,groupName);
+			mapp = taxInvoiceService.getNetProfit(orgId, fromDate, toDate, groupName);
 		} catch (Exception e) {
 			errorMsg = e.getMessage();
 			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
@@ -786,8 +786,37 @@ public class TaxInvoiceController extends BaseController {
 			responseObjectsMap.put("mapp", mapp);
 			responseDTO = createServiceResponse(responseObjectsMap);
 		} else {
-			responseDTO = createServiceResponseError(responseObjectsMap, "Failed to retrieve  NetReport",
-					errorMsg);
+			responseDTO = createServiceResponseError(responseObjectsMap, "Failed to retrieve  NetReport", errorMsg);
+		}
+
+		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+		return ResponseEntity.ok().body(responseDTO);
+	}
+
+	@GetMapping("/getTrailBalance")
+	public ResponseEntity<ResponseDTO> getTrailBalance(@RequestParam String branch,
+			@RequestParam(required = false) String finYear, @RequestParam String fromDate, @RequestParam String toDate,
+			@RequestParam Long orgId, @RequestParam(required = false) String details) {
+		String methodName = "getNetProfit()";
+		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+		String errorMsg = null;
+		Map<String, Object> responseObjectsMap = new HashMap<>();
+		ResponseDTO responseDTO = null;
+		List<Map<String, Object>> mapp = new ArrayList<>();
+
+		try {
+			mapp = taxInvoiceService.getTrailBalance(branch, finYear, fromDate, toDate, orgId, details);
+		} catch (Exception e) {
+			errorMsg = e.getMessage();
+			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+		}
+
+		if (StringUtils.isBlank(errorMsg)) {
+			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "TrailBalance Report retrieved successfully");
+			responseObjectsMap.put("mapp", mapp);
+			responseDTO = createServiceResponse(responseObjectsMap);
+		} else {
+			responseDTO = createServiceResponseError(responseObjectsMap, "Failed to retrieve  TrailBalance", errorMsg);
 		}
 
 		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);

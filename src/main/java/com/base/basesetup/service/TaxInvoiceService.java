@@ -81,4 +81,7 @@ public interface TaxInvoiceService {
 
 	List<Map<String, Object>> getNetProfit(Long orgId, String fromDate, String toDate, String groupName);
 
+	List<Map<String, Object>> getTrailBalance(String branch, String finYear, String fromDate, String toDate, Long orgId,
+			String details);
+
 }
