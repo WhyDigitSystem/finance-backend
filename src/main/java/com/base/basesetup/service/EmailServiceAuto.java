@@ -1,7 +1,6 @@
 package com.base.basesetup.service;
 
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -17,7 +16,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,9 +45,9 @@ public class EmailServiceAuto {
 	@Value("${email.bcc.address:}")
 	private String bccAddress;
 
-//	@Value("${pdf.directory.path:C:/Users/Lenovo/Desktop/Email}")
+	@Value("${pdf.directory.path:C:/Users/Lenovo/Desktop/Email}")
 	//244 Server
-	@Value("${pdf.directory.path:C:/Users/Administrator/Desktop/Email}")
+//	@Value("${pdf.directory.path:C:/Users/Administrator/Desktop/Email}")
 	public void setWatchDirectory(String path) {
 		this.watchDirectory = path;
 	}
@@ -105,109 +103,233 @@ public class EmailServiceAuto {
 		Path file = Paths.get(watchDirectory).resolve(filename).normalize();
 		return Files.readAllBytes(file);
 	}
-
+	
 	public void sendSelectedEmails(List<String> employeeCodes, String bccAddress) {
-		Path directory = Paths.get(watchDirectory);
-		Path backupDir = directory.resolve("backup");
+	    Path directory = Paths.get(watchDirectory);
+	    Path backupDir = directory.resolve("backup");
 
-		try {
-			if (!Files.exists(backupDir)) {
-				Files.createDirectories(backupDir);
-			}
+	    try {
+	        if (!Files.exists(backupDir)) {
+	            Files.createDirectories(backupDir);
+	        }
 
-			List<Path> processedFiles = new ArrayList<>();
+	        List<Path> processedFiles = new ArrayList<>();
 
-			for (String employeeCode : employeeCodes) {
-				Path textFile = directory.resolve(employeeCode + ".txt");
-				Path pdfFile = directory.resolve(employeeCode + ".pdf");
+	        for (String employeeCode : employeeCodes) {
+	            Path textFile = directory.resolve(employeeCode + ".txt");
+	            Path pdfFile = directory.resolve(employeeCode + ".pdf");
 
-				if (Files.exists(textFile) && Files.exists(pdfFile)) {
-					Optional<String> emailOpt = employeeRepository.findEmailByCode(employeeCode);
+	            if (Files.exists(textFile) && Files.exists(pdfFile)) {
+	                Optional<String> emailOpt = employeeRepository.findEmailByCode(employeeCode);
 
-					if (emailOpt.isPresent()) {
-						if (sendEmailWithAttachments(emailOpt.get(), "Documents for " + employeeCode, textFile, pdfFile,
-								bccAddress)) {
-							processedFiles.add(textFile);
-							processedFiles.add(pdfFile);
-						}
-					}
-				}
-			}
+	                if (emailOpt.isPresent()) {
+	                    String toEmail = emailOpt.get();
 
-			moveFilesToBackup(processedFiles, backupDir);
-		} catch (Exception e) {
-			throw new RuntimeException("Error sending selected emails", e);
-		}
+	                    // ✅ Validate email format
+	                    if (isValidEmail(toEmail)) {
+	                        if (sendEmailWithAttachments(toEmail, "Documents for " + employeeCode, textFile, pdfFile,
+	                                bccAddress)) {
+	                            processedFiles.add(textFile);
+	                            processedFiles.add(pdfFile);
+	                        }
+	                    } else {
+	                        log.warn("Invalid email format for employee {}: {}", employeeCode, toEmail);
+	                    }
+	                }
+	            }
+	        }
+
+	        moveFilesToBackup(processedFiles, backupDir);
+	    } catch (Exception e) {
+	        throw new RuntimeException("Error sending selected emails", e);
+	    }
 	}
 
 	private boolean sendEmailWithAttachments(String toEmail, String subject, Path textFile, Path pdfFile,
-			String bccAddress) throws MessagingException, IOException {
-		log.info("Preparing email to: {}", toEmail);
+	        String bccAddress) {
+	    log.info("Preparing email to: {}", toEmail);
 
-		try {
-			String textContent = new String(Files.readAllBytes(textFile));
-			byte[] pdfContent = Files.readAllBytes(pdfFile);
+	    try {
+	        String textContent = new String(Files.readAllBytes(textFile));
+	        byte[] pdfContent = Files.readAllBytes(pdfFile);
 
-			MimeMessage message = mailSender.createMimeMessage();
-			MimeMessageHelper helper = new MimeMessageHelper(message, true);
+	        MimeMessage message = mailSender.createMimeMessage();
+	        MimeMessageHelper helper = new MimeMessageHelper(message, true);
 
-			helper.setFrom("mn0443585@gmail.com");
-			helper.setTo(toEmail);
-			if (StringUtils.hasText(bccAddress)) {
-				helper.setBcc(bccAddress);
-			}
-			helper.setSubject(subject);
-			helper.setText(buildEmailBody(textContent, toEmail.split("@")[0]), true);
-			helper.addAttachment(pdfFile.getFileName().toString(), new ByteArrayResource(pdfContent));
+	        helper.setFrom("mn0443585@gmail.com");
+	        helper.setTo(toEmail);
+	        if (StringUtils.hasText(bccAddress)) {
+	            helper.setBcc(bccAddress);
+	        }
+	        helper.setSubject(subject);
+	        helper.setText(buildEmailBody(textContent, toEmail.split("@")[0]), true);
+	        helper.addAttachment(pdfFile.getFileName().toString(), new ByteArrayResource(pdfContent));
 
-			mailSender.send(message);
-			log.info("Successfully sent email to: {}", toEmail);
-			return true;
-		} catch (Exception e) {
-			log.error("Failed to send email to {}: {}", toEmail, e.getMessage());
-			return false;
-		}
+	        mailSender.send(message);
+	        log.info("Successfully sent email to: {}", toEmail);
+	        return true;
+	    } catch (Exception e) {
+	        // ✅ Log full SMTP error for debugging
+	        log.error("Failed to send email to {}. Exception: ", toEmail, e);
+	        return false;
+	    }
 	}
 
 	private void moveFilesToBackup(List<Path> files, Path backupDir) throws IOException {
-		if (files.isEmpty()) {
-			log.info("No files to move to backup");
-			return;
-		}
+	    if (files.isEmpty()) {
+	        log.info("No files to move to backup");
+	        return;
+	    }
 
-		Map<String, List<Path>> filesByEmployee = files.stream()
-				.collect(Collectors.groupingBy(file -> getBaseName(file.getFileName().toString())));
+	    Map<String, List<Path>> filesByEmployee = files.stream()
+	            .collect(Collectors.groupingBy(file -> getBaseName(file.getFileName().toString())));
 
-		for (Map.Entry<String, List<Path>> entry : filesByEmployee.entrySet()) {
-			String employeeCode = entry.getKey();
-			String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss"));
-			String backupFolderName = employeeCode + "_" + timestamp;
+	    for (Map.Entry<String, List<Path>> entry : filesByEmployee.entrySet()) {
+	        String employeeCode = entry.getKey();
+	        String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss"));
+	        String backupFolderName = employeeCode + "_" + timestamp;
 
-			Path employeeBackupDir = backupDir.resolve(backupFolderName);
-			Files.createDirectories(employeeBackupDir);
+	        Path employeeBackupDir = backupDir.resolve(backupFolderName);
+	        Files.createDirectories(employeeBackupDir);
 
-			for (Path file : entry.getValue()) {
-				try {
-					Path target = employeeBackupDir.resolve(file.getFileName());
-					Files.move(file, target, StandardCopyOption.REPLACE_EXISTING);
-					log.info("Moved {} to backup: {}", file.getFileName(), target);
-				} catch (IOException e) {
-					log.error("Failed to move {} to backup: {}", file, e.getMessage());
-				}
-			}
-		}
+	        for (Path file : entry.getValue()) {
+	            try {
+	                Path target = employeeBackupDir.resolve(file.getFileName());
+	                Files.move(file, target, StandardCopyOption.REPLACE_EXISTING);
+	                log.info("Moved {} to backup: {}", file.getFileName(), target);
+	            } catch (IOException e) {
+	                log.error("Failed to move {} to backup: {}", file, e.getMessage());
+	            }
+	        }
+	    }
 	}
 
 	private String buildEmailBody(String content, String name) {
-		return "<!DOCTYPE html>" + "<html><head><style>" + "body { font-family: Arial, sans-serif; }"
-				+ ".content { background: #f5f5f5; padding: 15px; border-radius: 5px; }" + "</style></head>" + "<body>"
-				+ "<h2>Hello, " + name + "!</h2>" + "<div class='content'>" + content + "</div>"
-				+ "<p>Please find your document attached.</p>" + "</body></html>";
+	    return "<!DOCTYPE html>" +
+	            "<html><head><style>" +
+	            "body { font-family: Arial, sans-serif; }" +
+	            ".content { background: #f5f5f5; padding: 15px; border-radius: 5px; }" +
+	            "</style></head>" +
+	            "<body>" +
+	            "<h2>Hello, " + name + "!</h2>" +
+	            "<div class='content'>" + content + "</div>" +
+	            "<p>Please find your document attached.</p>" +
+	            "</body></html>";
 	}
 
 	private String getBaseName(String fileName) {
-		return fileName.substring(0, fileName.lastIndexOf('.'));
+	    return fileName.substring(0, fileName.lastIndexOf('.'));
 	}
+
+	private boolean isValidEmail(String email) {
+	    String emailRegex = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$";
+	    return email != null && email.matches(emailRegex);
+	}
+
+	
+
+//	public void sendSelectedEmails(List<String> employeeCodes, String bccAddress) {
+//		Path directory = Paths.get(watchDirectory);
+//		Path backupDir = directory.resolve("backup");
+//
+//		try {
+//			if (!Files.exists(backupDir)) {
+//				Files.createDirectories(backupDir);
+//			}
+//
+//			List<Path> processedFiles = new ArrayList<>();
+//
+//			for (String employeeCode : employeeCodes) {
+//				Path textFile = directory.resolve(employeeCode + ".txt");
+//				Path pdfFile = directory.resolve(employeeCode + ".pdf");
+//
+//				if (Files.exists(textFile) && Files.exists(pdfFile)) {
+//					Optional<String> emailOpt = employeeRepository.findEmailByCode(employeeCode);
+//
+//					if (emailOpt.isPresent()) {
+//						if (sendEmailWithAttachments(emailOpt.get(), "Documents for " + employeeCode, textFile, pdfFile,
+//								bccAddress)) {
+//							processedFiles.add(textFile);
+//							processedFiles.add(pdfFile);
+//						}
+//					}
+//				}
+//			}
+//
+//			moveFilesToBackup(processedFiles, backupDir);
+//		} catch (Exception e) {
+//			throw new RuntimeException("Error sending selected emails", e);
+//		}
+//	}
+//
+//	private boolean sendEmailWithAttachments(String toEmail, String subject, Path textFile, Path pdfFile,
+//			String bccAddress) throws MessagingException, IOException {
+//		log.info("Preparing email to: {}", toEmail);
+//
+//		try {
+//			String textContent = new String(Files.readAllBytes(textFile));
+//			byte[] pdfContent = Files.readAllBytes(pdfFile);
+//
+//			MimeMessage message = mailSender.createMimeMessage();
+//			MimeMessageHelper helper = new MimeMessageHelper(message, true);
+//
+//			helper.setFrom("mn0443585@gmail.com");
+//			helper.setTo(toEmail);
+//			if (StringUtils.hasText(bccAddress)) {
+//				helper.setBcc(bccAddress);
+//			}
+//			helper.setSubject(subject);
+//			helper.setText(buildEmailBody(textContent, toEmail.split("@")[0]), true);
+//			helper.addAttachment(pdfFile.getFileName().toString(), new ByteArrayResource(pdfContent));
+//
+//			mailSender.send(message);
+//			log.info("Successfully sent email to: {}", toEmail);
+//			return true;
+//		} catch (Exception e) {
+//			log.error("Failed to send email to {}: {}", toEmail, e.getMessage());
+//			return false;
+//		}
+//	}
+//
+//	private void moveFilesToBackup(List<Path> files, Path backupDir) throws IOException {
+//		if (files.isEmpty()) {
+//			log.info("No files to move to backup");
+//			return;
+//		}
+//
+//		Map<String, List<Path>> filesByEmployee = files.stream()
+//				.collect(Collectors.groupingBy(file -> getBaseName(file.getFileName().toString())));
+//
+//		for (Map.Entry<String, List<Path>> entry : filesByEmployee.entrySet()) {
+//			String employeeCode = entry.getKey();
+//			String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss"));
+//			String backupFolderName = employeeCode + "_" + timestamp;
+//
+//			Path employeeBackupDir = backupDir.resolve(backupFolderName);
+//			Files.createDirectories(employeeBackupDir);
+//
+//			for (Path file : entry.getValue()) {
+//				try {
+//					Path target = employeeBackupDir.resolve(file.getFileName());
+//					Files.move(file, target, StandardCopyOption.REPLACE_EXISTING);
+//					log.info("Moved {} to backup: {}", file.getFileName(), target);
+//				} catch (IOException e) {
+//					log.error("Failed to move {} to backup: {}", file, e.getMessage());
+//				}
+//			}
+//		}
+//	}
+//
+//	private String buildEmailBody(String content, String name) {
+//		return "<!DOCTYPE html>" + "<html><head><style>" + "body { font-family: Arial, sans-serif; }"
+//				+ ".content { background: #f5f5f5; padding: 15px; border-radius: 5px; }" + "</style></head>" + "<body>"
+//				+ "<h2>Hello, " + name + "!</h2>" + "<div class='content'>" + content + "</div>"
+//				+ "<p>Please find your document attached.</p>" + "</body></html>";
+//	}
+//
+//	private String getBaseName(String fileName) {
+//		return fileName.substring(0, fileName.lastIndexOf('.'));
+//	}
 	
 	public List<Map<String, Object>> getEmployeeEmail(Long orgId, String employeeCodeOrEmail) {
 		Set<Object[]> chType = employeeRepository.getEmployeeEmail(orgId, employeeCodeOrEmail);
