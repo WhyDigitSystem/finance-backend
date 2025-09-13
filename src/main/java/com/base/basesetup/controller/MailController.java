@@ -30,6 +30,7 @@ import com.base.basesetup.common.CommonConstant;
 import com.base.basesetup.common.UserConstants;
 import com.base.basesetup.dto.EmailRequestDTO;
 import com.base.basesetup.dto.ResponseDTO;
+import com.base.basesetup.service.AutoEmailSchedulerService;
 import com.base.basesetup.service.EmailServiceAuto;
 
 import lombok.extern.slf4j.Slf4j;
@@ -40,10 +41,13 @@ import lombok.extern.slf4j.Slf4j;
 public class MailController extends BaseController {
 
 	private final EmailServiceAuto emailServiceAuto;
+	
+	private final AutoEmailSchedulerService autoEmailSchedulerService;
 
 //	@Autowired
-	public MailController(EmailServiceAuto emailServiceAuto) {
+	public MailController(EmailServiceAuto emailServiceAuto, AutoEmailSchedulerService autoEmailSchedulerService) {
 		this.emailServiceAuto = emailServiceAuto;
+		this.autoEmailSchedulerService=autoEmailSchedulerService;
 	}
 
 	@GetMapping
@@ -185,5 +189,18 @@ public class MailController extends BaseController {
 		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
 		return ResponseEntity.ok().body(responseDTO);
 	}
+
+	
+	
+////	//
+//	@PostMapping("/schedule")
+//	public ResponseEntity<String> scheduleEmail(
+//	        @RequestParam String employeeCode,
+//	        @RequestParam @DateTimeFormat(pattern = "dd-MM-yyyy hh:mm:ss a") LocalDateTime scheduledTime,
+//	        @RequestParam(required = false) String bcc) {
+//
+//		autoEmailSchedulerService.autoSendEmails(employeeCode, scheduledTime, bcc);
+//	    return ResponseEntity.ok("✅ Email scheduled for " + employeeCode + " at " + scheduledTime);
+//	}
 
 }

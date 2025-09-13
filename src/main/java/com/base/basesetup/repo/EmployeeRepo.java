@@ -1,11 +1,13 @@
 package com.base.basesetup.repo;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import com.base.basesetup.entity.EmployeeVO;
 
@@ -32,5 +34,7 @@ public interface EmployeeRepo extends JpaRepository<EmployeeVO,Long>{
     Optional<String> findEmailByCode(String employeeCode);
 
 	@Query(nativeQuery = true,value = "select email from employee where orgid=?1  and (employeecode=?2  or email=?2) order by email")
-	Set<Object[]> getEmployeeEmail(Long orgId,String employeeCodeOrEmail);    
+	Set<Object[]> getEmployeeEmail(Long orgId,String employeeCodeOrEmail);
+
+	   Optional<EmployeeVO> findByEmailAndEmployeeCode(String email, String employeeCode); 
 }
