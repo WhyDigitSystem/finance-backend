@@ -6,88 +6,138 @@ import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import javax.annotation.PostConstruct;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.base.basesetup.repo.EmployeeRepo;
+import com.base.basesetup.entity.EmailSchedule;
+import com.base.basesetup.repo.EmailScheduleRepo;
 
 @Service
 public class AutoEmailSchedulerService {
 	
+//	 @Autowired
+//	    private EmployeeRepo employeeRepository;
+
 	 @Autowired
-	    private EmployeeRepo employeeRepository;
+	    private EmailScheduleRepo scheduleRepo;
 
 	    private final EmailServiceAuto mailService;
-	    private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+	    private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(4); 
 
 	    public AutoEmailSchedulerService(EmailServiceAuto mailService) {
 	        this.mailService = mailService;
 	    }
 
-	    public void autoSendEmails(List<String> employeeCodes, List<String> dateTimeList, List<String> bccEmails) {
+	    /** 🔹 Load all pending schedules when app starts */
+	    @PostConstruct
+	    public void init() {
+	        List<EmailSchedule> pending = scheduleRepo.findBySentFalse();
+	        for (EmailSchedule schedule : pending) {
+	            scheduleTaskSingle(schedule);
+	        }
+	    }
+
+	    /** 🔹 Save new schedules or update existing ones */
+	    public void autoSendEmails(List<Long> scheduleIds,
+	                               List<String> employeeCodes,
+	                               List<String> dateTimeList,
+	                               List<String> bccEmails) {
+
 	        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy hh:mm:ss a");
 
-	        if (employeeCodes.size() != dateTimeList.size() || employeeCodes.size() != bccEmails.size()) {
-	            throw new IllegalArgumentException("❌ Mismatch: employeeCodes, dateTimeList, and bccEmails must have same size!");
-	        }
-
 	        for (int i = 0; i < employeeCodes.size(); i++) {
+	            Long id = (scheduleIds != null && scheduleIds.size() > i) ? scheduleIds.get(i) : null;
 	            String employeeCode = employeeCodes.get(i);
 	            String dateTimeStr = dateTimeList.get(i);
 	            String email = bccEmails.get(i);
 
 	            try {
-	                LocalDateTime scheduledDateTime;
-	                try {
-	                    scheduledDateTime = LocalDateTime.parse(dateTimeStr); // ISO
-	                } catch (Exception e) {
-	                    scheduledDateTime = LocalDateTime.parse(dateTimeStr, formatter); // fallback custom
+	                LocalDateTime scheduledDateTime = LocalDateTime.parse(dateTimeStr, formatter);
+
+	                if (scheduledDateTime.isBefore(LocalDateTime.now())) {
+	                    throw new IllegalArgumentException("❌ Scheduled time must be in the future!");
 	                }
 
-	                long delay = Duration.between(LocalDateTime.now(), scheduledDateTime).toMillis();
-	                if (delay < 0) {
-	                    throw new IllegalArgumentException("Scheduled time must be in the future!");
+	                EmailSchedule schedule;
+
+	                if (id != null) {
+	                    // 🔹 Update existing record if ID exists
+	                    schedule = scheduleRepo.findById(id)
+	                            .map(existing -> {
+	                                existing.setEmployeeCode(employeeCode);
+	                                existing.setEmail(email);
+	                                existing.setScheduledDateTime(scheduledDateTime);
+	                                existing.setSent(false);
+	                                return existing;
+	                            })
+	                            .orElseGet(() -> new EmailSchedule(employeeCode, email, scheduledDateTime));
+	                } else {
+	                    // 🔹 Otherwise check by employeeCode + email
+	                    schedule = scheduleRepo.findByEmployeeCodeAndEmail(employeeCode, email)
+	                            .map(existing -> {
+	                                existing.setScheduledDateTime(scheduledDateTime);
+	                                existing.setSent(false);
+	                                return existing;
+	                            })
+	                            .orElseGet(() -> new EmailSchedule(employeeCode, email, scheduledDateTime));
 	                }
 
-	                // ✅ Check employee exists
-	                boolean exists = employeeRepository.findByEmailAndEmployeeCode(email, employeeCode).isPresent();
-	                if (!exists) {
-	                    System.err.println("❌ Employee not found with code " + employeeCode + " and email " + email);
-	                    continue;
-	                }
+	                // Save to DB
+	                scheduleRepo.save(schedule);
 
-	                scheduler.schedule(() -> {
-	                    try {
-	                        List<Map<String, String>> files = mailService.getAvailableFiles();
-	                        Optional<Map<String, String>> fileOpt = files.stream()
-	                                .filter(f -> f.get("employeeCode").equals(employeeCode))
-	                                .findFirst();
-
-	                        if (fileOpt.isPresent()) {
-	                            mailService.sendSelectedAutoEmails(Collections.singletonList(employeeCode));
-	                            System.out.println("✅ Email sent for employee: " + employeeCode +
-	                                    " to " + email +
-	                                    " at " + LocalDateTime.now());
-	                        } else {
-	                            System.err.println("❌ No files found for employee: " + employeeCode);
-	                        }
-	                    } catch (Exception e) {
-	                        System.err.println("❌ Error while sending scheduled email for "
-	                                + employeeCode + ": " + e.getMessage());
-	                    }
-	                }, delay, TimeUnit.MILLISECONDS);
-
-	                System.out.println("📌 Email scheduled for employee " + employeeCode +
-	                        " (email: " + email + ") at " + scheduledDateTime);
+	                // Register independent execution
+	                scheduleTaskSingle(schedule);
 
 	            } catch (Exception e) {
-	                throw new RuntimeException("Invalid date format! Use ISO `yyyy-MM-dd'T'HH:mm:ss` or `dd-MM-yyyy hh:mm:ss a`", e);
+	                throw new RuntimeException("❌ Invalid date format or scheduling failed for employeeCode="
+	                        + employeeCode + ", email=" + email, e);
 	            }
 	        }
+	    }
+
+	    private void scheduleTaskSingle(EmailSchedule schedule) {
+	        long delay = Duration.between(LocalDateTime.now(), schedule.getScheduledDateTime()).toMillis();
+	        if (delay < 0) return; // skip past times
+
+	        scheduler.schedule(() -> {
+	            try {
+	                List<Map<String, String>> files = mailService.getAvailableFiles();
+
+	                boolean hasFile = files.stream()
+	                        .anyMatch(f -> f.get("employeeCode").equals(schedule.getEmployeeCode()));
+
+	                if (hasFile) {
+	                    try {
+	                        mailService.sendSelectedAutoEmails(
+	                                Collections.singletonList(schedule.getEmployeeCode()),
+	                                Collections.singletonList(schedule.getEmail())
+	                        );
+
+	                        schedule.setSent(true);
+	                        scheduleRepo.save(schedule);
+
+	                        System.out.println("✅ Email sent to " + schedule.getEmail()
+	                                + " for employee " + schedule.getEmployeeCode());
+	                    } catch (Exception ex) {
+	                        schedule.setSent(false);
+	                        scheduleRepo.save(schedule);
+	                        System.err.println("❌ Failed to send email to "
+	                                + schedule.getEmail() + ": " + ex.getMessage());
+	                    }
+	                } else {
+	                    System.err.println("⚠ No file found for employee " + schedule.getEmployeeCode());
+	                }
+
+	            } catch (Exception e) {
+	                System.err.println("❌ Error while sending scheduled email for employee "
+	                        + schedule.getEmployeeCode() + ": " + e.getMessage());
+	            }
+	        }, delay, TimeUnit.MILLISECONDS);
 	    }
 	}

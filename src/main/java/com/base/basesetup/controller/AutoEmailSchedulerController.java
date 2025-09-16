@@ -21,10 +21,11 @@ public class AutoEmailSchedulerController {
 
     @PostMapping("/schedule")
     public ResponseEntity<String> scheduleEmails(@RequestBody ScheduleRequest request) {
-        schedulerService.autoSendEmails(
+        schedulerService.autoSendEmails(request.getScheduleIds(),
                 request.getEmployeeCodes(),
                 request.getDateTime(),
                 request.getBccEmails()
+               
         );
         return ResponseEntity.ok("✅ Emails scheduled for employees: " + request.getEmployeeCodes());
     }
