@@ -84,4 +84,8 @@ public interface TaxInvoiceService {
 	List<Map<String, Object>> getTrailBalance(String branch, String finYear, String fromDate, String toDate, Long orgId,
 			String details);
 
+	//Count
+	
+	List<Map<String, Object>> getTaxInvoiceCount(Long orgId, String finYear, String branchCode);
+
 }

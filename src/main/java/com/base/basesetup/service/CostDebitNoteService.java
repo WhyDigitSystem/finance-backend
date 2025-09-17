@@ -45,4 +45,6 @@ public interface CostDebitNoteService {
 	CostDebitNoteVO approveCostDebitNote(Long orgId, Long id, String docId, String action, String actionBy)
 			throws ApplicationException;
 
+	List<Map<String, Object>> getCostDebitNoteCount(Long orgId, String finYear, String branchCode);
+
 }

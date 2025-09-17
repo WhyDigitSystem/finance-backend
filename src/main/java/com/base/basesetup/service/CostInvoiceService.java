@@ -84,4 +84,6 @@ public interface CostInvoiceService {
 	List<Map<String, Object>> getCostGstReport(Long orgId, String partyName, String finYear, String fromDate,
 			String toDate);
 
+	List<Map<String, Object>> getCostInvoiceCount(Long orgId, String finYear, String branchCode);
+
 }

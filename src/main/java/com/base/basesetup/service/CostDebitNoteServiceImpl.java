@@ -884,4 +884,24 @@ public class CostDebitNoteServiceImpl implements CostDebitNoteService {
 		return List1;
 
 	}
+	
+	@Override
+	public List<Map<String, Object>> getCostDebitNoteCount(Long orgId,String finYear, String branchCode) {
+		Set<Object[]> chType = costDebitNoteRepo.getCostDebitNoteCount(  orgId, finYear,  branchCode);
+		return getCostDebitNoteCount(chType);
+	}
+
+	private List<Map<String, Object>> getCostDebitNoteCount(Set<Object[]> chType) {
+		List<Map<String, Object>> List1 = new ArrayList<>();
+		for (Object[] ch : chType) {
+			Map<String, Object> map = new HashMap<>();
+			map.put("Complete", ch[0] != null ? ch[0].toString() : "");	
+			map.put("Approved", ch[1] != null ? ch[1].toString() : "");
+			map.put("Pending", ch[2] != null ? ch[2].toString() : "");
+			map.put("Reject", ch[3] != null ?  ch[3].toString() : "");
+
+			List1.add(map);
+		}
+		return List1;
+	}
 }

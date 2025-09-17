@@ -492,5 +492,38 @@ public interface CostInvoiceRepo extends JpaRepository<CostInvoiceVO, Long> {
 //	@Query(nativeQuery = true,value="select * from costinvoice a,costdebitnote a1  where a.orgid=a1.orgid and a.suppliercode=a1.suppliercode and a.docid=a1.orginbill\r\n"
 //			+ " and a.approvestatus=a1.approvestatus and a.orgid=?1 and a.suppliername=?2")
 //	List<CostInvoiceVO> getCheck(Long orgId, String party);
+	
+	@Query(nativeQuery = true, value = "select \r\n"
+			+ "    sum(t.complete) as complete, \r\n"
+			+ "    sum(t.Approved) as Approved, \r\n"
+			+ "    sum(t.Pending) as Pending, \r\n"
+			+ "    sum(t.Reject) as Reject\r\n"
+			+ "from (\r\n"
+			+ "    select count(*) as complete, 0 as Approved, 0 as Pending, 0 as Reject\r\n"
+			+ "    from costinvoice \r\n"
+			+ "    where orgid = ?1 and finyear = ?2 and branchcode = ?3 and cancel = 0\r\n"
+			+ "\r\n"
+			+ "    union all\r\n"
+			+ "\r\n"
+			+ "    select 0 as complete, count(*) as Approved, 0 as Pending, 0 as Reject\r\n"
+			+ "    from costinvoice \r\n"
+			+ "    where orgid = ?1 and finyear = ?2 and branchcode = ?3 and cancel = 0 \r\n"
+			+ "      and approvestatus = 'APPROVED'\r\n"
+			+ "\r\n"
+			+ "    union all\r\n"
+			+ "\r\n"
+			+ "    select 0 as complete, 0 as Approved, count(*) as Pending, 0 as Reject\r\n"
+			+ "    from costinvoice \r\n"
+			+ "    where orgid = ?1 and finyear = ?2 and branchcode = ?3 and cancel = 0 \r\n"
+			+ "      and mode = 'EDIT'\r\n"
+			+ "\r\n"
+			+ "    union all\r\n"
+			+ "\r\n"
+			+ "    select 0 as complete, 0 as Approved, 0 as Pending, count(*) as Reject\r\n"
+			+ "    from costinvoice \r\n"
+			+ "    where orgid = ?1 and finyear = ?2 and branchcode = ?3 and cancel = 0 \r\n"
+			+ "      and approvestatus = 'REJECTED'\r\n"
+			+ ") t")
+	Set<Object[]> getCostInvoiceCount(Long orgId,String finYear, String branchCode);
 
 }

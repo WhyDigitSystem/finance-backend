@@ -638,4 +638,17 @@ public interface TaxInvoiceRepo extends JpaRepository<TaxInvoiceVO, Long> {
 			+ "GROUP BY groupname, accountcode, accountgroupname, partycode, partyname\r\n"
 			+ "ORDER BY groupname, accountcode")
 	Set<Object[]> getTrailBalance(String branch,String finYear,String fromDate,String toDate,Long orgId,String details);
+	
+	@Query(nativeQuery = true, value = " select sum(t.complete) complete, sum(t.Approved)Approved,sum(t.Pending)Pending,sum(t.Reject)Reject from(\r\n"
+			+ "select count(*) complete, 0 Approved, 0 Pending,0 Reject from taxinvoice where orgid= ?1 and finyear=?2 and branchcode=?3  and cancel=0 \r\n"
+			+ "union  all\r\n"
+			+ "select 0 complete, count(*) Approved,0  Pending,0 Reject from taxinvoice where orgid= ?1 and finyear=?2  and branchcode=?3 and  cancel=0 and\r\n"
+			+ " approvestatus='APPROVED'\r\n"
+			+ " union all\r\n"
+			+ " select 0 complete, 0 Approved, count(*) Pending,0 Reject from taxinvoice where orgid= ?1 and finyear=?2  and branchcode=?3 and cancel=0 and\r\n"
+			+ " status='PROFOMA'\r\n"
+			+ " union all\r\n"
+			+ "select 0 complete, 0 Approved, 0 Pending,count(*) Reject from taxinvoice where orgid= ?1 and finyear=?2  and branchcode=?3 and  cancel=0 and\r\n"
+			+ " approvestatus='REJECTED')t")
+	Set<Object[]> getTaxInvoiceCount(Long orgId,String finYear, String branchCode);
 }
