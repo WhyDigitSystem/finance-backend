@@ -42,6 +42,8 @@ public interface CostEstimationService {
 	String uploadImageCostEstimationDetail(List<MultipartFile> files, Long costEstimationId, List<Long> detailsId)
 			throws IOException;
 
+	List<Map<String, Object>> getCostEstimationCount(Long orgId, String finYear, String branchCode);
+
 	
 //	CostEstimationVO uploadMultipleImagesToCostEstimationDetails(MultipartFile[] files, Long costEstimationId, List<Long> costEstmationDetailsId);
 

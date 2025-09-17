@@ -92,4 +92,6 @@ public interface APService {
 	List<Map<String, Object>> getPaybaleTdsDetailsReport(Long orgId, String partyName, String finYear, String fromDate,
 			String toDate, String branchName);
 
+	List<Map<String, Object>> getPaymentCount(Long orgId, String finYear, String branchCode);
+
 }

@@ -1021,6 +1021,40 @@ public interface ReceiptRepo extends JpaRepository<ReceiptVO, Long> {
 	Set<Object[]> getReceivableTdsDetailsReport(Long orgId,String partyName,String finYear,String fromDate,String toDate,String branchName);
 	
 	
+	@Query(nativeQuery = true, value = "select \r\n"
+			+ "    sum(t.complete) as complete, \r\n"
+			+ "    sum(t.Approved) as Approved,\r\n"
+			+ "    sum(t.Pending) as Pending,\r\n"
+			+ "    sum(t.Reject) as Reject\r\n"
+			+ "from (\r\n"
+			+ "    select count(*) as complete, 0 as Approved, 0 as Pending, 0 as Reject\r\n"
+			+ "    from receipt \r\n"
+			+ "    where orgid = ?1 and finyear = ?2 and branchcode = ?3 and cancel = 0\r\n"
+			+ "\r\n"
+			+ "    union all\r\n"
+			+ "\r\n"
+			+ "    select 0 as complete, count(*) as Approved, 0 as Pending, 0 as Reject\r\n"
+			+ "    from receipt \r\n"
+			+ "    where orgid = ?1 and finyear = ?2 and branchcode = ?3 and cancel = 0 \r\n"
+			+ "      and approvestatus = 'APPROVED'\r\n"
+			+ "\r\n"
+			+ "    union all\r\n"
+			+ "\r\n"
+			+ "    select 0 as complete, 0 as Approved, count(*) as Pending, 0 as Reject\r\n"
+			+ "    from receipt \r\n"
+			+ "    where orgid = ?1 and finyear = ?2 and branchcode = ?3 and cancel = 0 \r\n"
+			+ "      and status = 'PROFOMA'\r\n"
+			+ "\r\n"
+			+ "    union all\r\n"
+			+ "\r\n"
+			+ "    select 0 as complete, 0 as Approved, 0 as Pending, count(*) as Reject\r\n"
+			+ "    from receipt \r\n"
+			+ "    where orgid = ?1 and finyear = ?2 and branchcode = ?3 and cancel = 0 \r\n"
+			+ "      and approvestatus = 'REJECTED'\r\n"
+			+ ") t")
+	Set<Object[]> getReceiptCount(Long orgId,String finYear, String branchCode);
+	
+	
 //	@Query(nativeQuery = true, value = "select 1 as sno, a.docid,a.docdate,a.refno,a.refdate,a1.accountname,r.customername,p.partytype,p.gstin,p.panno,p.tanno,r.tdsamt,r1.gstamt,r1.amount,r1.chargeamt,r.netamount	 from accounts a,accountsdetails a1,receipt r,receiptinvdetails r1, partymaster p,branch b,taxinvoice t,taxinvoicedetails t1,taxinvoicegst t2\r\n"
 //			+ " where b.branch=r.branch and r.receiptid=r1.receiptid and t.taxinvoiceid=t1.taxinvoiceid and t.taxinvoiceid=t2.taxinvoiceid and   p.partyname=r.customername  and  a.accountsid=a1.accountsid and a.refno=r.docid and a.sourcescreencode in('RT') and a1.accountname='TDS RECEIVABLE' and (b.branch=?6 or ?6='ALL')\r\n"
 //			+ " and (r.customername=?2 or ?2='ALL') and a.docdate between ?4 and ?5   and r.finyear=?3 and r.orgid=?1 group by\r\n"

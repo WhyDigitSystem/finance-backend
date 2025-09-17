@@ -303,9 +303,8 @@ public class ARServiceImpl implements ARService {
 						: BigDecimal.ZERO;
 				BigDecimal chargeAmt = amount.add(gstAmt);
 				receiptInvDetailsVO.setChargeAmt(chargeAmt);
-				
-				totalChargeAmount=totalChargeAmount.add(receiptInvDetailsVO.getChargeAmt());
-				
+
+				totalChargeAmount = totalChargeAmount.add(receiptInvDetailsVO.getChargeAmt());
 
 				BigDecimal tds = receiptInvDetailsDTO.getTds() != null ? receiptInvDetailsDTO.getTds()
 						: BigDecimal.ZERO;
@@ -313,9 +312,9 @@ public class ARServiceImpl implements ARService {
 
 				BigDecimal settled = receiptInvDetailsDTO.getSettled() != null ? receiptInvDetailsDTO.getSettled()
 						: BigDecimal.ZERO;
-				
-				receiableAmount=receiableAmount.add(chargeAmt.subtract(tdsValue));
-				
+
+				receiableAmount = receiableAmount.add(chargeAmt.subtract(tdsValue));
+
 				BigDecimal outstanding = chargeAmt.subtract(settled).subtract(tdsValue);
 				totalTds = totalTds.add(tdsValue);
 				receiptInvDetailsVO.setOutstanding(outstanding);
@@ -583,7 +582,6 @@ public class ARServiceImpl implements ARService {
 			throws ApplicationException {
 
 		ReceiptVO receiptVO = receiptRepo.findByOrgIdAndIdAndDocId(orgId, id, docId);
-		
 
 		// Null check before any processing
 		if (receiptVO == null) {
@@ -614,12 +612,12 @@ public class ARServiceImpl implements ARService {
 
 		multipleDocIdGenerationDetailsVO.setLastno(multipleDocIdGenerationDetailsVO.getLastno() + 1);
 		multipleDocIdGenerationDetailsRepo.save(multipleDocIdGenerationDetailsVO);
-		
+
 		List<ReceiptInvDetailsVO> receiptInvDetailsVOs = receiptVO.getReceiptInvDetailsVO();
 		String currency = (!receiptInvDetailsVOs.isEmpty() && receiptInvDetailsVOs.get(0).getCurrency() != null)
-		        ? receiptInvDetailsVOs.get(0).getCurrency()
-		        : receiptVO.getCurrency();
-		
+				? receiptInvDetailsVOs.get(0).getCurrency()
+				: receiptVO.getCurrency();
+
 		AccountsVO accountsVO = new AccountsVO();
 		accountsVO.setDocId(accountsDocId);
 		accountsVO.setSourceScreen(receiptVO.getScreenName());
@@ -649,7 +647,7 @@ public class ARServiceImpl implements ARService {
 		BigDecimal effectivereceiptAmt = (netAmount == null || netAmount.compareTo(BigDecimal.ZERO) == 0)
 				? (receiptAmt != null ? receiptAmt : BigDecimal.ZERO)
 				: netAmount;
-		
+
 		BigDecimal effectiveNetAmount = (netAmount == null || netAmount.compareTo(BigDecimal.ZERO) == 0)
 				? (receiptAmt != null ? receiptAmt : BigDecimal.ZERO)
 				: netAmount;
@@ -768,7 +766,7 @@ public class ARServiceImpl implements ARService {
 
 		receiptVO.setPurVoucherNo(savedAccountsVO.getDocId());
 		receiptVO.setPurVoucherDate(savedAccountsVO.getDocDate());
-	    
+
 		receiptVO.setApproveStatus(action);
 		receiptVO.setApproveBy(actionBy);
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy hh:mm:ss a");
@@ -781,8 +779,8 @@ public class ARServiceImpl implements ARService {
 
 	@Override
 	public List<Map<String, Object>> getReceiptDetails(Long orgId, String finYear, String partyname, String fromDate,
-			String toDate,String branchCode) {
-		Set<Object[]> chType = receiptRepo.getReceiptDetails(orgId, finYear, partyname, fromDate, toDate,branchCode);
+			String toDate, String branchCode) {
+		Set<Object[]> chType = receiptRepo.getReceiptDetails(orgId, finYear, partyname, fromDate, toDate, branchCode);
 		return getReceiptDetails(chType);
 	}
 
@@ -820,8 +818,8 @@ public class ARServiceImpl implements ARService {
 
 	@Override
 	public List<Map<String, Object>> getReceiptSummary(Long orgId, String finYear, String partyname, String fromDate,
-			String toDate,String branchCode) {
-		Set<Object[]> chType = receiptRepo.getReceiptSummary(orgId, finYear, partyname, fromDate, toDate,branchCode);
+			String toDate, String branchCode) {
+		Set<Object[]> chType = receiptRepo.getReceiptSummary(orgId, finYear, partyname, fromDate, toDate, branchCode);
 		return getReceiptSummary(chType);
 	}
 
@@ -846,20 +844,21 @@ public class ARServiceImpl implements ARService {
 		}
 		return List1;
 	}
-	
+
 	@Override
 	public ReceiptVO getReceiptByDocIdAndScreenCode(String docId) {
-		
-	  return receiptRepo.getReceiptByDocId(docId);
-	
+
+		return receiptRepo.getReceiptByDocId(docId);
+
 	}
-	
-	//ReportTds
-	
+
+	// ReportTds
+
 	@Override
-	public List<Map<String, Object>> getReceivableTdsDetailsReport(Long orgId, String partyName, String finYear, String fromDate,
-			String toDate,String branchName) {
-		Set<Object[]> chType = receiptRepo.getReceivableTdsDetailsReport(orgId, partyName, finYear, fromDate, toDate,branchName);
+	public List<Map<String, Object>> getReceivableTdsDetailsReport(Long orgId, String partyName, String finYear,
+			String fromDate, String toDate, String branchName) {
+		Set<Object[]> chType = receiptRepo.getReceivableTdsDetailsReport(orgId, partyName, finYear, fromDate, toDate,
+				branchName);
 		return getReceivableTdsDetailsReport(chType);
 	}
 
@@ -879,7 +878,7 @@ public class ARServiceImpl implements ARService {
 			map.put("panNo", ch[9] != null ? ch[9].toString() : "");
 			map.put("tanNo", ch[10] != null ? ch[10].toString() : "");
 			map.put("tdsAmount", ch[11] != null ? new BigDecimal(ch[11].toString()) : BigDecimal.ZERO);
-			
+
 //			map.put("gstAmount", ch[12] != null ? new BigDecimal(ch[12].toString()) : BigDecimal.ZERO);
 //			map.put("chargeAmount", ch[13] != null ? new BigDecimal(ch[13].toString()) : BigDecimal.ZERO);
 //			map.put("billAmount", ch[14] != null ? new BigDecimal(ch[14].toString()) : BigDecimal.ZERO);
@@ -888,7 +887,27 @@ public class ARServiceImpl implements ARService {
 		}
 		return List1;
 	}
-	
+
+	@Override
+	public List<Map<String, Object>> getReceiptCount(Long orgId, String finYear, String branchCode) {
+		Set<Object[]> chType = receiptRepo.getReceiptCount(orgId, finYear, branchCode);
+		return getReceiptCount(chType);
+	}
+
+	private List<Map<String, Object>> getReceiptCount(Set<Object[]> chType) {
+		List<Map<String, Object>> List1 = new ArrayList<>();
+		for (Object[] ch : chType) {
+			Map<String, Object> map = new HashMap<>();
+			map.put("Complete", ch[0] != null ? ch[0].toString() : "");
+			map.put("Approved", ch[1] != null ? ch[1].toString() : "");
+			map.put("Pending", ch[2] != null ? ch[2].toString() : "");
+			map.put("Reject", ch[3] != null ? ch[3].toString() : "");
+
+			List1.add(map);
+		}
+		return List1;
+	}
+
 //	
 //	@Override
 //	public List<Map<String, Object>> getReceivableTdsDetailsReport(Long orgId, String partyName, String finYear, String fromDate,
@@ -922,6 +941,5 @@ public class ARServiceImpl implements ARService {
 //		}
 //		return List1;
 //	}
-
 
 }

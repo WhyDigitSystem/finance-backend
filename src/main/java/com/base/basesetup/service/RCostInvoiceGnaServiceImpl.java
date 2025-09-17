@@ -852,4 +852,24 @@ public class RCostInvoiceGnaServiceImpl implements RCostInvoiceGnaService {
 		// TODO Auto-generated method stub
 		return rCostInvoiceGnaRepo.getrCostInvoiceByDocIdandScreenCode(ScreenCode, docId);
 	}
+	
+	@Override
+	public List<Map<String, Object>> getRCostInvoiceGnaCount(Long orgId,String finYear, String branchCode) {
+		Set<Object[]> chType = rCostInvoiceGnaRepo.getRCostInvoiceGnaCount(  orgId, finYear,  branchCode);
+		return getRCostInvoiceGnaCount(chType);
+	}
+
+	private List<Map<String, Object>> getRCostInvoiceGnaCount(Set<Object[]> chType) {
+		List<Map<String, Object>> List1 = new ArrayList<>();
+		for (Object[] ch : chType) {
+			Map<String, Object> map = new HashMap<>();
+			map.put("Complete", ch[0] != null ? ch[0].toString() : "");	
+			map.put("Approved", ch[1] != null ? ch[1].toString() : "");
+			map.put("Pending", ch[2] != null ? ch[2].toString() : "");
+			map.put("Reject", ch[3] != null ?  ch[3].toString() : "");
+
+			List1.add(map);
+		}
+		return List1;
+	}
 }
