@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import com.base.basesetup.entity.EmailSchedule;
@@ -14,5 +15,8 @@ public interface EmailScheduleRepo extends JpaRepository<EmailSchedule, Long> {
     List<EmailSchedule> findBySentFalse();
 
 	Optional<EmailSchedule> findByEmployeeCodeAndEmail(String employeeCode, String email); 
+	
+	@Query(nativeQuery = true,value = "select * from email_schedule where email_scheduleid=?1 and sent=0")
+	EmailSchedule getFindBySchedule(Long id);
 
 }

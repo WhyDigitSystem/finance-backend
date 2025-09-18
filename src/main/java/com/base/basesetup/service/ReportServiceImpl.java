@@ -268,6 +268,7 @@ public class ReportServiceImpl implements ReportService {
 			throws ApplicationException {
 		issueManifestProviderVO.setDispatchDate(issueManifestProviderDTO.getDispatchDate());
 		issueManifestProviderVO.setTransactionType(issueManifestProviderDTO.getTransactionType());
+		issueManifestProviderVO.setTransactionDate(issueManifestProviderDTO.getTransactionDate());
 		issueManifestProviderVO.setFromWarehouse(issueManifestProviderDTO.getFromWarehouse());
 		issueManifestProviderVO.setWarehouseAddress(issueManifestProviderDTO.getWarehouseAddress());
 		issueManifestProviderVO.setSender(issueManifestProviderDTO.getSender());

@@ -40,7 +40,7 @@ public class IssueManifestProviderVO {
 	@Column(name = "transactionno")
 	private String transactionNo;
 	@Column(name = "transactiondate")
-	private LocalDate transactionDate =LocalDate.now();
+	private LocalDate transactionDate;
 	@Column(name = "dispatchdate")
 	private LocalDate dispatchDate;
 	@Column(name = "transactiontype")

@@ -33,6 +33,11 @@ public class AutoEmailSchedulerService {
 	    public AutoEmailSchedulerService(EmailServiceAuto mailService) {
 	        this.mailService = mailService;
 	    }
+	    
+        public EmailSchedule getFindBySchedule(Long id) {
+	    	
+	    	return scheduleRepo.getFindBySchedule(id);
+	    }
 
 	    /** 🔹 Load all pending schedules when app starts */
 	    @PostConstruct
@@ -140,4 +145,7 @@ public class AutoEmailSchedulerService {
 	            }
 	        }, delay, TimeUnit.MILLISECONDS);
 	    }
+	    
 	}
+
+

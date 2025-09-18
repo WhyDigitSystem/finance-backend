@@ -60,6 +60,8 @@ public class IssueManifestProviderDTO {
 	
 	private String branchCode;
 	
+	private LocalDate transactionDate;
+	
 	private List<IssueManifestProviderDetailsDTO> issueManifestProviderDetailsDTO;
 	
 
