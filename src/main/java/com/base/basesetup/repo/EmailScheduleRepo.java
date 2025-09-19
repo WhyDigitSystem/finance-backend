@@ -23,7 +23,7 @@ public interface EmailScheduleRepo extends JpaRepository<EmailSchedule, Long> {
 	@Query(nativeQuery = true,value = "select * from email_schedule where org_id=?1 and sent=0")
 	List<EmailSchedule> getFindByScheduleOrgId(Long orgId);
 	
-	@Query(nativeQuery = true, value = "select scheduled_date_time from email_schedule where employee_code = ?1 and email = ?2 order by scheduled_date_time desc limit 1")
+	@Query(nativeQuery = true, value = "select scheduled_date_time from email_schedule where employee_code = ?1 and email = ?2 and sent=0  order by scheduled_date_time desc limit 1")
 		Optional<LocalDateTime> findScheduledDateTime(String employeeCode, String email);
 
 
