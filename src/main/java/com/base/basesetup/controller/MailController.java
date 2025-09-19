@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
@@ -40,14 +41,15 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class MailController extends BaseController {
 
-	private final EmailServiceAuto emailServiceAuto;
-	
+	@Autowired
+	EmailServiceAuto emailServiceAuto;
+
 	private final AutoEmailSchedulerService autoEmailSchedulerService;
 
 //	@Autowired
 	public MailController(EmailServiceAuto emailServiceAuto, AutoEmailSchedulerService autoEmailSchedulerService) {
 		this.emailServiceAuto = emailServiceAuto;
-		this.autoEmailSchedulerService=autoEmailSchedulerService;
+		this.autoEmailSchedulerService = autoEmailSchedulerService;
 	}
 
 	@GetMapping
@@ -63,59 +65,25 @@ public class MailController extends BaseController {
 		}
 	}
 
-//    @GetMapping("/content/{filename}")
-//    public ResponseEntity<String> getFileContent(@PathVariable String filename) {
-//        try {
-//            String content = emailServiceAuto.getFileContent(filename);
-//            return ResponseEntity.ok(content);
-//        } catch (Exception e) {
-//            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-//                    "Error reading file: " + e.getMessage(), e);
-//        }
-//    }
-
-//	@GetMapping("/content/{filename}")
-//	public ResponseEntity<byte[]> getFileContent(@PathVariable String filename) {
-//		try {
-//			byte[] content = emailServiceAuto.getFileContent(filename);
-//
-//			Path filePath = Paths.get(emailServiceAuto.getWatchDirectory()).resolve(filename).normalize();
-//			String contentType = Files.probeContentType(filePath);
-//			if (contentType == null) {
-//				contentType = "application/octet-stream";
-//			}
-//
-//			return ResponseEntity.ok().contentType(MediaType.parseMediaType(contentType)).body(content);
-//
-//		} catch (IOException e) {
-//			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Error reading file: " + e.getMessage(), e);
-//		}
-//	}
-
-	
 	@GetMapping("/content/{filename}")
 	public ResponseEntity<byte[]> getFileContent(@PathVariable String filename) {
-	    try {
-	        byte[] content = emailServiceAuto.getFileContent(filename);
+		try {
+			byte[] content = emailServiceAuto.getFileContent(filename);
 
-	        Path filePath = Paths.get(emailServiceAuto.getWatchDirectory()).resolve(filename).normalize();
-	        String contentType = Files.probeContentType(filePath);
-	        if (contentType == null) {
-	            contentType = "application/octet-stream";
-	        }
+			Path filePath = Paths.get((String) emailServiceAuto.getWatchDirectory()).resolve(filename).normalize();
+			String contentType = Files.probeContentType(filePath);
+			if (contentType == null) {
+				contentType = "application/octet-stream";
+			}
 
-	        return ResponseEntity.ok()
-	                .contentType(MediaType.parseMediaType(contentType))
-	                .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + filename + "\"")
-	                .body(content);
+			return ResponseEntity.ok().contentType(MediaType.parseMediaType(contentType))
+					.header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + filename + "\"").body(content);
 
-	    } catch (IOException e) {
-	        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Error reading file: " + e.getMessage(), e);
-	    }
+		} catch (IOException e) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Error reading file: " + e.getMessage(), e);
+		}
 	}
 
-	
-	
 	@GetMapping("/download/{filename}")
 	public ResponseEntity<Resource> downloadFile(@PathVariable String filename) {
 		try {
@@ -162,9 +130,10 @@ public class MailController extends BaseController {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Error sending emails: " + e.getMessage(), e);
 		}
 	}
-	
+
 	@GetMapping("/getEmployeeEmail")
-	public ResponseEntity<ResponseDTO> getEmployeeEmail(@RequestParam Long orgId,  @RequestParam String employeeCodeOrEmail) {
+	public ResponseEntity<ResponseDTO> getEmployeeEmail(@RequestParam Long orgId,
+			@RequestParam String employeeCodeOrEmail) {
 		String methodName = "getEmployeeEmail()";
 		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
 		String errorMsg = null;
@@ -172,7 +141,7 @@ public class MailController extends BaseController {
 		ResponseDTO responseDTO = null;
 		List<Map<String, Object>> mapp = new ArrayList<>();
 		try {
-			mapp = emailServiceAuto.getEmployeeEmail(orgId,employeeCodeOrEmail);
+			mapp = emailServiceAuto.getEmployeeEmail(orgId, employeeCodeOrEmail);
 		} catch (Exception e) {
 			errorMsg = e.getMessage();
 			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
@@ -183,24 +152,12 @@ public class MailController extends BaseController {
 			responseObjectsMap.put("mapp", mapp);
 			responseDTO = createServiceResponse(responseObjectsMap);
 		} else {
-			responseDTO = createServiceResponseError(responseObjectsMap, "Email to retrieve tax invoice Details", errorMsg);
+			responseDTO = createServiceResponseError(responseObjectsMap, "Email to retrieve tax invoice Details",
+					errorMsg);
 		}
 
 		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
 		return ResponseEntity.ok().body(responseDTO);
 	}
-
-	
-	
-////	//
-//	@PostMapping("/schedule")
-//	public ResponseEntity<String> scheduleEmail(
-//	        @RequestParam String employeeCode,
-//	        @RequestParam @DateTimeFormat(pattern = "dd-MM-yyyy hh:mm:ss a") LocalDateTime scheduledTime,
-//	        @RequestParam(required = false) String bcc) {
-//
-//		autoEmailSchedulerService.autoSendEmails(employeeCode, scheduledTime, bcc);
-//	    return ResponseEntity.ok("✅ Email scheduled for " + employeeCode + " at " + scheduledTime);
-//	}
 
 }

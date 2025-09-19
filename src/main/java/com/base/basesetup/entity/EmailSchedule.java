@@ -29,6 +29,7 @@ public class EmailSchedule {
 
     private String employeeCode;
     private String email;
+    private Long orgId;
     private LocalDateTime scheduledDateTime;
     private boolean sent = false;
     
