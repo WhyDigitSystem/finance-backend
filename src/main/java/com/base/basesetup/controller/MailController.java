@@ -40,7 +40,6 @@ import lombok.extern.slf4j.Slf4j;
 @RequestMapping("/api/mail")
 @Slf4j
 public class MailController extends BaseController {
-
 	@Autowired
 	EmailServiceAuto emailServiceAuto;
 
@@ -159,5 +158,6 @@ public class MailController extends BaseController {
 		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
 		return ResponseEntity.ok().body(responseDTO);
 	}
+
 
 }

@@ -22,9 +22,6 @@ import com.base.basesetup.repo.EmailScheduleRepo;
 
 @Service
 public class AutoEmailSchedulerServiceImpl implements AutoEmailSchedulerService{
-	
-//	 @Autowired
-//	    private EmployeeRepo employeeRepository;
 
 	 @Autowired
 	    private EmailScheduleRepo scheduleRepo;
@@ -33,9 +30,6 @@ public class AutoEmailSchedulerServiceImpl implements AutoEmailSchedulerService{
 	  EmailServiceAutoImpl maAutoImpl;
 	    private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(4); 
 
-//	    public AutoEmailSchedulerService(EmailServiceAuto mailService) {
-//	        this.mailService = mailService;
-//	    }
 	    
         public EmailSchedule getFindBySchedule(Long id) {
 	    	
@@ -55,70 +49,6 @@ public class AutoEmailSchedulerServiceImpl implements AutoEmailSchedulerService{
 	            scheduleTaskSingle(schedule);
 	        }
 	    }
-
-
-	    
-	    
-//	    @Override
-//	    public List<EmailSchedule> autoSendEmails(List<ScheduleRequestDTO> request) {
-//
-//	        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy hh:mm:ss a");
-//
-//	        List<EmailSchedule> savedSchedules = new ArrayList<>();
-//
-////	        for (int i = 0; i < employeeCodes.size(); i++) {
-////	            Long id = (scheduleIds != null && scheduleIds.size() > i) ? scheduleIds.get(i) : null;
-////	            String employeeCode = employeeCodes.get(i);
-////	            String dateTimeStr = dateTimeList.get(i);
-////	            String email = bccEmails.get(i);
-////
-////	            try {
-////	                LocalDateTime scheduledDateTime = LocalDateTime.parse(dateTimeStr, formatter);
-////
-////	                if (scheduledDateTime.isBefore(LocalDateTime.now())) {
-////	                    throw new IllegalArgumentException("❌ Scheduled time must be in the future!");
-////	                }
-////
-////	                EmailSchedule schedule;
-//
-//	                if (request.getScheduleIds() != null) {
-//	                    // 🔹 Update existing record
-//	                    schedule = scheduleRepo.findById(id)
-//	                            .map(existing -> {
-//	                                existing.setEmployeeCode(employeeCode);
-//	                                existing.setEmail(email);
-//	                                existing.setScheduledDateTime(scheduledDateTime);
-//	                                existing.setSent(false);
-//	                                return existing;
-//	                            })
-//	                            .orElseGet(() -> new EmailSchedule(employeeCode, email, scheduledDateTime));
-//	                } else {
-//	                    // 🔹 Check by employeeCode + email
-//	                    schedule = scheduleRepo.findByEmployeeCodeAndEmail(employeeCode, email)
-//	                            .map(existing -> {
-//	                                existing.setScheduledDateTime(scheduledDateTime);
-//	                                existing.setSent(false);
-//	                                return existing;
-//	                            })
-//	                            .orElseGet(() -> new EmailSchedule(employeeCode, email, scheduledDateTime));
-//	                }
-//
-//	                // Save to DB
-//	                EmailSchedule saved = scheduleRepo.save(schedule);
-//	                savedSchedules.add(saved);
-//
-//	                // Register independent execution
-//	                scheduleTaskSingle(saved);
-//
-//	            } catch (Exception e) {
-//	                throw new RuntimeException("❌ Invalid date format or scheduling failed for employeeCode="
-//	                        + employeeCode + ", email=" + email, e);
-//	            }
-//	        }
-//
-//	        return savedSchedules;
-//	    }
-
 	    
 	    
 	    @Override

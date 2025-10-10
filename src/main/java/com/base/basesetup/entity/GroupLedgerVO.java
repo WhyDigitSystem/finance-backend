@@ -60,7 +60,7 @@ public class GroupLedgerVO {
 	private String createdBy;
 	@Column(name = "modifiedby", length = 50)
 	private String updatedBy;
-	@Column(name = "cancelremarks", length = 150)
+	@Column(name = "cancelremarks", length = 150)	
 	private String cancelRemarks;
 	private boolean cancel;
 	private boolean active;
