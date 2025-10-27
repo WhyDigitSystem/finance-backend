@@ -1217,5 +1217,37 @@ public class CommonMasterController extends BaseController {
 	        LOGGER.debug("Ending Method: " + methodName);
 	        return ResponseEntity.ok().body(responseDTO);
 	    }
+	 
+
+
+		
+		
+		@GetMapping("/getFinYearByClient")
+		public ResponseEntity<ResponseDTO> getFinYearByClient(@RequestParam Long orgId,@RequestParam String clientCode) {
+			String methodName = "getFinYearByClient()";
+			LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+			String errorMsg = null;
+			Map<String, Object> responseObjectsMap = new HashMap<>();
+			ResponseDTO responseDTO = null;
+			List<Map<String, Object>> financialYearVOs = new ArrayList<>();
+			try {
+				financialYearVOs = commonMasterService.getFinYearByClient(orgId, clientCode);
+			} catch (Exception e) {
+				errorMsg = e.getMessage();
+				LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+			}
+			if (StringUtils.isBlank(errorMsg)) {
+				responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "FInYear information get successfully");
+				responseObjectsMap.put("financialYearVOs", financialYearVOs);
+				responseDTO = createServiceResponse(responseObjectsMap);
+			} else {
+				responseDTO = createServiceResponseError(responseObjectsMap, "FInYear information receive failed",
+						errorMsg);
+			}
+			LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+			return ResponseEntity.ok().body(responseDTO);
+		}
+
+		
 	
 }

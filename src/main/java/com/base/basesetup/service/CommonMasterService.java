@@ -160,6 +160,8 @@ public interface CommonMasterService {
 	ProductServiceVO getProductServiceById(Long id);
 
 	ProductServiceVO uploadImageProductServivceInBloob(MultipartFile file, Long id) throws IOException;
+
+	List<Map<String, Object>> getFinYearByClient(Long orgId, String clientCode);
 	
 
 
