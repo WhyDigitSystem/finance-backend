@@ -242,8 +242,8 @@ public class CostEstimationServiceImpl implements CostEstimationService {
 		accountsVO.setOrgId(costEstimationVO.getOrgId());
 		accountsVO.setRefNo(costEstimationVO.getDocId());
 		accountsVO.setRefDate(costEstimationVO.getDocDate());
-//	    accountsVO.setVId(costInvoiceVO.getVId());
-//	    accountsVO.setVDate(costInvoiceVO.getVDate());
+	    accountsVO.setVId(costEstimationVO.getDocId());
+	    accountsVO.setVDate(costEstimationVO.getDocDate());
 //	    accountsVO.setDueDate(costInvoiceVO.getDueDate());
 		accountsVO.setAmountInWords(costEstimationVO.getAmountInWords());
 //	    accountsVO.setChargeableAmount(costInvoiceVO.getTotChargesLcAmt());
@@ -251,7 +251,7 @@ public class CostEstimationServiceImpl implements CostEstimationService {
 //	    accountsVO.setCreditDays(costInvoiceVO.getCreditDays());
 		accountsVO.setSourceScreen(costEstimationVO.getScreenName());
 		accountsVO.setSourceScreenCode(costEstimationVO.getScreenCode());
-//	    accountsVO.setRemarks(costEstimationVO.getRemarks());
+	    accountsVO.setRemarks(costEstimationVO.getApprovalRemarks());
 		accountsVO.setTotalDebitAmount(costEstimationVO.getTotalAmount());
 		accountsVO.setTotalCreditAmount(costEstimationVO.getTotalAmount());
 
@@ -478,6 +478,27 @@ public class CostEstimationServiceImpl implements CostEstimationService {
 		}
 		return List1;
 	}
+	
+	@Override
+	public List<Map<String, Object>> getCostEstimationCount(Long orgId,String finYear, String branchCode) {
+		Set<Object[]> chType = costEstimationRepo.getCostEstimationCount(  orgId, finYear,  branchCode);
+		return getCostEstimationCount(chType);
+	}
+
+	private List<Map<String, Object>> getCostEstimationCount(Set<Object[]> chType) {
+		List<Map<String, Object>> List1 = new ArrayList<>();
+		for (Object[] ch : chType) {
+			Map<String, Object> map = new HashMap<>();
+			map.put("Complete", ch[0] != null ? ch[0].toString() : "");	
+			map.put("Approved", ch[1] != null ? ch[1].toString() : "");
+			map.put("Pending", ch[2] != null ? ch[2].toString() : "");
+			map.put("Reject", ch[3] != null ?  ch[3].toString() : "");
+
+			List1.add(map);
+		}
+		return List1;
+	}
+	
 
 //	@Override
 //	public CostEstimationVO uploadMultipleImagesToCostEstimationDetails(MultipartFile[] files, Long costEstimationId,

@@ -621,8 +621,9 @@ public class APServiceImpl implements APService {
 	}
 
 	@Override
-	public List<Map<String, Object>> getAPOutstanding(String Asondate, String partyname, String branch, Long orgId,String pdate) {
-		Set<Object[]> group = arapAdjustmentsRepo.findAPOutstanding(Asondate, partyname,branch,orgId,pdate);
+	public List<Map<String, Object>> getAPOutstanding(String Asondate, String partyname, String branch, Long orgId,
+			String pdate) {
+		Set<Object[]> group = arapAdjustmentsRepo.findAPOutstanding(Asondate, partyname, branch, orgId, pdate);
 		return getAPOutstanding(group);
 	}
 
@@ -800,11 +801,11 @@ public class APServiceImpl implements APService {
 
 		BigDecimal netAmount = paymentVO.getNetAmount();
 		BigDecimal paymentAmt = paymentVO.getPaymentAmt();
-		
+
 		BigDecimal effectivepaymentAmt = (netAmount == null || netAmount.compareTo(BigDecimal.ZERO) == 0)
 				? (paymentAmt != null ? paymentAmt : BigDecimal.ZERO)
 				: netAmount;
-		
+
 		BigDecimal effectiveNetAmount = (netAmount == null || netAmount.compareTo(BigDecimal.ZERO) == 0)
 				? (paymentAmt != null ? paymentAmt : BigDecimal.ZERO)
 				: netAmount;
@@ -892,7 +893,7 @@ public class APServiceImpl implements APService {
 
 		paymentVO.setPurVoucherNo(savedAccountsVO.getDocId());
 		paymentVO.setPurVoucherDate(savedAccountsVO.getDocDate());
-		
+
 		paymentVO.setApproveStatus(action);
 		paymentVO.setApproveBy(actionBy);
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy hh:mm:ss a");
@@ -922,9 +923,9 @@ public class APServiceImpl implements APService {
 			map.put("partyname", ch[7] != null ? ch[7].toString() : "");
 			map.put("partycode", ch[8] != null ? ch[8].toString() : "");
 			map.put("paymentamt", ch[9] != null ? new BigDecimal(ch[9].toString()) : BigDecimal.ZERO);
-			map.put("netamount", ch[10] != null ?new BigDecimal(ch[10].toString()) : BigDecimal.ZERO);
+			map.put("netamount", ch[10] != null ? new BigDecimal(ch[10].toString()) : BigDecimal.ZERO);
 			map.put("onaccount", ch[11] != null ? new BigDecimal(ch[11].toString()) : BigDecimal.ZERO);
-			map.put("chequeno", ch[12] != null ?ch[12].toString() : "");
+			map.put("chequeno", ch[12] != null ? ch[12].toString() : "");
 			map.put("chequedate", ch[13] != null ? ch[13].toString() : "");
 			map.put("tdsamt", ch[14] != null ? new BigDecimal(ch[14].toString()) : BigDecimal.ZERO);
 			map.put("amount", ch[15] != null ? new BigDecimal(ch[15].toString()) : BigDecimal.ZERO);
@@ -968,11 +969,69 @@ public class APServiceImpl implements APService {
 		}
 		return List1;
 	}
-	
+
 	@Override
 	public PaymentVO getPaymentByDocId(Long orgId, String docId) {
 		// TODO Auto-generated method stub
 		return paymentRepo.findAllPaymentByDocId(orgId, docId);
 	}
+
+	// ReportTds
+
+	@Override
+	public List<Map<String, Object>> getPaybaleTdsDetailsReport(Long orgId, String partyName, String finYear,
+			String fromDate, String toDate, String branchName) {
+		Set<Object[]> chType = paymentRepo.getPaybaleTdsDetailsReport(orgId, partyName, finYear, fromDate, toDate,
+				branchName);
+		return getPaybaleTdsDetailsReport(chType);
+	}
+
+	private List<Map<String, Object>> getPaybaleTdsDetailsReport(Set<Object[]> chType) {
+		List<Map<String, Object>> List1 = new ArrayList<>();
+		for (Object[] ch : chType) {
+			Map<String, Object> map = new HashMap<>();
+			map.put("sNo", ch[0] != null ? ch[0].toString() : "");
+			map.put("docId", ch[1] != null ? ch[1].toString() : "");
+			map.put("docDate", ch[2] != null ? ch[2].toString() : "");
+			map.put("refNo", ch[3] != null ? ch[3].toString() : "");
+			map.put("refDate", ch[4] != null ? ch[4].toString() : "");
+			map.put("accountName", ch[5] != null ? ch[5].toString() : "");
+			map.put("partyName", ch[6] != null ? ch[6].toString() : "");
+			map.put("partyType", ch[7] != null ? ch[7].toString() : "");
+			map.put("gstNo", ch[8] != null ? ch[8].toString() : "");
+			map.put("panNo", ch[9] != null ? ch[9].toString() : "");
+			map.put("tanNo", ch[10] != null ? ch[10].toString() : "");
+			map.put("tdsAmount", ch[11] != null ? new BigDecimal(ch[11].toString()) : BigDecimal.ZERO);
+			map.put("gstAmount", ch[12] != null ? new BigDecimal(ch[12].toString()) : BigDecimal.ZERO);
+			map.put("chargeAmount", ch[13] != null ? new BigDecimal(ch[13].toString()) : BigDecimal.ZERO);
+			map.put("billAmount", ch[14] != null ? new BigDecimal(ch[14].toString()) : BigDecimal.ZERO);
+			map.put("totalAmountLc", ch[15] != null ? new BigDecimal(ch[15].toString()) : BigDecimal.ZERO);
+			map.put("tdsPercentage", ch[16] != null ? new BigDecimal(ch[16].toString()) : BigDecimal.ZERO);
+			map.put("gstPercentage", ch[17] != null ? ch[17].toString() : 0);
+			List1.add(map);
+		}
+		return List1;
+	}
+	
+	@Override
+	public List<Map<String, Object>> getPaymentCount(Long orgId, String finYear, String branchCode) {
+		Set<Object[]> chType = paymentRepo.getPaymentCount(orgId, finYear, branchCode);
+		return getPaymentCount(chType);
+	}
+
+	private List<Map<String, Object>> getPaymentCount(Set<Object[]> chType) {
+		List<Map<String, Object>> List1 = new ArrayList<>();
+		for (Object[] ch : chType) {
+			Map<String, Object> map = new HashMap<>();
+			map.put("Complete", ch[0] != null ? ch[0].toString() : "");
+			map.put("Approved", ch[1] != null ? ch[1].toString() : "");
+			map.put("Pending", ch[2] != null ? ch[2].toString() : "");
+			map.put("Reject", ch[3] != null ? ch[3].toString() : "");
+
+			List1.add(map);
+		}
+		return List1;
+	}
+
 
 }

@@ -70,7 +70,7 @@ public class UrCostInvoiceGnaController extends BaseController {
 		String errorMsg = null;
 		Map<String, Object> responseObjectsMap = new HashMap<>();
 		ResponseDTO responseDTO = null;
-		List<UrCostInvoiceGnaVO> urCostInvoiceGnaVO =   new ArrayList<>();
+		List<UrCostInvoiceGnaVO> urCostInvoiceGnaVO = new ArrayList<>();
 		try {
 			urCostInvoiceGnaVO = urCostInvoiceGnaService.getUrCostInvoiceGnaById(id);
 		} catch (Exception e) {
@@ -172,9 +172,6 @@ public class UrCostInvoiceGnaController extends BaseController {
 		return ResponseEntity.ok().body(responseDTO);
 
 	}
-	
-	
-	
 
 	@GetMapping("/getVendorAddressFromPartyMaster")
 	public ResponseEntity<ResponseDTO> getVendorAddressFromPartyMaster(@RequestParam Long orgId,
@@ -187,7 +184,7 @@ public class UrCostInvoiceGnaController extends BaseController {
 		List<Map<String, Object>> mapp = new ArrayList<>();
 
 		try {
-			mapp = urCostInvoiceGnaService.getVendorAddressFromPartyMaster(orgId,supplierCode);
+			mapp = urCostInvoiceGnaService.getVendorAddressFromPartyMaster(orgId, supplierCode);
 		} catch (Exception e) {
 			errorMsg = e.getMessage();
 			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
@@ -198,15 +195,17 @@ public class UrCostInvoiceGnaController extends BaseController {
 			responseObjectsMap.put("partyMasterVO", mapp);
 			responseDTO = createServiceResponse(responseObjectsMap);
 		} else {
-			responseDTO = createServiceResponseError(responseObjectsMap, "StateDetails Failed to retrieve Address ", errorMsg);
+			responseDTO = createServiceResponseError(responseObjectsMap, "StateDetails Failed to retrieve Address ",
+					errorMsg);
 		}
 
 		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
 		return ResponseEntity.ok().body(responseDTO);
 	}
-	
+
 	@GetMapping("/getCurrencyAndExrateFromParty")
-	public ResponseEntity<ResponseDTO> getCurrencyAndExrateFromParty(@RequestParam Long orgId,@RequestParam String supplierCode) {
+	public ResponseEntity<ResponseDTO> getCurrencyAndExrateFromParty(@RequestParam Long orgId,
+			@RequestParam String supplierCode) {
 		String methodName = "getCurrencyAndExrateFromParty()";
 		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
 		String errorMsg = null;
@@ -260,7 +259,7 @@ public class UrCostInvoiceGnaController extends BaseController {
 		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
 		return ResponseEntity.ok().body(responseDTO);
 	}
-	
+
 	@GetMapping("/getSectionNameFromMaster")
 	public ResponseEntity<ResponseDTO> getSectionNameFromMaster(@RequestParam Long orgId,
 			@RequestParam String section) {
@@ -288,18 +287,18 @@ public class UrCostInvoiceGnaController extends BaseController {
 		return ResponseEntity.ok().body(responseDTO);
 
 	}
-	
-	
-	
+
 	@PutMapping("/approveUrCostInvoiceGnaVO")
-	public ResponseEntity<ResponseDTO> approveUrCostInvoiceGnaVO(@RequestParam Long orgId,@RequestParam Long id,@RequestParam String docId,@RequestParam String action,@RequestParam String actionBy) {
+	public ResponseEntity<ResponseDTO> approveUrCostInvoiceGnaVO(@RequestParam Long orgId, @RequestParam Long id,
+			@RequestParam String docId, @RequestParam String action, @RequestParam String actionBy) {
 		String methodName = "approveTaxInvoice()";
 		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
 		String errorMsg = null;
 		Map<String, Object> responseObjectsMap = new HashMap<>();
 		ResponseDTO responseDTO = null;
 		try {
-			UrCostInvoiceGnaVO urCostInvoiceGnaVO = urCostInvoiceGnaService.approveUrCostInvoiceGnaVO(orgId, id, docId, action, actionBy);
+			UrCostInvoiceGnaVO urCostInvoiceGnaVO = urCostInvoiceGnaService.approveUrCostInvoiceGnaVO(orgId, id, docId,
+					action, actionBy);
 			responseObjectsMap.put("urCostInvoiceGnaVO", urCostInvoiceGnaVO);
 			responseDTO = createServiceResponse(responseObjectsMap);
 		} catch (Exception e) {
@@ -310,9 +309,10 @@ public class UrCostInvoiceGnaController extends BaseController {
 		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
 		return ResponseEntity.ok().body(responseDTO);
 	}
-	
+
 	@GetMapping("/getUrCostInvoiceByDocIdandScreenCode")
-	public ResponseEntity<ResponseDTO> getUrCostInvoiceByDocIdandScreenCode(@RequestParam String ScreenCode , @RequestParam String docId) {
+	public ResponseEntity<ResponseDTO> getUrCostInvoiceByDocIdandScreenCode(@RequestParam String ScreenCode,
+			@RequestParam String docId) {
 		String methodName = "getUrCostInvoiceByDocIdandScreenCode()";
 		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
 		String errorMsg = null;
@@ -320,13 +320,14 @@ public class UrCostInvoiceGnaController extends BaseController {
 		ResponseDTO responseDTO = null;
 		UrCostInvoiceGnaVO urCostInvoiceGnaVO = new UrCostInvoiceGnaVO();
 		try {
-			urCostInvoiceGnaVO = urCostInvoiceGnaService.getUrCostInvoiceByDocIdandScreenCode( ScreenCode, docId);
+			urCostInvoiceGnaVO = urCostInvoiceGnaService.getUrCostInvoiceByDocIdandScreenCode(ScreenCode, docId);
 		} catch (Exception e) {
 			errorMsg = e.getMessage();
 			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
 		}
 		if (StringUtils.isBlank(errorMsg)) {
-			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "UR Cost Invoice information get successfully By docid");
+			responseObjectsMap.put(CommonConstant.STRING_MESSAGE,
+					"UR Cost Invoice information get successfully By docid");
 			responseObjectsMap.put("urCostInvoiceGnaVO", urCostInvoiceGnaVO);
 			responseDTO = createServiceResponse(responseObjectsMap);
 		} else {
@@ -337,9 +338,10 @@ public class UrCostInvoiceGnaController extends BaseController {
 		return ResponseEntity.ok().body(responseDTO);
 
 	}
-	
+
 	@GetMapping("/getChargeAccountFromChargeLedger")
-	public ResponseEntity<ResponseDTO> getChargeAccountFromChargeLedger(@RequestParam Long orgId,@RequestParam String chargeLedger) {
+	public ResponseEntity<ResponseDTO> getChargeAccountFromChargeLedger(@RequestParam Long orgId,
+			@RequestParam String chargeLedger) {
 		String methodName = "getChargeAccountFromChargeLedger()";
 		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
 		String errorMsg = null;
@@ -348,7 +350,7 @@ public class UrCostInvoiceGnaController extends BaseController {
 		List<Map<String, Object>> mapp = new ArrayList<>();
 
 		try {
-			mapp = urCostInvoiceGnaService.getChargeAccountFromChargeLedger(orgId,chargeLedger);
+			mapp = urCostInvoiceGnaService.getChargeAccountFromChargeLedger(orgId, chargeLedger);
 		} catch (Exception e) {
 			errorMsg = e.getMessage();
 			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
@@ -365,6 +367,34 @@ public class UrCostInvoiceGnaController extends BaseController {
 		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
 		return ResponseEntity.ok().body(responseDTO);
 	}
-	
-	
+
+	@GetMapping("/getURCostInvoiceGnaCount")
+	public ResponseEntity<ResponseDTO> getURCostInvoiceGnaCount(@RequestParam Long orgId, @RequestParam String finYear,
+			@RequestParam String branchCode) {
+		String methodName = "getURCostInvoiceGnaCount()";
+		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+		String errorMsg = null;
+		Map<String, Object> responseObjectsMap = new HashMap<>();
+		ResponseDTO responseDTO = null;
+		List<Map<String, Object>> mapp = new ArrayList<>();
+
+		try {
+			mapp = urCostInvoiceGnaService.getURCostInvoiceGnaCount(orgId, finYear, branchCode);
+		} catch (Exception e) {
+			errorMsg = e.getMessage();
+			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+		}
+
+		if (StringUtils.isBlank(errorMsg)) {
+			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "Count  retrieved successfully");
+			responseObjectsMap.put("mapp", mapp);
+			responseDTO = createServiceResponse(responseObjectsMap);
+		} else {
+			responseDTO = createServiceResponseError(responseObjectsMap, "Failed to retrieve  Count", errorMsg);
+		}
+
+		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+		return ResponseEntity.ok().body(responseDTO);
+	}
+
 }

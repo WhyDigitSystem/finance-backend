@@ -28,7 +28,7 @@ public interface RCostInvoiceGnaRepo extends JpaRepository<RCostInvoiceGnaVO, Lo
 	@Query(value = "select a from PartyMasterVO a where a.orgId=?1 and a.partyType=?2 and a.active=true and a.gstRegistered='YES'")
 	List<PartyMasterVO> getAllVendorFromPartyMaster(Long orgId, String partyType);
 	
-	@Query(nativeQuery = true,value = "select accountgroupname from groupledger where orgid=?1 and category in ('OTHERS','TAX') and active = 1  order by accountgroupname")
+	@Query(nativeQuery = true,value = "select accountgroupname from groupledger where orgid=?1  and  type='ACCOUNT' and coalist='EXPENSE'  and active = 1 group by accountgroupname order by accountgroupname")
 	Set<Object[]> getChargeLedgerFromGroup(Long orgId);
 
 	@Query(nativeQuery = true,value = "select a.sectionname ,b.tcspercentage  from tdsmaster a , tdsmaster2 b where a.tdsmasterid=b.tdsmaster2id and a.orgid=?1 and a.section=?2 and a.active = 1  order by sectionname")
@@ -202,6 +202,39 @@ public interface RCostInvoiceGnaRepo extends JpaRepository<RCostInvoiceGnaVO, Lo
 
 	@Query(nativeQuery = true, value = "select * from rcostinvoicegna where screencode=?1 and docid=?2")
 	RCostInvoiceGnaVO getrCostInvoiceByDocIdandScreenCode(String screenCode, String docId);
+	
+	@Query(nativeQuery = true, value = "select \r\n"
+			+ "    sum(t.complete) as complete, \r\n"
+			+ "    sum(t.Approved) as Approved,\r\n"
+			+ "    sum(t.Pending) as Pending,\r\n"
+			+ "    sum(t.Reject) as Reject\r\n"
+			+ "from (\r\n"
+			+ "    select count(*) as complete, 0 as Approved, 0 as Pending, 0 as Reject\r\n"
+			+ "    from rcostinvoicegna \r\n"
+			+ "    where orgid = ?1 and finyear = ?2 and branchcode = ?3 and cancel = 0\r\n"
+			+ "\r\n"
+			+ "    union all\r\n"
+			+ "\r\n"
+			+ "    select 0 as complete, count(*) as Approved, 0 as Pending, 0 as Reject\r\n"
+			+ "    from rcostinvoicegna \r\n"
+			+ "    where orgid = ?1 and finyear = ?2 and branchcode = ?3 and cancel = 0 \r\n"
+			+ "      and approvestatus = 'APPROVED'\r\n"
+			+ "\r\n"
+			+ "    union all\r\n"
+			+ "\r\n"
+			+ "    select 0 as complete, 0 as Approved, count(*) as Pending, 0 as Reject\r\n"
+			+ "    from rcostinvoicegna \r\n"
+			+ "    where orgid = ?1 and finyear = ?2 and branchcode = ?3 and cancel = 0 \r\n"
+			+ "      and mode = 'PROFOMA'\r\n"
+			+ "\r\n"
+			+ "    union all\r\n"
+			+ "\r\n"
+			+ "    select 0 as complete, 0 as Approved, 0 as Pending, count(*) as Reject\r\n"
+			+ "    from rcostinvoicegna \r\n"
+			+ "    where orgid = ?1 and finyear = ?2 and branchcode = ?3 and cancel = 0 \r\n"
+			+ "      and approvestatus = 'REJECTED'\r\n"
+			+ ") t")
+	Set<Object[]> getRCostInvoiceGnaCount(Long orgId,String finYear, String branchCode);
 
 }
 	

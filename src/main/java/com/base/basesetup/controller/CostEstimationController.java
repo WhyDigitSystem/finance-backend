@@ -280,4 +280,33 @@ public class CostEstimationController extends BaseController {
 		return ResponseEntity.ok().body(responseDTO);
 	}
 
+	
+	@GetMapping("/getCostEstimationCount")
+	public ResponseEntity<ResponseDTO> getCostEstimationCount(@RequestParam Long orgId,
+			@RequestParam String finYear, @RequestParam String branchCode) {
+		String methodName = "getCostEstimationCount()";
+		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+		String errorMsg = null;
+		Map<String, Object> responseObjectsMap = new HashMap<>();
+		ResponseDTO responseDTO = null;
+		List<Map<String, Object>> mapp = new ArrayList<>();
+
+		try {
+			mapp = costEstimationService.getCostEstimationCount(orgId, finYear, branchCode);
+		} catch (Exception e) {
+			errorMsg = e.getMessage();
+			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+		}
+
+		if (StringUtils.isBlank(errorMsg)) {
+			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "Count  retrieved successfully");
+			responseObjectsMap.put("mapp", mapp);
+			responseDTO = createServiceResponse(responseObjectsMap);
+		} else {
+			responseDTO = createServiceResponseError(responseObjectsMap, "Failed to retrieve  Count", errorMsg);
+		}
+
+		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+		return ResponseEntity.ok().body(responseDTO);
+	}
 }

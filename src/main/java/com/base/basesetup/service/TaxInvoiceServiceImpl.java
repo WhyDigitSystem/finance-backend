@@ -278,7 +278,7 @@ public class TaxInvoiceServiceImpl implements TaxInvoiceService {
 			taxInvoiceDetailsVO.setTlcAmount(tlcAmount);
 
 			billAmount = lcAmount.divide(exRate); // Ensure you specify a RoundingMode when
-																		// dividing
+													// dividing
 			taxInvoiceDetailsVO.setBillAmount(billAmount);
 			totalChargeAmountBC = totalChargeAmountBC.add(billAmount);
 
@@ -425,88 +425,86 @@ public class TaxInvoiceServiceImpl implements TaxInvoiceService {
 //			taxInvoiceGstVO.setTaxInvoiceVO(taxInvoiceVO);
 //			taxInvoiceGstVOList.add(taxInvoiceGstVO);
 //		}
-		
-		
+
 		Map<Integer, BigDecimal> gstSumMap = new HashMap<>();
 		for (TaxInvoiceDetailsVO vo : taxInvoiceDetailsVOs) {
-		    int gst = vo.getGSTPercent();
-		    BigDecimal gstAmt = vo.getTlcAmount();
-		    gstSumMap.put(gst, gstSumMap.getOrDefault(gst, BigDecimal.ZERO).add(gstAmt));
+			int gst = vo.getGSTPercent();
+			BigDecimal gstAmt = vo.getTlcAmount();
+			gstSumMap.put(gst, gstSumMap.getOrDefault(gst, BigDecimal.ZERO).add(gstAmt));
 		}
 
 		Map<Double, BigDecimal> updatedGstSumMap = new HashMap<>();
 		if ("INTRA".equalsIgnoreCase(taxInvoiceDTO.getGstType())) {
-		    for (Map.Entry<Integer, BigDecimal> entry : gstSumMap.entrySet()) {
-		        double halfGst = entry.getKey() / 2.0;
-		        BigDecimal halfGstAmount = entry.getValue().divide(BigDecimal.valueOf(2));
-		        updatedGstSumMap.put(halfGst, halfGstAmount);
-		    }
+			for (Map.Entry<Integer, BigDecimal> entry : gstSumMap.entrySet()) {
+				double halfGst = entry.getKey() / 2.0;
+				BigDecimal halfGstAmount = entry.getValue().divide(BigDecimal.valueOf(2));
+				updatedGstSumMap.put(halfGst, halfGstAmount);
+			}
 		} else {
-		    for (Map.Entry<Integer, BigDecimal> entry : gstSumMap.entrySet()) {
-		        updatedGstSumMap.put((double) entry.getKey(), entry.getValue());
-		    }
+			for (Map.Entry<Integer, BigDecimal> entry : gstSumMap.entrySet()) {
+				updatedGstSumMap.put((double) entry.getKey(), entry.getValue());
+			}
 		}
 
 		// Ledger-wise GST entries
 		Map<String, BigDecimal> taxDetailsMap = new HashMap<>();
 		for (Map.Entry<Double, BigDecimal> entry : updatedGstSumMap.entrySet()) {
-		    List<GroupLedgerVO> groupLedgers = groupLedgerRepo.getTaxLedgerDetails(
-		            taxInvoiceDTO.getOrgId(), taxInvoiceDTO.getGstType(), entry.getKey());
-		    for (GroupLedgerVO groupLedgerVO : groupLedgers) {
-		        taxDetailsMap.put(groupLedgerVO.getAccountGroupName(), entry.getValue());
-		    }
+			List<GroupLedgerVO> groupLedgers = groupLedgerRepo.getTaxLedgerDetails(taxInvoiceDTO.getOrgId(),
+					taxInvoiceDTO.getGstType(), entry.getKey());
+			for (GroupLedgerVO groupLedgerVO : groupLedgers) {
+				taxDetailsMap.put(groupLedgerVO.getAccountGroupName(), entry.getValue());
+			}
 		}
 
 		List<TaxInvoiceGstVO> taxInvoiceGstVOList = new ArrayList<>();
 		for (Map.Entry<String, BigDecimal> entry : taxDetailsMap.entrySet()) {
-		    TaxInvoiceGstVO gstVO = new TaxInvoiceGstVO();
-		    gstVO.setGstChargeAcc(entry.getKey());
-		    gstVO.setGstCrLcAmount(entry.getValue());
-		    gstVO.setGstDbBillAmount(BigDecimal.ZERO);
-		    gstVO.setGstDbLcAmount(BigDecimal.ZERO);
-		    gstVO.setGstSubledgerCode("None");
-		    gstVO.setGstCrBillAmount(entry.getValue());
-		    gstVO.setTaxInvoiceVO(taxInvoiceVO);
-		    taxInvoiceGstVOList.add(gstVO);
+			TaxInvoiceGstVO gstVO = new TaxInvoiceGstVO();
+			gstVO.setGstChargeAcc(entry.getKey());
+			gstVO.setGstCrLcAmount(entry.getValue());
+			gstVO.setGstDbBillAmount(BigDecimal.ZERO);
+			gstVO.setGstDbLcAmount(BigDecimal.ZERO);
+			gstVO.setGstSubledgerCode("None");
+			gstVO.setGstCrBillAmount(entry.getValue());
+			gstVO.setTaxInvoiceVO(taxInvoiceVO);
+			taxInvoiceGstVOList.add(gstVO);
 		}
 
 		// Ledger-wise bill mapping (for credit)
 		Map<String, BigDecimal> ledgerSumMap = new HashMap<>();
 		for (TaxInvoiceDetailsVO vo : taxInvoiceDetailsVOs) {
-		    String ledger = vo.getLedger();
-		    BigDecimal billAmt = vo.getBillAmount();
-		    ledgerSumMap.put(ledger, ledgerSumMap.getOrDefault(ledger, BigDecimal.ZERO).add(billAmt));
+			String ledger = vo.getLedger();
+			BigDecimal billAmt = vo.getBillAmount();
+			ledgerSumMap.put(ledger, ledgerSumMap.getOrDefault(ledger, BigDecimal.ZERO).add(billAmt));
 		}
 
 		for (Map.Entry<String, BigDecimal> entry : ledgerSumMap.entrySet()) {
-		    TaxInvoiceGstVO gstVO = new TaxInvoiceGstVO();
-		    gstVO.setGstChargeAcc(entry.getKey());
-		    
-		    String ledger = entry.getKey();
-		    BigDecimal billAmtFC = entry.getValue();
+			TaxInvoiceGstVO gstVO = new TaxInvoiceGstVO();
+			gstVO.setGstChargeAcc(entry.getKey());
 
-		    String currency = taxInvoiceVO.getBillCurr();
-		    BigDecimal exRate = taxInvoiceVO.getBillCurrRate();
+			String ledger = entry.getKey();
+			BigDecimal billAmtFC = entry.getValue();
 
-		    for (TaxInvoiceDetailsVO vo : taxInvoiceDetailsVOs) {
-		        if (ledger.equalsIgnoreCase(vo.getLedger())) {
-		            currency = vo.getCurrency();
-		            exRate = vo.getExRate();
-		            break;
-		        }
-		    }
+			String currency = taxInvoiceVO.getBillCurr();
+			BigDecimal exRate = taxInvoiceVO.getBillCurrRate();
 
-		    BigDecimal billAmtINR = "INR".equalsIgnoreCase(currency) ? billAmtFC : billAmtFC.multiply(exRate);
-		    gstVO.setGstCrLcAmount(billAmtINR);
-		    gstVO.setGstDbBillAmount(BigDecimal.ZERO);
-		    gstVO.setGstDbLcAmount(BigDecimal.ZERO);
-		    gstVO.setGstSubledgerCode("None");
-		    gstVO.setGstCrBillAmount(billAmtFC);
-		    gstVO.setTaxInvoiceVO(taxInvoiceVO);
-		    taxInvoiceGstVOList.add(gstVO);
+			for (TaxInvoiceDetailsVO vo : taxInvoiceDetailsVOs) {
+				if (ledger.equalsIgnoreCase(vo.getLedger())) {
+					currency = vo.getCurrency();
+					exRate = vo.getExRate();
+					break;
+				}
+			}
+
+			BigDecimal billAmtINR = "INR".equalsIgnoreCase(currency) ? billAmtFC : billAmtFC.multiply(exRate);
+			gstVO.setGstCrLcAmount(billAmtINR);
+			gstVO.setGstDbBillAmount(BigDecimal.ZERO);
+			gstVO.setGstDbLcAmount(BigDecimal.ZERO);
+			gstVO.setGstSubledgerCode("None");
+			gstVO.setGstCrBillAmount(billAmtFC);
+			gstVO.setTaxInvoiceVO(taxInvoiceVO);
+			taxInvoiceGstVOList.add(gstVO);
 		}
-		
-		
+
 		taxInvoiceVO.setTaxInvoiceGstVO(taxInvoiceGstVOList);
 
 		totalInvAmountLC = totalChargeAmountLC.add(totalTaxAmountLC);
@@ -787,16 +785,16 @@ public class TaxInvoiceServiceImpl implements TaxInvoiceService {
 						: creditAmountFC.multiply(exRate).setScale(2, RoundingMode.HALF_UP);
 				gstAccountDetailsVO.setACurrency(currency);
 				gstAccountDetailsVO.setAExRate(exRate);
-				
+
 				gstAccountDetailsVO.setCreditAmount(creditAmountFC);
-				if(!taxInvoiceVO.getBillCurr().equals("INR")) {
-				gstAccountDetailsVO.setBCrAmount(creditAmountFC);
-				gstAccountDetailsVO.setNCreditAmount(creditAmountFC);
-				
+				if (!taxInvoiceVO.getBillCurr().equals("INR")) {
+					gstAccountDetailsVO.setBCrAmount(creditAmountFC);
+					gstAccountDetailsVO.setNCreditAmount(creditAmountFC);
+
 				}
-					gstAccountDetailsVO.setBCrAmount(creditAmountINR);
-					gstAccountDetailsVO.setNCreditAmount(creditAmountINR);
-				
+				gstAccountDetailsVO.setBCrAmount(creditAmountINR);
+				gstAccountDetailsVO.setNCreditAmount(creditAmountINR);
+
 				gstAccountDetailsVO.setDebitAmount(BigDecimal.ZERO);
 				gstAccountDetailsVO.setNDebitAmount(BigDecimal.ZERO);
 				gstAccountDetailsVO.setBDebitAmount(BigDecimal.ZERO);
@@ -846,7 +844,6 @@ public class TaxInvoiceServiceImpl implements TaxInvoiceService {
 			taxInvoiceVO.setInvoiceNo(savedAccountsVO.getDocId());
 			taxInvoiceVO.setInvoiceDate(savedAccountsVO.getDocDate());
 
-			
 			// Save dueDate in your entity
 			taxInvoiceVO.setDueDate(dueDate);
 			taxInvoiceVO.setApproveStatus(action);
@@ -1289,6 +1286,128 @@ public class TaxInvoiceServiceImpl implements TaxInvoiceService {
 			Map<String, Object> map = new HashMap<>();
 			map.put("currency", ch[0] != null ? ch[0].toString() : "");
 			map.put("sellingRate", ch[1] != null ? new BigDecimal(ch[1].toString()) : BigDecimal.ZERO);
+			List1.add(map);
+		}
+		return List1;
+	}
+
+//GstReport
+
+	@Override
+	public List<Map<String, Object>> getRevenueGstReport(Long orgId, String partyName, String finYear, String fromDate,
+			String toDate) {
+		Set<Object[]> chType = taxInvoiceRepo.getRevenueGstReport(orgId, partyName, finYear, fromDate, toDate);
+		return getRevenueGstReport(chType);
+	}
+
+	private List<Map<String, Object>> getRevenueGstReport(Set<Object[]> chType) {
+		List<Map<String, Object>> List1 = new ArrayList<>();
+		for (Object[] ch : chType) {
+			Map<String, Object> map = new HashMap<>();
+			map.put("sNo", ch[0] != null ? ch[0].toString() : "");
+			map.put("docId", ch[1] != null ? ch[1].toString() : "");
+			map.put("docDate", ch[2] != null ? ch[2].toString() : "");
+			map.put("refNo", ch[3] != null ? ch[3].toString() : "");
+			map.put("refDate", ch[4] != null ? ch[4].toString() : "");
+			map.put("partyType", ch[5] != null ? ch[5].toString() : "");
+			map.put("partyCode", ch[6] != null ? ch[6].toString() : "");
+			map.put("partyName", ch[7] != null ? ch[7].toString() : "");
+			map.put("gstNo", ch[8] != null ? ch[8].toString() : "");
+			map.put("currency", ch[9] != null ? ch[9].toString() : "");
+     		map.put("exRate", ch[10] != null ? ch[10].toString() : "");
+			map.put("gstPercent", ch[11] != null ? ch[11].toString() : 0);
+			map.put("gstAmount", ch[12] != null ? new BigDecimal(ch[12].toString()) : BigDecimal.ZERO);
+			map.put("chargeAmount", ch[13] != null ? new BigDecimal(ch[13].toString()) : BigDecimal.ZERO);
+			map.put("billAmount", ch[14] != null ? new BigDecimal(ch[14].toString()) : BigDecimal.ZERO);
+			map.put("totalAmountLc", ch[15] != null ? new BigDecimal(ch[15].toString()) : BigDecimal.ZERO);
+			List1.add(map);
+		}
+		return List1;
+	}
+	
+	
+	//Profit&Loss
+	
+	@Override
+	public List<Map<String, Object>> getProfitAndLossReport(Long orgId,  String fromDate,
+			String toDate) {
+		Set<Object[]> chType = taxInvoiceRepo.getProfitAndLossReport(orgId, fromDate, toDate);
+		return getProfitAndLossReport(chType);
+	}
+
+	private List<Map<String, Object>> getProfitAndLossReport(Set<Object[]> chType) {
+		List<Map<String, Object>> List1 = new ArrayList<>();
+		for (Object[] ch : chType) {
+			Map<String, Object> map = new HashMap<>();
+			map.put("groupName", ch[0] != null ? ch[0].toString() : "");
+			map.put("amount", ch[1] != null ? new BigDecimal(ch[1].toString()) : BigDecimal.ZERO);
+			List1.add(map);
+		}
+		return List1;
+	}
+	
+	
+	@Override
+	public List<Map<String, Object>> getNetProfit(Long orgId,  String fromDate,
+			String toDate,String groupName) {
+		Set<Object[]> chType = taxInvoiceRepo.getNetProfit(orgId, fromDate, toDate,groupName);
+		return getNetProfit(chType);
+	}
+
+	private List<Map<String, Object>> getNetProfit(Set<Object[]> chType) {
+		List<Map<String, Object>> List1 = new ArrayList<>();
+		for (Object[] ch : chType) {
+			Map<String, Object> map = new HashMap<>();
+			map.put("accountName", ch[2] != null ? ch[2].toString() : "");
+			map.put("groupName", ch[1] != null ? ch[1].toString() : "");
+			map.put("amounts", ch[0] != null ? new BigDecimal(ch[0].toString()) : BigDecimal.ZERO);
+			List1.add(map);
+		}
+		return List1;
+	}
+	
+	@Override
+	public List<Map<String, Object>> getTrailBalance(String branch,String finYear,String fromDate,String toDate,Long orgId,String details) {
+		Set<Object[]> chType = taxInvoiceRepo.getTrailBalance( branch, finYear, fromDate, toDate, orgId, details);
+		return getTrailBalance(chType);
+	}
+
+	private List<Map<String, Object>> getTrailBalance(Set<Object[]> chType) {
+		List<Map<String, Object>> List1 = new ArrayList<>();
+		for (Object[] ch : chType) {
+			Map<String, Object> map = new HashMap<>();
+			map.put("groupName", ch[0] != null ? ch[0].toString() : "");
+			map.put("accountCode", ch[1] != null ? ch[1].toString() : "");
+			map.put("accountName", ch[2] != null ? ch[2].toString() : "");
+			map.put("partyCode", ch[3] != null ? ch[3].toString() : "");
+			map.put("partyName", ch[4] != null ? ch[4].toString() : "");
+			map.put("odbamount", ch[5] != null ? new BigDecimal(ch[5].toString()) : BigDecimal.ZERO);
+			map.put("ocramount", ch[6] != null ?new BigDecimal(ch[6].toString()) : BigDecimal.ZERO);
+			map.put("tdbamount", ch[7] != null ? new BigDecimal(ch[7].toString()) : BigDecimal.ZERO);
+			map.put("tcramount", ch[8] != null ? new BigDecimal(ch[8].toString()) : BigDecimal.ZERO);
+			map.put("cdbamount", ch[9] != null ? new BigDecimal(ch[9].toString()) : BigDecimal.ZERO);
+     		map.put("ccramount", ch[10] != null ? new BigDecimal(ch[10].toString()) : BigDecimal.ZERO);
+
+			List1.add(map);
+		}
+		return List1;
+	}
+	
+	@Override
+	public List<Map<String, Object>> getTaxInvoiceCount(Long orgId,String finYear, String branchCode) {
+		Set<Object[]> chType = taxInvoiceRepo.getTaxInvoiceCount(  orgId, finYear,  branchCode);
+		return getTaxInvoiceCount(chType);
+	}
+
+	private List<Map<String, Object>> getTaxInvoiceCount(Set<Object[]> chType) {
+		List<Map<String, Object>> List1 = new ArrayList<>();
+		for (Object[] ch : chType) {
+			Map<String, Object> map = new HashMap<>();
+			map.put("Complete", ch[0] != null ? ch[0].toString() : "");	
+			map.put("Approved", ch[1] != null ? ch[1].toString() : "");
+			map.put("Pending", ch[2] != null ? ch[2].toString() : "");
+			map.put("Reject", ch[3] != null ?  ch[3].toString() : "");
+
 			List1.add(map);
 		}
 		return List1;

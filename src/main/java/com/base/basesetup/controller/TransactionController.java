@@ -3014,30 +3014,60 @@ public class TransactionController extends BaseController {
 	}
 	
 	
-	@GetMapping("/getIncomeAndExponseAndProfit")
-	public ResponseEntity<ResponseDTO> getIncomeAndExponseAndProfit(@RequestParam Long OrgId,
-			@RequestParam String partyName,@RequestParam String jobNo ) {
+//	@GetMapping("/getIncomeAndExponseAndProfit")
+//	public ResponseEntity<ResponseDTO> getIncomeAndExponseAndProfit(@RequestParam Long OrgId,
+//			@RequestParam String partyName,@RequestParam String jobNo ) {
+//
+//		String methodName = "getIncomeAndExponseAndProfit()";
+//		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+//		String errorMsg = null;
+//		Map<String, Object> responseObjectsMap = new HashMap<>();
+//		ResponseDTO responseDTO = null;
+//		List<Map<String, Object>> mov = new ArrayList<>();
+//		try {
+//			mov = transactionService.getIncomeAndExponseAndProfit(OrgId, partyName,jobNo);
+//		} catch (Exception e) {
+//			errorMsg = e.getMessage();
+//			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+//		}
+//
+//		if (StringUtils.isBlank(errorMsg)) {
+//			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "PartyName information retrieved successfully");
+//			responseObjectsMap.put("JobCardVO", mov);
+//			responseDTO = createServiceResponse(responseObjectsMap);
+//		} else {
+//			responseDTO = createServiceResponseError(responseObjectsMap,
+//					"Failed to retrieve PartyName information", errorMsg);
+//		}
+//
+//		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+//		return ResponseEntity.ok().body(responseDTO);
+//	}
+	
+	@GetMapping("/getIncomeAndExponseAndProfitDetails")
+	public ResponseEntity<ResponseDTO> getIncomeAndExponseAndProfitDetails(@RequestParam Long OrgId,
+			@RequestParam String partyName,@RequestParam  String finYear,@RequestParam String branch ) {
 
-		String methodName = "getIncomeAndExponseAndProfit()";
+		String methodName = "getIncomeAndExponseAndProfitDetails()";
 		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
 		String errorMsg = null;
 		Map<String, Object> responseObjectsMap = new HashMap<>();
 		ResponseDTO responseDTO = null;
 		List<Map<String, Object>> mov = new ArrayList<>();
 		try {
-			mov = transactionService.getIncomeAndExponseAndProfit(OrgId, partyName,jobNo);
+			mov = transactionService.getIncomeAndExponseAndProfitDetails(OrgId, partyName,finYear,branch);
 		} catch (Exception e) {
 			errorMsg = e.getMessage();
 			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
 		}
 
 		if (StringUtils.isBlank(errorMsg)) {
-			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "PartyName information retrieved successfully");
+			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "Income/Expence information retrieved successfully");
 			responseObjectsMap.put("JobCardVO", mov);
 			responseDTO = createServiceResponse(responseObjectsMap);
 		} else {
 			responseDTO = createServiceResponseError(responseObjectsMap,
-					"Failed to retrieve PartyName information", errorMsg);
+					"Failed to retrieve Income/Expence information", errorMsg);
 		}
 
 		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);

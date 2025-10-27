@@ -55,6 +55,8 @@ public class RetrievalManifestProviderVO {
 	private String receiverAddress;
 	@Column(name = "sendergst")
 	private String senderGst;
+	@Column(name = "receivergst")
+	private String receiverGst;
 	@Column(name = "transportername")
 	private String transporterName;
 	@Column(name = "vehicleeno")

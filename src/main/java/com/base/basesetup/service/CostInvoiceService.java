@@ -18,7 +18,7 @@ public interface CostInvoiceService {
 
 	// CostInvoice
 
-	List<CostInvoiceVO> getAllCostInvoiceByOrgId(Long orgId,String finYear, String branchCode);
+	List<CostInvoiceVO> getAllCostInvoiceByOrgId(Long orgId, String finYear, String branchCode);
 
 	Map<String, Object> updateCreateCostInvoice(@Valid CostInvoiceDTO costInvoiceDTO) throws ApplicationException;
 
@@ -65,18 +65,25 @@ public interface CostInvoiceService {
 	CostInvoiceVO getCostInvoiceById(Long id);
 
 	List<Map<String, Object>> getDsahboardCost(Long orgId, String billMonth, String finYear);
-	
-	// hyperlink for Cost  register
-		CostInvoiceVO getCostByDocIdandScreenCode(String ScreenCode, String docId);
-		//screencode
-		
-		CostDebitNoteVO getDebitNoteByDocIdandScreenCode(String ScreenCode, String docId);
-		
-		//COSTINVOICE SUMMARY
 
-		List<Map<String, Object>> getCostInvoiceSummary(Long orgId, String fromDate, String toDate,String finYear,
-				String partyName,String branchCode);
+	// hyperlink for Cost register
+	CostInvoiceVO getCostByDocIdandScreenCode(String ScreenCode, String docId);
+	// screencode
 
-		List<Map<String, Object>> getCostInvoiceSummaryDetails(Long orgId, String fromDate, String toDate,String finYear, String partyName,String branchCode);
-		
+	CostDebitNoteVO getDebitNoteByDocIdandScreenCode(String ScreenCode, String docId);
+
+	// COSTINVOICE SUMMARY
+
+	List<Map<String, Object>> getCostInvoiceSummary(Long orgId, String fromDate, String toDate, String finYear,
+			String partyName, String branchCode);
+
+	List<Map<String, Object>> getCostInvoiceSummaryDetails(Long orgId, String fromDate, String toDate, String finYear,
+			String partyName, String branchCode);
+
+	// CostGstReport
+	List<Map<String, Object>> getCostGstReport(Long orgId, String partyName, String finYear, String fromDate,
+			String toDate);
+
+	List<Map<String, Object>> getCostInvoiceCount(Long orgId, String finYear, String branchCode);
+
 }

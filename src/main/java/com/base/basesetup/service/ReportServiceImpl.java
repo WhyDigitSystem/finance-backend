@@ -206,14 +206,14 @@ public class ReportServiceImpl implements ReportService {
 			message = "IssueManifestProvider Updated Successfully";
 		} else {
 
-			String docId = issueManifestProviderRepo.getIssueManifestProviderDocId(issueManifestProviderDTO.getOrgId(), issueManifestProviderDTO.getFinYear(),
-					issueManifestProviderDTO.getBranchCode(), screenCode);
+			String docId = issueManifestProviderRepo.getIssueManifestProviderDocId(issueManifestProviderDTO.getOrgId(), issueManifestProviderDTO.getFinYear()
+					, screenCode);
 			issueManifestProviderVO.setTransactionNo(docId);
 
 			// GETDOCID LASTNO +1
 			DocumentTypeMappingDetailsVO documentTypeMappingDetailsVO = documentTypeMappingDetailsRepo
-					.findByOrgIdAndFinYearAndBranchCodeAndScreenCode(issueManifestProviderDTO.getOrgId(),
-							issueManifestProviderDTO.getFinYear(), issueManifestProviderDTO.getBranchCode(), screenCode);
+					.findByOrgIdAndFinYearAndScreenCode(issueManifestProviderDTO.getOrgId(),
+							issueManifestProviderDTO.getFinYear(),  screenCode);
 			documentTypeMappingDetailsVO.setLastno(documentTypeMappingDetailsVO.getLastno() + 1);
 			documentTypeMappingDetailsRepo.save(documentTypeMappingDetailsVO);
 
@@ -268,6 +268,7 @@ public class ReportServiceImpl implements ReportService {
 			throws ApplicationException {
 		issueManifestProviderVO.setDispatchDate(issueManifestProviderDTO.getDispatchDate());
 		issueManifestProviderVO.setTransactionType(issueManifestProviderDTO.getTransactionType());
+		issueManifestProviderVO.setTransactionDate(issueManifestProviderDTO.getTransactionDate());
 		issueManifestProviderVO.setFromWarehouse(issueManifestProviderDTO.getFromWarehouse());
 		issueManifestProviderVO.setWarehouseAddress(issueManifestProviderDTO.getWarehouseAddress());
 		issueManifestProviderVO.setSender(issueManifestProviderDTO.getSender());
@@ -343,7 +344,7 @@ public class ReportServiceImpl implements ReportService {
 	@Override
 	public String getIssueManifestProviderDocId(Long orgId, String finYear, String branch, String branchCode) {
 		String ScreenCode = "MIM";
-		String result = issueManifestProviderRepo.getIssueManifestProviderDocId(orgId, finYear, branchCode, ScreenCode);
+		String result = issueManifestProviderRepo.getIssueManifestProviderDocId(orgId, finYear,  ScreenCode);
 		return result;
 	}
 	
@@ -397,13 +398,13 @@ public class ReportServiceImpl implements ReportService {
 		} else {
 
 			String docId = retrievalManifestProviderRepo.getRetrievalManifestProviderDocId(retrievalManifestProviderDTO.getOrgId(), retrievalManifestProviderDTO.getFinYear(),
-					retrievalManifestProviderDTO.getBranchCode(), screenCode);
+					 screenCode);
 			retrievalManifestProviderVO.setTransactionNo(docId);
 
 			// GETDOCID LASTNO +1
 			DocumentTypeMappingDetailsVO documentTypeMappingDetailsVO = documentTypeMappingDetailsRepo
-					.findByOrgIdAndFinYearAndBranchCodeAndScreenCode(retrievalManifestProviderDTO.getOrgId(),
-							retrievalManifestProviderDTO.getFinYear(), retrievalManifestProviderDTO.getBranchCode(), screenCode);
+					.findByOrgIdAndFinYearAndScreenCode(retrievalManifestProviderDTO.getOrgId(),
+							retrievalManifestProviderDTO.getFinYear(), screenCode);
 			documentTypeMappingDetailsVO.setLastno(documentTypeMappingDetailsVO.getLastno() + 1);
 			documentTypeMappingDetailsRepo.save(documentTypeMappingDetailsVO);
 
@@ -440,6 +441,7 @@ public class ReportServiceImpl implements ReportService {
 		retrievalManifestProviderVO.setActive(retrievalManifestProviderDTO.isActive());
 		retrievalManifestProviderVO.setCancel(retrievalManifestProviderDTO.isCancel());
 		retrievalManifestProviderVO.setOrgId(retrievalManifestProviderDTO.getOrgId());
+		retrievalManifestProviderVO.setReceiverGst(retrievalManifestProviderDTO.getReceiverGst());
 		retrievalManifestProviderVO.setCode(retrievalManifestProviderDTO.getCode());
 		retrievalManifestProviderVO.setFinYear(retrievalManifestProviderDTO.getFinYear());
 		retrievalManifestProviderVO.setBranch(retrievalManifestProviderDTO.getBranch());
@@ -491,7 +493,7 @@ public class ReportServiceImpl implements ReportService {
 	@Override
 	public String getRetrievalManifestProviderDocId(Long orgId, String finYear, String branch, String branchCode) {
 		String ScreenCode = "RM";
-		String result = retrievalManifestProviderRepo.getRetrievalManifestProviderDocId(orgId, finYear, branchCode, ScreenCode);
+		String result = retrievalManifestProviderRepo.getRetrievalManifestProviderDocId(orgId, finYear, ScreenCode);
 		return result;
 	}
 

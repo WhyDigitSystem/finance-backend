@@ -60,4 +60,11 @@ public interface ARService {
 
 	ReceiptVO getReceiptByDocIdAndScreenCode(String docId);
 
+	//TdsReport
+	
+	List<Map<String, Object>> getReceivableTdsDetailsReport(Long orgId, String partyName, String finYear,
+			String fromDate, String toDate, String branchName);
+
+	List<Map<String, Object>> getReceiptCount(Long orgId, String finYear, String branchCode);
+
 }

@@ -63,5 +63,22 @@ public interface JobCardRepo extends JpaRepository<JobCardVO, Long> {
 	String getJobCardDocId(Long orgId, String finYear, String branchCode, String screenCode);
 
 	boolean existsByrefNoAndOrgId(String refNo, Long orgId);
+	
+	@Query(nativeQuery = true, value = "select sum(income) income,sum(expence) expence,case when sum(income) - sum(expence) > 0 then (sum(income) - sum(expence)) else\r\n"
+			+ " 0 end as profit ,\r\n"
+			+ " case when sum(income) - sum(expence) < 0 then  abs(sum(income) - sum(expence)) else 0 end as loss\r\n"
+			+ "     from(\r\n"
+			+ "select sum(a.amount) as income,0 expence from vw_revenue a join taxinvoice t on a.docid=t.vid\r\n"
+			+ "  join jobcard j on t.joborderno=j.jobno \r\n"
+			+ " where a.orgid=?1 and j.customer=?2 and a.finyear=?3 and t.branch=?4\r\n"
+			+ " union\r\n"
+			+ "  select 0 as income,sum(a.amount) expence from vw_cost a join costinvoice t on \r\n"
+			+ " a.docid=t.vid join chargercostinvoice c on t.costinvoiceid=c.costinvoiceid\r\n"
+			+ "   join jobcard j on c.jobno=j.jobno and j.customer=c.party\r\n"
+			+ " where a.orgid=?1 and j.customer=?2 and a.finyear=?3 and t.branch=?4\r\n"
+			+ " ) a1")
+	Set<Object[]> getIncomeAndExponseAndProfitDetails(Long orgId,String partyName,String finYear,String branch);
+	
+	
 
 }

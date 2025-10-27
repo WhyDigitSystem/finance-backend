@@ -314,5 +314,8 @@ public interface TransactionService {
 
 	List<Map<String, Object>> getIncomeAndExponseAndProfit(Long orgId, String partyName,String jobNo);
 
+	List<Map<String, Object>> getIncomeAndExponseAndProfitDetails(Long orgId, String partyName, String finYear,
+			String branch);
+
 
 }

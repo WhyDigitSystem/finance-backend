@@ -32,5 +32,7 @@ public interface EmployeeRepo extends JpaRepository<EmployeeVO,Long>{
     Optional<String> findEmailByCode(String employeeCode);
 
 	@Query(nativeQuery = true,value = "select email from employee where orgid=?1  and (employeecode=?2  or email=?2) order by email")
-	Set<Object[]> getEmployeeEmail(Long orgId,String employeeCodeOrEmail);    
+	Set<Object[]> getEmployeeEmail(Long orgId,String employeeCodeOrEmail);
+
+	   Optional<EmployeeVO> findByEmailAndEmployeeCode(String email, String employeeCode); 
 }

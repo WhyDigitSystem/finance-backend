@@ -14,7 +14,7 @@ import com.base.basesetup.exception.ApplicationException;
 
 @Service
 public interface TaxInvoiceService {
-	
+
 //	TaxInvoice
 	List<TaxInvoiceVO> getAllTaxInvoiceByFinYearAndOrgId(Long orgId, String finYear, String branchCode);
 
@@ -29,10 +29,12 @@ public interface TaxInvoiceService {
 	List<Map<String, Object>> getChargeType(Long orgId);
 
 	List<Map<String, Object>> getChargeCodeByChargeType(Long orgId, String chargeType);
-	
-	List<Map<String, Object>> getTaxinvoiceDetails(Long orgId,String finYear, String partyname,String fromDate, String toDate,String branchCode);
-	
-	List<Map<String, Object>> getTaxinvoiceSummary(Long orgId,String finYear, String partyname,String fromDate, String toDate,String branchCode);
+
+	List<Map<String, Object>> getTaxinvoiceDetails(Long orgId, String finYear, String partyname, String fromDate,
+			String toDate, String branchCode);
+
+	List<Map<String, Object>> getTaxinvoiceSummary(Long orgId, String finYear, String partyname, String fromDate,
+			String toDate, String branchCode);
 
 	List<Map<String, Object>> getCurrencyAndExrates(Long orgId);
 
@@ -40,13 +42,14 @@ public interface TaxInvoiceService {
 
 	List<Map<String, Object>> getPartyStateCodeDetails(Long orgId, Long id);
 
-	List<Map<String, Object>> getPlaceOfSupplyDetails(Long orgId, Long id,String stateCode);
+	List<Map<String, Object>> getPlaceOfSupplyDetails(Long orgId, Long id, String stateCode);
 
 	List<Map<String, Object>> getPartyAddressDetails(Long orgId, Long id, String stateCode, String placeOfSupply);
 
 	List<Map<String, Object>> getGstTypeDetails(Long orgId, String branchCode, String stateCode);
-	
-	TaxInvoiceVO approveTaxInvoice(Long orgId,Long id,String docId,String action,String actionBy) throws ApplicationException;
+
+	TaxInvoiceVO approveTaxInvoice(Long orgId, Long id, String docId, String action, String actionBy)
+			throws ApplicationException;
 
 	List<Map<String, Object>> getCreditDaysFromCustomer(Long orgId, String customerCode);
 
@@ -54,18 +57,35 @@ public interface TaxInvoiceService {
 
 	List<Map<String, Object>> getJobCardForTaxInvoice(Long orgId, String partyCode);
 
-	List<Map<String, Object>> getReportDetailsForSalesRegister(String fromDate, String toDate,
-			Long orgId, String branchCode, String partyCode,String finYear);
+	List<Map<String, Object>> getReportDetailsForSalesRegister(String fromDate, String toDate, Long orgId,
+			String branchCode, String partyCode, String finYear);
 
 	List<Map<String, Object>> getDsahboardRevenue(Long orgId, String billMonth, String finYear);
 
 	// hyperlink for sales register
 	TaxInvoiceVO getTaxInvoiceByDocIdandScreenCode(String ScreenCode, String docId);
-	//screencode
-	
+	// screencode
+
 	IrnCreditNoteVO getCreditNoteByDocIdandScreenCode(String ScreenCode, String docId);
 
-	List<Map<String, Object>> getCurrencyFromPartyMaster(Long orgId,String partyCode);
+	List<Map<String, Object>> getCurrencyFromPartyMaster(Long orgId, String partyCode);
+
+	// RevenueReport
+
+	List<Map<String, Object>> getRevenueGstReport(Long orgId, String partyName, String finYear, String fromDate,
+			String toDate);
+
+	//Profit/Loss
 	
+	List<Map<String, Object>> getProfitAndLossReport(Long orgId, String fromDate, String toDate);
+
+	List<Map<String, Object>> getNetProfit(Long orgId, String fromDate, String toDate, String groupName);
+
+	List<Map<String, Object>> getTrailBalance(String branch, String finYear, String fromDate, String toDate, Long orgId,
+			String details);
+
+	//Count
+	
+	List<Map<String, Object>> getTaxInvoiceCount(Long orgId, String finYear, String branchCode);
 
 }

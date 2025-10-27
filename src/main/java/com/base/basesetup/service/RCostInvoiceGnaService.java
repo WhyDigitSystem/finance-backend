@@ -49,4 +49,6 @@ public interface RCostInvoiceGnaService {
 	RCostInvoiceGnaVO getRCostInvoiceGnaByDocIdandScreenCode(String ScreenCode, String docId);
 	// screencode
 
+	List<Map<String, Object>> getRCostInvoiceGnaCount(Long orgId, String finYear, String branchCode);
+
 }

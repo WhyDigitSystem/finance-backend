@@ -966,6 +966,6 @@ public interface IssueManifestProviderRepo extends JpaRepository<IssueManifestPr
 			+ "ORDER BY subledgername,sno asc")
 	Set<Object[]> getARAgeingReport(Long orgId, String branch, String partyName, String asOnDate, String base);
 
-	@Query(nativeQuery = true,value="select concat(prefixfield,lpad(lastno,4,0)) AS docid from documenttypemappingdetails where orgid=?1 and finyear=?2 and branchcode=?3 and screencode=?4")
-	String getIssueManifestProviderDocId(Long orgId, String finYear, String branchCode, String screenCode);
+	@Query(nativeQuery = true,value="select concat(prefixfield,lpad(lastno,4,0)) AS docid from documenttypemappingdetails where orgid=?1 and finyear=?2 and branchcode='BLR' and screencode=?3")
+	String getIssueManifestProviderDocId(Long orgId, String finYear, String screenCode);
 }

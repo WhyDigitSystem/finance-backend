@@ -38,4 +38,6 @@ public interface UrCostInvoiceGnaService {
 	UrCostInvoiceGnaVO getUrCostInvoiceByDocIdandScreenCode(String ScreenCode, String docId);
 
 	List<Map<String, Object>> getChargeAccountFromChargeLedger(Long orgId, String chargeLedger);
+
+	List<Map<String, Object>> getURCostInvoiceGnaCount(Long orgId, String finYear, String branchCode);
 }
