@@ -3,6 +3,7 @@ package com.base.basesetup.service;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Date;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -109,6 +110,14 @@ public class UserServiceImpl implements UserService {
             return false;
         }
     }
+
+
+
+	@Override
+	public List<UserVO> getBranchCodeByUser(String userName) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
 	
 

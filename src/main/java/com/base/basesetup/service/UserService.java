@@ -1,8 +1,12 @@
 package com.base.basesetup.service;
 
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.stereotype.Service;
+
+import com.base.basesetup.entity.UserVO;
 
 @Service
 public interface UserService {
@@ -12,6 +16,8 @@ public interface UserService {
 	public void createUserLoginAction(String userName, Long userId, String actionType, HttpServletRequest request);
 
 	public void removeUser(String userName);
+
+	public List<UserVO> getBranchCodeByUser(String userName);
 	
 	
 }

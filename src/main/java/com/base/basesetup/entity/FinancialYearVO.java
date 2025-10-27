@@ -51,6 +51,8 @@ public class FinancialYearVO {
 	@Column(name = "modifiedby")
 	private String updatedBy;
 	private boolean active;
+	
+	private String yearType;
 
 	@JsonGetter("active")
     public String getActive() {

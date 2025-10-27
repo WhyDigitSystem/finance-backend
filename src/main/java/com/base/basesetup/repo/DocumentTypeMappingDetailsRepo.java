@@ -13,6 +13,8 @@ public interface DocumentTypeMappingDetailsRepo extends JpaRepository<DocumentTy
 	DocumentTypeMappingDetailsVO findByOrgIdAndFinYearAndBranchCodeAndScreenCode(Long orgId, String finYear,
 			String branchCode, String screenCode);
 
+	
+
 
 
 }

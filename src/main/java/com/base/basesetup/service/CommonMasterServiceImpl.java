@@ -1430,6 +1430,24 @@ public class CommonMasterServiceImpl implements CommonMasterService {
 		productServiceVO.setImage(file.getBytes()); 
 		return productServiceRepo.save(productServiceVO);
 	}
+
+	@Override
+	public List<Map<String, Object>> getFinYearByClient(Long orgId,String clientCode) {
+		Set<Object[]> finYear = financialYearRepo.getClientFinYear(orgId,clientCode);
+		return getFinYear(finYear); // Returning a list of Map<String, Object>
+	}
+
+	private List<Map<String, Object>> getFinYear(Set<Object[]> finYear) {
+		List<Map<String, Object>> currencyList = new ArrayList<>(); // Correct variable name
+
+		for (Object[] currency : finYear) { // Iterating over getFullGridCurrency
+			Map<String, Object> currencyMap = new HashMap<>();
+			currencyMap.put("finYear", currency[0] != null ? currency[0].toString() : "");
+
+			currencyList.add(currencyMap); // Add the Map to the list
+		}
+		return currencyList;
+	}
 	
 	
 }
