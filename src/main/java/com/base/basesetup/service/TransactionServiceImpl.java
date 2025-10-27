@@ -3765,4 +3765,25 @@ public class TransactionServiceImpl implements TransactionService {
 		return details1;
 
 	}
+	
+	
+	@Override
+	public List<Map<String, Object>> getIncomeAndExponseAndProfitDetails(Long orgId, String partyName,String finYear,String branch) {
+		Set<Object[]> result = tmsJobCardRepo.getIncomeAndExponseAndProfitDetails(orgId,partyName, finYear, branch);
+		return getIncomeAndExponseAndProfit(result);
+	}
+
+	private List<Map<String, Object>> getIncomeAndExponseAndProfit(Set<Object[]> result) {
+		List<Map<String, Object>> details1 = new ArrayList<>();
+		for (Object[] fs : result) {
+			Map<String, Object> part = new HashMap<>();
+			part.put("income", fs[0] != null ? new BigDecimal(fs[0].toString()) : BigDecimal.ZERO);
+			part.put("expense", fs[1] != null ? new BigDecimal(fs[1].toString()) : BigDecimal.ZERO);
+			part.put("profit", fs[2] != null ? new BigDecimal(fs[2].toString()) : BigDecimal.ZERO);
+			part.put("loss", fs[3] != null ? new BigDecimal(fs[3].toString()) : BigDecimal.ZERO);
+			details1.add(part);
+		}
+		return details1;
+
+	}
 }
