@@ -47,6 +47,9 @@ public class IssueManifestProviderVO {
 	private String transactionType;
 	@Column(name = "fromwarehouse")
 	private String fromWarehouse;
+	@Column(name = "refno")
+	private String refNo;
+	
 	@Column(name = "warehouseaddress")
 	private String warehouseAddress;
 	@Column(name = "sender")

@@ -289,6 +289,7 @@ public class ReportServiceImpl implements ReportService {
 		issueManifestProviderVO.setFinYear(issueManifestProviderDTO.getFinYear());
 		issueManifestProviderVO.setBranch(issueManifestProviderDTO.getBranch());
 		issueManifestProviderVO.setBranchCode(issueManifestProviderDTO.getBranchCode());
+		issueManifestProviderVO.setRefNo(issueManifestProviderDTO.getRefNo());
 
 		if (ObjectUtils.isNotEmpty(issueManifestProviderDTO.getId())) {
 
@@ -446,6 +447,8 @@ public class ReportServiceImpl implements ReportService {
 		retrievalManifestProviderVO.setFinYear(retrievalManifestProviderDTO.getFinYear());
 		retrievalManifestProviderVO.setBranch(retrievalManifestProviderDTO.getBranch());
 		retrievalManifestProviderVO.setBranchCode(retrievalManifestProviderDTO.getBranchCode());
+		retrievalManifestProviderVO.setRefNo(retrievalManifestProviderDTO.getRefNo());
+		
 
 		if (retrievalManifestProviderDTO.getId() != null) {
 

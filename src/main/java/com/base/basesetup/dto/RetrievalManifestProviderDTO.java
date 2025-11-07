@@ -51,6 +51,8 @@ public class RetrievalManifestProviderDTO {
 
 	private String branch;
 	
+	private String refNo;
+	
 	private List<RetrievalManifestProviderDetailsDTO> retrievalManifestProviderDetailsDTO;
 
 }

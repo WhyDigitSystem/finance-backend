@@ -85,6 +85,8 @@ public class RetrievalManifestProviderVO {
 	private String screenCode="RM";
 	@Column(name = "screenname",length = 30)
 	private String screenName="RETRIEVALMANIFESTPROVIDER";
+	@Column(name = "refno")
+	private String refNo;
 
 	
 	@JsonGetter("active")
