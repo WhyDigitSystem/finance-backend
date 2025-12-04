@@ -87,6 +87,10 @@ public class RetrievalManifestProviderVO {
 	private String screenName="RETRIEVALMANIFESTPROVIDER";
 	@Column(name = "refno")
 	private String refNo;
+	@Column(name = "amountinwords")
+	private String amountInWords;
+	@Column(name = "amount")
+	private Long amount;
 
 	
 	@JsonGetter("active")

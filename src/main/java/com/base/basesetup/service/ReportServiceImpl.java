@@ -448,6 +448,8 @@ public class ReportServiceImpl implements ReportService {
 		retrievalManifestProviderVO.setBranch(retrievalManifestProviderDTO.getBranch());
 		retrievalManifestProviderVO.setBranchCode(retrievalManifestProviderDTO.getBranchCode());
 		retrievalManifestProviderVO.setRefNo(retrievalManifestProviderDTO.getRefNo());
+		retrievalManifestProviderVO.setAmountInWords(retrievalManifestProviderDTO.getAmountInWords());
+		retrievalManifestProviderVO.setAmount(retrievalManifestProviderDTO.getAmount());
 		
 
 		if (retrievalManifestProviderDTO.getId() != null) {

@@ -50,5 +50,7 @@ public interface WareHouseService {
 	void excelUploadForAsset(MultipartFile[] files, String createdBy, Long orgId)
 			throws EncryptedDocumentException, ApplicationException, IOException;
 
+	List<Map<String, Object>> getAllWarehouseNames(Long orgId);
+
 
 }

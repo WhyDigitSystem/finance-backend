@@ -1,6 +1,7 @@
 package com.base.basesetup.repo;
 
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -28,8 +29,11 @@ public interface WarehouseRepo extends JpaRepository<WarehouseVO, Long> {
 	boolean existsByLocationUnitAndOrgId(String locationUnit, Long orgId);
 	
 
-//	@Query(value = "select w.warehouseLocation,w.warehouseId  from WarehouseVO w where w.orgId=?1")
-//	Set<Object[]> getWarehouseLocationByOrgID(Long orgId);
+	@Query(value = "select name,address,gst from warehouse where orgid=?1 and active=1 and cancel=0\r\n"
+			+ "union \r\n"
+			+ "select p.partyname,concat(p1.addressline1,',',p1.addressline2,',',p1.addressline3) address,p.gstin from partymaster p join partyaddress p1 on p.partymasterid=p1.partymasterid\r\n"
+			+ "where p.orgid=?1 and p.partytype='CUSTOMER'  and p.active=1 and p.cancel=0",nativeQuery = true)
+	Set<Object[]> getAllWarehouseNames(Long orgId);
 //
 //boolean existsByLocationNameAndUnitAndOrgId(String locationName, String unit, Long orgId);
 //

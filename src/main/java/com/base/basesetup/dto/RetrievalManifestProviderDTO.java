@@ -3,6 +3,8 @@ package com.base.basesetup.dto;
 import java.time.LocalDate;
 import java.util.List;
 
+import javax.persistence.Column;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -52,6 +54,11 @@ public class RetrievalManifestProviderDTO {
 	private String branch;
 	
 	private String refNo;
+	
+	private Long amount;
+	
+	private String amountInWords;
+
 	
 	private List<RetrievalManifestProviderDetailsDTO> retrievalManifestProviderDetailsDTO;
 

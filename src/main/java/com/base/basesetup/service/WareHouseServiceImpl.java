@@ -490,6 +490,25 @@ public class WareHouseServiceImpl implements WareHouseService {
 	    }
 	}		
 	
+	
+	@Override
+	public List<Map<String, Object>> getAllWarehouseNames(Long orgId) {
+		Set<Object[]> chType = warehouseRepo.getAllWarehouseNames(orgId);
+		return getAllWarehouseNames(chType);
+	}
+
+	private List<Map<String, Object>> getAllWarehouseNames(Set<Object[]> chType) {
+		List<Map<String, Object>> List1 = new ArrayList<>();
+		for (Object[] ch : chType) {
+			Map<String, Object> map = new HashMap<>();
+			map.put("name", ch[0] != null ? ch[0].toString() : "");
+			map.put("address", ch[1] != null ? ch[1].toString() : "");
+			map.put("gstIn", ch[2] != null ? ch[2].toString() : "");
+
+			List1.add(map);
+		}
+		return List1;
+	}
 }
 	
 
