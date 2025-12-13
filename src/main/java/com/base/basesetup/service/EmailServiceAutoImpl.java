@@ -1,5 +1,6 @@
 package com.base.basesetup.service;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
@@ -389,5 +390,20 @@ public class EmailServiceAutoImpl implements EmailServiceAuto {
 		}
 		return List1;
 	}
+	
 
+
+	public void sendCreditRiskMail(String htmlBody) throws MessagingException {
+
+		MimeMessage message = mailSender.createMimeMessage();
+		MimeMessageHelper helper = new MimeMessageHelper(message, true);
+
+		helper.setFrom("noreply@whydigit.in");
+		helper.setTo("justinaravinth2@gmail.com");
+		helper.setCc("jeni31101995@gmail.com");
+		helper.setSubject("Credit Utilization & Outstanding Risk Report");
+		helper.setText(htmlBody, true); // true = HTML
+
+		mailSender.send(message);
+	}
 }
