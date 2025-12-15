@@ -27,7 +27,7 @@ public class CustomerOutstandingScheduler {
 	private EmailServiceAutoImpl mailService;
 
 	// Runs every day at 8 AM
-	@Scheduled(cron = "0 33 12 * * ?", zone = "Asia/Kolkata")
+	@Scheduled(cron = "0 37 19 * * ?", zone = "Asia/Kolkata")
 	public void sendDailyCreditRiskMail() throws MessagingException {
 
 		List<CustomerOutstandingVO> customers = repository.findCustomersExceeding80Percent();
@@ -36,29 +36,29 @@ public class CustomerOutstandingScheduler {
 			return;
 
 		int totalCustomers = customers.size();
-		int c80 = 0, c120 = 0, c150 = 0;
+		int c80 = 0, c100 = 0, c120 = 0;
 		BigDecimal totalOutstanding = BigDecimal.ZERO;
 
 		for (CustomerOutstandingVO c : customers) {
 			int p = c.getOutpercentage();
-			if (p >= 80 && p <= 119)
+			if (p >= 80 && p <= 99)
 				c80++;
-			if (p >= 120 && p <= 149)
+			if (p >= 100 && p <= 119)
+				c100++;
+			if (p >= 120)
 				c120++;
-			if (p >= 150)
-				c150++;
 			totalOutstanding = totalOutstanding.add(c.getTotaldue());
 		}
 
 		String rows = buildCustomerRows(customers);
 
 		String html = loadOutstandingReportTemplate(LocalDate.now().format(DateTimeFormatter.ofPattern("dd-MMM-yyyy")),
-				totalCustomers, c80, c120, c150, totalOutstanding, rows);
+				totalCustomers, c80, c100, c120, totalOutstanding, rows);
 		mailService.sendCreditRiskMail(html);
 	}
 
 	public String loadOutstandingReportTemplate(String reportDate, int totalCustomers, int customers80,
-			int customers120, int customers150, BigDecimal totalOutstanding, String customerRows) {
+			int customers100, int customers120, BigDecimal totalOutstanding, String customerRows) {
 
 		try {
 			ClassPathResource resource = new ClassPathResource("templates/outstandingreport.html");
@@ -68,8 +68,8 @@ public class CustomerOutstandingScheduler {
 			return html.replace("${reportDate}", reportDate)
 					.replace("${totalCustomers}", String.valueOf(totalCustomers))
 					.replace("${customers80}", String.valueOf(customers80))
+					.replace("${customers100}", String.valueOf(customers100))
 					.replace("${customers120}", String.valueOf(customers120))
-					.replace("${customers150}", String.valueOf(customers150))
 					.replace("${totalOutstanding}", AmountUtil.formatInteger(totalOutstanding))
 					.replace("${customerRows}", customerRows);
 
@@ -94,17 +94,17 @@ public class CustomerOutstandingScheduler {
 	        String textColor;
 	        String status;
 
-	        if (percent >= 150) {
-	            textColor = "#8B0000";
+	        if (percent >= 120) {
+	            textColor = "#8b0000";
 	            status = "Extreme Breach";
-	        } else if (percent >= 120) {
-	            textColor = "#D32F2F";
-	            status = "Critical Breach";
 	        } else if (percent >= 100) {
-	            textColor = "#F57C00";
+	            textColor = "#ff6600";
+	            status = "Critical Breach";
+	        } else if (percent >= 80) {
+	            textColor = "#ffcc00";
 	            status = "Credit Breached";
 	        } else {
-	            textColor = "#FFA000";
+	            textColor = "#339933";
 	            status = "Near Credit Limit";
 	        }
 
