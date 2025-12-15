@@ -27,7 +27,7 @@ public class CustomerOutstandingScheduler {
 	private EmailServiceAutoImpl mailService;
 
 	// Runs every day at 8 AM
-	@Scheduled(cron = "0 59 23 * * ?", zone = "Asia/Kolkata")
+	@Scheduled(cron = "0 33 12 * * ?", zone = "Asia/Kolkata")
 	public void sendDailyCreditRiskMail() throws MessagingException {
 
 		List<CustomerOutstandingVO> customers = repository.findCustomersExceeding80Percent();
@@ -54,7 +54,6 @@ public class CustomerOutstandingScheduler {
 
 		String html = loadOutstandingReportTemplate(LocalDate.now().format(DateTimeFormatter.ofPattern("dd-MMM-yyyy")),
 				totalCustomers, c80, c120, c150, totalOutstanding, rows);
-
 		mailService.sendCreditRiskMail(html);
 	}
 

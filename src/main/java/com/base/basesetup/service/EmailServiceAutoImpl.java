@@ -1,6 +1,5 @@
 package com.base.basesetup.service;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
@@ -10,6 +9,7 @@ import java.nio.file.StandardCopyOption;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,6 +28,8 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import com.base.basesetup.entity.EmailNotificationConfigVO;
+import com.base.basesetup.repo.EmailNotificationConfigRepo;
 import com.base.basesetup.repo.EmailScheduleRepo;
 import com.base.basesetup.repo.EmployeeRepo;
 
@@ -47,6 +49,9 @@ public class EmailServiceAutoImpl implements EmailServiceAuto {
 	private EmailScheduleRepo emailScheduleRepo;
 
 	private String watchDirectory;
+	
+	@Autowired
+	EmailNotificationConfigRepo emailNotificationConfigRepo;
 
 	@Value("${email.bcc.address:}")
 	private String bccAddress;
@@ -393,17 +398,45 @@ public class EmailServiceAutoImpl implements EmailServiceAuto {
 	
 
 
+	@Override
 	public void sendCreditRiskMail(String htmlBody) throws MessagingException {
 
-		MimeMessage message = mailSender.createMimeMessage();
-		MimeMessageHelper helper = new MimeMessageHelper(message, true);
+	    EmailNotificationConfigVO config =
+	        emailNotificationConfigRepo
+	            .findByModuleCodeAndIsActive("CREDIT_RISK", "Y")
+	            .orElseThrow(() ->
+	                new RuntimeException("Email config not found for CREDIT_RISK"));
 
-		helper.setFrom("noreply@whydigit.in");
-		helper.setTo("justinaravinth2@gmail.com");
-		helper.setCc("jeni31101995@gmail.com");
-		helper.setSubject("Credit Utilization & Outstanding Risk Report");
-		helper.setText(htmlBody, true); // true = HTML
+	    MimeMessage message = mailSender.createMimeMessage();
+	    MimeMessageHelper helper =
+	        new MimeMessageHelper(message, true, "UTF-8");
 
-		mailSender.send(message);
+	    // FROM
+	    helper.setFrom("noreply@whydigit.in");
+
+	    // TO (multiple supported)
+	    helper.setTo(parseEmails(config.getToEmails()));
+
+	    // CC (multiple supported)
+	    String[] ccList = parseEmails(config.getCcEmails());
+	    if (ccList.length > 0) {
+	        helper.setCc(ccList);
+	    }
+
+	    helper.setSubject("Credit Utilization & Outstanding Risk Report");
+	    helper.setText(htmlBody, true);
+
+	    mailSender.send(message);
 	}
+
+	private String[] parseEmails(String emails) {
+	    if (emails == null || emails.trim().isEmpty()) {
+	        return new String[0];
+	    }
+	    return Arrays.stream(emails.split(","))
+	                 .map(String::trim)
+	                 .filter(e -> !e.isEmpty())
+	                 .toArray(String[]::new);
+	}
+
 }
