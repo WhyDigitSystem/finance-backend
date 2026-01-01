@@ -9,6 +9,7 @@ import java.nio.file.StandardCopyOption;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,6 +28,8 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import com.base.basesetup.entity.EmailNotificationConfigVO;
+import com.base.basesetup.repo.EmailNotificationConfigRepo;
 import com.base.basesetup.repo.EmailScheduleRepo;
 import com.base.basesetup.repo.EmployeeRepo;
 
@@ -46,6 +49,9 @@ public class EmailServiceAutoImpl implements EmailServiceAuto {
 	private EmailScheduleRepo emailScheduleRepo;
 
 	private String watchDirectory;
+	
+	@Autowired
+	EmailNotificationConfigRepo emailNotificationConfigRepo;
 
 	@Value("${email.bcc.address:}")
 	private String bccAddress;
@@ -388,6 +394,49 @@ public class EmailServiceAutoImpl implements EmailServiceAuto {
 			List1.add(map);
 		}
 		return List1;
+	}
+	
+
+
+	@Override
+	public void sendCreditRiskMail(String htmlBody) throws MessagingException {
+
+	    EmailNotificationConfigVO config =
+	        emailNotificationConfigRepo
+	            .findByModuleCodeAndIsActive("CREDIT_RISK", "Y")
+	            .orElseThrow(() ->
+	                new RuntimeException("Email config not found for CREDIT_RISK"));
+
+	    MimeMessage message = mailSender.createMimeMessage();
+	    MimeMessageHelper helper =
+	        new MimeMessageHelper(message, true, "UTF-8");
+
+	    // FROM
+	    helper.setFrom("noreply@whydigit.in");
+
+	    // TO (multiple supported)
+	    helper.setTo(parseEmails(config.getToEmails()));
+
+	    // CC (multiple supported)
+	    String[] ccList = parseEmails(config.getCcEmails());
+	    if (ccList.length > 0) {
+	        helper.setCc(ccList);
+	    }
+
+	    helper.setSubject("Credit Utilization & Outstanding Risk Report");
+	    helper.setText(htmlBody, true);
+
+	    mailSender.send(message);
+	}
+
+	private String[] parseEmails(String emails) {
+	    if (emails == null || emails.trim().isEmpty()) {
+	        return new String[0];
+	    }
+	    return Arrays.stream(emails.split(","))
+	                 .map(String::trim)
+	                 .filter(e -> !e.isEmpty())
+	                 .toArray(String[]::new);
 	}
 
 }

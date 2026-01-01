@@ -290,12 +290,12 @@ public interface PartyMasterRepo extends JpaRepository<PartyMasterVO, Long> {
 			+ "    CONCAT(\r\n"
 			+ "        IFNULL(p.addressline1, ''), ' ',\r\n"
 			+ "        IFNULL(p.addressline2, ''), ' ',\r\n"
-			+ "        IFNULL(p.addressline3, '')\r\n"
+			+ "        IFNULL(p.addressline3, ''),' - ', IFNULL(p.pincode, '')\r\n"
 			+ "    ) AS full_address,\r\n"
 			+ "    p.stategstin \r\n"
 			+ "FROM partymaster a\r\n"
 			+ "JOIN partyaddress p ON a.partymasterid = p.partymasterid\r\n"
-			+ "WHERE a.partytype = 'VENDOR' and a.orgid =?1  group by a.partyname,addressline1 ,addressline2,addressline3 ,stategstin  ")
+			+ "WHERE a.partytype = 'VENDOR' and a.orgid =?1  group by a.partyname,addressline1,p.pincode ,addressline2,addressline3 ,stategstin  ")
 	Set<Object[]> getVedorsAddressDetails(Long orgId );
 	
 	@Query(nativeQuery = true, value = "SELECT \r\n"
