@@ -1414,4 +1414,22 @@ public class TaxInvoiceServiceImpl implements TaxInvoiceService {
 		}
 		return List1;
 	}
+	
+	@Override
+	public List<Map<String, Object>> getFinYearDetails(Long orgId,Long finYear) {
+		Set<Object[]> chType = taxInvoiceRepo.getFinYearDetails(  orgId, finYear);
+		return getFinYearDetails(chType);
+	}
+
+	private List<Map<String, Object>> getFinYearDetails(Set<Object[]> chType) {
+		List<Map<String, Object>> List1 = new ArrayList<>();
+		for (Object[] ch : chType) {
+			Map<String, Object> map = new HashMap<>();
+			map.put("startdate", ch[0] != null ? ch[0].toString() : "");	
+			map.put("enddate", ch[1] != null ? ch[1].toString() : "");
+
+			List1.add(map);
+		}
+		return List1;
+	}
 }

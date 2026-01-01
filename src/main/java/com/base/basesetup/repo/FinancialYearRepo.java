@@ -33,5 +33,6 @@ public interface FinancialYearRepo extends JpaRepository<FinancialYearVO, Long> 
 	@Query(nativeQuery = true,value = "select b.finyearidentifier from clientcompany a,financialyear b where a.orgid=b.orgid and a.clientcode=?2 and a.orgid=?1 and a.clientyear=b.yeartype\r\n"
 			+ "order by b.finyearidentifier desc")
 	Set<Object[]> getClientFinYear(Long orgId, String clientCode);
+	
 
 }

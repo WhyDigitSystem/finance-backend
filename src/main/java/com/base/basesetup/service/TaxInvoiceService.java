@@ -88,4 +88,6 @@ public interface TaxInvoiceService {
 	
 	List<Map<String, Object>> getTaxInvoiceCount(Long orgId, String finYear, String branchCode);
 
+	List<Map<String, Object>> getFinYearDetails(Long orgId, Long finYear);
+
 }

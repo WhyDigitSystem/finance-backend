@@ -653,4 +653,7 @@ public interface TaxInvoiceRepo extends JpaRepository<TaxInvoiceVO, Long> {
 			+ "select 0 complete, 0 Approved, 0 Pending,count(*) Reject from taxinvoice where orgid= ?1 and finyear=?2  and branchcode=?3 and  cancel=0 and\r\n"
 			+ " approvestatus='REJECTED')t")
 	Set<Object[]> getTaxInvoiceCount(Long orgId,String finYear, String branchCode);
+	
+	@Query(nativeQuery = true,value = "select startdate,enddate  from financialyear where orgid=?1  and finyear=?2 and active=1 and closed =0")
+	Set<Object[]> getFinYearDetails(Long orgId,Long finYear);
 }
