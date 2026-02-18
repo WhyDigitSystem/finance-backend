@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.validation.Valid;
 
@@ -158,6 +159,146 @@ public class ArapAdjustmentsServiceImpl implements ArapAdjustmentsService{
 		String result = arapAdjustmentsRepo.getArapAdjustmentsDocId(orgId, finYear, branchCode, ScreenCode);
 		return result;
 	}
+
+	@Override
+	public List<Map<String, Object>> GetArapAgeing(String asondate, String pdate, String partyname, Long orgId) {
+		Set<Object[]> mapp = arapAdjustmentsRepo.findArapAgeing(asondate, pdate, partyname,orgId);
+		return GetArapAgeing(mapp);
+	}
+
+	private List<Map<String, Object>> GetArapAgeing(Set<Object[]> mapp) {
+		List<Map<String, Object>> List1 = new ArrayList<>();
+		for (Object[] ch : mapp) {
+			Map<String, Object> map = new HashMap<>();
+			map.put("arapdetailsid", ch[0] != null ? ch[0].toString() : ""); // Empty string if null
+			map.put("orgid", ch[1] != null ? ch[1].toString() : "");
+			map.put("branch", ch[2] != null ? ch[2].toString() : "");
+			map.put("subledgercode", ch[3] != null ? ch[3].toString() : "");
+			map.put("partyname", ch[4] != null ? ch[4].toString() : "");
+			map.put("subledgername", ch[5] != null ? ch[5].toString() : "");
+			map.put("partytype", ch[6] != null ? ch[6].toString() : ""); // Empty string if null
+			map.put("branchcode", ch[7] != null ? ch[7].toString() : "");
+			map.put("subledgerdivision", ch[8] != null ? ch[8].toString() : "");
+			map.put("currency", ch[9] != null ? ch[9].toString() : "");
+			map.put("auser", ch[10] != null ? ch[10].toString() : "");
+			map.put("docid", ch[11] != null ? ch[11].toString() : "");
+			map.put("docdate", ch[12] != null ? ch[12].toString() : ""); // Empty string if null
+			map.put("supprefno", ch[13] != null ? ch[13].toString() : "");
+			map.put("duedate", ch[14] != null ? ch[14].toString() : "");
+			map.put("refno", ch[15] != null ? ch[15].toString() : "");
+			map.put("refdate", ch[16] != null ? ch[16].toString() : "");
+			map.put("amount", ch[17] != null ? ch[17].toString() : "");
+			map.put("outstanding", ch[18] != null ? ch[18].toString() : ""); // Empty string if null
+			map.put("totaldue", ch[19] != null ? ch[19].toString() : "");
+			map.put("unadjusted", ch[20] != null ? ch[20].toString() : "");
+			map.put("ddays", ch[21] != null ? ch[21].toString() : "");
+			map.put("mslab1", ch[22] != null ? ch[22].toString() : "");
+			map.put("mslab2", ch[23] != null ? ch[23].toString() : "");
+			map.put("mslab3", ch[24] != null ? ch[24].toString() : ""); // Empty string if null
+			map.put("mslab4", ch[25] != null ? ch[25].toString() : "");
+			map.put("mslab5", ch[26] != null ? ch[26].toString() : "");
+			map.put("product", ch[27] != null ? ch[27].toString() : "");
+			map.put("creditlimit", ch[28] != null ? ch[28].toString() : "");
+			map.put("creditdays", ch[29] != null ? ch[29].toString() : "");
+			map.put("doctypecode", ch[30] != null ? ch[30].toString() : "");
+			
+			List1.add(map);
+		}
+		return List1;
+	}
+	
+	
+	@Override
+	public List<Map<String, Object>> GetArapAdjustments(String Asondate, String partyname, String branch, Long orgId,String pdate) {
+		Set<Object[]> mapp = arapAdjustmentsRepo.findArapAdjustments(Asondate, partyname,branch,orgId,pdate);
+		return GetArapAdjustments(mapp);
+	}
+
+	
+	private List<Map<String, Object>> GetArapAdjustments(Set<Object[]> customer) {
+		List<Map<String, Object>> apage = new ArrayList<>();
+		for (Object[] sup : customer) {
+			Map<String, Object> apageing = new HashMap<>();
+			apageing.put("no", sup[0] != null ? sup[0].toString() : "");
+			apageing.put("orgId", sup[1] != null ? sup[1].toString() : "");
+			apageing.put("subledgerCode", sup[2] != null ? sup[2].toString() : "");
+			apageing.put("partyName", sup[3] != null ? sup[3].toString() : "");
+			apageing.put("subledgerName", sup[4] != null ? sup[4].toString() : "");
+			apageing.put("partyType", sup[5] != null ? sup[5].toString() : "");
+			apageing.put("branch", sup[6] != null ? sup[6].toString() : "");
+			apageing.put("currency", sup[7] != null ? sup[7].toString() : "");
+			apageing.put("creditDays", sup[8] != null ? sup[8].toString() : "");
+			apageing.put("creditLimit", sup[9] != null ? sup[9].toString() : "");
+			apageing.put("amount", sup[10] != null ? sup[10].toString() : "");
+			apageing.put("outstanding", sup[11] != null ? sup[11].toString() : "");
+			apageing.put("unadjusted", sup[12] != null ? sup[12].toString() : "");
+			apageing.put("totaldue", sup[13] != null ? sup[13].toString() : "");
+
+			apage.add(apageing);
+		}
+		return apage;
+	}
+//	
+//	private List<Map<String, Object>> GetArapAdjustments(Set<Object[]> mapp) {
+//		List<Map<String, Object>> List1 = new ArrayList<>();
+//		for (Object[] ch : mapp) {
+//			Map<String, Object> apageing = new HashMap<>();
+//			apageing.put("no", sup[0] != null ? sup[0].toString() : "");
+//			apageing.put("orgId", sup[1] != null ? sup[1].toString() : "");
+//			apageing.put("subledgerCode", sup[2] != null ? sup[2].toString() : "");
+//			apageing.put("partyName", sup[3] != null ? sup[3].toString() : "");
+//			apageing.put("subledgerName", sup[4] != null ? sup[4].toString() : "");
+//			apageing.put("partyType", sup[5] != null ? sup[5].toString() : "");
+//			apageing.put("branch", sup[6] != null ? sup[6].toString() : "");
+//			apageing.put("currency", sup[7] != null ? sup[7].toString() : "");
+//			apageing.put("creditDays", sup[8] != null ? sup[8].toString() : "");
+//			apageing.put("creditLimit", sup[9] != null ? sup[9].toString() : "");
+//			apageing.put("amount", sup[10] != null ? sup[10].toString() : "");
+//			apageing.put("outstanding", sup[11] != null ? sup[11].toString() : "");
+//			apageing.put("unadjusted", sup[12] != null ? sup[12].toString() : "");
+//			apageing.put("totaldue", sup[13] != null ? sup[13].toString() : "");
+//			
+//			
+//			List1.add(apageing);
+//		}
+//		return List1;
+//	}
+//	
+//	
+
+	@Override
+	public List<Map<String, Object>> GetPendingRegisterDetails(String Partytype, String PartyName, String ScreenName,
+			Long orgId,String finYear) {
+		Set<Object[]> mapp = arapAdjustmentsRepo.GetPendingRegisterDetails(Partytype,PartyName,ScreenName,orgId,finYear);
+		return GetPendingRegisterDetails(mapp);
+	}
+
+	
+	private List<Map<String, Object>> GetPendingRegisterDetails(Set<Object[]> customer) {
+		List<Map<String, Object>> apage = new ArrayList<>();
+		for (Object[] sup : customer) {
+			Map<String, Object> apageing = new HashMap<>();
+			apageing.put("docid", sup[0] != null ? sup[0].toString() : "");
+			apageing.put("docdate", sup[1] != null ? sup[1].toString() : "");
+			apageing.put("vid", sup[2] != null ? sup[2].toString() : "");
+			apageing.put("vdate", sup[3] != null ? sup[3].toString() : "");
+			apageing.put("approvestatus", sup[4] != null ? sup[4].toString() : "");
+			apageing.put("partyname", sup[5] != null ? sup[5].toString() : "");
+			apageing.put("partytype", sup[6] != null ? sup[6].toString() : "");
+			apageing.put("screenname", sup[7] != null ? sup[7].toString() : "");
+			apageing.put("orgid", sup[8] != null ? sup[8].toString() : "");
+			apageing.put("screencode", sup[9] != null ? sup[9].toString() : "");
+			apageing.put("status", sup[10] != null ? sup[10].toString() : "");
+			apageing.put("amount", sup[11] != null ? sup[11].toString() : "");
+			apageing.put("sno", sup[12] != null ? sup[12].toString() : "");
+			apageing.put("finyear", sup[13] != null ? sup[13].toString() : "");
+			
+
+			apage.add(apageing);
+		}
+		return apage;
+		}
+	
 	}
 	
 	

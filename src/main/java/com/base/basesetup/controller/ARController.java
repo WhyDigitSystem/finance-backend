@@ -41,8 +41,9 @@ public class ARController extends BaseController {
 
 	// Receipt
 
-	@GetMapping("/getAllReceiptByOrgId")
-	public ResponseEntity<ResponseDTO> getAllReceiptReceivableByOrgId(@RequestParam Long orgId) {
+	@GetMapping("/getAllReceiptReceivableByOrgId")
+	public ResponseEntity<ResponseDTO> getAllReceiptReceivableByOrgId(@RequestParam Long orgId,
+			@RequestParam String finYear, @RequestParam String branchCode) {
 		String methodName = "getAllReceiptReceivableByOrgId()";
 		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
 		String errorMsg = null;
@@ -50,7 +51,7 @@ public class ARController extends BaseController {
 		ResponseDTO responseDTO = null;
 		List<ReceiptVO> receiptReceivableVO = new ArrayList<>();
 		try {
-			receiptReceivableVO = arReceivableService.getAllReceiptReceivableByOrgId(orgId);
+			receiptReceivableVO = arReceivableService.getAllReceiptReceivableByOrgId(orgId, finYear, branchCode);
 		} catch (Exception e) {
 			errorMsg = e.getMessage();
 			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
@@ -188,7 +189,7 @@ public class ARController extends BaseController {
 	}
 
 	@GetMapping("/getReceiptDocId")
-	public ResponseEntity<ResponseDTO> getReceiptDocId(@RequestParam Long orgId, @RequestParam String finYear,
+	public ResponseEntity<ResponseDTO> x(@RequestParam Long orgId, @RequestParam String finYear,
 			@RequestParam String branch, @RequestParam String branchCode) {
 
 		String methodName = "getReceiptDocId()";
@@ -369,7 +370,7 @@ public class ARController extends BaseController {
 		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
 		return ResponseEntity.ok().body(responseDTO);
 	}
-	
+
 	@GetMapping("/getPartyNameAndCodeForArBillBalance")
 	public ResponseEntity<ResponseDTO> getPartyNameAndCodeForArBillBalance(@RequestParam Long orgId) {
 		String methodName = "getPartyNameAndCodeForArBillBalance()";
@@ -385,8 +386,7 @@ public class ARController extends BaseController {
 			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
 		}
 		if (StringUtils.isBlank(errorMsg)) {
-			responseObjectsMap.put(CommonConstant.STRING_MESSAGE,
-					"Party name and code information get successfully");
+			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "Party name and code information get successfully");
 			responseObjectsMap.put("PartyMasterVO", customer);
 			responseDTO = createServiceResponse(responseObjectsMap);
 		} else {
@@ -399,8 +399,8 @@ public class ARController extends BaseController {
 
 	// Receipt Register
 	@GetMapping("/getAllReceiptRegister")
-	public ResponseEntity<ResponseDTO> getAllReceiptRegister(@RequestParam Long orgId, @RequestParam String fromDate,
-			@RequestParam String toDate, @RequestParam String subLedgerName) {
+	public ResponseEntity<ResponseDTO> getAllReceiptRegister(@RequestParam Long orgId, String fromDate, String toDate,
+			@RequestParam String subLedgerName) {
 		String methodName = "getAllReceiptRegister()";
 		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
 		String errorMsg = null;
@@ -424,31 +424,204 @@ public class ARController extends BaseController {
 		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
 		return ResponseEntity.ok().body(responseDTO);
 	}
-	
+
 	// Receipt Register
-		@GetMapping("/getReciptFillGrid")
-		public ResponseEntity<ResponseDTO> getReciptFillGrid(@RequestParam Long orgId, @RequestParam String partyCode) {
-			String methodName = "getReciptFillGrid()";
-			LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
-			String errorMsg = null;
-			Map<String, Object> responseObjectsMap = new HashMap<>();
-			ResponseDTO responseDTO = null;
-			List<Map<String, Object>> reciptFillGrid = new ArrayList<>();
-			try {
-				reciptFillGrid = arReceivableService.getReciptFillGrid(orgId,partyCode);
-			} catch (Exception e) {
-				errorMsg = e.getMessage();
-				LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
-			}
-			if (StringUtils.isBlank(errorMsg)) {
-				responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "Receipt Fill Grid information get successfully");
-				responseObjectsMap.put("reciptFillGrid", reciptFillGrid);
-				responseDTO = createServiceResponse(responseObjectsMap);
-			} else {
-				responseDTO = createServiceResponseError(responseObjectsMap, "Receipt Fill Grid information receive failed",
-						errorMsg);
-			}
-			LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
-			return ResponseEntity.ok().body(responseDTO);
+	@GetMapping("/getReciptFillGrid")
+	public ResponseEntity<ResponseDTO> getReciptFillGrid(@RequestParam Long orgId, @RequestParam String partyCode,
+			@RequestParam String branchCode) {
+		String methodName = "getReciptFillGrid()";
+		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+		String errorMsg = null;
+		Map<String, Object> responseObjectsMap = new HashMap<>();
+		ResponseDTO responseDTO = null;
+		List<Map<String, Object>> reciptFillGrid = new ArrayList<>();
+		try {
+			reciptFillGrid = arReceivableService.getReciptFillGrid(orgId, partyCode, branchCode);
+		} catch (Exception e) {
+			errorMsg = e.getMessage();
+			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
 		}
+		if (StringUtils.isBlank(errorMsg)) {
+			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "Receipt Fill Grid information get successfully");
+			responseObjectsMap.put("reciptFillGrid", reciptFillGrid);
+			responseDTO = createServiceResponse(responseObjectsMap);
+		} else {
+			responseDTO = createServiceResponseError(responseObjectsMap, "Receipt Fill Grid information receive failed",
+					errorMsg);
+		}
+		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+		return ResponseEntity.ok().body(responseDTO);
+	}
+
+	@PutMapping("/approveReceipt")
+	public ResponseEntity<ResponseDTO> approveReceipt(@RequestParam Long orgId, @RequestParam Long id,
+			@RequestParam String docId, @RequestParam String action, @RequestParam String actionBy) {
+		String methodName = "approveReceipt()";
+		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+		String errorMsg = null;
+		Map<String, Object> responseObjectsMap = new HashMap<>();
+		ResponseDTO responseDTO = null;
+		try {
+			ReceiptVO taxInvoiceVO = arReceivableService.approveReceipt(orgId, id, docId, action, actionBy);
+			responseObjectsMap.put("taxInvoiceVO", taxInvoiceVO);
+			responseDTO = createServiceResponse(responseObjectsMap);
+		} catch (Exception e) {
+			errorMsg = e.getMessage();
+			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+			responseDTO = createServiceResponseError(responseObjectsMap, errorMsg, errorMsg);
+		}
+		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+		return ResponseEntity.ok().body(responseDTO);
+	}
+
+//report
+
+	@GetMapping("/getReceiptDetails")
+	public ResponseEntity<ResponseDTO> getReceiptDetails(@RequestParam Long orgId,
+			@RequestParam(required = true) String finYear, @RequestParam(required = true) String partyname,
+			String fromDate, String toDate, @RequestParam String branchCode) {
+		String methodName = "getReceiptDetails()";
+		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+		String errorMsg = null;
+		Map<String, Object> responseObjectsMap = new HashMap<>();
+		ResponseDTO responseDTO = null;
+		List<Map<String, Object>> mapp = new ArrayList<>();
+
+		try {
+			mapp = arReceivableService.getReceiptDetails(orgId, finYear, partyname, fromDate, toDate, branchCode);
+		} catch (Exception e) {
+			errorMsg = e.getMessage();
+			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+		}
+
+		if (StringUtils.isBlank(errorMsg)) {
+			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "Receipt Details retrieved successfully");
+			responseObjectsMap.put("mapp", mapp);
+			responseDTO = createServiceResponse(responseObjectsMap);
+		} else {
+			responseDTO = createServiceResponseError(responseObjectsMap, "Failed to retrieve tax Receipt Details",
+					errorMsg);
+		}
+
+		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+		return ResponseEntity.ok().body(responseDTO);
+	}
+
+	@GetMapping("/getReceiptSummary")
+	public ResponseEntity<ResponseDTO> getReceiptSummary(@RequestParam Long orgId,
+			@RequestParam(required = true) String finYear, @RequestParam(required = true) String partyname,
+			String fromDate, String toDate, @RequestParam String branchCode) {
+		String methodName = "getReceiptSummary()";
+		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+		String errorMsg = null;
+		Map<String, Object> responseObjectsMap = new HashMap<>();
+		ResponseDTO responseDTO = null;
+		List<Map<String, Object>> mapp = new ArrayList<>();
+
+		try {
+			mapp = arReceivableService.getReceiptSummary(orgId, finYear, partyname, fromDate, toDate, branchCode);
+		} catch (Exception e) {
+			errorMsg = e.getMessage();
+			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+		}
+
+		if (StringUtils.isBlank(errorMsg)) {
+			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "tax Receipt summary retrieved successfully");
+			responseObjectsMap.put("mapp", mapp);
+			responseDTO = createServiceResponse(responseObjectsMap);
+		} else {
+			responseDTO = createServiceResponseError(responseObjectsMap, "Failed to retrieve tax Receipt summary",
+					errorMsg);
+		}
+
+		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+		return ResponseEntity.ok().body(responseDTO);
+	}
+
+	@GetMapping("/getReceiptByDocIdAndScreenCode")
+	public ResponseEntity<ResponseDTO> getReceiptByDocIdAndScreenCode(@RequestParam String docId) {
+		String methodName = "getReceiptByDocId()";
+		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+		String errorMsg = null;
+		Map<String, Object> responseObjectsMap = new HashMap<>();
+		ResponseDTO responseDTO = null;
+		ReceiptVO receiptVO = new ReceiptVO();
+		try {
+			receiptVO = arReceivableService.getReceiptByDocIdAndScreenCode(docId);
+		} catch (Exception e) {
+			errorMsg = e.getMessage();
+			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+		}
+		if (StringUtils.isBlank(errorMsg)) {
+			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "receiptVO information get successfully By docid");
+			responseObjectsMap.put("receiptVO", receiptVO);
+			responseDTO = createServiceResponse(responseObjectsMap);
+		} else {
+			responseDTO = createServiceResponseError(responseObjectsMap,
+					"receiptVO information receive failed By docid", errorMsg);
+		}
+		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+		return ResponseEntity.ok().body(responseDTO);
+
+	}
+
+	@GetMapping("/getReceivableTdsDetailsReport")
+	public ResponseEntity<ResponseDTO> getReceivableTdsDetailsReport(@RequestParam Long orgId,
+			@RequestParam String partyName, @RequestParam String finYear, @RequestParam String fromDate,
+			@RequestParam String toDate, @RequestParam String branchName) {
+		String methodName = "getReceivableTdsDetailsReport()";
+		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+		String errorMsg = null;
+		Map<String, Object> responseObjectsMap = new HashMap<>();
+		ResponseDTO responseDTO = null;
+		List<Map<String, Object>> mapp = new ArrayList<>();
+
+		try {
+			mapp = arReceivableService.getReceivableTdsDetailsReport(orgId, partyName, finYear, fromDate, toDate,
+					branchName);
+		} catch (Exception e) {
+			errorMsg = e.getMessage();
+			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+		}
+
+		if (StringUtils.isBlank(errorMsg)) {
+			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "ReceivableReport retrieved successfully");
+			responseObjectsMap.put("mapp", mapp);
+			responseDTO = createServiceResponse(responseObjectsMap);
+		} else {
+			responseDTO = createServiceResponseError(responseObjectsMap, "Failed to retrieve  ReceivableReport",
+					errorMsg);
+		}
+
+		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+		return ResponseEntity.ok().body(responseDTO);
+	}
+
+	@GetMapping("/getReceiptCount")
+	public ResponseEntity<ResponseDTO> getReceiptCount(@RequestParam Long orgId, @RequestParam String finYear,
+			@RequestParam String branchCode) {
+		String methodName = "getReceiptCount()";
+		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+		String errorMsg = null;
+		Map<String, Object> responseObjectsMap = new HashMap<>();
+		ResponseDTO responseDTO = null;
+		List<Map<String, Object>> mapp = new ArrayList<>();
+
+		try {
+			mapp = arReceivableService.getReceiptCount(orgId, finYear, branchCode);
+		} catch (Exception e) {
+			errorMsg = e.getMessage();
+		}
+
+		if (StringUtils.isBlank(errorMsg)) {
+			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "Count  retrieved successfully");
+			responseObjectsMap.put("mapp", mapp);
+			responseDTO = createServiceResponse(responseObjectsMap);
+		} else {
+			responseDTO = createServiceResponseError(responseObjectsMap, "Failed to retrieve  Count", errorMsg);
+		}
+
+		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+		return ResponseEntity.ok().body(responseDTO);
+	}
 }

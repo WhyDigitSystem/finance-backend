@@ -1,5 +1,7 @@
 package com.base.basesetup.repo;
 
+import java.time.LocalDate;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -26,6 +28,17 @@ public interface AccountsRepo extends JpaRepository<AccountsVO, Long> {
 
 	@Query(nativeQuery = true, value = "select concat(prefixfield,lpad(lastno,5,0)) AS docid from multipledocidgendetails where orgid=?1  and finyear=?2  and branchcode=?3 and sourcescreencode=?4 and screencode=?5 ")
 	String getRCostInvoiceGnaDocId(Long orgId, String finYear, String branchCode, String sourceScreenCode,
+			String screenCode);
+
+
+	@Query(nativeQuery = true, value = "select * from accounts where refno=?1 and vid=?2 and vdate=?3")
+	AccountsVO findByRefNoAndVIdAndVDate(String docId, String vId, LocalDate vDate);
+
+	@Query(nativeQuery = true, value = "select * from accounts where refno=?1 and refdate=?2")
+	AccountsVO findByRefNoAndRefDate(String docId, LocalDate docDate);
+
+	@Query(nativeQuery = true, value = "select concat(prefixfield,lpad(lastno,5,0)) AS docid from multipledocidgendetails where orgid=?1  and finyear=?2  and branchcode=?3 and sourcescreencode=?4 and screencode=?5 ")
+	String getCostEstimationDocId(Long orgId, String finYear, String branchCode, String sourceScreenCode,
 			String screenCode);
 
 

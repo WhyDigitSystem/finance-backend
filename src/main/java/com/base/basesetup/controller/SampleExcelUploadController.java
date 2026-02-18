@@ -25,7 +25,6 @@ import com.base.basesetup.common.UserConstants;
 import com.base.basesetup.dto.ResponseDTO;
 import com.base.basesetup.dto.SampleExcelUploadDTO;
 import com.base.basesetup.entity.SampleExcelUploadVO;
-import com.base.basesetup.exception.ApplicationException;
 import com.base.basesetup.service.SampleExcelUploadService;
 
 @CrossOrigin

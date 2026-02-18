@@ -4,9 +4,6 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
-import com.base.basesetup.entity.ChargerCostDebitNoteVO;
-import com.base.basesetup.entity.TdsCostDebitNoteVO;
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

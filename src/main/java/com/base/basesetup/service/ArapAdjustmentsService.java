@@ -6,6 +6,7 @@ import java.util.Map;
 import javax.validation.Valid;
 
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.base.basesetup.dto.ArapAdjustmentsDTO;
 import com.base.basesetup.entity.ArapAdjustmentsVO;
@@ -27,4 +28,15 @@ public interface ArapAdjustmentsService {
 
 	String getArapAdjustmentsDocId(Long orgId, String finYear, String branch, String branchCode);
 	
+	
+	List<Map<String, Object>> GetArapAgeing(String asondate , String pdate,String partyname,Long orgId);
+	
+	List<Map<String, Object>> GetArapAdjustments(@RequestParam(required = true) String Asondate, 
+			@RequestParam(required = true) String partyname,@RequestParam(required = true) String branch,  
+			@RequestParam(required = true)  Long orgId, 
+			@RequestParam(required = false) String pdate
+		);
+	
+	List<Map<String, Object>> GetPendingRegisterDetails(String Partytype , String PartyName ,String ScreenName,Long orgId,String finYear);
+
 }

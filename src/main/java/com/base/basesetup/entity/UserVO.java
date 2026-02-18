@@ -81,6 +81,9 @@ public class UserVO {
 	@Column(name = "role")
 	private Role role;
 	private boolean allIndiaAcces;
+	
+	@Column(name = "clientid")
+	private Long clientId;
 
 	@Embedded
 	private CreatedUpdatedDate commonDate = new CreatedUpdatedDate();

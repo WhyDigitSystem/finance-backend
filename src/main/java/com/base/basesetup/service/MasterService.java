@@ -11,37 +11,49 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.base.basesetup.dto.AccountDTO;
+import com.base.basesetup.dto.AutomationDTO;
 import com.base.basesetup.dto.BranchDTO;
 import com.base.basesetup.dto.ChargeTypeRequestDTO;
 import com.base.basesetup.dto.ChequeBookDTO;
 import com.base.basesetup.dto.CostCenterDTO;
 import com.base.basesetup.dto.EmployeeDTO;
 import com.base.basesetup.dto.GroupLedgerDTO;
+import com.base.basesetup.dto.GroupMapping2DTO;
+import com.base.basesetup.dto.GroupMappingDTO;
 import com.base.basesetup.dto.HSNSacCodeDTO;
+import com.base.basesetup.dto.ItemMasterDTO;
 import com.base.basesetup.dto.ListOfValuesDTO;
 import com.base.basesetup.dto.PartyMasterDTO;
 import com.base.basesetup.dto.SacCodeDTO;
+import com.base.basesetup.dto.SegmentMappingDTO;
 import com.base.basesetup.dto.SetTaxRateDTO;
 import com.base.basesetup.dto.SubLedgerAccountDTO;
 import com.base.basesetup.dto.TaxMasterDTO;
 import com.base.basesetup.dto.TcsMasterDTO;
 import com.base.basesetup.dto.TdsMasterDTO;
+import com.base.basesetup.dto.UomDTO;
 import com.base.basesetup.entity.AccountVO;
+import com.base.basesetup.entity.AutomationVO;
 import com.base.basesetup.entity.BranchVO;
 import com.base.basesetup.entity.ChargeTypeRequestVO;
 import com.base.basesetup.entity.ChequeBookVO;
+import com.base.basesetup.entity.CoaVO;
 import com.base.basesetup.entity.CostCenterVO;
 import com.base.basesetup.entity.EmployeeVO;
 import com.base.basesetup.entity.GroupLedgerVO;
+import com.base.basesetup.entity.GroupMappingVO;
 import com.base.basesetup.entity.HSNSacCodeVO;
+import com.base.basesetup.entity.ItemMasterVO;
 import com.base.basesetup.entity.ListOfValuesVO;
 import com.base.basesetup.entity.PartyMasterVO;
 import com.base.basesetup.entity.SacCodeVO;
+import com.base.basesetup.entity.SegmentMappingVO;
 import com.base.basesetup.entity.SetTaxRateVO;
 import com.base.basesetup.entity.SubLedgerAccountVO;
 import com.base.basesetup.entity.TaxMasterVO;
 import com.base.basesetup.entity.TcsMasterVO;
 import com.base.basesetup.entity.TdsMasterVO;
+import com.base.basesetup.entity.UomVO;
 import com.base.basesetup.exception.ApplicationException;
 
 import io.jsonwebtoken.io.IOException;
@@ -70,7 +82,7 @@ public interface MasterService {
 	Map<String, Object> createEmployee(EmployeeDTO employeeDTO) throws ApplicationException;
 
 	void deleteEmployee(Long employeeid);
-	
+
 	List<Map<String, Object>> getDepartmentNameForEmployee(Long orgId);
 
 	List<Map<String, Object>> getDesignationNameForEmployee(Long orgId);
@@ -111,6 +123,10 @@ public interface MasterService {
 
 	List<TdsMasterVO> getTdsMasterByActive();
 
+	List<Map<String, Object>> getTdsAccountNameFromReceivable(Long orgId);
+
+	List<Map<String, Object>> getTdsAccountNameFromPayable(Long orgId);
+
 //	AccountVO
 	List<AccountVO> getAllAccountByOrgId(Long orgId);
 
@@ -131,16 +147,9 @@ public interface MasterService {
 
 	List<GroupLedgerVO> getGroupLedgerByActive();
 
-//	SacCode
-	List<SacCodeVO> getAllSacCodeById(Long id);
+	List<Map<String, Object>> getGroupLedgerexcelDetails(Long orgId);
 
-	List<SacCodeVO> getAllSacCodeByOrgId(Long orgId);
 
-	List<HSNSacCodeVO> getAllActiveSacCodeByOrgId(Long orgId);
-
-	SacCodeVO updateCreateSacCode(@Valid SacCodeDTO sacCodeDTO) throws ApplicationException;
-
-//	List<SacCodeVO> getSacCodeByActive();
 
 //	SubLedgerAccount
 	List<SubLedgerAccountVO> getAllSubLedgerAccountByOrgId(Long orgId);
@@ -185,15 +194,7 @@ public interface MasterService {
 	List<Map<String, Object>> getSalesAccountFromGroup(Long orgId);
 
 	List<Map<String, Object>> getPaymentAccountFromGroup(Long orgId);
-//	ListOfValues
 
-	List<ListOfValuesVO> getListOfValuesById(Long id);
-
-	List<ListOfValuesVO> getListOfValuesByOrgId(Long orgid);
-
-	ListOfValuesVO updateCreateListOfValues(@Valid ListOfValuesDTO listOfValuesDTO) throws ApplicationException;
-
-	// PartyMaster
 
 	List<PartyMasterVO> getPartyMasterByOrgId(Long orgid);
 
@@ -202,10 +203,12 @@ public interface MasterService {
 	PartyMasterVO updateCreatePartyMaster(@Valid PartyMasterDTO partyMasterDTO) throws ApplicationException;
 
 	String getPartyMasterDocId(Long orgId, String finYear, String branch, String branchCode);
-	
+
 	void excelUploadForGroupLedger(MultipartFile[] files, String createdBy, Long orgId)
 			throws ApplicationException, EncryptedDocumentException, IOException, java.io.IOException;
+
 	int getTotalRows();
+
 	int getSuccessfulUploads();
 
 	void excelUploadForChargeCode(MultipartFile[] files, String createdBy, Long orgId)
@@ -218,9 +221,9 @@ public interface MasterService {
 	List<Map<String, Object>> getRevenueLegderForTaxMaster(Long orgId);
 
 	List<Map<String, Object>> getCostLedgerForTaxMaster(Long orgId);
-	
-	//HSNSAC CODE 
-	
+
+	// HSNSAC CODE
+
 	Map<String, Object> updateCreateHSNSacCode(HSNSacCodeDTO hsnSacCodeDTO) throws ApplicationException;
 
 	List<HSNSacCodeVO> getAllHSNSacCodeByOrgId(Long orgId);
@@ -228,5 +231,83 @@ public interface MasterService {
 	HSNSacCodeVO getAllHSNSacCodeById(Long id);
 
 	List<HSNSacCodeVO> findHSNSacCodeByActive();
+
+	// Item Master
+
+	Map<String, Object> updateCreateItemMaster(ItemMasterDTO itemMasterDTO) throws ApplicationException;
+
+	List<ItemMasterVO> getAllItemMasterByOrgId(Long orgId, String branchCode);
+
+	List<ItemMasterVO> getAllItemMasterById(Long id);
+
+	List<ItemMasterVO> getAllItemMasterByActive();
+
+	// UOM
+
+	List<UomVO> getUomByOrgId(Long orgId);
+
+	List<UomVO> getUomById(Long id);
+
+	Map<String, Object> updateCreateUom(@Valid UomDTO uomDTO) throws ApplicationException;
+
+	List<GroupLedgerVO> getAllGroupLedgerByAccountCode(String accountCode);
+
+
+//		SacCode
+	List<SacCodeVO> getAllSacCodeById(Long id);
+
+	List<SacCodeVO> getAllSacCodeByOrgId(Long orgId);
+
+//	List<SacCodeVO> getAllActiveSacCodeByOrgId(Long orgId);
+
+//		List<SacCodeVO> getSacCodeByActive();
+
+
+	// List Of Values
+
+	List<ListOfValuesVO> getAllListOfValuesByOrgId(Long orgId);
+
+	List<ListOfValuesVO> getListOfValuesById(Long listOfValuesId);
+
+	ListOfValuesVO updateCreateListOfValues(@Valid ListOfValuesDTO listOfValuesDTO) throws ApplicationException;
+
+	// Group Mapping\
+	List<Map<String, Object>> getBudgetGroup(Long orgId, String name) throws ApplicationException;
+
+	List<CoaVO> getSubGroup(Long orgId);
+
+	List<CoaVO> getLegders(Long orgId, List<String> accountCode);
+
+	Map<String, Object> createUpdateGroupMapping(GroupMappingDTO groupMappingDTO) throws ApplicationException;
+
+	List<GroupMappingVO> getGroupMappingAll(Long orgId);
+
+	Optional<GroupMappingVO> getGroupMappingById(Long id);
+
+	Map<String, Object> createUpdateGroupMapping2(GroupMapping2DTO groupMapping2DTO) throws ApplicationException;
+
+	List<Map<String, Object>> getLedgersDetailsForGroupMapping(Long orgId, String segment);
+
+	// Segment Mapping
+
+	Map<String, Object> createUpdateSegmentMapping(SegmentMappingDTO segmentMappingDTO) throws ApplicationException;
+
+	List<SegmentMappingVO> getAllSegmentMapping(Long orgId);
+
+	Optional<SegmentMappingVO> getSegmentMappingById(Long id);
+
+	List<Map<String, Object>> getSegmentDetailsByClient(Long orgId);
+
+	Map<String, Object> createUpdateAutomationGroupMapping(AutomationDTO automationDTO) throws ApplicationException;
+
+	AutomationVO getAutomationById(Long id);
+
+	List<AutomationVO> getAutomationByOrgId(Long orgId);
+
+	SacCodeVO updateCreateSacCode(@Valid SacCodeDTO sacCodeDTO) throws ApplicationException;
+
+	List<ListOfValuesVO> getListOfValuesByOrgId(Long orgid);
+
+	List<HSNSacCodeVO> getAllActiveSacCodeByOrgId(Long orgId);
 
 }

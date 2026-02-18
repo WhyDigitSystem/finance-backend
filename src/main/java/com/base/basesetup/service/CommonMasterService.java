@@ -18,10 +18,10 @@ import com.base.basesetup.dto.DepartmentDTO;
 import com.base.basesetup.dto.DesignationDTO;
 import com.base.basesetup.dto.FinScreenDTO;
 import com.base.basesetup.dto.FinancialYearDTO;
+import com.base.basesetup.dto.ProductServiceDTO;
 import com.base.basesetup.dto.RegionDTO;
 import com.base.basesetup.dto.ScreenNamesDTO;
 import com.base.basesetup.dto.StateDTO;
-import com.base.basesetup.entity.BankDetailsVO;
 import com.base.basesetup.entity.CityVO;
 import com.base.basesetup.entity.CompanyVO;
 import com.base.basesetup.entity.CountryVO;
@@ -29,6 +29,7 @@ import com.base.basesetup.entity.CurrencyVO;
 import com.base.basesetup.entity.DepartmentVO;
 import com.base.basesetup.entity.DesignationVO;
 import com.base.basesetup.entity.FinancialYearVO;
+import com.base.basesetup.entity.ProductServiceVO;
 import com.base.basesetup.entity.RegionVO;
 import com.base.basesetup.entity.ScreenNamesVO;
 import com.base.basesetup.entity.StateVO;
@@ -149,7 +150,18 @@ public interface CommonMasterService {
 	List<DesignationVO> getDesignationByOrgId(Long orgId);
 
 	List<Map<String, Object>> getCompanyByOrgId(Long orgId);
+	
+	//ProductAndService
+	
+	Map<String, Object> createUpdateProductService(ProductServiceDTO productServiceDTO) throws ApplicationException;
 
+	List<ProductServiceVO> getProductServiceByOrgId(Long orgId);
+	
+	ProductServiceVO getProductServiceById(Long id);
+
+	ProductServiceVO uploadImageProductServivceInBloob(MultipartFile file, Long id) throws IOException;
+
+	List<Map<String, Object>> getFinYearByClient(Long orgId, String clientCode);
 	
 
 

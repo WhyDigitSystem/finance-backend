@@ -28,8 +28,10 @@ public class CustomersDTO {
 	private String bussinessCategory;
 	private String accountsType;
 	private String currency;
+	private String shortName;
 //	private String customerCode;
 	private boolean approved;
+	private String country;
 	
 	private List<CustomersStateDTO> customersStateDTO = new ArrayList<>();
 	private List<CustomersAddressDTO> customersAddressDTO = new ArrayList<>();

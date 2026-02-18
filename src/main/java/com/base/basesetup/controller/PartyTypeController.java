@@ -1,7 +1,6 @@
 package com.base.basesetup.controller;
 
 import java.util.ArrayList;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -132,6 +131,38 @@ public class PartyTypeController extends BaseController {
 		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
 		return ResponseEntity.ok().body(responseDTO);
 	}
+	
+	
+	@GetMapping("/getAllTransporters")
+	public ResponseEntity<ResponseDTO> getAllTransporters(@RequestParam Long orgid) {
+	    final String methodName = "getAllTransporters()";
+	    LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+
+	    ResponseDTO responseDTO;
+	    Map<String, Object> responseObjectsMap = new HashMap<>();
+
+	    try {
+	        List<Map<String, Object>> transporters = partyTypeService.getAllTransporters(orgid);
+
+	        responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "Transporter information retrieved successfully by OrgId");
+	        responseObjectsMap.put("partyTypeVO", transporters);
+
+	        responseDTO = createServiceResponse(responseObjectsMap);
+
+	    } catch (Exception e) {
+	        LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, e.getMessage(), e);
+
+	        responseDTO = createServiceResponseError(
+	                responseObjectsMap,
+	                "Failed to retrieve transporter information by OrgId",
+	                e.getMessage()
+	        );
+	    }
+
+	    LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+	    return ResponseEntity.ok(responseDTO);
+	}
+
 
 //			@GetMapping("/getPartyCodeByOrgIdAndPartyType")
 //			public ResponseEntity<ResponseDTO> getPartyCodeByOrgIdAndPartyType(@RequestParam(required = false) Long orgid,@RequestParam(required = false) String partytype) {
@@ -415,7 +446,7 @@ public class PartyTypeController extends BaseController {
 
 	@GetMapping("/getAllPartyLedgerReport")
 	public ResponseEntity<ResponseDTO> getAllPartyLedgerReport(@RequestParam(required = true) Long orgId,@RequestParam(required = true) String partyName,
-			@RequestParam(required = true) String partyType, @RequestParam(required = true) String branch,@RequestParam(required = true) String fromDate,@RequestParam(required = true) String toDate) {
+			@RequestParam(required = true) String partyType, @RequestParam(required = true) String branch,@RequestParam(required = false) String fromDate,@RequestParam(required = false) String toDate) {
 		String methodName = "getAllPartyLedgerReport()";
 		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
 		String errorMsg = null;
@@ -445,7 +476,7 @@ public class PartyTypeController extends BaseController {
 	
 	@GetMapping("/getAllLedgerReport")
 	public ResponseEntity<ResponseDTO> getAllLedgerReport(@RequestParam(required = true) Long orgId,@RequestParam(required = true) String accountName,
-			@RequestParam(required = true) String branchCode,@RequestParam(required = true) String fromDate,@RequestParam(required = true) String toDate) {
+			@RequestParam(required = true) String branchCode,@RequestParam(required = false) String fromDate,@RequestParam(required = false) String toDate) {
 		String methodName = "getAllLedgerReport()";
 		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
 		String errorMsg = null;
@@ -502,7 +533,7 @@ public class PartyTypeController extends BaseController {
 	}
 	
 	@GetMapping("/getMonthlyAndYearWiseData")
-	public ResponseEntity<ResponseDTO> getMonthlyAndYearWiseData(@RequestParam(required = true) Long orgId,@RequestParam(required = false) String month,@RequestParam(required = false) String year) {
+	public ResponseEntity<ResponseDTO> getMonthlyAndYearWiseData(@RequestParam(required = true) Long orgId,@RequestParam(required = false) String month,@RequestParam(required = true) String finYear,@RequestParam String branchCode) {
 		String methodName = "getMonthlyAndYearWiseData()";
 		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
 		String errorMsg = null;
@@ -511,7 +542,7 @@ public class PartyTypeController extends BaseController {
 		List<Map<String, Object>> mapp = new ArrayList<>();
 
 		try {
-			mapp = partyTypeService.getMonthlyAndYearWiseData(orgId,month,year);
+			mapp = partyTypeService.getMonthlyAndYearWiseData(orgId,month,finYear,branchCode);
 		} catch (Exception e) {
 			errorMsg = e.getMessage();
 			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
@@ -530,7 +561,7 @@ public class PartyTypeController extends BaseController {
 	}
 	
 	@GetMapping("/getSalesDistributionData")
-	public ResponseEntity<ResponseDTO> getSalesDistributionData(@RequestParam(required = true) Long orgId,@RequestParam(required = false) String month,@RequestParam(required = false) String year) {
+	public ResponseEntity<ResponseDTO> getSalesDistributionData(@RequestParam(required = true) Long orgId,@RequestParam(required = false) String month,@RequestParam(required = true) String finYear,@RequestParam String branchCode) {
 		String methodName = "getSalesDistributionData()";
 		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
 		String errorMsg = null;
@@ -539,7 +570,7 @@ public class PartyTypeController extends BaseController {
 		List<Map<String, Object>> mapp = new ArrayList<>();
 
 		try {
-			mapp = partyTypeService.getSalesDistributionData(orgId,month,year);
+			mapp = partyTypeService.getSalesDistributionData(orgId,month,finYear,branchCode);
 		} catch (Exception e) {
 			errorMsg = e.getMessage();
 			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
@@ -551,6 +582,92 @@ public class PartyTypeController extends BaseController {
 			responseDTO = createServiceResponse(responseObjectsMap);
 		} else {
 			responseDTO = createServiceResponseError(responseObjectsMap, "Sales Distribution data Reterive Failed", errorMsg);
+		}
+
+		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+		return ResponseEntity.ok().body(responseDTO);
+	}
+	
+	@GetMapping("/getVedorsAddressDetails")
+	public ResponseEntity<ResponseDTO> getVedorsAddressDetails(@RequestParam(required = true) Long orgId) {
+		String methodName = "getVedorsAddressDetails()";
+		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+		String errorMsg = null;
+		Map<String, Object> responseObjectsMap = new HashMap<>();
+		ResponseDTO responseDTO = null;
+		List<Map<String, Object>> mapp = new ArrayList<>();
+
+		try {
+			mapp = partyTypeService.getVedorsAddressDetails(orgId);
+		} catch (Exception e) {
+			errorMsg = e.getMessage();
+			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+		}
+
+		if (StringUtils.isBlank(errorMsg)) {
+			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "Vendors Address data  retrieved successfully");
+			responseObjectsMap.put("partyMasterVO", mapp);
+			responseDTO = createServiceResponse(responseObjectsMap);
+		} else {
+			responseDTO = createServiceResponseError(responseObjectsMap, "Vendors Address data Reterive Failed", errorMsg);
+		}
+
+		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+		return ResponseEntity.ok().body(responseDTO);
+	}
+	
+	@GetMapping("/getCustomersAddressDetails")
+	public ResponseEntity<ResponseDTO> getCustomersAddressDetails(@RequestParam(required = true) Long orgId) {
+		String methodName = "getCustomersAddressDetails()";
+		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+		String errorMsg = null;
+		Map<String, Object> responseObjectsMap = new HashMap<>();
+		ResponseDTO responseDTO = null;
+		List<Map<String, Object>> mapp = new ArrayList<>();
+
+		try {
+			mapp = partyTypeService.getCustomersAddressDetails(orgId);
+		} catch (Exception e) {
+			errorMsg = e.getMessage();
+			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+		}
+
+		if (StringUtils.isBlank(errorMsg)) {
+			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "Customers Address data  retrieved successfully");
+			responseObjectsMap.put("partyMasterVO", mapp);
+			responseDTO = createServiceResponse(responseObjectsMap);
+		} else {
+			responseDTO = createServiceResponseError(responseObjectsMap, "Customers Address data Reterive Failed", errorMsg);
+		}
+
+		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+		return ResponseEntity.ok().body(responseDTO);
+	}
+	
+	@GetMapping("/getLedgerReport")
+	public ResponseEntity<ResponseDTO> getLedgerReport(@RequestParam(required = true) Long orgId,@RequestParam(required = true) String branch,@RequestParam(required = true) String fromdate,
+			@RequestParam(required = true) String toDate,@RequestParam(required = true) String accountName
+			,@RequestParam(required = true) String details) {
+		String methodName = "getLedgerReport()";
+		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+		String errorMsg = null;
+		Map<String, Object> responseObjectsMap = new HashMap<>();
+		ResponseDTO responseDTO = null;
+		List<Map<String, Object>> mapp = new ArrayList<>();
+
+		try {
+			mapp = partyTypeService.getLedgerReport(orgId,branch,fromdate,toDate,accountName,details);
+		} catch (Exception e) {
+			errorMsg = e.getMessage();
+			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+		}
+
+		if (StringUtils.isBlank(errorMsg)) {
+			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "LedgerReport data  retrieved successfully");
+			responseObjectsMap.put("ledgerReport", mapp);
+			responseDTO = createServiceResponse(responseObjectsMap);
+		} else {
+			responseDTO = createServiceResponseError(responseObjectsMap, "LedgerReport data Reterive Failed", errorMsg);
 		}
 
 		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);

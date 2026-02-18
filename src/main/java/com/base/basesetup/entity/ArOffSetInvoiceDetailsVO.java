@@ -58,6 +58,10 @@ public class ArOffSetInvoiceDetailsVO {
 	private BigDecimal gainOrLoss;
 	@Column(name = "remarks",length=150)
 	private String remarks;
+	@Column(name = "gstamt", precision = 10, scale = 2)
+	private BigDecimal gstAmt;
+	@Column(name = "chargeamt", precision = 10, scale = 2)
+	private BigDecimal chargeAmt;
 
 	@ManyToOne
 	@JsonBackReference

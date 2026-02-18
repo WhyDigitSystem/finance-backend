@@ -1,4 +1,4 @@
-package com.base.basesetup.entity;
+	package com.base.basesetup.entity;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -15,8 +15,9 @@ import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
+import org.springframework.format.annotation.DateTimeFormat;
+
 import com.base.basesetup.dto.CreatedUpdatedDate;
-import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import lombok.AllArgsConstructor;
@@ -133,7 +134,7 @@ public class ReceiptVO {
 	@Column(name = "chequeutino", length = 100)
 	private String chequeUtiNo;
 
-	@Column(name = "chequeutidt")
+	@Column(name = "chequeutidate")
 	private LocalDate chequeUtiDate;
 
 	@Column(name = "receivedfrom", length = 100)
@@ -154,6 +155,36 @@ public class ReceiptVO {
 	
 	@Column(name = "onaccount", precision = 10, scale = 2)
 	private BigDecimal onAccount;
+	
+	@Column(name="approvestatus",length = 20)
+	private String approveStatus;
+	
+	@Column(name="approveby",length = 20)
+	private String approveBy;
+	
+	@Column(name = "status",length = 30)
+	private String status;
+	
+	@Column(name = "shortname",length = 30)
+	private String shortName;
+	
+	@Column(name = "totaloutstanding", precision = 10, scale = 2)
+	private BigDecimal totalOutStanding;
+	
+	@Column(name = "totalchargeamount", precision = 10, scale = 2)
+	private BigDecimal totalChargeAmount;
+    
+	@Column(name = "receivableamount", precision = 10, scale = 2)
+	private BigDecimal receivableAmount;
+	
+	@DateTimeFormat(pattern = "dd-MM-yyyy hh:mm:ss a")
+	@Column(name="approveon")
+	private String approveOn;
+	
+	@Column(name = "purvoucherno", length = 50)
+	private String purVoucherNo;
+	@Column(name = "purvoucherdate")
+	private LocalDate purVoucherDate;
 
 	@OneToMany(mappedBy = "receiptVO", cascade = CascadeType.ALL)
 	@JsonManagedReference

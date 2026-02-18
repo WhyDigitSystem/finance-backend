@@ -34,4 +34,10 @@ public interface UrCostInvoiceGnaService {
 
 	UrCostInvoiceGnaVO approveUrCostInvoiceGnaVO(Long orgId, Long id, String docId, String action, String actionBy)
 			throws ApplicationException;
+	
+	UrCostInvoiceGnaVO getUrCostInvoiceByDocIdandScreenCode(String ScreenCode, String docId);
+
+	List<Map<String, Object>> getChargeAccountFromChargeLedger(Long orgId, String chargeLedger);
+
+	List<Map<String, Object>> getURCostInvoiceGnaCount(Long orgId, String finYear, String branchCode);
 }

@@ -10,14 +10,11 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 import com.base.basesetup.dto.CreatedUpdatedDate;
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
@@ -38,10 +35,12 @@ public class RetrievalManifestProviderVO {
 	private Long id;
 	@Column(name = "orgid")
 	private Long orgId;
+	@Column(name = "finyear")
+	private String finYear;
 	@Column(name = "transactionno")
 	private String transactionNo;
 	@Column(name = "transactiondate")
-	private LocalDate transactionDate;
+	private LocalDate transactionDate=LocalDate.now();
 	@Column(name = "dispatchdate")
 	private LocalDate dispatchDate;
 	@Column(name = "transactiontype")
@@ -56,6 +55,8 @@ public class RetrievalManifestProviderVO {
 	private String receiverAddress;
 	@Column(name = "sendergst")
 	private String senderGst;
+	@Column(name = "receivergst")
+	private String receiverGst;
 	@Column(name = "transportername")
 	private String transporterName;
 	@Column(name = "vehicleeno")
@@ -67,14 +68,31 @@ public class RetrievalManifestProviderVO {
 	@Column(name = "notes")
 	private String notes;
 	@Column(name = "active")
-	private boolean active;
+	private boolean active = true;
 	@Column(name = "cancel")
 	private boolean cancel;
 	@Column(name = "createdby")
 	private String createdBy;
 	@Column(name = "modifiedby")
 	private String updatedBy;
+	@Column(name = "code")
+	private String code;
+	@Column(name = "branchcode",length = 10)
+	private String branchCode;
+	@Column(name = "branch")
+	private String branch;
+	@Column(name = "screencode",length = 30)
+	private String screenCode="RM";
+	@Column(name = "screenname",length = 30)
+	private String screenName="RETRIEVALMANIFESTPROVIDER";
+	@Column(name = "refno")
+	private String refNo;
+	@Column(name = "amountinwords")
+	private String amountInWords;
+	@Column(name = "amount")
+	private Long amount;
 
+	
 	@JsonGetter("active")
 	public String getActive() {
 		return active ? "Active" : "In-Active";
@@ -86,14 +104,24 @@ public class RetrievalManifestProviderVO {
 		return cancel ? "T" : "F";
 	}
 	
-	@OneToMany(mappedBy ="retrievalManifestProviderVO",cascade =CascadeType.ALL)
-	@JsonManagedReference
-	private List<RetrievalManifestProviderDetailsVO> retrievalManifestProviderDetailsVOs;
+//	@OneToMany(mappedBy ="retrievalManifestProviderVO",cascade =CascadeType.ALL)
+//	@JsonManagedReference
+//	private List<RetrievalManifestProviderDetailsVO> retrievalManifestProviderDetailsVOs;
+//	
+//	@ManyToOne
+//	@JsonBackReference
+//	@JoinColumn(name="rimdeclarationid")
+//	private RimDeclarationVO rimDeclarationVO;
 	
-	@ManyToOne
-	@JsonBackReference
-	@JoinColumn(name="rimdeclarationid")
-	private RimDeclarationVO rimDeclarationVO;
+	// ✅ One-to-many with details
+    @OneToMany(mappedBy = "retrievalManifestProviderVO", cascade = CascadeType.ALL)
+    @JsonManagedReference
+    private List<RetrievalManifestProviderDetailsVO> retrievalManifestProviderDetailsVOs;
+    
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "rimdeclarationid") // This is the FK column in this table
+//    @JsonBackReference
+//    private RimDeclarationVO rimDeclarationVO;
 
 	@Embedded
 	private CreatedUpdatedDate commonDate = new CreatedUpdatedDate();

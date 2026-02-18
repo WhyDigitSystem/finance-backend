@@ -3,11 +3,6 @@ package com.base.basesetup.dto;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
-import javax.persistence.Column;
-
-import com.base.basesetup.entity.ArAdjustmentOffSetVO;
-import com.base.basesetup.entity.ArOffSetInvoiceDetailsVO;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -32,5 +27,7 @@ public class ArOffSetInvoiceDetailsDTO {
 	private BigDecimal tnxSettled;
 	private BigDecimal gainOrLoss;
 	private String remarks;
+	private BigDecimal gstAmt;
+	private BigDecimal chargeAmt;
 
 }

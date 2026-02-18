@@ -130,6 +130,8 @@ public class UrCostInvoiceGnaVO {
 	private BigDecimal input;
 	@Column(name = "output", precision = 10, scale = 2)
 	private BigDecimal output;
+	@Column(name = "totalgstamount", precision = 10, scale = 2)
+	private BigDecimal totalGstAmount;
 	
 
 //	APPROVED

@@ -17,5 +17,5 @@ public class RolesDTO {
 	private Long orgId;
 	private boolean active;
 	private List<RolesResponsibilityDTO> rolesResponsibilityDTO;
-
+	private List<RolesPermissionDTO> rolesPermissionDTO;
 }

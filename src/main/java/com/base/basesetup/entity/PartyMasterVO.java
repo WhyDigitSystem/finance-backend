@@ -185,6 +185,8 @@ public class PartyMasterVO {
 	
     @Column(name = "creditterms")
     private String creditTerms;
+    @Column(name = "partyshortname")
+    private String partyShortName;
     
 	@OneToMany(mappedBy = "partyMasterVO",cascade = CascadeType.ALL)
 	@JsonManagedReference

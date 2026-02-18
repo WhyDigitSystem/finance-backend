@@ -3,7 +3,6 @@ package com.base.basesetup.entity;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 
 import javax.persistence.CascadeType;
@@ -165,6 +164,12 @@ public class TaxInvoiceVO {
 	@Column(name = "billingremarks",length = 30)
 	private String billingRemarks;
 	private double annexureSubTotal;
+	@Column(name = "transactionno")
+	private String trasactionNo;
+	@Column(name = "totalqty")
+	private Long totalQty;
+	@Column(name = "partyshortname")
+	private String partyShortName;
 
 	
 

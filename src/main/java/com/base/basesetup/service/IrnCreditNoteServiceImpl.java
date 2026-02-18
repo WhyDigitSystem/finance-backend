@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.lang3.ObjectUtils;
 import org.slf4j.Logger;
@@ -29,7 +30,6 @@ import com.base.basesetup.entity.IrnCreditNoteGstVO;
 import com.base.basesetup.entity.IrnCreditNoteVO;
 import com.base.basesetup.entity.MultipleDocIdGenerationDetailsVO;
 import com.base.basesetup.entity.PartyMasterVO;
-import com.base.basesetup.entity.TaxInvoiceAnnexureVO;
 import com.base.basesetup.entity.TaxInvoiceVO;
 import com.base.basesetup.exception.ApplicationException;
 import com.base.basesetup.repo.AccountsDetailsRepo;
@@ -260,9 +260,16 @@ public class IrnCreditNoteServiceImpl implements IrnCreditNoteService {
 			irnCreditNoteDetailsVO.setBillAmount(billAmount);
 			totalChargeAmountBC = totalChargeAmountBC.add(billAmount);
 
-			gstAmount = lcAmount.multiply(gstPercent).divide(BigDecimal.valueOf(100));
+//			gstAmount = lcAmount.multiply(gstPercent).divide(BigDecimal.valueOf(100));
+			
+			if (irnCreditNoteDetailsDTO.getCurrency().equals("INR")) {
+				gstAmount = lcAmount.multiply(gstPercent).divide(BigDecimal.valueOf(100));
+			} else {
+				gstAmount = fcAmount.multiply(gstPercent).divide(BigDecimal.valueOf(100));
+			}
+			
 			irnCreditNoteDetailsVO.setGstAmount(gstAmount);
-			totalTaxAmountLC = totalTaxAmountLC.add(gstAmount);
+			totalTaxAmountLC = totalTaxAmountLC.add(lcAmount.multiply(gstPercent).divide(BigDecimal.valueOf(100)));
 			totalTaxAmountBC = totalTaxAmountBC.add(gstAmount);
 
 			irnCreditNoteDetailsVO.setIrnCreditNoteVO(irnCreditNoteVO);
@@ -310,7 +317,7 @@ public class IrnCreditNoteServiceImpl implements IrnCreditNoteService {
 		Map<Integer, BigDecimal> gstSumMap = new HashMap<>();
 		for (IrnCreditNoteDetailsVO detailsVO : irnCreditNoteDetailsVOs) {
 			int gst = detailsVO.getGSTPercent();
-			BigDecimal gstAmount = detailsVO.getGstAmount();
+			BigDecimal gstAmount = detailsVO.getTlcAmount();
 			gstSumMap.put(gst, gstSumMap.getOrDefault(gst, BigDecimal.ZERO).add(gstAmount));
 		}
 		
@@ -358,7 +365,7 @@ public class IrnCreditNoteServiceImpl implements IrnCreditNoteService {
 		Map<String, BigDecimal> ledgerSumMap = new HashMap<>();
 		for (IrnCreditNoteDetailsVO detailsVO : irnCreditNoteDetailsVOs) {
 			String ledger = detailsVO.getLedger();
-			BigDecimal lcAmount = detailsVO.getLcAmount();
+			BigDecimal lcAmount = detailsVO.getBillAmount();
 
 			ledgerSumMap.put(ledger, ledgerSumMap.getOrDefault(ledger, BigDecimal.ZERO).add(lcAmount));
 		}
@@ -366,10 +373,29 @@ public class IrnCreditNoteServiceImpl implements IrnCreditNoteService {
 		
 		for (Map.Entry<String, BigDecimal> entry : ledgerSumMap.entrySet()) {
 			IrnCreditNoteGstVO irnCreditNoteGstVO = new IrnCreditNoteGstVO();
+			
+			irnCreditNoteGstVO.setGstChargeAcc(entry.getKey());
+			String gstLedger = entry.getKey();
+			BigDecimal creditAmountFC = entry.getValue();
+			
+			String currency = irnCreditNoteVO.getBillCurr();
+			BigDecimal exRate = irnCreditNoteVO.getBillCurrRate();
+
+			for (IrnCreditNoteDetailsVO detailVO : irnCreditNoteVO.getIrnCreditNoteDetailsVO()) {
+				if (detailVO.getLedger().equalsIgnoreCase(gstLedger)) {
+					currency = detailVO.getCurrency();
+					exRate = detailVO.getExRate();
+					break;
+				}
+			}
+			BigDecimal creditAmountINR = "INR".equalsIgnoreCase(currency) ? creditAmountFC
+					: creditAmountFC.multiply(exRate).setScale(2, RoundingMode.HALF_UP);
+			
+			
 			irnCreditNoteGstVO.setGstChargeAcc(entry.getKey());
 			irnCreditNoteGstVO.setGstCrLcAmount(BigDecimal.ZERO);
-			irnCreditNoteGstVO.setGstDbBillAmount(entry.getValue());
-			irnCreditNoteGstVO.setGstDbLcAmount(entry.getValue());
+			irnCreditNoteGstVO.setGstDbBillAmount(creditAmountFC);
+			irnCreditNoteGstVO.setGstDbLcAmount(creditAmountINR);
 			irnCreditNoteGstVO.setGstSubledgerCode("None");
 			irnCreditNoteGstVO.setGstCrBillAmount(BigDecimal.ZERO);
 			irnCreditNoteGstVO.setIrnCreditNoteVO(irnCreditNoteVO);
@@ -390,6 +416,7 @@ public class IrnCreditNoteServiceImpl implements IrnCreditNoteService {
 //		BigDecimal roundedTotalInvAmountLC = totalInvAmountLC.setScale(0, RoundingMode.HALF_UP);
 //		BigDecimal roundOffAmountLC = roundedTotalInvAmountLC.subtract(originalTotalInvAmountLC);
 		
+		
 		TaxInvoiceVO taxInvoiceVO = taxInvoiceRepo.findByOrgIdAndDocId( irnCreditNoteDTO.getOrgId(), irnCreditNoteDTO.getOriginBillNo());
 		if (taxInvoiceVO == null) {
 		    new  ApplicationException("No TaxInvoice found for given orgId and docId");
@@ -399,14 +426,42 @@ public class IrnCreditNoteServiceImpl implements IrnCreditNoteService {
 
 //		System.out.println(totalInvAmountLc);
 //		System.out.println(roundedTotalInvAmountLC);
+		
+//		      Set<Object[]> byOrginBillBased = irnCreditRepo.findByOrginBillBased(irnCreditNoteDTO.getOrgId());
+//		      for (Object[] ledger : byOrginBillBased) {
+//		    	  
+//	if(ledger[0].toBigDecimal().compareTo(totalInvAmountLC)>=0) {
+//		if (totalInvAmountLC.compareTo(totalInvAmountLc1) <= 0) {  
+//			irnCreditNoteVO.setTotalInvAmountLc(totalInvAmountLC);
+//
+//		} else {
+//		    throw new IllegalArgumentException("CREDIT NOTE " + totalInvAmountLC + " must be less than or equal to TAXINVOICE "+ totalInvAmountLc1);
+//		}
+//
+//		      }else {
+//		    	  throw new IllegalArgumentException("RemaingAmount" + ledger[0].toBigDecimal() + " must be less than or equal to TAXINVOICE "+ totalInvAmountLc1);
+//		    	  
+//		      }
+		
+		Set<Object[]> byOrginBillBased = irnCreditRepo.findByOrginBillBased(irnCreditNoteDTO.getOrgId(),irnCreditNoteDTO.getOriginBillNo());
 
-		if (totalInvAmountLC.compareTo(totalInvAmountLc1) <= 0) {  
-			irnCreditNoteVO.setTotalInvAmountLc(totalInvAmountLC);
+		for (Object[] ledger : byOrginBillBased) {
+		    BigDecimal remainingAmount =  (BigDecimal) ledger[4];
 
-		} else {
-		    throw new IllegalArgumentException("CREDIT NOTE " + totalInvAmountLC + " must be less than or equal to TAXINVOICE "+ totalInvAmountLc1);
+		    if (totalInvAmountLC.compareTo(remainingAmount) <= 0) {
+		        if (totalInvAmountLC.compareTo(totalInvAmountLc1) <= 0) {
+		            irnCreditNoteVO.setTotalInvAmountLc(totalInvAmountLC);
+		        } else {
+		            throw new IllegalArgumentException("CREDIT NOTE " + totalInvAmountLC +
+		                    " must be less than or equal to TAXINVOICE " + totalInvAmountLc1);
+		        }
+		    } else {
+		        throw new IllegalArgumentException("CREDIT NOTE " + totalInvAmountLC +
+		                " must be less than or equal to REMAINING amount " + remainingAmount);
+		    }
 		}
 
+		
 		
 		irnCreditNoteVO.setAmountInWords(amountInWordsConverterService.convert(irnCreditNoteVO.getTotalInvAmountLc()));
 //		irnCreditNoteVO.setRoundOffAmountLc(roundOffAmountLC);
@@ -434,7 +489,7 @@ public class IrnCreditNoteServiceImpl implements IrnCreditNoteService {
 
 	@Override
 	public List<TaxInvoiceVO> getOriginBillNofromTaxInvoiceByParty(Long orgId, String party,String branchCode) {
-		return taxInvoiceRepo.findPartyInvoiceDetails(orgId,party,branchCode);
+		return taxInvoiceRepo.findPartyInvoiceDetails(orgId, party, branchCode);
 	}
 
 	@Override
@@ -478,6 +533,8 @@ public class IrnCreditNoteServiceImpl implements IrnCreditNoteService {
 	        accountsVO.setRefDate(irnCreditNoteVO.getDocDate());
 	        accountsVO.setCurrency(irnCreditNoteVO.getBillCurr());
 	        accountsVO.setExRate(irnCreditNoteVO.getBillCurrRate());
+	        accountsVO.setVDate(irnCreditNoteVO.getVdate());
+	        accountsVO.setVId(irnCreditNoteVO.getVid()); 
 	        accountsVO.setRemarks(irnCreditNoteVO.getCreditRemarks());
 	        accountsVO.setSupplierRefNo(irnCreditNoteVO.getSupplierRefNo());
 	        accountsVO.setSupplierRefDate(irnCreditNoteVO.getSupplierRefDate());
@@ -499,6 +556,7 @@ public class IrnCreditNoteServiceImpl implements IrnCreditNoteService {
 	        AccountsDetailsVO accountsDetailsVO = new AccountsDetailsVO();
 	        accountsDetailsVO.setNDebitAmount(BigDecimal.ZERO);
 	        accountsDetailsVO.setACategory("RECEIVABLE A/C");
+	        accountsDetailsVO.setAccountName("RECEIVABLE A/C");
 	        accountsDetailsVO.setSubLedgerCode(irnCreditNoteVO.getPartyCode());
 	        accountsDetailsVO.setDebitAmount(BigDecimal.ZERO);
 	        accountsDetailsVO.setNCreditAmount(irnCreditNoteVO.getTotalInvAmountLc());
@@ -521,35 +579,63 @@ public class IrnCreditNoteServiceImpl implements IrnCreditNoteService {
 	        Map<String, BigDecimal> ledgerSumMap = new HashMap<>();
 	        for (IrnCreditNoteGstVO gstVO : irnCreditNoteVO.getIrnCreditNoteGstVO()) {
 	            String ledger = gstVO.getGstChargeAcc();
-	            BigDecimal lcAmount = gstVO.getGstDbLcAmount();
+	            BigDecimal lcAmount = gstVO.getGstDbBillAmount();
 
 	            ledgerSumMap.put(ledger, ledgerSumMap.getOrDefault(ledger, BigDecimal.ZERO).add(lcAmount));
 	        }
 
 //	        // Add GST ledger entries
 	        for (Map.Entry<String, BigDecimal> entry : ledgerSumMap.entrySet()) {
+				String gstLedger = entry.getKey();
+				BigDecimal creditAmountFC = entry.getValue();
 	            GroupLedgerVO groupLedgerVO = groupLedgerRepo.findByAccountGroupName(entry.getKey());
 	            if (groupLedgerVO == null) {
 	                throw new ApplicationException("No Group Ledger found for account group name: " + entry.getKey());
 	            }
 	            AccountsDetailsVO gstAccountDetailsVO = new AccountsDetailsVO();
 	            gstAccountDetailsVO.setACategory(groupLedgerVO.getCategory());
-	            gstAccountDetailsVO.setNDebitAmount(entry.getValue());
-	            gstAccountDetailsVO.setDebitAmount(entry.getValue());
+	            gstAccountDetailsVO.setAccountName(groupLedgerVO.getAccountGroupName());
+	            
+				String currency = irnCreditNoteVO.getBillCurr();
+				BigDecimal exRate = irnCreditNoteVO.getBillCurrRate();
+
+				for (IrnCreditNoteDetailsVO detailVO : irnCreditNoteVO.getIrnCreditNoteDetailsVO()) {
+					if (detailVO.getLedger().equalsIgnoreCase(gstLedger)) {
+						currency = detailVO.getCurrency();
+						exRate = detailVO.getExRate();
+						break;
+					}
+				}
+				BigDecimal creditAmountINR = "INR".equalsIgnoreCase(currency) ? creditAmountFC
+						: creditAmountFC.multiply(exRate).setScale(2, RoundingMode.HALF_UP);
+	            
+				gstAccountDetailsVO.setACurrency(currency);
+				gstAccountDetailsVO.setAExRate(exRate);
+			     gstAccountDetailsVO.setDebitAmount(creditAmountFC);
+					if(!irnCreditNoteVO.getBillCurr().equals("INR")) {
+						gstAccountDetailsVO.setBDebitAmount(creditAmountFC);
+						gstAccountDetailsVO.setNDebitAmount(creditAmountFC);
+						
+						}
+					gstAccountDetailsVO.setBDebitAmount(creditAmountINR);
+					gstAccountDetailsVO.setNDebitAmount(creditAmountINR);				
+//	            gstAccountDetailsVO.setNDebitAmount(entry.getValue());
+//	            gstAccountDetailsVO.setDebitAmount(entry.getValue());
 	            gstAccountDetailsVO.setNCreditAmount(BigDecimal.ZERO);
 	            gstAccountDetailsVO.setCreditAmount(BigDecimal.ZERO);
 	            gstAccountDetailsVO.setArapFlag(false);
 	            gstAccountDetailsVO.setArapAmount(BigDecimal.ZERO);
-	            gstAccountDetailsVO.setBDebitAmount(entry.getValue());
+//	            gstAccountDetailsVO.setBDebitAmount(entry.getValue());
 	            gstAccountDetailsVO.setBCrAmount(BigDecimal.ZERO);
 	            gstAccountDetailsVO.setBArapAmount(BigDecimal.ZERO);
-	            gstAccountDetailsVO.setAccountName(groupLedgerVO.getAccountGroupName());
-	            gstAccountDetailsVO.setACurrency(irnCreditNoteVO.getBillCurr());
-	            gstAccountDetailsVO.setAExRate(irnCreditNoteVO.getBillCurrRate());
+//	            gstAccountDetailsVO.setAccountName(groupLedgerVO.getAccountGroupName());
 	            gstAccountDetailsVO.setSubledgerName("None");
 	            gstAccountDetailsVO.setSubLedgerCode("None");
 	            gstAccountDetailsVO.setNArapAmount(BigDecimal.ZERO);
 	            gstAccountDetailsVO.setGstflag(3);
+	           
+	            
+	            
 	            gstAccountDetailsVO.setAccountsVO(accountsVO);
 	            accountsDetailsVOs.add(gstAccountDetailsVO);
 	        }
@@ -579,11 +665,13 @@ public class IrnCreditNoteServiceImpl implements IrnCreditNoteService {
 			arapDetailsVO.setCreditDays(savedAccountsVO.getCreditDays());
 			arapDetailsVO.setDocId(savedAccountsVO.getDocId());
 			arapDetailsVO.setDocDate(savedAccountsVO.getDocDate());
+			arapDetailsVO.setActive(savedAccountsVO.isActive());
 			arapDetailsVO.setAccCurrency(savedAccountsVO.getCurrency());
 			arapDetailsVO.setExRate(savedAccountsVO.getExRate());
+			arapDetailsVO.setOrgId(savedAccountsVO.getOrgId());
 			arapDetailsVO.setAccName(accountsDetailsVOs2.getAccountName());
 			arapDetailsVO.setGstFlag(accountsDetailsVOs2.getGstflag());
-			arapDetailsVO.setSubLedgerName(accountsDetailsVOs2.getAccountName());
+			arapDetailsVO.setSubLedgerName(accountsDetailsVOs2.getSubledgerName());
 			arapDetailsVO.setSalesType(savedAccountsVO.getSalesType());
 			arapDetailsVO.setNativeAmt(accountsDetailsVOs2.getArapAmount().multiply(new BigDecimal(-1)));
 			arapDetailsRepo.save(arapDetailsVO);
@@ -602,4 +690,26 @@ public class IrnCreditNoteServiceImpl implements IrnCreditNoteService {
 	        throw new ApplicationException("This Credit Note Already Rejected");
 	    }
 	    }
+	
+	
+	
+	@Override
+	public List<Map<String, Object>> getIRNCreditNoteCount(Long orgId,String finYear, String branchCode) {
+		Set<Object[]> chType = irnCreditRepo.getIRNCreditNoteCount(  orgId, finYear,  branchCode);
+		return getIRNCreditNoteCount(chType);
+	}
+
+	private List<Map<String, Object>> getIRNCreditNoteCount(Set<Object[]> chType) {
+		List<Map<String, Object>> List1 = new ArrayList<>();
+		for (Object[] ch : chType) {
+			Map<String, Object> map = new HashMap<>();
+			map.put("Complete", ch[0] != null ? ch[0].toString() : "");	
+			map.put("Approved", ch[1] != null ? ch[1].toString() : "");
+			map.put("Pending", ch[2] != null ? ch[2].toString() : "");
+			map.put("Reject", ch[3] != null ?  ch[3].toString() : "");
+
+			List1.add(map);
+		}
+		return List1;
+	}
 }

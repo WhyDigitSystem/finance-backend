@@ -16,6 +16,8 @@ public class TdsMasterDTO {
 	private String sectionName;
 	private boolean active;
 	private String createdBy;
+	private String recievableAccount;
+	private String payableAccount;
 	
 	private List<TdsMaster2DTO>  tdsMaster2DTO;
 

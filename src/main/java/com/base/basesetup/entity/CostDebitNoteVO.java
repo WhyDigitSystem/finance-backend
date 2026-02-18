@@ -14,6 +14,7 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -81,7 +82,7 @@ public class CostDebitNoteVO {
 	@Column(name = "orgid", length = 15)
 	private Long orgId;
 	@Column(name = "active")
-	private boolean active;
+	private boolean active=true;
 	@Column(name = "modifiedby", length = 25)
 	private String updatedBy;
 	@Column(name = "createdby", length = 25)
@@ -180,6 +181,13 @@ public class CostDebitNoteVO {
 //	private String partyAddType;
 
 	// summary
+	
+	@Transient
+	List<ChargerCostDebitNoteVO> gstLines;
+
+	@Transient
+	List<ChargerCostDebitNoteVO> normalCharges;
+
 
 	@OneToMany(mappedBy = "costDebitNoteVO", cascade = CascadeType.ALL)
 	@JsonManagedReference

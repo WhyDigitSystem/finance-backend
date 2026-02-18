@@ -3,6 +3,8 @@ package com.base.basesetup.dto;
 import java.time.LocalDate;
 import java.util.List;
 
+import javax.persistence.Column;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -12,10 +14,8 @@ import lombok.NoArgsConstructor;
 public class RetrievalManifestProviderDTO {
 
 	private Long id;
-
-	private String transactionNo;
-
-	private LocalDate transactionDate;
+	
+	private String finYear;
 
 	private LocalDate dispatchDate;
 
@@ -30,6 +30,8 @@ public class RetrievalManifestProviderDTO {
 	private String receiverAddress;
 
 	private String senderGst;
+	
+	private String receiverGst;
 
 	private String transporterName;
 
@@ -44,6 +46,19 @@ public class RetrievalManifestProviderDTO {
 	private String createdBy;
 
 	private Long orgId;
+	
+	private String code;
+	
+	private String branchCode;
+
+	private String branch;
+	
+	private String refNo;
+	
+	private Long amount;
+	
+	private String amountInWords;
+
 	
 	private List<RetrievalManifestProviderDetailsDTO> retrievalManifestProviderDetailsDTO;
 

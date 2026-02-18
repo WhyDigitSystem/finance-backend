@@ -4,8 +4,6 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import javax.persistence.Column;
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -33,6 +31,8 @@ public class TmsJobCardDTO {
 	private String details;
 	private String refNo;
 	private String refDate;
+	private String service;
+	private String partyShortName;
 
 	private Long orgId;
 	private String branch;

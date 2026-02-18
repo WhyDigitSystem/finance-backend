@@ -23,4 +23,5 @@ public interface BankingWithdrawalRepo extends JpaRepository<BankingWithdrawalVO
 	@Query(nativeQuery = true,value ="select concat(prefixfield,lpad(lastno,5,0)) AS docid from documenttypemappingdetails where orgid=?1 and finyear=?2 and branchcode=?3 and screencode=?4")
 	String getBankingWithdrawalByDocId(Long orgId, String finYear, String branchCode, String screenCode);
 
+
 }

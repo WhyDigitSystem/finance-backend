@@ -1,5 +1,7 @@
 package com.base.basesetup.dto;
 
+import java.math.BigDecimal;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -10,9 +12,10 @@ import lombok.NoArgsConstructor;
 public class InvoiceProductLinesDTO {
 	
 	private String description;
-    private String quantity;
-    private String rate;
-    private Long amount;
+    private BigDecimal quantity;
+    private BigDecimal rate;
+    private BigDecimal tax;
+
 	
 
 }

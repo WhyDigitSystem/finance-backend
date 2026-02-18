@@ -795,7 +795,7 @@ public class TransactionController extends BaseController {
 		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
 		return ResponseEntity.ok().body(responseDTO);
 	}
-	
+
 	@GetMapping("/getGeneralJournalDocId")
 	public ResponseEntity<ResponseDTO> getGeneralJournalDocId(@RequestParam Long orgId, @RequestParam String finYear,
 			@RequestParam String branch, @RequestParam String branchCode) {
@@ -828,7 +828,6 @@ public class TransactionController extends BaseController {
 		return ResponseEntity.ok().body(responseDTO);
 	}
 
-	
 	@GetMapping("/getAccountNameFromGroup")
 	public ResponseEntity<ResponseDTO> getAccountNameFromGroup(@RequestParam Long orgId) {
 
@@ -2503,7 +2502,8 @@ public class TransactionController extends BaseController {
 	}
 
 	@GetMapping("/getIncomeByTaxInvoice")
-	public ResponseEntity<ResponseDTO> getIncomeByTaxInvoice(@RequestParam Long orgId, @RequestParam String customerName) {
+	public ResponseEntity<ResponseDTO> getIncomeByTaxInvoice(@RequestParam Long orgId,
+			@RequestParam String customerName) {
 		String methodName = "getIncomeByTaxInvoice()";
 		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
 		String errorMsg = null;
@@ -2531,7 +2531,8 @@ public class TransactionController extends BaseController {
 	}
 
 	@GetMapping("/getExponesByCostInvoice")
-	public ResponseEntity<ResponseDTO> getExponesByCostInvoice(@RequestParam Long orgId,@RequestParam String customerName) {
+	public ResponseEntity<ResponseDTO> getExponesByCostInvoice(@RequestParam Long orgId,
+			@RequestParam String customerName) {
 		String methodName = "getExponesByCostInvoice()";
 		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
 		String errorMsg = null;
@@ -2540,7 +2541,7 @@ public class TransactionController extends BaseController {
 		List<Map<String, Object>> mapp = new ArrayList<>();
 
 		try {
-			mapp = transactionService.getExponesByCostInvoice(orgId,customerName);
+			mapp = transactionService.getExponesByCostInvoice(orgId, customerName);
 		} catch (Exception e) {
 			errorMsg = e.getMessage();
 			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
@@ -2952,4 +2953,124 @@ public class TransactionController extends BaseController {
 		return ResponseEntity.ok().body(responseDTO);
 	}
 
+	@GetMapping("/getAccountNameFromGroupLedgerGeneral")
+	public ResponseEntity<ResponseDTO> getAccountNameFromGroupLedgerGeneral(@RequestParam Long OrgId) {
+
+		String methodName = "getAccountNameFromGroupLedgerGeneral()";
+		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+		String errorMsg = null;
+		Map<String, Object> responseObjectsMap = new HashMap<>();
+		ResponseDTO responseDTO = null;
+		List<Map<String, Object>> mov = new ArrayList<>();
+		try {
+			mov = transactionService.getAccountNameFromGroupLedgerGeneral(OrgId);
+		} catch (Exception e) {
+			errorMsg = e.getMessage();
+			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+		}
+
+		if (StringUtils.isBlank(errorMsg)) {
+			responseObjectsMap.put(CommonConstant.STRING_MESSAGE,
+					" AccountName from GroupLedger for GeneralJournal information retrieved successfully");
+			responseObjectsMap.put("GeneralJournalVO", mov);
+			responseDTO = createServiceResponse(responseObjectsMap);
+		} else {
+			responseDTO = createServiceResponseError(responseObjectsMap,
+					"Failed to retrieve AccountName from GroupLedger for GeneralJournal information", errorMsg);
+		}
+
+		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+		return ResponseEntity.ok().body(responseDTO);
+	}
+
+	@GetMapping("/getSubLedgerNameFromPartyMaster")
+	public ResponseEntity<ResponseDTO> getSubLedgerNameFromPartyMaster(@RequestParam Long OrgId,
+			@RequestParam String accountName) {
+
+		String methodName = "getSubLedgerNameFromPartyMaster()";
+		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+		String errorMsg = null;
+		Map<String, Object> responseObjectsMap = new HashMap<>();
+		ResponseDTO responseDTO = null;
+		List<Map<String, Object>> mov = new ArrayList<>();
+		try {
+			mov = transactionService.getSubLedgerNameFromPartyMaster(OrgId, accountName);
+		} catch (Exception e) {
+			errorMsg = e.getMessage();
+			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+		}
+
+		if (StringUtils.isBlank(errorMsg)) {
+			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "PartyName information retrieved successfully");
+			responseObjectsMap.put("GeneralJournalVO", mov);
+			responseDTO = createServiceResponse(responseObjectsMap);
+		} else {
+			responseDTO = createServiceResponseError(responseObjectsMap,
+					"Failed to retrieve PartyName   GeneralJournal information", errorMsg);
+		}
+
+		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+		return ResponseEntity.ok().body(responseDTO);
+	}
+	
+	
+//	@GetMapping("/getIncomeAndExponseAndProfit")
+//	public ResponseEntity<ResponseDTO> getIncomeAndExponseAndProfit(@RequestParam Long OrgId,
+//			@RequestParam String partyName,@RequestParam String jobNo ) {
+//
+//		String methodName = "getIncomeAndExponseAndProfit()";
+//		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+//		String errorMsg = null;
+//		Map<String, Object> responseObjectsMap = new HashMap<>();
+//		ResponseDTO responseDTO = null;
+//		List<Map<String, Object>> mov = new ArrayList<>();
+//		try {
+//			mov = transactionService.getIncomeAndExponseAndProfit(OrgId, partyName,jobNo);
+//		} catch (Exception e) {
+//			errorMsg = e.getMessage();
+//			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+//		}
+//
+//		if (StringUtils.isBlank(errorMsg)) {
+//			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "PartyName information retrieved successfully");
+//			responseObjectsMap.put("JobCardVO", mov);
+//			responseDTO = createServiceResponse(responseObjectsMap);
+//		} else {
+//			responseDTO = createServiceResponseError(responseObjectsMap,
+//					"Failed to retrieve PartyName information", errorMsg);
+//		}
+//
+//		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+//		return ResponseEntity.ok().body(responseDTO);
+//	}
+	
+	@GetMapping("/getIncomeAndExponseAndProfitDetails")
+	public ResponseEntity<ResponseDTO> getIncomeAndExponseAndProfitDetails(@RequestParam Long OrgId,
+			@RequestParam String partyName,@RequestParam  String finYear,@RequestParam String branch ) {
+
+		String methodName = "getIncomeAndExponseAndProfitDetails()";
+		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+		String errorMsg = null;
+		Map<String, Object> responseObjectsMap = new HashMap<>();
+		ResponseDTO responseDTO = null;
+		List<Map<String, Object>> mov = new ArrayList<>();
+		try {
+			mov = transactionService.getIncomeAndExponseAndProfitDetails(OrgId, partyName,finYear,branch);
+		} catch (Exception e) {
+			errorMsg = e.getMessage();
+			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+		}
+
+		if (StringUtils.isBlank(errorMsg)) {
+			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "Income/Expence information retrieved successfully");
+			responseObjectsMap.put("JobCardVO", mov);
+			responseDTO = createServiceResponse(responseObjectsMap);
+		} else {
+			responseDTO = createServiceResponseError(responseObjectsMap,
+					"Failed to retrieve Income/Expence information", errorMsg);
+		}
+
+		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+		return ResponseEntity.ok().body(responseDTO);
+	}
 }

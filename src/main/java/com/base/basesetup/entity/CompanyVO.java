@@ -82,6 +82,7 @@ public class CompanyVO {
 	private boolean cancel;
 	private int role;
 	private String ceo;
+
 	private String gst;
 	@Column(name = "termsandconditions",length=10000)
 	private String termsAndConditions;
@@ -99,6 +100,8 @@ public class CompanyVO {
 	@OneToMany(mappedBy = "companyVO", cascade = CascadeType.ALL)
 	@JsonManagedReference
 	List<BankDetailsVO> bankDetailsVO;
+
+
 
 	@JsonGetter("active")
 	public String getActive() {

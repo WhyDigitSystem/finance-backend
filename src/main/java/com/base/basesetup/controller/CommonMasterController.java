@@ -34,11 +34,11 @@ import com.base.basesetup.dto.DepartmentDTO;
 import com.base.basesetup.dto.DesignationDTO;
 import com.base.basesetup.dto.FinScreenDTO;
 import com.base.basesetup.dto.FinancialYearDTO;
+import com.base.basesetup.dto.ProductServiceDTO;
 import com.base.basesetup.dto.RegionDTO;
 import com.base.basesetup.dto.ResponseDTO;
 import com.base.basesetup.dto.ScreenNamesDTO;
 import com.base.basesetup.dto.StateDTO;
-import com.base.basesetup.entity.BankDetailsVO;
 import com.base.basesetup.entity.CityVO;
 import com.base.basesetup.entity.CompanyVO;
 import com.base.basesetup.entity.CountryVO;
@@ -46,6 +46,7 @@ import com.base.basesetup.entity.CurrencyVO;
 import com.base.basesetup.entity.DepartmentVO;
 import com.base.basesetup.entity.DesignationVO;
 import com.base.basesetup.entity.FinancialYearVO;
+import com.base.basesetup.entity.ProductServiceVO;
 import com.base.basesetup.entity.RegionVO;
 import com.base.basesetup.entity.ScreenNamesVO;
 import com.base.basesetup.entity.StateVO;
@@ -1108,5 +1109,145 @@ public class CommonMasterController extends BaseController {
 		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
 		return ResponseEntity.ok().body(responseDTO);
 	}
+	
+	
+	//ProducutService
+	
+	
+	@GetMapping("/getProductServiceByOrgId")
+	public ResponseEntity<ResponseDTO> getProductServiceByOrgId(@RequestParam Long orgId) {
+		String methodName = "getProductServiceByOrgId()";
+		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+		String errorMsg = null;
+		Map<String, Object> responseObjectsMap = new HashMap<>();
+		ResponseDTO responseDTO = null;
+		List<ProductServiceVO> productServiceVO = new ArrayList<>();
+		try {
+			productServiceVO = commonMasterService.getProductServiceByOrgId(orgId);
+		} catch (Exception e) {
+			errorMsg = e.getMessage();
+			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+		}
+		if (StringUtils.isBlank(errorMsg)) {
+			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "ProductService information get successfully");
+			responseObjectsMap.put("productServiceVO", productServiceVO);
+			responseDTO = createServiceResponse(responseObjectsMap);
+		} else {
+			responseDTO = createServiceResponseError(responseObjectsMap, "ProductService information receive failed",
+					errorMsg);
+		}
+		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+		return ResponseEntity.ok().body(responseDTO);
+	}
+
+	@GetMapping("/getProductServiceById")
+	public ResponseEntity<ResponseDTO> getProductServiceById(@RequestParam Long id) {
+		String methodName = "getProductServiceById()";
+		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+		String errorMsg = null;
+		Map<String, Object> responseObjectsMap = new HashMap<>();
+		ResponseDTO responseDTO = null;
+		ProductServiceVO productServiceVO = new ProductServiceVO();
+		try {
+			productServiceVO = commonMasterService.getProductServiceById(id);
+		} catch (Exception e) {
+			errorMsg = e.getMessage();
+			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+		}
+		if (StringUtils.isEmpty(errorMsg)) {
+			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "ProductService found by ID");
+			responseObjectsMap.put("productServiceVO", productServiceVO);
+			responseDTO = createServiceResponse(responseObjectsMap);
+		} else {
+			errorMsg = "Country not found for ID: " + id;
+			responseDTO = createServiceResponseError(responseObjectsMap, "ProductService not found", errorMsg);
+		}
+		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+		return ResponseEntity.ok().body(responseDTO);
+	}
+
+	@PutMapping("/createUpdateProductService")
+	public ResponseEntity<ResponseDTO> createUpdateProductService(@RequestBody ProductServiceDTO productServiceDTO) {
+		String methodName = "createUpdateProductService()";
+		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+		Map<String, Object> responseObjectsMap = new HashMap<String, Object>();
+		String errorMsg = null;
+		ResponseDTO responseDTO = null;
+		try {
+			Map<String, Object> productServiceVO = commonMasterService.createUpdateProductService(productServiceDTO);
+			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, productServiceVO.get("message"));
+			responseObjectsMap.put("productServiceVO", productServiceVO.get("productServiceVO"));
+			responseDTO = createServiceResponse(responseObjectsMap);
+		} catch (Exception e) {
+			errorMsg = e.getMessage();
+			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+			responseDTO = createServiceResponseError(responseObjectsMap, errorMsg, errorMsg);
+		}
+		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+		return ResponseEntity.ok().body(responseDTO);
+	}
+	
+	
+	
+	 @PostMapping("/uploadImageProductServivceInBloob")
+	    public ResponseEntity<ResponseDTO> uploadImageProductServivceInBloob(@RequestParam("file") MultipartFile file,
+	            @RequestParam Long id) {
+	        String methodName = "uploadImageProductServivceInBloob()";
+	        LOGGER.debug("Starting Method: " + methodName);
+	        String errorMsg = null;
+	        Map<String, Object> responseObjectsMap = new HashMap<>();
+	        ResponseDTO responseDTO = null;
+	        ProductServiceVO productServiceVO = null;
+
+	        try {
+	        	productServiceVO = commonMasterService.uploadImageProductServivceInBloob(file, id);
+	        } catch (Exception e) {
+	            errorMsg = e.getMessage();
+	            LOGGER.error("Unable to Upload Image: " + errorMsg);
+	        }
+
+	        if (StringUtils.isBlank(errorMsg)) {
+	            responseObjectsMap.put("message", "PostImage Successfully Uploaded");
+	            responseObjectsMap.put("productServiceVO", productServiceVO);
+	            responseDTO = createServiceResponse(responseObjectsMap);  // Assuming this is your custom response method
+	        } else {
+	            responseDTO = createServiceResponseError(responseObjectsMap, "Image Upload Failed", errorMsg);
+	        }
+
+	        LOGGER.debug("Ending Method: " + methodName);
+	        return ResponseEntity.ok().body(responseDTO);
+	    }
+	 
+
+
+		
+		
+		@GetMapping("/getFinYearByClient")
+		public ResponseEntity<ResponseDTO> getFinYearByClient(@RequestParam Long orgId,@RequestParam String clientCode) {
+			String methodName = "getFinYearByClient()";
+			LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+			String errorMsg = null;
+			Map<String, Object> responseObjectsMap = new HashMap<>();
+			ResponseDTO responseDTO = null;
+			List<Map<String, Object>> financialYearVOs = new ArrayList<>();
+			try {
+				financialYearVOs = commonMasterService.getFinYearByClient(orgId, clientCode);
+			} catch (Exception e) {
+				errorMsg = e.getMessage();
+				LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+			}
+			if (StringUtils.isBlank(errorMsg)) {
+				responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "FInYear information get successfully");
+				responseObjectsMap.put("financialYearVOs", financialYearVOs);
+				responseDTO = createServiceResponse(responseObjectsMap);
+			} else {
+				responseDTO = createServiceResponseError(responseObjectsMap, "FInYear information receive failed",
+						errorMsg);
+			}
+			LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+			return ResponseEntity.ok().body(responseDTO);
+		}
+
+		
 	
 }

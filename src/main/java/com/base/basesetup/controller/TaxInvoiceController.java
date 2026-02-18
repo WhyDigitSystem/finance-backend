@@ -1,9 +1,9 @@
 package com.base.basesetup.controller;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -21,6 +21,7 @@ import com.base.basesetup.common.CommonConstant;
 import com.base.basesetup.common.UserConstants;
 import com.base.basesetup.dto.ResponseDTO;
 import com.base.basesetup.dto.TaxInvoiceDTO;
+import com.base.basesetup.entity.IrnCreditNoteVO;
 import com.base.basesetup.entity.PartyMasterVO;
 import com.base.basesetup.entity.TaxInvoiceVO;
 import com.base.basesetup.service.TaxInvoiceService;
@@ -392,7 +393,8 @@ public class TaxInvoiceController extends BaseController {
 	}
 
 	@PutMapping("/approveTaxInvoice")
-	public ResponseEntity<ResponseDTO> approveTaxInvoice(@RequestParam Long orgId,@RequestParam Long id,@RequestParam String docId,@RequestParam String action,@RequestParam String actionBy) {
+	public ResponseEntity<ResponseDTO> approveTaxInvoice(@RequestParam Long orgId, @RequestParam Long id,
+			@RequestParam String docId, @RequestParam String action, @RequestParam String actionBy) {
 		String methodName = "approveTaxInvoice()";
 		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
 		String errorMsg = null;
@@ -410,7 +412,7 @@ public class TaxInvoiceController extends BaseController {
 		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
 		return ResponseEntity.ok().body(responseDTO);
 	}
-	
+
 	@GetMapping("/getCreditDaysFromCustomer")
 	public ResponseEntity<ResponseDTO> getCreditDaysFromCustomer(@RequestParam Long orgId,
 			@RequestParam String customerCode) {
@@ -427,8 +429,7 @@ public class TaxInvoiceController extends BaseController {
 			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
 		}
 		if (StringUtils.isBlank(errorMsg)) {
-			responseObjectsMap.put(CommonConstant.STRING_MESSAGE,
-					"Creditdays get successfully from customer master");
+			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "Creditdays get successfully from customer master");
 			responseObjectsMap.put("creditdays", creditdays);
 			responseDTO = createServiceResponse(responseObjectsMap);
 		} else {
@@ -438,7 +439,7 @@ public class TaxInvoiceController extends BaseController {
 		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
 		return ResponseEntity.ok().body(responseDTO);
 	}
-	
+
 	@GetMapping("/getAllJobNoByActice")
 	public ResponseEntity<ResponseDTO> getAllJobNoByActice(@RequestParam Long orgId) {
 		String methodName = "getAllJobNoByActice()";
@@ -454,20 +455,20 @@ public class TaxInvoiceController extends BaseController {
 			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
 		}
 		if (StringUtils.isBlank(errorMsg)) {
-			responseObjectsMap.put(CommonConstant.STRING_MESSAGE,
-					"jobNo get successfully from JobCard ");
+			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "jobNo get successfully from JobCard ");
 			responseObjectsMap.put("jobNo", jobNo);
 			responseDTO = createServiceResponse(responseObjectsMap);
 		} else {
-			responseDTO = createServiceResponseError(responseObjectsMap,
-					"jobNo receive failed from JobCard ", errorMsg);
+			responseDTO = createServiceResponseError(responseObjectsMap, "jobNo receive failed from JobCard ",
+					errorMsg);
 		}
 		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
 		return ResponseEntity.ok().body(responseDTO);
 	}
 
 	@GetMapping("/getJobCardForTaxInvoice")
-	public ResponseEntity<ResponseDTO> getJobCardForTaxInvoice(@RequestParam Long orgId,@RequestParam String partyCode) {
+	public ResponseEntity<ResponseDTO> getJobCardForTaxInvoice(@RequestParam Long orgId,
+			@RequestParam String partyCode) {
 		String methodName = "getJobCardForTaxInvoice()";
 		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
 		String errorMsg = null;
@@ -476,7 +477,7 @@ public class TaxInvoiceController extends BaseController {
 		List<Map<String, Object>> mapp = new ArrayList<>();
 
 		try {
-			mapp = taxInvoiceService.getJobCardForTaxInvoice(orgId,partyCode);
+			mapp = taxInvoiceService.getJobCardForTaxInvoice(orgId, partyCode);
 		} catch (Exception e) {
 			errorMsg = e.getMessage();
 			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
@@ -494,12 +495,13 @@ public class TaxInvoiceController extends BaseController {
 		return ResponseEntity.ok().body(responseDTO);
 	}
 
-	
-	//ReportSalesRegister
-	
+	// ReportSalesRegister
+
 	@GetMapping("/getReportDetailsForSalesRegister")
 	public ResponseEntity<ResponseDTO> getReportDetailsForSalesRegister(@RequestParam(required = false) String fromDate,
-	        @RequestParam(required = false) String toDate ,@RequestParam(required =false) Long orgId,@RequestParam(required =false) String branchCode,@RequestParam(required =false) String partyCode) {
+			@RequestParam(required = false) String toDate, @RequestParam(required = false) Long orgId,
+			@RequestParam(required = false) String branchCode, @RequestParam(required = false) String partyCode,
+			@RequestParam(required = false) String finYear) {
 		String methodName = "getReportDetailsForSalesRegister()";
 		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
 		String errorMsg = null;
@@ -508,7 +510,8 @@ public class TaxInvoiceController extends BaseController {
 		List<Map<String, Object>> mapp = new ArrayList<>();
 
 		try {
-			mapp = taxInvoiceService.getReportDetailsForSalesRegister(fromDate,toDate,orgId,branchCode,partyCode);
+			mapp = taxInvoiceService.getReportDetailsForSalesRegister(fromDate, toDate, orgId, branchCode, partyCode,
+					finYear);
 		} catch (Exception e) {
 			errorMsg = e.getMessage();
 			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
@@ -519,7 +522,8 @@ public class TaxInvoiceController extends BaseController {
 			responseObjectsMap.put("taxInvoiceVO", mapp);
 			responseDTO = createServiceResponse(responseObjectsMap);
 		} else {
-			responseDTO = createServiceResponseError(responseObjectsMap, "Failed to retrieve SalesRegisterReport", errorMsg);
+			responseDTO = createServiceResponseError(responseObjectsMap, "Failed to retrieve SalesRegisterReport",
+					errorMsg);
 		}
 
 		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
@@ -527,8 +531,8 @@ public class TaxInvoiceController extends BaseController {
 	}
 
 	@GetMapping("/getDsahboardRevenue")
-	public ResponseEntity<ResponseDTO> getDsahboardRevenue(@RequestParam(required =false) Long orgId,@RequestParam (required =false) String billMonth,
-			@RequestParam (required =false) String finYear) {
+	public ResponseEntity<ResponseDTO> getDsahboardRevenue(@RequestParam(required = false) Long orgId,
+			@RequestParam(required = false) String billMonth, @RequestParam(required = false) String finYear) {
 		String methodName = "getDsahboardRevenue()";
 		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
 		String errorMsg = null;
@@ -537,7 +541,7 @@ public class TaxInvoiceController extends BaseController {
 		List<Map<String, Object>> mapp = new ArrayList<>();
 
 		try {
-			mapp = taxInvoiceService.getDsahboardRevenue(orgId,billMonth,finYear);
+			mapp = taxInvoiceService.getDsahboardRevenue(orgId, billMonth, finYear);
 		} catch (Exception e) {
 			errorMsg = e.getMessage();
 			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
@@ -555,5 +559,323 @@ public class TaxInvoiceController extends BaseController {
 		return ResponseEntity.ok().body(responseDTO);
 	}
 
+	@GetMapping("/getTaxInvoiceByDocIdandScreenCode")
+	public ResponseEntity<ResponseDTO> getTaxInvoiceByDocIdandScreenCode(@RequestParam String ScreenCode,
+			@RequestParam String docId) {
+		String methodName = "getTaxInvoiceByDocIdandScreenCode()";
+		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+		String errorMsg = null;
+		Map<String, Object> responseObjectsMap = new HashMap<>();
+		ResponseDTO responseDTO = null;
+		TaxInvoiceVO taxInvoiceVO = new TaxInvoiceVO();
+		try {
+			taxInvoiceVO = taxInvoiceService.getTaxInvoiceByDocIdandScreenCode(ScreenCode, docId);
+		} catch (Exception e) {
+			errorMsg = e.getMessage();
+			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+		}
+		if (StringUtils.isBlank(errorMsg)) {
+			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "TaxInvoice information get successfully By docid");
+			responseObjectsMap.put("taxInvoiceVO", taxInvoiceVO);
+			responseDTO = createServiceResponse(responseObjectsMap);
+		} else {
+			responseDTO = createServiceResponseError(responseObjectsMap,
+					"TaxInvoice information receive failed By docid", errorMsg);
+		}
+		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+		return ResponseEntity.ok().body(responseDTO);
 
+	}
+
+	@GetMapping("/getCreditNoteByDocIdandScreenCode")
+	public ResponseEntity<ResponseDTO> getCreditNoteByDocIdandScreenCode(@RequestParam String ScreenCode,
+			@RequestParam String docId) {
+		String methodName = "getCreditNoteByDocIdandScreenCode()";
+		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+		String errorMsg = null;
+		Map<String, Object> responseObjectsMap = new HashMap<>();
+		ResponseDTO responseDTO = null;
+		IrnCreditNoteVO irnCreditNoteVO = new IrnCreditNoteVO();
+		try {
+			irnCreditNoteVO = taxInvoiceService.getCreditNoteByDocIdandScreenCode(ScreenCode, docId);
+		} catch (Exception e) {
+			errorMsg = e.getMessage();
+			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+		}
+		if (StringUtils.isBlank(errorMsg)) {
+			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "CreditNote information get successfully By docid");
+			responseObjectsMap.put("irnCreditNoteVO", irnCreditNoteVO);
+			responseDTO = createServiceResponse(responseObjectsMap);
+		} else {
+			responseDTO = createServiceResponseError(responseObjectsMap,
+					"CreditNote information receive failed By docid", errorMsg);
+		}
+		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+		return ResponseEntity.ok().body(responseDTO);
+
+	}
+
+	@GetMapping("/getTaxinvoiceDetails")
+	public ResponseEntity<ResponseDTO> getTaxinvoiceDetails(@RequestParam Long orgId,
+			@RequestParam(required = true) String finYear, @RequestParam String partyname, String fromDate,
+			String toDate, @RequestParam String branchCode) {
+		String methodName = "getTaxinvoiceDetails()";
+		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+		String errorMsg = null;
+		Map<String, Object> responseObjectsMap = new HashMap<>();
+		ResponseDTO responseDTO = null;
+		List<Map<String, Object>> mapp = new ArrayList<>();
+		try {
+			mapp = taxInvoiceService.getTaxinvoiceDetails(orgId, finYear, partyname, fromDate, toDate, branchCode);
+		} catch (Exception e) {
+			errorMsg = e.getMessage();
+			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+		}
+
+		if (StringUtils.isBlank(errorMsg)) {
+			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "tax invoice Details retrieved successfully");
+			responseObjectsMap.put("mapp", mapp);
+			responseDTO = createServiceResponse(responseObjectsMap);
+		} else {
+			responseDTO = createServiceResponseError(responseObjectsMap, "Failed to retrieve tax invoice Details",
+					errorMsg);
+		}
+
+		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+		return ResponseEntity.ok().body(responseDTO);
+	}
+
+	@GetMapping("/getTaxinvoiceSummary")
+	public ResponseEntity<ResponseDTO> getTaxinvoiceSummary(@RequestParam Long orgId,
+			@RequestParam(required = true) String finYear, @RequestParam String partyname, String fromDate,
+			String toDate, @RequestParam String branchCode) {
+		String methodName = "getTaxinvoiceSummary()";
+		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+		String errorMsg = null;
+		Map<String, Object> responseObjectsMap = new HashMap<>();
+		ResponseDTO responseDTO = null;
+		List<Map<String, Object>> mapp = new ArrayList<>();
+
+		try {
+			mapp = taxInvoiceService.getTaxinvoiceSummary(orgId, finYear, partyname, fromDate, toDate, branchCode);
+		} catch (Exception e) {
+			errorMsg = e.getMessage();
+			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+		}
+
+		if (StringUtils.isBlank(errorMsg)) {
+			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "tax invoice summary retrieved successfully");
+			responseObjectsMap.put("mapp", mapp);
+			responseDTO = createServiceResponse(responseObjectsMap);
+		} else {
+			responseDTO = createServiceResponseError(responseObjectsMap, "Failed to retrieve tax invoice summary",
+					errorMsg);
+		}
+
+		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+		return ResponseEntity.ok().body(responseDTO);
+	}
+
+	@GetMapping("/getCurrencyFromPartyMaster")
+	public ResponseEntity<ResponseDTO> getCurrencyFromPartyMaster(@RequestParam Long orgId,
+			@RequestParam String partyCode) {
+		String methodName = "getCurrencyFromPartyMaster()";
+		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+		String errorMsg = null;
+		Map<String, Object> responseObjectsMap = new HashMap<>();
+		ResponseDTO responseDTO = null;
+		List<Map<String, Object>> mapp = new ArrayList<>();
+
+		try {
+			mapp = taxInvoiceService.getCurrencyFromPartyMaster(orgId, partyCode);
+		} catch (Exception e) {
+			errorMsg = e.getMessage();
+			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+		}
+
+		if (StringUtils.isBlank(errorMsg)) {
+			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "currency retrieved successfully");
+			responseObjectsMap.put("mapp", mapp);
+			responseDTO = createServiceResponse(responseObjectsMap);
+		} else {
+			responseDTO = createServiceResponseError(responseObjectsMap, "Failed to retrieve tax currency", errorMsg);
+		}
+
+		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+		return ResponseEntity.ok().body(responseDTO);
+	}
+
+	@GetMapping("/getRevenueGstReport")
+	public ResponseEntity<ResponseDTO> getRevenueGstReport(@RequestParam Long orgId, @RequestParam String partyName,
+			@RequestParam String finYear, @RequestParam String fromDate, @RequestParam String toDate) {
+		String methodName = "getRevenueGstReport()";
+		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+		String errorMsg = null;
+		Map<String, Object> responseObjectsMap = new HashMap<>();
+		ResponseDTO responseDTO = null;
+		List<Map<String, Object>> mapp = new ArrayList<>();
+
+		try {
+			mapp = taxInvoiceService.getRevenueGstReport(orgId, partyName, finYear, fromDate, toDate);
+		} catch (Exception e) {
+			errorMsg = e.getMessage();
+			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+		}
+
+		if (StringUtils.isBlank(errorMsg)) {
+			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "GstReport retrieved successfully");
+			responseObjectsMap.put("mapp", mapp);
+			responseDTO = createServiceResponse(responseObjectsMap);
+		} else {
+			responseDTO = createServiceResponseError(responseObjectsMap, "Failed to retrieve  GstReport", errorMsg);
+		}
+
+		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+		return ResponseEntity.ok().body(responseDTO);
+	}
+
+	@GetMapping("/getProfitAndLossReport")
+	public ResponseEntity<ResponseDTO> getProfitAndLossReport(@RequestParam Long orgId, @RequestParam String fromDate,
+			@RequestParam String toDate) {
+		String methodName = "getProfitAndLossReport()";
+		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+		String errorMsg = null;
+		Map<String, Object> responseObjectsMap = new HashMap<>();
+		ResponseDTO responseDTO = null;
+		List<Map<String, Object>> mapp = new ArrayList<>();
+
+		try {
+			mapp = taxInvoiceService.getProfitAndLossReport(orgId, fromDate, toDate);
+		} catch (Exception e) {
+			errorMsg = e.getMessage();
+			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+		}
+
+		if (StringUtils.isBlank(errorMsg)) {
+			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "Profit/Loss Report retrieved successfully");
+			responseObjectsMap.put("mapp", mapp);
+			responseDTO = createServiceResponse(responseObjectsMap);
+		} else {
+			responseDTO = createServiceResponseError(responseObjectsMap, "Failed to retrieve  Profit/Loss Report",
+					errorMsg);
+		}
+
+		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+		return ResponseEntity.ok().body(responseDTO);
+	}
+
+	@GetMapping("/getNetProfit")
+	public ResponseEntity<ResponseDTO> getNetProfit(@RequestParam Long orgId, @RequestParam String fromDate,
+			@RequestParam String toDate, @RequestParam String groupName) {
+		String methodName = "getNetProfit()";
+		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+		String errorMsg = null;
+		Map<String, Object> responseObjectsMap = new HashMap<>();
+		ResponseDTO responseDTO = null;
+		List<Map<String, Object>> mapp = new ArrayList<>();
+
+		try {
+			mapp = taxInvoiceService.getNetProfit(orgId, fromDate, toDate, groupName);
+		} catch (Exception e) {
+			errorMsg = e.getMessage();
+			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+		}
+
+		if (StringUtils.isBlank(errorMsg)) {
+			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "NetReport Report retrieved successfully");
+			responseObjectsMap.put("mapp", mapp);
+			responseDTO = createServiceResponse(responseObjectsMap);
+		} else {
+			responseDTO = createServiceResponseError(responseObjectsMap, "Failed to retrieve  NetReport", errorMsg);
+		}
+
+		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+		return ResponseEntity.ok().body(responseDTO);
+	}
+
+	@GetMapping("/getTrailBalance")
+	public ResponseEntity<ResponseDTO> getTrailBalance(@RequestParam String branch,
+			@RequestParam(required = false) String finYear, @RequestParam String fromDate, @RequestParam String toDate,
+			@RequestParam Long orgId, @RequestParam(required = false) String details) {
+		String methodName = "getNetProfit()";
+		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+		String errorMsg = null;
+		Map<String, Object> responseObjectsMap = new HashMap<>();
+		ResponseDTO responseDTO = null;
+		List<Map<String, Object>> mapp = new ArrayList<>();
+
+		try {
+			mapp = taxInvoiceService.getTrailBalance(branch, finYear, fromDate, toDate, orgId, details);
+		} catch (Exception e) {
+			errorMsg = e.getMessage();
+			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+		}
+
+		if (StringUtils.isBlank(errorMsg)) {
+			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "TrailBalance Report retrieved successfully");
+			responseObjectsMap.put("mapp", mapp);
+			responseDTO = createServiceResponse(responseObjectsMap);
+		} else {
+			responseDTO = createServiceResponseError(responseObjectsMap, "Failed to retrieve  TrailBalance", errorMsg);
+		}
+
+		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+		return ResponseEntity.ok().body(responseDTO);
+	}
+	
+	@GetMapping("/getTaxInvoiceCount")
+	public ResponseEntity<ResponseDTO> getTaxInvoiceCount(@RequestParam Long orgId,
+			@RequestParam String finYear, @RequestParam String branchCode) {
+		String methodName = "getTaxInvoiceCount()";
+		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+		String errorMsg = null;
+		Map<String, Object> responseObjectsMap = new HashMap<>();
+		ResponseDTO responseDTO = null;
+		List<Map<String, Object>> mapp = new ArrayList<>();
+
+		try {
+			mapp = taxInvoiceService.getTaxInvoiceCount(orgId, finYear, branchCode);
+		} catch (Exception e) {
+			errorMsg = e.getMessage();
+		}
+
+		if (StringUtils.isBlank(errorMsg)) {
+			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "Count  retrieved successfully");
+			responseObjectsMap.put("mapp", mapp);
+			responseDTO = createServiceResponse(responseObjectsMap);
+		} else {
+			responseDTO = createServiceResponseError(responseObjectsMap, "Failed to retrieve  Count", errorMsg);
+		}
+
+		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+		return ResponseEntity.ok().body(responseDTO);
+	}
+	
+	@GetMapping("/getFinYearDetails")
+	public ResponseEntity<ResponseDTO> getFinYearDetails(@RequestParam Long orgId,
+			@RequestParam Long finYear) {
+		String methodName = "getFinYearDetails()";
+		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+		String errorMsg = null;
+		Map<String, Object> responseObjectsMap = new HashMap<>();
+		ResponseDTO responseDTO = null;
+		List<Map<String, Object>> mapp = new ArrayList<>();
+
+		try {
+			mapp = taxInvoiceService.getFinYearDetails(orgId, finYear);
+		} catch (Exception e) {
+			errorMsg = e.getMessage();
+		}
+
+		if (StringUtils.isBlank(errorMsg)) {
+			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "FinYearDetails  retrieved successfully");
+			responseObjectsMap.put("mapp", mapp);
+			responseDTO = createServiceResponse(responseObjectsMap);
+		} else {
+			responseDTO = createServiceResponseError(responseObjectsMap, "Failed to retrieve  FinYearDetails", errorMsg);
+		}
+
+		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+		return ResponseEntity.ok().body(responseDTO);
+	}
 }

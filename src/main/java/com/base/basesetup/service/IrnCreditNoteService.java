@@ -28,4 +28,6 @@ public interface IrnCreditNoteService {
 	List<TaxInvoiceVO>getOriginBillNofromTaxInvoiceByParty(Long orgId,String party,String branchCode);
 	
 	IrnCreditNoteVO approveIrnCreditNote(Long orgId,Long id,String docId,String action,String actionBy) throws ApplicationException;
+
+	List<Map<String, Object>> getIRNCreditNoteCount(Long orgId, String finYear, String branchCode);
 }

@@ -30,11 +30,14 @@ public class VendorDTO {
 	private String bussinessCategory;
 	private String accountsType;
 	private boolean approved;
+	private String shortName;
 	
 	private List<VendorsStateDTO> vendorStateDTO;
 	private List<VendorsAddressDTO> vendorAddressDTO;
 	private List<SpecialTdsDTO> specialTdsDTO;
+
 	
     private List<VendorCurrencyMappingDTO> vendorCurrencyMappingDTO = new ArrayList<>();
+
 
 }

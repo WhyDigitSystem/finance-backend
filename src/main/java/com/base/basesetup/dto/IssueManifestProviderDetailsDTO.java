@@ -25,4 +25,6 @@ public class IssueManifestProviderDetailsDTO {
 
 	private Long assetQty;
 
+	private Long actualQty;
+
 }

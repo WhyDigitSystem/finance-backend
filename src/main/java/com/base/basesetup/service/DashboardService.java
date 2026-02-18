@@ -1,0 +1,44 @@
+package com.base.basesetup.service;
+
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.stereotype.Service;
+
+@Service
+public interface DashboardService {
+
+	List<Map<String, Object>> getReceiptAmont(Long orgId, String month, String year);
+
+	List<Map<String, Object>> getPaymentAmont(Long orgId, String month, String year);
+
+	List<Map<String, Object>> getTdsSummary(Long orgId, String month, Long finYear);
+  
+	List<Map<String, Object>> getPercentageDiffFromRevenue(Long orgId,Long finYear,String Month,String Year,String branchCode);
+	
+	List<Map<String, Object>> getRevenueMonthWiseRevenue(Long orgId, Long finYear, String monthName);
+	
+	List<Map<String, Object>> getRevenueMonthWiseCost(Long orgId, Long finYear, String monthName);
+	
+	List<Map<String, Object>> getRevenueMonthWiseRecepit(Long orgId, Long finYear, String monthName );
+	
+	List<Map<String, Object>> getRevenueMonthWisePayment(Long orgId, Long finYear, String monthName );
+
+	List<Map<String, Object>> getPercentageDiffFromYear(Long orgId, Long finYear);
+
+	List<Map<String, Object>> getPercentageDiffFromCost(Long orgId, Long finYear, String month, String year);
+
+	List<Map<String, Object>> getPercentageFromReceipt(Long orgId, Long finYear, String month);
+
+	List<Map<String, Object>> getPercentageFromPayment(Long orgId, Long finYear, String month);
+
+	List<Map<String, Object>> getSalesMonthWiseData(Long orgId, Long finYear, String branchCode);
+
+	List<Map<String, Object>> getTotaltdsFromCustomer(Long orgId, Long finYear, String branchCode);
+
+	List<Map<String, Object>> getTotaltdsFromCustomerBillWise(Long orgId, Long finYear, String branchCode,
+			String partyName);
+	
+	List<Map<String, Object>> getTrailBalanceReport(String startDate, String endDate, String branch,String message,String finYear);
+
+}

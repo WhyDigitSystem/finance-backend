@@ -23,4 +23,7 @@ public class RetrievalManifestProviderDetailsDTO {
 	private String asset;
 
 	private Long assetQty;
+	
+	private Long actualQty;
+
 }
