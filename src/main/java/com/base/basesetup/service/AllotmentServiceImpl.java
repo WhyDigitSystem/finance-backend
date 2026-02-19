@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.transaction.Transactional;
 
@@ -16,9 +17,11 @@ import com.base.basesetup.dto.AllotmentDTO;
 import com.base.basesetup.dto.AllotmentDetailsDTO;
 import com.base.basesetup.entity.AllotmentDetailsVO;
 import com.base.basesetup.entity.AllotmentVO;
-import com.base.basesetup.entity.PartyStateVO;
+import com.base.basesetup.entity.ListOfValuesVO;
 import com.base.basesetup.repo.AllotmentDetailsRepo;
 import com.base.basesetup.repo.AllotmentRepo;
+import com.base.basesetup.repo.ListOfValuesRepo;
+import com.base.basesetup.repo.PartyMasterRepo;
 import com.base.basesetup.responseDTO.AllotmentDetailsResponseDTO;
 import com.base.basesetup.responseDTO.AllotmentResponseDTO;
 
@@ -34,6 +37,12 @@ public class AllotmentServiceImpl implements AllotmentService{
 	
 	@Autowired
 	AllotmentDetailsRepo allotmentDetailsRepo;
+	
+	@Autowired
+	PartyMasterRepo partymasterRepo;
+	
+	@Autowired
+	ListOfValuesRepo listOfValuesRepo;
 
 	@Transactional(rollbackOn = Exception.class)
 	@Override
@@ -211,6 +220,32 @@ public class AllotmentServiceImpl implements AllotmentService{
 		AllotmentResponseDTO allotmentResponseDTO = mapToAllotmentResponseDTO(allotmentVO);
 		return allotmentResponseDTO;
 	}
+	
+	@Override
+	public List<ListOfValuesVO> getOemDetails(Long orgId) {
+		return listOfValuesRepo.getOemDetails(orgId);
+
+	}
 
 
+	@Override
+	public List<Map<String, Object>> getCustomer(Long orgId) {
+		Set<Object[]> chType = partymasterRepo.getCustomer(orgId);
+		return getTds(chType);
+	}
+
+	private List<Map<String, Object>> getTds(Set<Object[]> chType) {
+		List<Map<String, Object>> List1 = new ArrayList<>();
+		for (Object[] ch : chType) {
+			Map<String, Object> map = new HashMap<>();
+
+			map.put("customerShortName", ch[0] != null ? ch[0].toString() : "");
+			map.put("customer", ch[1] != null ? ch[1].toString() : "");
+			map.put("customerCode", ch[2] != null ? ch[2].toString() : "");
+
+			List1.add(map);
+		}
+		return List1;
+
+	}
 }

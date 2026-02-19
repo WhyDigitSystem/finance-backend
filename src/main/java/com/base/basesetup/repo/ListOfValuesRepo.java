@@ -33,6 +33,9 @@ public interface ListOfValuesRepo extends JpaRepository<ListOfValuesVO, Long> {
 			+ "			group by a.valuedescription")
 	Set<Object[]> getListValuesDetailsForBudget(Long orgId,String name);
 
+	@Query(nativeQuery = true, value = "select * from listofvalues where orgid=?1 and listcode='OEM' and active=1")
+	List<ListOfValuesVO> getOemDetails(Long orgId);
+
 
         
 }

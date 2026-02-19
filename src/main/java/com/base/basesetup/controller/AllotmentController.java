@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,9 +19,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.base.basesetup.common.CommonConstant;
+import com.base.basesetup.common.UserConstants;
 import com.base.basesetup.dto.AllotmentDTO;
 import com.base.basesetup.dto.ResponseDTO;
 import com.base.basesetup.entity.AllotmentVO;
+import com.base.basesetup.entity.ListOfValuesVO;
 import com.base.basesetup.responseDTO.AllotmentResponseDTO;
 import com.base.basesetup.service.AllotmentService;
 
@@ -91,6 +94,57 @@ public class AllotmentController extends BaseController {
 			AllotmentResponseDTO allotment = allotmentService.getAllotmentById(id);
 			responseMap.put("message", "Allotment Details retrieved successfully");
 			responseMap.put("allotment", allotment);
+			responseDTO = createServiceResponse(responseMap);
+		} catch (Exception e) {
+			LOGGER.error("Error in {}: {}", methodName, e.getMessage());
+			responseDTO = createServiceResponseError(responseMap, "Error fetching users", e.getMessage());
+		}
+
+		LOGGER.debug("Ending {}", methodName);
+		return ResponseEntity.ok(responseDTO);
+	}
+
+	
+	@GetMapping("/getCustomer")
+	public ResponseEntity<ResponseDTO> getCustomer(@RequestParam(required = true) Long orgId) {
+		String methodName = "getCustomer()";
+		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+		String errorMsg = null;
+		Map<String, Object> responseObjectsMap = new HashMap<>();
+		ResponseDTO responseDTO = null;
+		List<Map<String, Object>> customer = new ArrayList<>();
+
+		try {
+			customer = allotmentService.getCustomer(orgId);
+		} catch (Exception e) {
+			errorMsg = e.getMessage();
+			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+		}
+
+		if (StringUtils.isBlank(errorMsg)) {
+			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "customer  retrieved successfully");
+			responseObjectsMap.put("customer", customer);
+			responseDTO = createServiceResponse(responseObjectsMap);
+		} else {
+			responseDTO = createServiceResponseError(responseObjectsMap, "customer Reterive Failed", errorMsg);
+		}
+
+		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+		return ResponseEntity.ok().body(responseDTO);
+	}
+	
+	@GetMapping("/getOemDetails")
+	public ResponseEntity<ResponseDTO> getOemDetails(@RequestParam Long orgId) {
+		String methodName = "getOemDetails()";
+		LOGGER.debug("Starting {}", methodName);
+
+		Map<String, Object> responseMap = new HashMap<>();
+		ResponseDTO responseDTO;
+      List<ListOfValuesVO>  listOfValuesVO = new ArrayList<>();
+		try {
+			listOfValuesVO = allotmentService.getOemDetails(orgId);
+			responseMap.put("message", "OEM Details retrieved successfully");
+			responseMap.put("listOfValuesVO", listOfValuesVO);
 			responseDTO = createServiceResponse(responseMap);
 		} catch (Exception e) {
 			LOGGER.error("Error in {}: {}", methodName, e.getMessage());

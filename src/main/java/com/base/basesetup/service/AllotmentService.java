@@ -5,6 +5,7 @@ import java.util.Map;
 
 import com.base.basesetup.dto.AllotmentDTO;
 import com.base.basesetup.entity.AllotmentVO;
+import com.base.basesetup.entity.ListOfValuesVO;
 import com.base.basesetup.responseDTO.AllotmentResponseDTO;
 
 public interface AllotmentService {
@@ -14,5 +15,9 @@ public interface AllotmentService {
 	List<AllotmentVO> getAllAllotmentByOrgId(Long orgId);
 
 	AllotmentResponseDTO getAllotmentById(Long id);
+
+	List<Map<String, Object>> getCustomer(Long orgId);
+
+	List<ListOfValuesVO> getOemDetails(Long orgId);
 
 }
