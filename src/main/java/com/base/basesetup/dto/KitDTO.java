@@ -21,6 +21,7 @@ public class KitDTO {
 	private String kitNo;
 
 	private String kitDesc;
+	private String partNo;
 
 	private boolean cancel;
 

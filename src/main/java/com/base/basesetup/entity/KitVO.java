@@ -60,6 +60,8 @@ public class KitVO {
 	@Column(name="finyear")
 	private String finyr;
 	
+	@Column(name = "partno")
+	private String partNo;
 	
 	@Column(name = "createdby")
 	private String createdBy;

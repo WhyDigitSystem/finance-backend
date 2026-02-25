@@ -106,6 +106,7 @@ public class AllotmentServiceImpl implements AllotmentService{
 	    allotmentVO.setActive(dto.isActive());
 	    allotmentVO.setOrgId(dto.getOrgId());
 	    allotmentVO.setCancel(dto.isCancel());
+	    allotmentVO.setPartNo(dto.getPartNo());
 
 	    allotmentVO.setBranchCode(dto.getBranchCode());
 	    allotmentVO.setBranchName(dto.getBranchName());

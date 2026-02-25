@@ -58,6 +58,9 @@ public class AllotmentVO {
 
 	    @Column(name = "modifiedby")
 	    private String updatedBy;
+	    
+	    @Column(name = "partno")
+	    private String partNo;
 
 	    @Column(name = "orgid")
 	    private Long orgId;

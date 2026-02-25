@@ -15,6 +15,8 @@ public class AllotmentDTO {
 	    private Long id;
 	    private String supplier;
 	    private String customer;
+	    private String partNo;
+
 	    private String mode;
 	    private LocalDate startDate;
 	    private LocalDate endDate;
