@@ -24,56 +24,55 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class AllotmentDetailsVO {
 
-	 @Id
-	    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "tdriverdocsgen")
-	    @SequenceGenerator(name = "tdriverdocsgen", sequenceName = "tdriverdocsseq", initialValue = 1000000001, allocationSize = 1)
-	    @Column(name = "tdriverdocumentsid")
-	    private Long id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "tdriverdocsgen")
+	@SequenceGenerator(name = "tdriverdocsgen", sequenceName = "tdriverdocsseq", initialValue = 1000000001, allocationSize = 1)
+	@Column(name = "tdriverdocumentsid")
+	private Long id;
 
-	    @Column(name = "projectcode")
-	    private String projectCode;   
+	@Column(name = "projectcode")
+	private String projectCode;
 
-	    @Column(name = "part")
-	    private Long part;
-	    
-	    @Column(name = "partno")
-	    private String partNo;
+	@Column(name = "part")
+	private Long part;
 
-	    @Column(name = "kitdesc")
-	    private String kitDesc;   
+	@Column(name = "partno")
+	private String partNo;
 
-	    @Column(name = "kitno")
-	    private String kitNo;
-	    @Column(name = "inventory")
-	    private String inventory;
+	@Column(name = "kitdesc")
+	private String kitDesc;
 
-	    @Column(name = "schedule")
-	    private String schedule;       
+	@Column(name = "kitno")
+	private String kitNo;
+	@Column(name = "inventory")
+	private String inventory;
 
-	    @Column(name = "month")
-	    private Long month;
+	@Column(name = "schedule")
+	private String schedule;
 
-	    @Column(name = "day")
-	    private Long day;
-	    
-	    @Column(name = "boxesreq")
-	    private Long boxesReq;
+	@Column(name = "month")
+	private Long month;
 
-	    @Column(name = "shortage")
-	    private Long shortage;
+	@Column(name = "day")
+	private Long day;
 
-	    @Column(name = "short")
-	    private Long shorted;
-	    
-	    @Column(name = "adherence")
-	    private String adherence;
-	    
-	    @Column(name = "allot")
-	    private Long allot;
+	@Column(name = "boxesreq")
+	private Long boxesReq;
 
-	    
-		@ManyToOne
-	    @JoinColumn(name = "allotmentid", nullable = false)
-		@JsonBackReference
-	    private AllotmentVO allotmentVO;
+	@Column(name = "shortage")
+	private Long shortage;
+
+	@Column(name = "short")
+	private Long shorted;
+
+	@Column(name = "adherence")
+	private String adherence;
+
+	@Column(name = "allot")
+	private Long allot;
+
+	@ManyToOne
+	@JoinColumn(name = "allotmentid", nullable = false)
+	@JsonBackReference
+	private AllotmentVO allotmentVO;
 }
