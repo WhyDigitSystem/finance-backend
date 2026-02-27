@@ -35,13 +35,13 @@ public class AllotmentVO {
 	    @Column(name = "allotmentid")
 	    private Long id;
 
-	    @Column(name = "supplier", length = 150)
+	    @Column(name = "supplier")
 	    private String supplier;
 
-	    @Column(name = "customer", length = 20)
+	    @Column(name = "customer")
 	    private String customer;
 
-	    @Column(name = "mode", length = 150)
+	    @Column(name = "mode")
 	    private String mode;
 
 	    @Column(name = "startdate")
@@ -59,8 +59,7 @@ public class AllotmentVO {
 	    @Column(name = "modifiedby")
 	    private String updatedBy;
 	    
-	    @Column(name = "partno")
-	    private String partNo;
+	    
 
 	    @Column(name = "orgid")
 	    private Long orgId;

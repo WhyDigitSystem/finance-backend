@@ -106,7 +106,6 @@ public class AllotmentServiceImpl implements AllotmentService{
 	    allotmentVO.setActive(dto.isActive());
 	    allotmentVO.setOrgId(dto.getOrgId());
 	    allotmentVO.setCancel(dto.isCancel());
-	    allotmentVO.setPartNo(dto.getPartNo());
 
 	    allotmentVO.setBranchCode(dto.getBranchCode());
 	    allotmentVO.setBranchName(dto.getBranchName());
@@ -137,6 +136,7 @@ public class AllotmentServiceImpl implements AllotmentService{
 	            td.setAllot(t.getAllot());
 	            td.setKitNo(t.getKitNo());
 	            td.setKitDesc(t.getKitDesc());
+	            td.setPartNo(t.getPartNo());
 
 	            // 🔥 VERY IMPORTANT
 	            td.setAllotmentVO(allotmentVO);
@@ -200,6 +200,7 @@ public class AllotmentServiceImpl implements AllotmentService{
 	            det.setAllot(d.getAllot());
 	            det.setKitNo(d.getKitNo());
 	            det.setKitDesc(d.getKitDesc());
+	            det.setPartNo(d.getPartNo());
 	            detailList.add(det);
 	        }
 	    }

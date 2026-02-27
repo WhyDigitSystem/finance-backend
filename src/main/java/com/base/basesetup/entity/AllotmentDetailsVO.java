@@ -35,6 +35,9 @@ public class AllotmentDetailsVO {
 
 	    @Column(name = "part")
 	    private Long part;
+	    
+	    @Column(name = "partno")
+	    private String partNo;
 
 	    @Column(name = "kitdesc")
 	    private String kitDesc;   
