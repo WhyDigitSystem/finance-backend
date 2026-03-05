@@ -22,4 +22,5 @@ public class AllotmentDetailsResponseDTO {
     private Long allot;
     private String kitDesc;   
     private String kitNo;
+    private String partNo;
 }
