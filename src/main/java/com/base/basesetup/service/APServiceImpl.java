@@ -230,6 +230,7 @@ public class APServiceImpl implements APService {
 
 		paymentVO.setPaymentType(paymentDTO.getPaymentType());
 		paymentVO.setBankChargeAcc(paymentDTO.getBankChargeAcc());
+		paymentVO.setLedgerName(paymentDTO.getLedgerName());
 
 		paymentVO.setBankCharges(paymentDTO.getBankCharges());
 		paymentVO.setBankInCurrency(paymentDTO.getBankInCurrency());
