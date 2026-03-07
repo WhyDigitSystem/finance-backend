@@ -521,6 +521,11 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 	public List<PartyMasterVO> getAllCustomers(Long orgId) {
 		return partyMasterRepo.getAllCustomers(orgId);
 	}
+	
+	@Override
+	public List<PartyMasterVO> getAllActiveCustomers(Long orgId) {
+		return partyMasterRepo.getAllActiveCustomers(orgId);
+	}
 
 	@Override
 	public Map<String, Object> createUpdateVendor(@Valid VendorDTO vendorDTO) throws ApplicationException {

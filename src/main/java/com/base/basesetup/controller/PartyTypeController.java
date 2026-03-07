@@ -319,6 +319,32 @@ public class PartyTypeController extends BaseController {
 		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
 		return ResponseEntity.ok().body(responseDTO);
 	}
+	
+	@GetMapping("/getAllActiveCustomers")
+	public ResponseEntity<ResponseDTO> getAllActiveCustomers(@RequestParam Long orgId) {
+		String methodName = "getAllActiveCustomers()";
+		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+		String errorMsg = null;
+		Map<String, Object> responseObjectsMap = new HashMap<>();
+		ResponseDTO responseDTO = null;
+		List<PartyMasterVO> masterVOs = new ArrayList<>();
+		try {
+			masterVOs = partyTypeService.getAllActiveCustomers(orgId);
+		} catch (Exception e) {
+			errorMsg = e.getMessage();
+			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+		}
+		if (StringUtils.isBlank(errorMsg)) {
+			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "Customers information get successfully By orgId");
+			responseObjectsMap.put("masterVOs", masterVOs);
+			responseDTO = createServiceResponse(responseObjectsMap);
+		} else {
+			responseDTO = createServiceResponseError(responseObjectsMap,
+					"Customers information receive failed By orgId", errorMsg);
+		}
+		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+		return ResponseEntity.ok().body(responseDTO);
+	}
 
 	@PutMapping("/createUpdateVendor")
 	public ResponseEntity<ResponseDTO> createUpdateVendor(@Valid @RequestBody VendorDTO vendorDTO) {
