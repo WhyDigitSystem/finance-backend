@@ -433,4 +433,7 @@ public interface PartyMasterRepo extends JpaRepository<PartyMasterVO, Long> {
 	@Query(nativeQuery = true, value = "select partyshortname,partyname,partycode from partymaster where orgid=?1 and partytype='Customer' and active=1")
 	Set<Object[]> getCustomer(Long orgId);
 
+	@Query(nativeQuery = true, value = "select * from partymaster where orgid=?1 and partytype='CUSTOMER' and active=1 and cancel=0")
+	List<PartyMasterVO> getAllActiveCustomers(Long orgId);
+
 }

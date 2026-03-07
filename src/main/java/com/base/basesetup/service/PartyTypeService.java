@@ -68,5 +68,7 @@ public interface PartyTypeService {
 	List<Map<String, Object>> getLedgerReport(Long orgId,String branch, String fromdate, String toDate,
 			String accountName, String details);
 
+	List<PartyMasterVO> getAllActiveCustomers(Long orgId);
+
 	
 }
