@@ -76,6 +76,10 @@ public class PaymentVO {
     @Column(name = "partyname", length = 150)
     private String partyName;
 
+
+    @Column(name = "ledgername", length = 150)
+    private String ledgerName;
+
     @Column(name = "chequebank", length = 50)
     private String chequeBank;
 

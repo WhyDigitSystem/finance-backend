@@ -476,6 +476,7 @@ public class KitControllerServiceImpl implements KitControllerService {
 		kitVO.setPartQty(kitDTO.getPartQty());
 		kitVO.setBlock(kitDTO.isBlock());
 		kitVO.setEflag(kitDTO.isEflag());
+		kitVO.setPartNo(kitDTO.getPartNo());
 
 		if (ObjectUtils.isNotEmpty(kitVO.getId())) {
 			List<KitAssetVO> kitAssetVOs = kitAssetRepo.findByKitVO(kitVO);

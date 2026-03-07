@@ -430,4 +430,7 @@ public interface PartyMasterRepo extends JpaRepository<PartyMasterVO, Long> {
 	Set<Object[]> getLedgerReport(Long orgId, String branch, String fromdate, String toDate, 
 			String accountName, String details);
 
+	@Query(nativeQuery = true, value = "select partyshortname,partyname,partycode from partymaster where orgid=?1 and partytype='Customer' and active=1")
+	Set<Object[]> getCustomer(Long orgId);
+
 }
