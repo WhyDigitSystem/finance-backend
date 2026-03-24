@@ -66,6 +66,9 @@ public class PaymentVO {
 
     @Column(name = "partycode", length = 50)
     private String partyCode;
+    
+    @Column(name = "remarks")
+    private String remarks;
 
     @Column(name = "servicetaxamt", precision = 10, scale = 2)
     private BigDecimal serviceTaxAmt;

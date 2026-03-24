@@ -22,6 +22,7 @@ public class ReceiptDTO {
 	private String customerCode;
 	private String bankCashAcc;
 	private BigDecimal receiptAmt;
+	private String ledgerName;
 	private String bankChargeAcc;
 	private BigDecimal bankCharges;
 	private String inCurrencyBnkChargs;

@@ -248,6 +248,7 @@ public class ARServiceImpl implements ARService {
 		BigDecimal reciptAmount = receiptDTO.getReceiptAmt();
 		receiptVO.setReceiptAmt(reciptAmount);
 		receiptVO.setBankChargeAcc(receiptDTO.getBankChargeAcc());
+		receiptVO.setLedgerName(receiptDTO.getLedgerName());
 		receiptVO.setBankCharges(receiptDTO.getBankCharges());
 		receiptVO.setInCurrencyBnkChargs(receiptDTO.getInCurrencyBnkChargs());
 		receiptVO.setTdsAmt(receiptDTO.getTdsAmt());
