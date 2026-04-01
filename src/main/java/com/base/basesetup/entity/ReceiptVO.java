@@ -46,6 +46,9 @@ public class ReceiptVO {
 
 	@Column(name = "branchcode", length = 20)
 	private String branchCode;
+	
+	@Column(name = "ledgername", length = 20)
+	private String ledgerName;
 
 	@Column(name = "customer", length = 50)
 	private String customer;

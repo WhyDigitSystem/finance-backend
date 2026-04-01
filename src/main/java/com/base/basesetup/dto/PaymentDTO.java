@@ -20,6 +20,7 @@ public class PaymentDTO {
 	private BigDecimal bankCharges;
 	private String bankInCurrency;
 	private String type;
+    private String remarks;
     private String ledgerName;
 	private String partyCode;
 	private BigDecimal serviceTaxAmt;
