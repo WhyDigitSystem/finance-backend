@@ -92,7 +92,7 @@ public class IrnCreditNoteVO {
 	@Column(name = "docid",length = 30)
 	private String docId;
 	@Column(name = "docdate")
-	private LocalDate docDate= LocalDate.now();
+	private LocalDate docDate;
 	@Column(name = "originbillno",length = 30)
 	private String originBillNo;
 	@Column(name = "originbilldate")

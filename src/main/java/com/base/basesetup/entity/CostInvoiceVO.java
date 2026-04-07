@@ -110,7 +110,7 @@ public class CostInvoiceVO {
 	@Column(name = "docid", length = 30)
 	private String docId;
 	@Column(name = "docdate")
-	private LocalDate docDate = LocalDate.now();
+	private LocalDate docDate;
 	@Column(name = "payment", length = 20)
 	private String payment;
 	@Column(name = "accuralid", length = 20)

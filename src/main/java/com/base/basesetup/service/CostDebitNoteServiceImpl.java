@@ -95,9 +95,25 @@ public class CostDebitNoteServiceImpl implements CostDebitNoteService {
 
 			getCostDebitNoteVOFromCostDebitNoteDTO(costDebitNoteVO, costDebitNoteDTO);
 			// GETDOCID API
-			String docId = costDebitNoteRepo.getCostDebitNoteDocId(costDebitNoteDTO.getOrgId(),
+//			String docId = costDebitNoteRepo.getCostDebitNoteDocId(costDebitNoteDTO.getOrgId(),
+//					costDebitNoteDTO.getFinYear(), costDebitNoteDTO.getBranchCode(), screenCode);
+//			costDebitNoteVO.setDocId(docId);
+
+			List<Object[]> taxInvoiceDoc = costDebitNoteRepo.getCostDebitNoteDocId(costDebitNoteDTO.getOrgId(),
 					costDebitNoteDTO.getFinYear(), costDebitNoteDTO.getBranchCode(), screenCode);
-			costDebitNoteVO.setDocId(docId);
+
+			if (taxInvoiceDoc != null && !taxInvoiceDoc.isEmpty()) {
+
+				Object[] row = taxInvoiceDoc.get(0);
+
+				// ✅ Set docId
+				costDebitNoteVO.setDocId((String) row[0]);
+
+				// ✅ Convert java.sql.Date → LocalDate
+				if (row[1] != null) {
+					costDebitNoteVO.setDocDate(((java.sql.Date) row[1]).toLocalDate());
+				}
+			}
 
 			// GETDOCID LASTNO +1
 			DocumentTypeMappingDetailsVO documentTypeMappingDetailsVO = documentTypeMappingDetailsRepo
@@ -415,7 +431,7 @@ public class CostDebitNoteServiceImpl implements CostDebitNoteService {
 //			throw new IllegalArgumentException("COSTDEBITNOTE " + netAmountBillCurr
 //					+ " must be less than or equal to COSTINVOICE  " + sumLcAmounts);
 //		}
-		
+
 //		
 //		if (netAmountBillCurr.compareTo(sumLcAmounts) <= 0) {
 //			costDebitNoteVO.setNetBillCurrAmt(netAmountBillCurr);
@@ -424,28 +440,25 @@ public class CostDebitNoteServiceImpl implements CostDebitNoteService {
 //			throw new IllegalArgumentException("COSTDEBITNOTE " + netAmountBillCurr
 //					+ " must be less than or equal to COSTINVOICE  " + sumLcAmounts);
 //		}
-		
-		Set<Object[]> byOrginBillBased = costDebitNoteRepo.findByOrginBillBased(costDebitNoteDTO.getOrgId(),costDebitNoteDTO.getOrginBill());
+
+		Set<Object[]> byOrginBillBased = costDebitNoteRepo.findByOrginBillBased(costDebitNoteDTO.getOrgId(),
+				costDebitNoteDTO.getOrginBill());
 
 		for (Object[] ledger : byOrginBillBased) {
-		    BigDecimal remainingAmount =  (BigDecimal) ledger[4];
+			BigDecimal remainingAmount = (BigDecimal) ledger[4];
 
-		    if (netAmountBillCurr.compareTo(remainingAmount) <= 0) {
-		        if (netAmountBillCurr.compareTo(sumLcAmounts) <= 0) {
-		        	costDebitNoteVO.setNetBillCurrAmt(netAmountBillCurr);
-		        } else {
-		            throw new IllegalArgumentException("COSTDEBITNOTE" + netAmountBillCurr +
-		                    " must be less than or equal to COSTINVOICE " + sumLcAmounts);
-		        }
-		    } else {
-		        throw new IllegalArgumentException("CREDIT NOTE " + netAmountBillCurr +
-		                " must be less than or equal to REMAINING amount " + remainingAmount);
-		    }
+			if (netAmountBillCurr.compareTo(remainingAmount) <= 0) {
+				if (netAmountBillCurr.compareTo(sumLcAmounts) <= 0) {
+					costDebitNoteVO.setNetBillCurrAmt(netAmountBillCurr);
+				} else {
+					throw new IllegalArgumentException("COSTDEBITNOTE" + netAmountBillCurr
+							+ " must be less than or equal to COSTINVOICE " + sumLcAmounts);
+				}
+			} else {
+				throw new IllegalArgumentException("CREDIT NOTE " + netAmountBillCurr
+						+ " must be less than or equal to REMAINING amount " + remainingAmount);
+			}
 		}
-
-		
-		
-		
 
 		costDebitNoteVO.setActBillCurrAmt(actBillAmtBillCurr);
 		costDebitNoteVO.setActBillLcAmt(actBillAmtLc);
@@ -511,11 +524,30 @@ public class CostDebitNoteServiceImpl implements CostDebitNoteService {
 	}
 
 	// 8778426636
+//	@Override
+//	public String getCostDebitNoteDocId(Long orgId, String finYear, String branch, String branchCode) {
+//		String ScreenCode = "CDN";
+//		String result = costDebitNoteRepo.getCostDebitNoteDocId(orgId, finYear, branchCode, ScreenCode);
+//		return result;
+//	}
+	
 	@Override
-	public String getCostDebitNoteDocId(Long orgId, String finYear, String branch, String branchCode) {
-		String ScreenCode = "CDN";
-		String result = costDebitNoteRepo.getCostDebitNoteDocId(orgId, finYear, branchCode, ScreenCode);
-		return result;
+	public Map<String, Object> getCostDebitNoteDocId(Long orgId, String finYear, String branch, String branchCode) {
+
+		String screenCode = "CDN";
+
+		List<Object[]> results = costDebitNoteRepo.getCostDebitNoteDocId(orgId, finYear, branchCode, screenCode);
+
+		Map<String, Object> map = new HashMap<>();
+
+		if (results != null && !results.isEmpty()) {
+			Object[] row = results.get(0);
+
+			map.put("docId", row[0]);
+			map.put("docDate", row.length > 1 ? row[1] : null);
+		}
+
+		return map;
 	}
 
 	@Override
@@ -603,7 +635,7 @@ public class CostDebitNoteServiceImpl implements CostDebitNoteService {
 	}
 
 	@Override
-	public List<CostInvoiceVO> getOriginBillNofromCostInvoiceByParty(Long orgId, String party, String branchCode) {		
+	public List<CostInvoiceVO> getOriginBillNofromCostInvoiceByParty(Long orgId, String party, String branchCode) {
 //		 List<CostInvoiceVO> existingInvoices = costInvoiceRepo.getCheck(orgId, party);
 //		    List<CostInvoiceVO> allPartyInvoices = costInvoiceRepo.findOrginBillNoByParty(orgId, party, branchCode);
 //
@@ -618,9 +650,9 @@ public class CostDebitNoteServiceImpl implements CostDebitNoteService {
 //		    return allPartyInvoices.stream()
 //		            .filter(invoice -> !existingInvoiceNumbers.contains(invoice.getDocId())) 
 //		            .collect(Collectors.toList());
-		
-	return	costInvoiceRepo.findOrginBillNoByParty(orgId, party, branchCode);
-		
+
+		return costInvoiceRepo.findOrginBillNoByParty(orgId, party, branchCode);
+
 	}
 
 	@Override
@@ -884,10 +916,10 @@ public class CostDebitNoteServiceImpl implements CostDebitNoteService {
 		return List1;
 
 	}
-	
+
 	@Override
-	public List<Map<String, Object>> getCostDebitNoteCount(Long orgId,String finYear, String branchCode) {
-		Set<Object[]> chType = costDebitNoteRepo.getCostDebitNoteCount(  orgId, finYear,  branchCode);
+	public List<Map<String, Object>> getCostDebitNoteCount(Long orgId, String finYear, String branchCode) {
+		Set<Object[]> chType = costDebitNoteRepo.getCostDebitNoteCount(orgId, finYear, branchCode);
 		return getCostDebitNoteCount(chType);
 	}
 
@@ -895,10 +927,10 @@ public class CostDebitNoteServiceImpl implements CostDebitNoteService {
 		List<Map<String, Object>> List1 = new ArrayList<>();
 		for (Object[] ch : chType) {
 			Map<String, Object> map = new HashMap<>();
-			map.put("Complete", ch[0] != null ? ch[0].toString() : "");	
+			map.put("Complete", ch[0] != null ? ch[0].toString() : "");
 			map.put("Approved", ch[1] != null ? ch[1].toString() : "");
 			map.put("Pending", ch[2] != null ? ch[2].toString() : "");
-			map.put("Reject", ch[3] != null ?  ch[3].toString() : "");
+			map.put("Reject", ch[3] != null ? ch[3].toString() : "");
 
 			List1.add(map);
 		}

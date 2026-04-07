@@ -1,6 +1,7 @@
 package com.base.basesetup.entity;
 
 import java.math.BigDecimal;
+
 import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.List;
@@ -98,7 +99,7 @@ public class TaxInvoiceVO {
 	private String screenName="TAX INVOICE";
 
 	@Column(name = "docdate")
-	private LocalDate docDate= LocalDate.now();
+	private LocalDate docDate;
 	@Column(name = "supplierbillno",length = 30)
 	private String supplierBillNo;
 	@Column(name = "supplierbilldate")

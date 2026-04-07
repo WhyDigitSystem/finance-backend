@@ -155,9 +155,25 @@ public class CostInvoiceServiceImpl implements CostInvoiceService {
 				throw new ApplicationException(errorMessage);
 			}
 
-			String docId = costInvoiceRepo.getCostInvoiceDocId(costInvoiceDTO.getOrgId(), costInvoiceDTO.getFinYear(),
-					costInvoiceDTO.getBranchCode(), screenCode);
-			costInvoiceVO.setDocId(docId);
+//			String docId = costInvoiceRepo.getCostInvoiceDocId(costInvoiceDTO.getOrgId(), costInvoiceDTO.getFinYear(),
+//					costInvoiceDTO.getBranchCode(), screenCode);
+//			costInvoiceVO.setDocId(docId);
+
+			List<Object[]> taxInvoiceDoc = costInvoiceRepo.getCostInvoiceDocId(costInvoiceDTO.getOrgId(),
+					costInvoiceDTO.getFinYear(), costInvoiceDTO.getBranchCode(), screenCode);
+
+			if (taxInvoiceDoc != null && !taxInvoiceDoc.isEmpty()) {
+
+				Object[] row = taxInvoiceDoc.get(0);
+
+				// ✅ Set docId
+				costInvoiceVO.setDocId((String) row[0]);
+
+				// ✅ Convert java.sql.Date → LocalDate
+				if (row[1] != null) {
+					costInvoiceVO.setDocDate(((java.sql.Date) row[1]).toLocalDate());
+				}
+			}
 
 			// GETDOCID LASTNO +1
 			DocumentTypeMappingDetailsVO documentTypeMappingDetailsVO = documentTypeMappingDetailsRepo
@@ -470,11 +486,30 @@ public class CostInvoiceServiceImpl implements CostInvoiceService {
 		return costInvoiceRepo.findAllCostInvoiceByDocId(orgId, docId);
 	}
 
+//	@Override
+//	public String getCostInvoiceDocId(Long orgId, String finYear, String branch, String branchCode) {
+//		String ScreenCode = "CI";
+//		String result = costInvoiceRepo.getCostInvoiceDocId(orgId, finYear, branchCode, ScreenCode);
+//		return result;
+//	}
+
 	@Override
-	public String getCostInvoiceDocId(Long orgId, String finYear, String branch, String branchCode) {
-		String ScreenCode = "CI";
-		String result = costInvoiceRepo.getCostInvoiceDocId(orgId, finYear, branchCode, ScreenCode);
-		return result;
+	public Map<String, Object> getCostInvoiceDocId(Long orgId, String finYear, String branch, String branchCode) {
+
+		String screenCode = "CI";
+
+		List<Object[]> results = costInvoiceRepo.getCostInvoiceDocId(orgId, finYear, branchCode, screenCode);
+
+		Map<String, Object> map = new HashMap<>();
+
+		if (results != null && !results.isEmpty()) {
+			Object[] row = results.get(0);
+
+			map.put("docId", row[0]);
+			map.put("docDate", row.length > 1 ? row[1] : null);
+		}
+
+		return map;
 	}
 
 	@Override
@@ -1306,12 +1341,10 @@ public class CostInvoiceServiceImpl implements CostInvoiceService {
 		}
 		return List1;
 	}
-	
-	
-	
+
 	@Override
-	public List<Map<String, Object>> getCostInvoiceCount(Long orgId,String finYear, String branchCode) {
-		Set<Object[]> chType = costInvoiceRepo.getCostInvoiceCount(  orgId, finYear,  branchCode);
+	public List<Map<String, Object>> getCostInvoiceCount(Long orgId, String finYear, String branchCode) {
+		Set<Object[]> chType = costInvoiceRepo.getCostInvoiceCount(orgId, finYear, branchCode);
 		return getCostInvoiceCount(chType);
 	}
 
@@ -1319,10 +1352,10 @@ public class CostInvoiceServiceImpl implements CostInvoiceService {
 		List<Map<String, Object>> List1 = new ArrayList<>();
 		for (Object[] ch : chType) {
 			Map<String, Object> map = new HashMap<>();
-			map.put("Complete", ch[0] != null ? ch[0].toString() : "");	
+			map.put("Complete", ch[0] != null ? ch[0].toString() : "");
 			map.put("Approved", ch[1] != null ? ch[1].toString() : "");
 			map.put("Pending", ch[2] != null ? ch[2].toString() : "");
-			map.put("Reject", ch[3] != null ?  ch[3].toString() : "");
+			map.put("Reject", ch[3] != null ? ch[3].toString() : "");
 
 			List1.add(map);
 		}

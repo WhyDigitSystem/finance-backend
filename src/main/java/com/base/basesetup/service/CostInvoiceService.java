@@ -28,7 +28,7 @@ public interface CostInvoiceService {
 
 	CostInvoiceVO getCostInvoiceByDocId(Long orgId, String docId);
 
-	String getCostInvoiceDocId(Long orgId, String finYear, String branch, String branchCode);
+	Map<String, Object> getCostInvoiceDocId(Long orgId, String finYear, String branch, String branchCode);
 
 	List<Map<String, Object>> getChargeType(Long orgId);
 

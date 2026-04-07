@@ -2,6 +2,7 @@ package com.base.basesetup.service;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -121,11 +122,26 @@ public class IrnCreditNoteServiceImpl implements IrnCreditNoteService {
 			message = "IRN Credit Note Updated Successfully";
 		} else {
 			// GETDOCID API
-			String docId = irnCreditRepo.getIrnCreditDocId(irnCreditNoteDTO.getOrgId(), irnCreditNoteDTO.getFinYear(),
-					irnCreditNoteDTO.getBranchCode(), screenCode);
-			irnCreditNoteVO.setDocId(docId);
+//			String docId = irnCreditRepo.getIrnCreditDocId(irnCreditNoteDTO.getOrgId(), irnCreditNoteDTO.getFinYear(),
+//					irnCreditNoteDTO.getBranchCode(), screenCode);
+//			irnCreditNoteVO.setDocId(docId);	
+//			System.out.println(docId);
 
-			System.out.println(docId);
+			List<Object[]> taxInvoiceDoc = irnCreditRepo.getIrnCreditDocId(irnCreditNoteDTO.getOrgId(),
+					irnCreditNoteDTO.getFinYear(), irnCreditNoteDTO.getBranchCode(), screenCode);
+
+			if (taxInvoiceDoc != null && !taxInvoiceDoc.isEmpty()) {
+
+				Object[] row = taxInvoiceDoc.get(0);
+
+				// ✅ Set docId
+				irnCreditNoteVO.setDocId((String) row[0]);
+
+				// ✅ Convert java.sql.Date → LocalDate
+				if (row[1] != null) {
+					irnCreditNoteVO.setDocDate(((java.sql.Date) row[1]).toLocalDate());
+				}
+			}
 
 			// GETDOCID LASTNO +1
 			DocumentTypeMappingDetailsVO documentTypeMappingDetailsVO = documentTypeMappingDetailsRepo
@@ -198,12 +214,12 @@ public class IrnCreditNoteServiceImpl implements IrnCreditNoteService {
 			List<IrnCreditNoteAnnexureVO> annexureVO1 = irnCreditNoteAnnexureRepo
 					.findByIrnCreditNoteVO(irnCreditNoteVO);
 			if (annexureVO1 != null) {
-			irnCreditNoteAnnexureRepo.deleteAll(annexureVO1);
+				irnCreditNoteAnnexureRepo.deleteAll(annexureVO1);
 			}
 
 			List<IrnCreditNoteGstVO> irnCreditNoteGstVO1 = irnCreditGstRepo.findByIrnCreditNoteVO(irnCreditNoteVO);
 			if (irnCreditNoteGstVO1 != null) {
-			irnCreditGstRepo.deleteAll(irnCreditNoteGstVO1);
+				irnCreditGstRepo.deleteAll(irnCreditNoteGstVO1);
 			}
 
 		}
@@ -465,7 +481,7 @@ public class IrnCreditNoteServiceImpl implements IrnCreditNoteService {
 					throw new IllegalArgumentException("CREDIT NOTE " + totalInvAmountLC
 							+ " must be less than or equal to TAXINVOICE " + totalInvAmountLc1);
 				}
-			} 
+			}
 //			else {
 //				throw new IllegalArgumentException("CREDIT NOTE " + totalInvAmountLC
 //						+ " must be less than or equal to REMAINING amount " + remainingAmount);
@@ -482,11 +498,30 @@ public class IrnCreditNoteServiceImpl implements IrnCreditNoteService {
 
 	}
 
+//	@Override
+//	public String getIrnCreditNoteDocId(Long orgId, String finYear, String branch, String branchCode) {
+//		String ScreenCode = "ICN";
+//		String result = irnCreditRepo.getIrnCreditDocId(orgId, finYear, branchCode, ScreenCode);
+//		return result;
+//	}
+
 	@Override
-	public String getIrnCreditNoteDocId(Long orgId, String finYear, String branch, String branchCode) {
-		String ScreenCode = "ICN";
-		String result = irnCreditRepo.getIrnCreditDocId(orgId, finYear, branchCode, ScreenCode);
-		return result;
+	public Map<String, Object> getIrnCreditNoteDocId(Long orgId, String finYear, String branch, String branchCode) {
+
+		String screenCode = "ICN";
+
+		List<Object[]> results = irnCreditRepo.getIrnCreditDocId(orgId, finYear, branchCode, screenCode);
+
+		Map<String, Object> map = new HashMap<>();
+
+		if (results != null && !results.isEmpty()) {
+			Object[] row = results.get(0);
+
+			map.put("docId", row[0]);
+			map.put("docDate", row.length > 1 ? row[1] : null);
+		}
+
+		return map;
 	}
 
 	@Override
@@ -513,9 +548,25 @@ public class IrnCreditNoteServiceImpl implements IrnCreditNoteService {
 		if (irnCreditNoteVO.getApproveStatus() == null || (!irnCreditNoteVO.getApproveStatus().equals("Approved")
 				&& !irnCreditNoteVO.getApproveStatus().equals("Rejected"))) {
 
-			String accountsDocId = accountsRepo.getApproveDocId(irnCreditNoteVO.getOrgId(),
+//			String accountsDocId = accountsRepo.getApproveDocId(irnCreditNoteVO.getOrgId(),
+//					irnCreditNoteVO.getFinYear(), irnCreditNoteVO.getBranchCode(), sourceScreenCode, screenCode);
+//			irnCreditNoteVO.setDocId(docId);
+
+			List<Object[]> taxInvoiceDoc = accountsRepo.getApproveDocIdTaxIncoice(irnCreditNoteVO.getOrgId(),
 					irnCreditNoteVO.getFinYear(), irnCreditNoteVO.getBranchCode(), sourceScreenCode, screenCode);
-			irnCreditNoteVO.setDocId(docId);
+
+			String generatedDocId = null;
+			LocalDate generatedDocDate = null;
+
+			if (taxInvoiceDoc != null && !taxInvoiceDoc.isEmpty()) {
+				Object[] row = taxInvoiceDoc.get(0);
+				generatedDocId = (String) row[0];
+				if (row[1] != null) {
+					generatedDocDate = ((java.sql.Date) row[1]).toLocalDate();
+				}
+			}
+			irnCreditNoteVO.setVoucherNo(generatedDocId);
+			irnCreditNoteVO.setVoucherDate(generatedDocDate);
 
 			// GETDOCID LASTNO +1
 			MultipleDocIdGenerationDetailsVO multipleDocIdGenerationDetailsVO = multipleDocIdGenerationDetailsRepo
@@ -527,7 +578,8 @@ public class IrnCreditNoteServiceImpl implements IrnCreditNoteService {
 
 			// Create AccountsVO object and populate its fields
 			AccountsVO accountsVO = new AccountsVO();
-			accountsVO.setDocId(accountsDocId);
+			accountsVO.setDocId(generatedDocId);
+			accountsVO.setDocDate(generatedDocDate);
 			accountsVO.setSourceScreen(irnCreditNoteVO.getScreenName());
 			accountsVO.setSourceScreenCode(irnCreditNoteVO.getScreenCode());
 			accountsVO.setSourceId(irnCreditNoteVO.getId());
