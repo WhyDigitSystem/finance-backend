@@ -1,4 +1,4 @@
-	package com.base.basesetup.entity;
+package com.base.basesetup.entity;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -46,7 +46,7 @@ public class ReceiptVO {
 
 	@Column(name = "branchcode", length = 20)
 	private String branchCode;
-	
+
 	@Column(name = "ledgername", length = 20)
 	private String ledgerName;
 
@@ -89,8 +89,8 @@ public class ReceiptVO {
 	private String docId;
 
 	@Column(name = "docdate")
-	@Builder.Default
-	private LocalDate docDate = LocalDate.now();
+//	@Builder.Default
+	private LocalDate docDate;
 
 	@Column(name = "type", length = 50)
 	private String type;
@@ -155,35 +155,35 @@ public class ReceiptVO {
 
 	@Column(name = "netamount", precision = 10, scale = 2)
 	private BigDecimal netAmount;
-	
+
 	@Column(name = "onaccount", precision = 10, scale = 2)
 	private BigDecimal onAccount;
-	
-	@Column(name="approvestatus",length = 20)
+
+	@Column(name = "approvestatus", length = 20)
 	private String approveStatus;
-	
-	@Column(name="approveby",length = 20)
+
+	@Column(name = "approveby", length = 20)
 	private String approveBy;
-	
-	@Column(name = "status",length = 30)
+
+	@Column(name = "status", length = 30)
 	private String status;
-	
-	@Column(name = "shortname",length = 30)
+
+	@Column(name = "shortname", length = 30)
 	private String shortName;
-	
+
 	@Column(name = "totaloutstanding", precision = 10, scale = 2)
 	private BigDecimal totalOutStanding;
-	
+
 	@Column(name = "totalchargeamount", precision = 10, scale = 2)
 	private BigDecimal totalChargeAmount;
-    
+
 	@Column(name = "receivableamount", precision = 10, scale = 2)
 	private BigDecimal receivableAmount;
-	
+
 	@DateTimeFormat(pattern = "dd-MM-yyyy hh:mm:ss a")
-	@Column(name="approveon")
+	@Column(name = "approveon")
 	private String approveOn;
-	
+
 	@Column(name = "purvoucherno", length = 50)
 	private String purVoucherNo;
 	@Column(name = "purvoucherdate")

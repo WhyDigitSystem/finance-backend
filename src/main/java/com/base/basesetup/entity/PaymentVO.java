@@ -53,7 +53,7 @@ public class PaymentVO {
     private String docId;
 
     @Column(name = "docdate")
-    private LocalDate docDate = LocalDate.now();
+    private LocalDate docDate;
 
     @Column(name = "bankcharges", precision = 10, scale = 2)
     private BigDecimal bankCharges;

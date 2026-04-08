@@ -188,30 +188,66 @@ public class ARController extends BaseController {
 		return ResponseEntity.ok().body(responseDTO);
 	}
 
+//	@GetMapping("/getReceiptDocId")
+//	public ResponseEntity<ResponseDTO> x(@RequestParam Long orgId, @RequestParam String finYear,
+//			@RequestParam String branch, @RequestParam String branchCode) {
+//
+//		String methodName = "getReceiptDocId()";
+//		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+//		String errorMsg = null;
+//		Map<String, Object> responseObjectsMap = new HashMap<>();
+//		ResponseDTO responseDTO = null;
+//		String mapp = "";
+//
+//		try {
+//			mapp = arReceivableService.getReceiptDocId(orgId, finYear, branch, branchCode);
+//		} catch (Exception e) {
+//			errorMsg = e.getMessage();
+//			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+//		}
+//
+//		if (StringUtils.isBlank(errorMsg)) {
+//			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "Receipt DocId information retrieved successfully");
+//			responseObjectsMap.put("receiptDocId", mapp);
+//			responseDTO = createServiceResponse(responseObjectsMap);
+//		} else {
+//			responseDTO = createServiceResponseError(responseObjectsMap, "Failed to retrieve Receipt Docid information",
+//					errorMsg);
+//		}
+//
+//		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+//		return ResponseEntity.ok().body(responseDTO);
+//	}
+
 	@GetMapping("/getReceiptDocId")
-	public ResponseEntity<ResponseDTO> x(@RequestParam Long orgId, @RequestParam String finYear,
+	public ResponseEntity<ResponseDTO> getReceiptDocId(@RequestParam Long orgId, @RequestParam String finYear,
 			@RequestParam String branch, @RequestParam String branchCode) {
 
 		String methodName = "getReceiptDocId()";
 		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+
 		String errorMsg = null;
 		Map<String, Object> responseObjectsMap = new HashMap<>();
 		ResponseDTO responseDTO = null;
-		String mapp = "";
+
+		Map<String, Object> resultMap = new HashMap<>();
 
 		try {
-			mapp = arReceivableService.getReceiptDocId(orgId, finYear, branch, branchCode);
+			resultMap = arReceivableService.getReceiptDocId(orgId, finYear, branch, branchCode);
 		} catch (Exception e) {
 			errorMsg = e.getMessage();
 			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
 		}
 
 		if (StringUtils.isBlank(errorMsg)) {
-			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "Receipt DocId information retrieved successfully");
-			responseObjectsMap.put("receiptDocId", mapp);
+			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "ReceiptDocId information retrieved successfully");
+
+			responseObjectsMap.put("receiptDocId", resultMap.get("docId"));
+			responseObjectsMap.put("docDate", resultMap.get("docDate"));
+
 			responseDTO = createServiceResponse(responseObjectsMap);
 		} else {
-			responseDTO = createServiceResponseError(responseObjectsMap, "Failed to retrieve Receipt Docid information",
+			responseDTO = createServiceResponseError(responseObjectsMap, "Failed to retrieve ReceiptDocId information",
 					errorMsg);
 		}
 

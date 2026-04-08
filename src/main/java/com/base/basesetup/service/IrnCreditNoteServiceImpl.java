@@ -552,7 +552,7 @@ public class IrnCreditNoteServiceImpl implements IrnCreditNoteService {
 //					irnCreditNoteVO.getFinYear(), irnCreditNoteVO.getBranchCode(), sourceScreenCode, screenCode);
 //			irnCreditNoteVO.setDocId(docId);
 
-			List<Object[]> taxInvoiceDoc = accountsRepo.getApproveDocIdTaxIncoice(irnCreditNoteVO.getOrgId(),
+			List<Object[]> taxInvoiceDoc = accountsRepo.getApproveDocId(irnCreditNoteVO.getOrgId(),
 					irnCreditNoteVO.getFinYear(), irnCreditNoteVO.getBranchCode(), sourceScreenCode, screenCode);
 
 			String generatedDocId = null;

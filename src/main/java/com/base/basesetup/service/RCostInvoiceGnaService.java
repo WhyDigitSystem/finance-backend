@@ -17,7 +17,7 @@ public interface RCostInvoiceGnaService {
 
 	List<RCostInvoiceGnaVO> getAllRCostInvoiceGnaById(Long id);
 
-	String getRCostInvoiceGnaDocId(Long orgId, String finYear, String branch, String branchCode);
+	Map<String, Object> getRCostInvoiceGnaDocId(Long orgId, String finYear, String branch, String branchCode);
 
 	Map<String, Object> updateCreateRCostInvoiceGna(RCostInvoiceGnaDTO rCostInvoiceGnaDTO) throws ApplicationException;
 

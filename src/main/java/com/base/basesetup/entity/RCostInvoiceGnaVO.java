@@ -43,7 +43,7 @@ public class RCostInvoiceGnaVO {
 	@Column(name = "docid", length = 30)
 	private String docId;
 	@Column(name = "docdate")
-	private LocalDate docDate = LocalDate.now();
+	private LocalDate docDate;
 	@Column(name = "purvoucherno", length = 50)
 	private String purVoucherNo;
 	@Column(name = "purvoucherdate")

@@ -93,19 +93,53 @@ public class RCostInvoiceGnaController extends BaseController {
 		return ResponseEntity.ok().body(responseDTO);
 	}
 
+//	@GetMapping("/getRCostInvoiceGnaDocId")
+//	public ResponseEntity<ResponseDTO> getRCostInvoiceGnaDocId(@RequestParam Long orgId, @RequestParam String finYear,
+//			@RequestParam String branch, @RequestParam String branchCode) {
+//
+//		String methodName = "getRCostInvoiceGnaDocId()";
+//		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+//		String errorMsg = null;
+//		Map<String, Object> responseObjectsMap = new HashMap<>();
+//		ResponseDTO responseDTO = null;
+//		String mapp = "";
+//
+//		try {
+//			mapp = rCostInvoiceGnaService.getRCostInvoiceGnaDocId(orgId, finYear, branch, branchCode);
+//		} catch (Exception e) {
+//			errorMsg = e.getMessage();
+//			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+//		}
+//
+//		if (StringUtils.isBlank(errorMsg)) {
+//			responseObjectsMap.put(CommonConstant.STRING_MESSAGE,
+//					"RCostInvoiceGnaDocId information retrieved successfully");
+//			responseObjectsMap.put("rcostInvoiceGnaDocId", mapp);
+//			responseDTO = createServiceResponse(responseObjectsMap);
+//		} else {
+//			responseDTO = createServiceResponseError(responseObjectsMap,
+//					"Failed to retrieve RCostInvoiceGna Docid information", errorMsg);
+//		}
+//
+//		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+//		return ResponseEntity.ok().body(responseDTO);
+//	}
+
 	@GetMapping("/getRCostInvoiceGnaDocId")
 	public ResponseEntity<ResponseDTO> getRCostInvoiceGnaDocId(@RequestParam Long orgId, @RequestParam String finYear,
 			@RequestParam String branch, @RequestParam String branchCode) {
 
 		String methodName = "getRCostInvoiceGnaDocId()";
 		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+
 		String errorMsg = null;
 		Map<String, Object> responseObjectsMap = new HashMap<>();
 		ResponseDTO responseDTO = null;
-		String mapp = "";
+
+		Map<String, Object> resultMap = new HashMap<>();
 
 		try {
-			mapp = rCostInvoiceGnaService.getRCostInvoiceGnaDocId(orgId, finYear, branch, branchCode);
+			resultMap = rCostInvoiceGnaService.getRCostInvoiceGnaDocId(orgId, finYear, branch, branchCode);
 		} catch (Exception e) {
 			errorMsg = e.getMessage();
 			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
@@ -113,12 +147,15 @@ public class RCostInvoiceGnaController extends BaseController {
 
 		if (StringUtils.isBlank(errorMsg)) {
 			responseObjectsMap.put(CommonConstant.STRING_MESSAGE,
-					"RCostInvoiceGnaDocId information retrieved successfully");
-			responseObjectsMap.put("rcostInvoiceGnaDocId", mapp);
+					"RcostInvoiceGnaDocId information retrieved successfully");
+
+			responseObjectsMap.put("rcostInvoiceGnaDocId", resultMap.get("docId"));
+			responseObjectsMap.put("docDate", resultMap.get("docDate"));
+
 			responseDTO = createServiceResponse(responseObjectsMap);
 		} else {
 			responseDTO = createServiceResponseError(responseObjectsMap,
-					"Failed to retrieve RCostInvoiceGna Docid information", errorMsg);
+					"Failed to retrieve RcostInvoiceGnaDocId information", errorMsg);
 		}
 
 		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
@@ -458,11 +495,10 @@ public class RCostInvoiceGnaController extends BaseController {
 		return ResponseEntity.ok().body(responseDTO);
 
 	}
-	
-	
+
 	@GetMapping("/getRCostInvoiceGnaCount")
-	public ResponseEntity<ResponseDTO> getRCostInvoiceGnaCount(@RequestParam Long orgId,
-			@RequestParam String finYear, @RequestParam String branchCode) {
+	public ResponseEntity<ResponseDTO> getRCostInvoiceGnaCount(@RequestParam Long orgId, @RequestParam String finYear,
+			@RequestParam String branchCode) {
 		String methodName = "getRCostInvoiceGnaCount()";
 		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
 		String errorMsg = null;

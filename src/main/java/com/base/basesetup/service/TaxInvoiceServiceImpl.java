@@ -757,7 +757,7 @@ public class TaxInvoiceServiceImpl implements TaxInvoiceService {
 //					taxInvoiceVO.getBranchCode(), sourceScreenCode, screenCode);
 //			taxInvoiceVO.setDocId(docId);
 //			
-			List<Object[]> taxInvoiceDoc = accountsRepo.getApproveDocIdTaxIncoice(taxInvoiceVO.getOrgId(),
+			List<Object[]> taxInvoiceDoc = accountsRepo.getApproveDocId(taxInvoiceVO.getOrgId(),
 					taxInvoiceVO.getFinYear(), taxInvoiceVO.getBranchCode(), sourceScreenCode, screenCode);
 
 			String generatedDocId = null;

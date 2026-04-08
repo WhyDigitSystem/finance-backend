@@ -30,21 +30,6 @@ public interface TaxInvoiceRepo extends JpaRepository<TaxInvoiceVO, Long> {
 //	@Query(nativeQuery = true, value = "select concat(prefixfield,lpad(lastno,5,0)) AS docid from documenttypemappingdetails where orgid=?1 and finyear=?2 and branchcode=?3 and screencode=?4")
 //	String getTaxInvoiceDocId(Long orgId, String finYear, String branchCode, String screenCode);
 
-//	@Query(nativeQuery = true, value = "SELECT \r\n" + "    CONCAT(prefixfield, LPAD(lastno, 5, '0')) AS docid,\r\n"
-//			+ "    CASE \r\n" + "        WHEN YEAR(CURDATE()) = SUBSTRING_INDEX(f.finyear, '-', 1)\r\n"
-//			+ "        THEN CURDATE()\r\n"
-//			+ "        ELSE STR_TO_DATE(CONCAT(SUBSTRING_INDEX(f.finyear, '-', 1), '-03-31'), '%Y-%m-%d')\r\n"
-//			+ "    END AS docdate\r\n" + "FROM documenttypemappingdetails d\r\n"
-//			+ "JOIN financialyear f ON d.finyear = f.finyear\r\n" + "WHERE d.orgid = ?1\r\n" + "AND d.finyear = ?2\r\n"
-//			+ "AND d.branchcode = ?3\r\n" + "AND d.screencode = ?4")
-//	String getTaxInvoiceDocId(Long orgId, String finYear, String branchCode, String screenCode);
-
-//	@Query(value = "SELECT " + "CONCAT(d.prefixfield, LPAD(d.lastno, 5, '0')) AS docid, " + "CASE "
-//			+ "   WHEN CURDATE() BETWEEN f.startdate AND f.enddate " + "   THEN CURDATE() " + "   ELSE f.enddate "
-//			+ "END AS docdate " + "FROM documenttypemappingdetails d " + "JOIN financialyear f "
-//			+ "ON d.finyear = f.finyear AND d.orgid = f.orgid " + "WHERE d.orgid = ?1 " + "AND d.finyear = ?2 "
-//			+ "AND d.branchcode = ?3 " + "AND d.screencode = ?4", nativeQuery = true)
-//	List<Object[]> getTaxInvoiceDocId(Long orgId, String finYear, String branchCode, String screenCode);
 	@Query(value = "SELECT " + "CONCAT(d.prefixfield, LPAD(d.lastno, 5, '0')) AS docid, " + "CASE "
 			+ "   WHEN CURDATE() BETWEEN f.startdate AND f.enddate " + "   THEN CURDATE() " + "   ELSE f.enddate "
 			+ "END AS docdate " + "FROM documenttypemappingdetails d " + "JOIN financialyear f "

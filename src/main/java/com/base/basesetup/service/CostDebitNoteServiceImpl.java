@@ -530,7 +530,7 @@ public class CostDebitNoteServiceImpl implements CostDebitNoteService {
 //		String result = costDebitNoteRepo.getCostDebitNoteDocId(orgId, finYear, branchCode, ScreenCode);
 //		return result;
 //	}
-	
+
 	@Override
 	public Map<String, Object> getCostDebitNoteDocId(Long orgId, String finYear, String branch, String branchCode) {
 
@@ -688,11 +688,26 @@ public class CostDebitNoteServiceImpl implements CostDebitNoteService {
 		if (costDebitNoteVO.getApproveStatus() == null || (!costDebitNoteVO.getApproveStatus().equals("Approved")
 				&& !costDebitNoteVO.getApproveStatus().equals("Rejected"))) {
 
-			String accountsDocId = accountsRepo.getApproveDocId(costDebitNoteVO.getOrgId(),
-					costDebitNoteVO.getFinYear(), costDebitNoteVO.getBranchCode(), sourceScreenCode, screenCode);
-//			costDebitNoteVO.setDocId(docId);
+//			String accountsDocId = accountsRepo.getApproveDocId(costDebitNoteVO.getOrgId(),
+//					costDebitNoteVO.getFinYear(), costDebitNoteVO.getBranchCode(), sourceScreenCode, screenCode);
+////			costDebitNoteVO.setDocId(docId);
 
-			System.out.println(accountsDocId);
+			List<Object[]> taxInvoiceDoc = accountsRepo.getApproveDocId(costDebitNoteVO.getOrgId(),
+					costDebitNoteVO.getFinYear(), costDebitNoteVO.getBranchCode(), sourceScreenCode, screenCode);
+
+			String generatedDocId = null;
+			LocalDate generatedDocDate = null;
+
+			if (taxInvoiceDoc != null && !taxInvoiceDoc.isEmpty()) {
+				Object[] row = taxInvoiceDoc.get(0);
+				generatedDocId = (String) row[0];
+				if (row[1] != null) {
+					generatedDocDate = ((java.sql.Date) row[1]).toLocalDate();
+				}
+			}
+			costDebitNoteVO.setPurVoucherNo(generatedDocId);
+			costDebitNoteVO.setPurVoucherDate(generatedDocDate);
+
 			// GETDOCID LASTNO +1
 			MultipleDocIdGenerationDetailsVO multipleDocIdGenerationDetailsVO = multipleDocIdGenerationDetailsRepo
 					.findByOrgIdAndFinYearAndBranchCodeAndSourceScreenCodeAndScreenCode(costDebitNoteVO.getOrgId(),
@@ -704,7 +719,8 @@ public class CostDebitNoteServiceImpl implements CostDebitNoteService {
 
 			// Create AccountsVO object and populate its fields
 			AccountsVO accountsVO = new AccountsVO();
-			accountsVO.setDocId(accountsDocId);
+			accountsVO.setDocId(generatedDocId);
+			accountsVO.setDocDate(generatedDocDate);
 			accountsVO.setSourceScreen(costDebitNoteVO.getScreenName());
 			accountsVO.setSourceScreenCode(costDebitNoteVO.getScreenCode());
 			accountsVO.setSourceId(costDebitNoteVO.getId());

@@ -10,8 +10,8 @@ import com.base.basesetup.entity.AccountsVO;
 
 public interface AccountsRepo extends JpaRepository<AccountsVO, Long> {
 
-	@Query(nativeQuery = true, value = "select concat(prefixfield,lpad(lastno,5,0)) AS docid from multipledocidgendetails where orgid=?1  and finyear=?2  and branchcode=?3 and sourcescreencode=?4 and screencode=?5 ")
-	String getApproveDocId(Long orgId, String finYear, String branchCode, String sourceScreenCode, String screenCode);
+//	@Query(nativeQuery = true, value = "select concat(prefixfield,lpad(lastno,5,0)) AS docid from multipledocidgendetails where orgid=?1  and finyear=?2  and branchcode=?3 and sourcescreencode=?4 and screencode=?5 ")
+//	String getApproveDocId(Long orgId, String finYear, String branchCode, String sourceScreenCode, String screenCode);
 
 	@Query(nativeQuery = true, value = "SELECT \r\n" + "    CONCAT(d.prefixfield, LPAD(d.lastno, 5, '0')) AS docid,\r\n"
 			+ "    CASE \r\n" + "        WHEN CURDATE() BETWEEN f.startdate AND f.enddate \r\n"
@@ -19,7 +19,7 @@ public interface AccountsRepo extends JpaRepository<AccountsVO, Long> {
 			+ "FROM multipledocidgendetails d\r\n" + "JOIN financialyear f \r\n" + "    ON d.finyear = f.finyear \r\n"
 			+ "    AND d.orgid = f.orgid\r\n" + "WHERE d.orgid = ?1\r\n"
 			+ "AND d.finyear = ?2  AND d.branchcode = ?3 and d.sourcescreencode=?4\r\n" + "AND d.screencode = ?5")
-	List<Object[]> getApproveDocIdTaxIncoice(Long orgId, String finYear, String branchCode, String sourceScreenCode,
+	List<Object[]> getApproveDocId(Long orgId, String finYear, String branchCode, String sourceScreenCode,
 			String screenCode);
 
 	@Query(nativeQuery = true, value = "select concat(prefixfield,lpad(lastno,5,0)) AS docid from multipledocidgendetails where orgid=?1  and finyear=?2  and branchcode=?3 and sourcescreencode=?4 and screencode=?5 ")

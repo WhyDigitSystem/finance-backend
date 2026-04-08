@@ -112,11 +112,27 @@ public class APServiceImpl implements APService {
 			message = "Payment Updated Successfully";
 		} else {
 
-//			GETDOCID API
-			String docId = paymentRepo.getPaymentDocId(paymentDTO.getOrgId(), paymentDTO.getFinYear(),
+////			GETDOCID API
+//			String docId = paymentRepo.getPaymentDocId(paymentDTO.getOrgId(), paymentDTO.getFinYear(),
+//					paymentDTO.getBranchCode(), screenCode);
+//
+//			paymentVO.setDocId(docId)
+
+			List<Object[]> taxInvoiceDoc = paymentRepo.getPaymentDocId(paymentDTO.getOrgId(), paymentDTO.getFinYear(),
 					paymentDTO.getBranchCode(), screenCode);
 
-			paymentVO.setDocId(docId);
+			if (taxInvoiceDoc != null && !taxInvoiceDoc.isEmpty()) {
+
+				Object[] row = taxInvoiceDoc.get(0);
+
+				// ✅ Set docId
+				paymentVO.setDocId((String) row[0]);
+
+				// ✅ Convert java.sql.Date → LocalDate
+				if (row[1] != null) {
+					paymentVO.setDocDate(((java.sql.Date) row[1]).toLocalDate());
+				}
+			}
 
 //			// GETDOCID LASTNO +1
 			DocumentTypeMappingDetailsVO documentTypeMappingDetailsVO = documentTypeMappingDetailsRepo
@@ -326,11 +342,29 @@ public class APServiceImpl implements APService {
 		return paymentVO;
 	}
 
+//	@Override
+//	public String getPaymentDocId(Long orgId, String finYear, String branch, String branchCode) {
+//		String ScreenCode = "PT";
+//		String result = paymentRepo.getPaymentDocId(orgId, finYear, branchCode, ScreenCode);
+//		return result;
+//	}
 	@Override
-	public String getPaymentDocId(Long orgId, String finYear, String branch, String branchCode) {
-		String ScreenCode = "PT";
-		String result = paymentRepo.getPaymentDocId(orgId, finYear, branchCode, ScreenCode);
-		return result;
+	public Map<String, Object> getPaymentDocId(Long orgId, String finYear, String branch, String branchCode) {
+
+		String screenCode = "PT";
+
+		List<Object[]> results = paymentRepo.getPaymentDocId(orgId, finYear, branchCode, screenCode);
+
+		Map<String, Object> map = new HashMap<>();
+
+		if (results != null && !results.isEmpty()) {
+			Object[] row = results.get(0);
+
+			map.put("docId", row[0]);
+			map.put("docDate", row.length > 1 ? row[1] : null);
+		}
+
+		return map;
 	}
 
 	// ApBillBalance
@@ -769,8 +803,24 @@ public class APServiceImpl implements APService {
 		String screenCode1 = "AC";
 		String sourceScreenCode = paymentVO.getScreenCode();
 
-		String accountsDocId = accountsRepo.getApproveDocId(paymentVO.getOrgId(), paymentVO.getFinYear(),
+//		String accountsDocId = accountsRepo.getApproveDocId(paymentVO.getOrgId(), paymentVO.getFinYear(),
+//				paymentVO.getBranchCode(), sourceScreenCode, screenCode1);
+
+		List<Object[]> taxInvoiceDoc = accountsRepo.getApproveDocId(paymentVO.getOrgId(), paymentVO.getFinYear(),
 				paymentVO.getBranchCode(), sourceScreenCode, screenCode1);
+
+		String generatedDocId = null;
+		LocalDate generatedDocDate = null;
+
+		if (taxInvoiceDoc != null && !taxInvoiceDoc.isEmpty()) {
+			Object[] row = taxInvoiceDoc.get(0);
+			generatedDocId = (String) row[0];
+			if (row[1] != null) {
+				generatedDocDate = ((java.sql.Date) row[1]).toLocalDate();
+			}
+		}
+		paymentVO.setPurVoucherNo(generatedDocId);
+		paymentVO.setPurVoucherDate(generatedDocDate);
 
 		MultipleDocIdGenerationDetailsVO multipleDocIdGenerationDetailsVO = multipleDocIdGenerationDetailsRepo
 				.findByOrgIdAndFinYearAndBranchCodeAndSourceScreenCodeAndScreenCode(paymentVO.getOrgId(),
@@ -780,7 +830,8 @@ public class APServiceImpl implements APService {
 		multipleDocIdGenerationDetailsRepo.save(multipleDocIdGenerationDetailsVO);
 
 		AccountsVO accountsVO = new AccountsVO();
-		accountsVO.setDocId(accountsDocId);
+		accountsVO.setDocId(generatedDocId);
+		accountsVO.setDocDate(generatedDocDate);
 		accountsVO.setSourceScreen(paymentVO.getScreenName());
 		accountsVO.setSourceId(paymentVO.getId());
 		accountsVO.setCreatedBy(paymentVO.getCreatedBy());
@@ -1014,7 +1065,7 @@ public class APServiceImpl implements APService {
 		}
 		return List1;
 	}
-	
+
 	@Override
 	public List<Map<String, Object>> getPaymentCount(Long orgId, String finYear, String branchCode) {
 		Set<Object[]> chType = paymentRepo.getPaymentCount(orgId, finYear, branchCode);
@@ -1034,6 +1085,5 @@ public class APServiceImpl implements APService {
 		}
 		return List1;
 	}
-
 
 }

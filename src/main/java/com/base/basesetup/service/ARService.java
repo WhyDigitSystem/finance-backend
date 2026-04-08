@@ -28,7 +28,7 @@ public interface ARService {
 
 	List<Map<String, Object>> getCustomerNameAndCodeForReceipt(Long orgId);
 
-	String getReceiptDocId(Long orgId, String finYear, String branch, String branchCode);
+	Map<String, Object> getReceiptDocId(Long orgId, String finYear, String branch, String branchCode);
 
 //	ARBillBalance
 	List<ArBillBalanceVO> getAllArBillBalanceByOrgId(Long orgId);

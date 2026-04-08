@@ -41,7 +41,7 @@ public interface APService {
 	List<Map<String, Object>> getPaymentSummary(Long orgId,String finYear,  String partyname, String fromDate,
 			String toDate, String branchCode);
 
-	String getPaymentDocId(Long orgId, String finYear, String branch, String branchCode);
+	Map<String, Object> getPaymentDocId(Long orgId, String finYear, String branch, String branchCode);
 
 	// ARBillBalance
 	List<ApBillBalanceVO> getAllApBillBalanceByOrgId(Long orgId);

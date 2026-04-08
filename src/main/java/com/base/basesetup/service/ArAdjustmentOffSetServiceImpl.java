@@ -210,13 +210,13 @@ public class ArAdjustmentOffSetServiceImpl implements ArAdjustmentOffSetService 
 				negativeArapAdjustments.setBranch(arAdjustmentOffSetVO.getBranch());
 				negativeArapAdjustments.setFinYear(arAdjustmentOffSetVO.getFinYear());
 				negativeArapAdjustments.setSourceId(arAdjustmentOffSetVO.getId());
-				negativeArapAdjustments.setDocId(savedReceiptInvDetails.getInvoiceNo()); 
-				negativeArapAdjustments.setDocDate(savedReceiptInvDetails.getInvoiceDate()); 
-				negativeArapAdjustments.setRefNo(arAdjustmentOffSetVO.getReceiptDocId()); 
+				negativeArapAdjustments.setDocId(savedReceiptInvDetails.getInvoiceNo());
+				negativeArapAdjustments.setDocDate(savedReceiptInvDetails.getInvoiceDate());
+				negativeArapAdjustments.setRefNo(arAdjustmentOffSetVO.getReceiptDocId());
 				negativeArapAdjustments.setRefDate(arAdjustmentOffSetVO.getReceiptDocDate());
 				negativeArapAdjustments.setCurrency(arAdjustmentOffSetVO.getCurrency());
-				negativeArapAdjustments.setBaseAmt(savedReceiptInvDetails.getSettled().negate()); 
-				negativeArapAdjustments.setNativeAmt(savedReceiptInvDetails.getSettled().negate()); 
+				negativeArapAdjustments.setBaseAmt(savedReceiptInvDetails.getSettled().negate());
+				negativeArapAdjustments.setNativeAmt(savedReceiptInvDetails.getSettled().negate());
 				negativeArapAdjustments.setVoucherType(arAdjustmentOffSetVO.getSubLedgerType());
 				negativeArapAdjustments.setSubLedgerCode(arAdjustmentOffSetVO.getSubLedgerCode());
 				negativeArapAdjustments.setExRate(savedReceiptInvDetails.getExRate());
@@ -229,7 +229,7 @@ public class ArAdjustmentOffSetServiceImpl implements ArAdjustmentOffSetService 
 				negativeArapAdjustments.setBranchCode(arAdjustmentOffSetVO.getBranchCode());
 				negativeArapAdjustments.setOffDocId(arAdjustmentOffSetVO.getDocId());
 				negativeArapAdjustments.setSubLedgerName(arAdjustmentOffSetVO.getSubLedgerName());
-				negativeArapAdjustments.setAmount(savedReceiptInvDetails.getSettled().negate()); 
+				negativeArapAdjustments.setAmount(savedReceiptInvDetails.getSettled().negate());
 				negativeArapAdjustments.setAccountName(partyMaster.getAccountType());
 				arapAdjustmentsRepo.save(negativeArapAdjustments);
 			}
@@ -262,10 +262,10 @@ public class ArAdjustmentOffSetServiceImpl implements ArAdjustmentOffSetService 
 		arAdjustmentOffSetVO.setOrgId(arAdjustmentOffSetDTO.getOrgId());
 		arAdjustmentOffSetVO.setActive(arAdjustmentOffSetDTO.isActive());
 		if (ObjectUtils.isNotEmpty(arAdjustmentOffSetDTO.getId())) {
-		    // Delete existing child records if updating
-		    List<ArOffSetInvoiceDetailsVO> existingDetails = arOffSetInvoiceDetailsRepo
-		            .findByArAdjustmentOffSetVO(arAdjustmentOffSetVO);
-		    arOffSetInvoiceDetailsRepo.deleteAll(existingDetails);
+			// Delete existing child records if updating
+			List<ArOffSetInvoiceDetailsVO> existingDetails = arOffSetInvoiceDetailsRepo
+					.findByArAdjustmentOffSetVO(arAdjustmentOffSetVO);
+			arOffSetInvoiceDetailsRepo.deleteAll(existingDetails);
 		}
 
 		BigDecimal netAmount = BigDecimal.ZERO;
@@ -275,41 +275,41 @@ public class ArAdjustmentOffSetServiceImpl implements ArAdjustmentOffSetService 
 		List<ArOffSetInvoiceDetailsVO> arOffSetInvoiceDetailsVOs = new ArrayList<>();
 
 		for (ArOffSetInvoiceDetailsDTO dto : arAdjustmentOffSetDTO.getArOffSetInvoiceDetailsDTO()) {
-		    ArOffSetInvoiceDetailsVO vo = new ArOffSetInvoiceDetailsVO();
+			ArOffSetInvoiceDetailsVO vo = new ArOffSetInvoiceDetailsVO();
 
-		    vo.setInvoiceNo(dto.getInvoiceNo());
-		    vo.setInvoiceDate(dto.getInvoiceDate());
-		    vo.setRefNo(dto.getRefNo());
-		    vo.setRefDate(dto.getRefDate());
-		    vo.setCurr(dto.getCurr());
-		    vo.setExRate(dto.getExRate());
-		    vo.setSetExRate(dto.getSetExRate());
-		    vo.setTnxSettled(dto.getTnxSettled());
-		    vo.setGainOrLoss(dto.getGainOrLoss());
+			vo.setInvoiceNo(dto.getInvoiceNo());
+			vo.setInvoiceDate(dto.getInvoiceDate());
+			vo.setRefNo(dto.getRefNo());
+			vo.setRefDate(dto.getRefDate());
+			vo.setCurr(dto.getCurr());
+			vo.setExRate(dto.getExRate());
+			vo.setSetExRate(dto.getSetExRate());
+			vo.setTnxSettled(dto.getTnxSettled());
+			vo.setGainOrLoss(dto.getGainOrLoss());
 
-		    BigDecimal amount = dto.getInvAmount() != null ? dto.getInvAmount() : BigDecimal.ZERO;
-		    BigDecimal gstAmt = dto.getGstAmt() != null ? dto.getGstAmt() : BigDecimal.ZERO;
-		    BigDecimal chargeAmt = amount.add(gstAmt);
-		    vo.setChargeAmt(chargeAmt);
+			BigDecimal amount = dto.getInvAmount() != null ? dto.getInvAmount() : BigDecimal.ZERO;
+			BigDecimal gstAmt = dto.getGstAmt() != null ? dto.getGstAmt() : BigDecimal.ZERO;
+			BigDecimal chargeAmt = amount.add(gstAmt);
+			vo.setChargeAmt(chargeAmt);
 
-		    BigDecimal settled = dto.getSettled() != null ? dto.getSettled() : BigDecimal.ZERO;
-		    BigDecimal outstanding = chargeAmt.subtract(settled);
+			BigDecimal settled = dto.getSettled() != null ? dto.getSettled() : BigDecimal.ZERO;
+			BigDecimal outstanding = chargeAmt.subtract(settled);
 
-		    vo.setOutStanding(outstanding);
-		    vo.setGstAmt(gstAmt);
-		    vo.setInvAmount(amount);
-		    vo.setSettled(settled);
-		    vo.setArAdjustmentOffSetVO(arAdjustmentOffSetVO);
+			vo.setOutStanding(outstanding);
+			vo.setGstAmt(gstAmt);
+			vo.setInvAmount(amount);
+			vo.setSettled(settled);
+			vo.setArAdjustmentOffSetVO(arAdjustmentOffSetVO);
 
-		    totalSettled = totalSettled.add(settled);
+			totalSettled = totalSettled.add(settled);
 
-		    arOffSetInvoiceDetailsVOs.add(vo);
+			arOffSetInvoiceDetailsVOs.add(vo);
 		}
 
 		netAmount = totalSettled;
 
 		if (netAmount.compareTo(receiptAmount) > 0) {
-		    throw new ApplicationException("Total Settled Amount should not be greater than Receipt Amount");
+			throw new ApplicationException("Total Settled Amount should not be greater than Receipt Amount");
 		}
 
 		onAccount = receiptAmount.subtract(netAmount);
@@ -320,7 +320,7 @@ public class ArAdjustmentOffSetServiceImpl implements ArAdjustmentOffSetService 
 
 		return arAdjustmentOffSetVO;
 
-}
+	}
 
 	@Override
 	public String getArAdjustmentOffSetDocId(Long orgId, String finYear, String branch, String branchCode) {
@@ -351,173 +351,181 @@ public class ArAdjustmentOffSetServiceImpl implements ArAdjustmentOffSetService 
 
 	}
 
-
 	@Override
-	public ArAdjustmentOffSetVO approveArAdjustmentOffSet(Long orgId, Long id, String docId, String action, String actionBy)
-	        throws ApplicationException {
+	public ArAdjustmentOffSetVO approveArAdjustmentOffSet(Long orgId, Long id, String docId, String action,
+			String actionBy) throws ApplicationException {
 
-	    ArAdjustmentOffSetVO receiptVO = arAdjustmentOffSetRepo.findByOrgIdAndIdAndDocId(orgId, id, docId);
+		ArAdjustmentOffSetVO receiptVO = arAdjustmentOffSetRepo.findByOrgIdAndIdAndDocId(orgId, id, docId);
 
-	    if (receiptVO == null) {
-	        throw new ApplicationException("ArAdjustmentOffSet not found for the given details.");
-	    }
+		if (receiptVO == null) {
+			throw new ApplicationException("ArAdjustmentOffSet not found for the given details.");
+		}
 
-	    if ("Approved".equalsIgnoreCase(receiptVO.getApproveStatus())) {  
-	        throw new ApplicationException("This ArAdjustmentOffSet Already Approved");
-	    } else if ("Rejected".equals(receiptVO.getApproveStatus())) {
-	        throw new ApplicationException("This ArAdjustmentOffSet Already Rejected");
-	    }
+		if ("Approved".equalsIgnoreCase(receiptVO.getApproveStatus())) {
+			throw new ApplicationException("This ArAdjustmentOffSet Already Approved");
+		} else if ("Rejected".equals(receiptVO.getApproveStatus())) {
+			throw new ApplicationException("This ArAdjustmentOffSet Already Rejected");
+		}
 //
 //	    if (!"SUBMIT".equalsIgnoreCase(receiptVO.getStatus())) {
 //	        throw new ApplicationException("Only SETTLED ArAdjustmentOffSet can be approved or rejected.");
 //	    }
 
-	    if (receiptVO.getApproveStatus() == null || 
-	        (!"Approved".equals(receiptVO.getApproveStatus()) && !"Rejected".equals(receiptVO.getApproveStatus()))) {
+		if (receiptVO.getApproveStatus() == null || (!"Approved".equals(receiptVO.getApproveStatus())
+				&& !"Rejected".equals(receiptVO.getApproveStatus()))) {
 
-	        String screenCode1 = "AC";
-	        String sourceScreenCode = receiptVO.getScreenCode();
-	        
-	        String accountsDocId = accountsRepo.getApproveDocId(
-	            receiptVO.getOrgId(),
-	            receiptVO.getFinYear(),
-	            receiptVO.getBranchCode(),
-	            sourceScreenCode,
-	            screenCode1
-	        );
+			String screenCode1 = "AC";
+			String sourceScreenCode = receiptVO.getScreenCode();
 
-	        MultipleDocIdGenerationDetailsVO multipleDocIdGenerationDetailsVO = 
-	            multipleDocIdGenerationDetailsRepo.findByOrgIdAndFinYearAndBranchCodeAndSourceScreenCodeAndScreenCode(
-	                receiptVO.getOrgId(),
-	                receiptVO.getFinYear(),
-	                receiptVO.getBranchCode(),
-	                sourceScreenCode,
-	                screenCode1
-	            );
-	        multipleDocIdGenerationDetailsVO.setLastno(multipleDocIdGenerationDetailsVO.getLastno() + 1);
-	        multipleDocIdGenerationDetailsRepo.save(multipleDocIdGenerationDetailsVO);
+//	        String accountsDocId = accountsRepo.getApproveDocId(
+//	            receiptVO.getOrgId(),
+//	            receiptVO.getFinYear(),
+//	            receiptVO.getBranchCode(),
+//	            sourceScreenCode,
+//	            screenCode1
+//	        );
 
-	        AccountsVO accountsVO = new AccountsVO();
-	        accountsVO.setDocId(accountsDocId);
-	        accountsVO.setSourceScreen(receiptVO.getScreenName());
-	        accountsVO.setSourceId(receiptVO.getId());
-	        accountsVO.setCreatedBy(receiptVO.getCreatedBy());
-	        accountsVO.setModifiedBy(receiptVO.getUpdatedBy());
-	        accountsVO.setOrgId(receiptVO.getOrgId());
-	        accountsVO.setBranch(receiptVO.getBranch());
-	        accountsVO.setBranchCode(receiptVO.getBranchCode());
-	        accountsVO.setRefNo(receiptVO.getDocId());
-	        accountsVO.setRefDate(receiptVO.getDocDate());
-	        accountsVO.setVId(receiptVO.getDocId());
-	        accountsVO.setVDate(receiptVO.getDocDate());
-	        accountsVO.setCurrency(receiptVO.getCurrency());
-	        accountsVO.setExRate(BigDecimal.ONE);
-	        accountsVO.setCancelRemarks(receiptVO.getCancelRemarks());
-	        accountsVO.setFinYear(receiptVO.getFinYear());
+			List<Object[]> taxInvoiceDoc = accountsRepo.getApproveDocId(receiptVO.getOrgId(), receiptVO.getFinYear(),
+					receiptVO.getBranchCode(), sourceScreenCode, screenCode1);
+
+			String generatedDocId = null;
+			LocalDate generatedDocDate = null;
+
+			if (taxInvoiceDoc != null && !taxInvoiceDoc.isEmpty()) {
+				Object[] row = taxInvoiceDoc.get(0);
+				generatedDocId = (String) row[0];
+				if (row[1] != null) {
+					generatedDocDate = ((java.sql.Date) row[1]).toLocalDate();
+				}
+			}
+			receiptVO.setPurVoucherNo(generatedDocId);
+			receiptVO.setPurVoucherDate(generatedDocDate);
+
+			MultipleDocIdGenerationDetailsVO multipleDocIdGenerationDetailsVO = multipleDocIdGenerationDetailsRepo
+					.findByOrgIdAndFinYearAndBranchCodeAndSourceScreenCodeAndScreenCode(receiptVO.getOrgId(),
+							receiptVO.getFinYear(), receiptVO.getBranchCode(), sourceScreenCode, screenCode1);
+			multipleDocIdGenerationDetailsVO.setLastno(multipleDocIdGenerationDetailsVO.getLastno() + 1);
+			multipleDocIdGenerationDetailsRepo.save(multipleDocIdGenerationDetailsVO);
+
+			AccountsVO accountsVO = new AccountsVO();
+			accountsVO.setDocId(generatedDocId);
+			accountsVO.setDocDate(generatedDocDate);
+			accountsVO.setSourceScreen(receiptVO.getScreenName());
+			accountsVO.setSourceId(receiptVO.getId());
+			accountsVO.setCreatedBy(receiptVO.getCreatedBy());
+			accountsVO.setModifiedBy(receiptVO.getUpdatedBy());
+			accountsVO.setOrgId(receiptVO.getOrgId());
+			accountsVO.setBranch(receiptVO.getBranch());
+			accountsVO.setBranchCode(receiptVO.getBranchCode());
+			accountsVO.setRefNo(receiptVO.getDocId());
+			accountsVO.setRefDate(receiptVO.getDocDate());
+			accountsVO.setVId(receiptVO.getDocId());
+			accountsVO.setVDate(receiptVO.getDocDate());
+			accountsVO.setCurrency(receiptVO.getCurrency());
+			accountsVO.setExRate(BigDecimal.ONE);
+			accountsVO.setCancelRemarks(receiptVO.getCancelRemarks());
+			accountsVO.setFinYear(receiptVO.getFinYear());
 //	        accountsVO.setTotalDebitAmount(dtlsVO.getSettled());
 //	        accountsVO.setTotalCreditAmount(dtlsVO.getSettled());
-	        
-	       
-	        BigDecimal netAmount = receiptVO.getNetAmount();
-	        BigDecimal receiptAmt = receiptVO.getAmount();
-	        BigDecimal effectiveNetAmount = (netAmount == null || netAmount.compareTo(BigDecimal.ZERO) == 0)
-	                ? (receiptAmt != null ? receiptAmt : BigDecimal.ZERO)
-	                : netAmount;
 
-	        List<AccountsDetailsVO> accountsDetailsVOs = new ArrayList<>();
+			BigDecimal netAmount = receiptVO.getNetAmount();
+			BigDecimal receiptAmt = receiptVO.getAmount();
+			BigDecimal effectiveNetAmount = (netAmount == null || netAmount.compareTo(BigDecimal.ZERO) == 0)
+					? (receiptAmt != null ? receiptAmt : BigDecimal.ZERO)
+					: netAmount;
 
-	        // RECEIVABLE A/C (Credit)
-	        AccountsDetailsVO receivable = new AccountsDetailsVO();
-	        receivable.setNDebitAmount(BigDecimal.ZERO);
-	        receivable.setACategory("RECEIVABLE A/C");
-	        receivable.setAccountName("RECEIVABLE A/C");
-	        receivable.setSubLedgerCode(receiptVO.getSubLedgerCode());
-	        receivable.setDebitAmount(BigDecimal.ZERO);
-	        receivable.setNCreditAmount(effectiveNetAmount);
-	        receivable.setCreditAmount(effectiveNetAmount);
-	        receivable.setArapFlag(true);
-	        receivable.setArapAmount(effectiveNetAmount.negate());
-	        receivable.setBDebitAmount(BigDecimal.ZERO);
-	        receivable.setBCrAmount(effectiveNetAmount);
-	        receivable.setBArapAmount(effectiveNetAmount.negate());
-	        receivable.setACurrency(receiptVO.getCurrency());
-	        receivable.setSubledgerName(receiptVO.getSubLedgerName());
-	        receivable.setNArapAmount(effectiveNetAmount.negate());
-	        receivable.setGstflag(1);
-	        receivable.setAccountsVO(accountsVO);
-	        accountsDetailsVOs.add(receivable);
+			List<AccountsDetailsVO> accountsDetailsVOs = new ArrayList<>();
 
-	        // BANK/CASH (Debit)
-	        AccountsDetailsVO cashBank = new AccountsDetailsVO();
-	        cashBank.setNDebitAmount(receiptAmt);
+			// RECEIVABLE A/C (Credit)
+			AccountsDetailsVO receivable = new AccountsDetailsVO();
+			receivable.setNDebitAmount(BigDecimal.ZERO);
+			receivable.setACategory("RECEIVABLE A/C");
+			receivable.setAccountName("RECEIVABLE A/C");
+			receivable.setSubLedgerCode(receiptVO.getSubLedgerCode());
+			receivable.setDebitAmount(BigDecimal.ZERO);
+			receivable.setNCreditAmount(effectiveNetAmount);
+			receivable.setCreditAmount(effectiveNetAmount);
+			receivable.setArapFlag(true);
+			receivable.setArapAmount(effectiveNetAmount.negate());
+			receivable.setBDebitAmount(BigDecimal.ZERO);
+			receivable.setBCrAmount(effectiveNetAmount);
+			receivable.setBArapAmount(effectiveNetAmount.negate());
+			receivable.setACurrency(receiptVO.getCurrency());
+			receivable.setSubledgerName(receiptVO.getSubLedgerName());
+			receivable.setNArapAmount(effectiveNetAmount.negate());
+			receivable.setGstflag(1);
+			receivable.setAccountsVO(accountsVO);
+			accountsDetailsVOs.add(receivable);
+
+			// BANK/CASH (Debit)
+			AccountsDetailsVO cashBank = new AccountsDetailsVO();
+			cashBank.setNDebitAmount(receiptAmt);
 //	        cashBank.setAccountName(receiptVO.getBankCashAcc());
-	        cashBank.setSubLedgerCode("None");
-	        cashBank.setDebitAmount(receiptAmt);
-	        cashBank.setNCreditAmount(BigDecimal.ZERO);
-	        cashBank.setCreditAmount(BigDecimal.ZERO);
-	        cashBank.setArapFlag(false);
-	        cashBank.setArapAmount(BigDecimal.ZERO);
-	        cashBank.setBDebitAmount(receiptAmt);
-	        cashBank.setBCrAmount(BigDecimal.ZERO);
-	        cashBank.setBArapAmount(BigDecimal.ZERO);
-	        cashBank.setACurrency(receiptVO.getCurrency());
-	        cashBank.setSubledgerName("None");
-	        cashBank.setNArapAmount(BigDecimal.ZERO);
-	        cashBank.setGstflag(3);
-	        cashBank.setAccountsVO(accountsVO);
-	        accountsDetailsVOs.add(cashBank);
+			cashBank.setSubLedgerCode("None");
+			cashBank.setDebitAmount(receiptAmt);
+			cashBank.setNCreditAmount(BigDecimal.ZERO);
+			cashBank.setCreditAmount(BigDecimal.ZERO);
+			cashBank.setArapFlag(false);
+			cashBank.setArapAmount(BigDecimal.ZERO);
+			cashBank.setBDebitAmount(receiptAmt);
+			cashBank.setBCrAmount(BigDecimal.ZERO);
+			cashBank.setBArapAmount(BigDecimal.ZERO);
+			cashBank.setACurrency(receiptVO.getCurrency());
+			cashBank.setSubledgerName("None");
+			cashBank.setNArapAmount(BigDecimal.ZERO);
+			cashBank.setGstflag(3);
+			cashBank.setAccountsVO(accountsVO);
+			accountsDetailsVOs.add(cashBank);
 
-	        // Set totals
-	        accountsVO.setTotalDebitAmount(effectiveNetAmount);
-	        accountsVO.setTotalCreditAmount(receiptAmt);
-	        accountsVO.setAccountsDetailsVO(accountsDetailsVOs);
+			// Set totals
+			accountsVO.setTotalDebitAmount(effectiveNetAmount);
+			accountsVO.setTotalCreditAmount(receiptAmt);
+			accountsVO.setAccountsDetailsVO(accountsDetailsVOs);
 
+			AccountsVO savedAccountsVO = accountsRepo.save(accountsVO);
 
-	        AccountsVO savedAccountsVO = accountsRepo.save(accountsVO);
+			// Create ARAP entry
+			AccountsDetailsVO accountsDetailsVOs2 = accountsDetailsRepo.findByAccountsVOAndGstflag(savedAccountsVO, 1);
+			ArapDetailsVO arapDetailsVO = new ArapDetailsVO();
+			arapDetailsVO.setSourceTransid(accountsDetailsVOs2.getId());
+			arapDetailsVO.setCreatedBy(savedAccountsVO.getCreatedBy());
+			arapDetailsVO.setUpdatedBy(savedAccountsVO.getModifiedBy());
+			arapDetailsVO.setBranch(savedAccountsVO.getBranch());
+			arapDetailsVO.setBranchCode(savedAccountsVO.getBranchCode());
+			arapDetailsVO.setFinYear(savedAccountsVO.getFinYear());
+			arapDetailsVO.setRefNo(savedAccountsVO.getRefNo());
+			arapDetailsVO.setOrgId(savedAccountsVO.getOrgId());
+			arapDetailsVO.setRefDate(savedAccountsVO.getRefDate());
+			arapDetailsVO.setSubLedgerCode(accountsDetailsVOs2.getSubLedgerCode());
+			arapDetailsVO.setCurrency(accountsDetailsVOs2.getACurrency());
+			arapDetailsVO.setExRate(accountsDetailsVOs2.getAExRate());
+			arapDetailsVO.setAmount(accountsDetailsVOs2.getArapAmount());
+			arapDetailsVO.setBaseAmt(accountsDetailsVOs2.getArapAmount());
+			arapDetailsVO.setDueDate(savedAccountsVO.getDueDate());
+			arapDetailsVO.setCreditDays(savedAccountsVO.getCreditDays());
+			arapDetailsVO.setDocId(savedAccountsVO.getDocId());
+			arapDetailsVO.setDocDate(savedAccountsVO.getDocDate());
+			arapDetailsVO.setAccCurrency(savedAccountsVO.getCurrency());
+			arapDetailsVO.setExRate(savedAccountsVO.getExRate());
+			arapDetailsVO.setAccName(accountsDetailsVOs2.getAccountName());
+			arapDetailsVO.setGstFlag(accountsDetailsVOs2.getGstflag());
+			arapDetailsVO.setActive(savedAccountsVO.isActive());
+			arapDetailsVO.setSubLedgerName(accountsDetailsVOs2.getSubledgerName());
+			arapDetailsVO.setSalesType(savedAccountsVO.getSalesType());
+			arapDetailsVO.setNativeAmt(accountsDetailsVOs2.getArapAmount());
 
-	        // Create ARAP entry
-	        AccountsDetailsVO accountsDetailsVOs2 = accountsDetailsRepo.findByAccountsVOAndGstflag(savedAccountsVO, 1);
-	        ArapDetailsVO arapDetailsVO = new ArapDetailsVO();
-	        arapDetailsVO.setSourceTransid(accountsDetailsVOs2.getId());
-	        arapDetailsVO.setCreatedBy(savedAccountsVO.getCreatedBy());
-	        arapDetailsVO.setUpdatedBy(savedAccountsVO.getModifiedBy());
-	        arapDetailsVO.setBranch(savedAccountsVO.getBranch());
-	        arapDetailsVO.setBranchCode(savedAccountsVO.getBranchCode());
-	        arapDetailsVO.setFinYear(savedAccountsVO.getFinYear());
-	        arapDetailsVO.setRefNo(savedAccountsVO.getRefNo());
-	        arapDetailsVO.setOrgId(savedAccountsVO.getOrgId());
-	        arapDetailsVO.setRefDate(savedAccountsVO.getRefDate());
-	        arapDetailsVO.setSubLedgerCode(accountsDetailsVOs2.getSubLedgerCode());
-	        arapDetailsVO.setCurrency(accountsDetailsVOs2.getACurrency());
-	        arapDetailsVO.setExRate(accountsDetailsVOs2.getAExRate());
-	        arapDetailsVO.setAmount(accountsDetailsVOs2.getArapAmount());
-	        arapDetailsVO.setBaseAmt(accountsDetailsVOs2.getArapAmount());
-	        arapDetailsVO.setDueDate(savedAccountsVO.getDueDate());
-	        arapDetailsVO.setCreditDays(savedAccountsVO.getCreditDays());
-	        arapDetailsVO.setDocId(savedAccountsVO.getDocId());
-	        arapDetailsVO.setDocDate(savedAccountsVO.getDocDate());
-	        arapDetailsVO.setAccCurrency(savedAccountsVO.getCurrency());
-	        arapDetailsVO.setExRate(savedAccountsVO.getExRate());
-	        arapDetailsVO.setAccName(accountsDetailsVOs2.getAccountName());
-	        arapDetailsVO.setGstFlag(accountsDetailsVOs2.getGstflag());
-	        arapDetailsVO.setActive(savedAccountsVO.isActive());
-	        arapDetailsVO.setSubLedgerName(accountsDetailsVOs2.getSubledgerName());
-	        arapDetailsVO.setSalesType(savedAccountsVO.getSalesType());
-	        arapDetailsVO.setNativeAmt(accountsDetailsVOs2.getArapAmount());
+			arapDetailsRepo.save(arapDetailsVO);
 
-	        arapDetailsRepo.save(arapDetailsVO);
-	
-	    receiptVO.setApproveStatus(action);
-	    receiptVO.setApproveBy(actionBy);
-	    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy hh:mm:ss a");
-	    receiptVO.setApproveOn(LocalDateTime.now().format(formatter).toUpperCase());
-	    
-	    return arAdjustmentOffSetRepo.save(receiptVO);
-	    }
+			receiptVO.setApproveStatus(action);
+			receiptVO.setApproveBy(actionBy);
+			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy hh:mm:ss a");
+			receiptVO.setApproveOn(LocalDateTime.now().format(formatter).toUpperCase());
 
-	    return receiptVO;
+			return arAdjustmentOffSetRepo.save(receiptVO);
+		}
+
+		return receiptVO;
 	}
-
 
 	// AP ADJUSTMENT OFFSET
 
@@ -667,7 +675,7 @@ public class ArAdjustmentOffSetServiceImpl implements ArAdjustmentOffSetService 
 			reverse.setAccountName(partyMaster.getAccountType());
 			reverse.setBranchCode(apAdjustmentOffSetVO.getBranchCode());
 			reverse.setBranch(apAdjustmentOffSetVO.getBranch());
-			reverse.setOffDocId(apAdjustmentOffSetVO.getDocId());	
+			reverse.setOffDocId(apAdjustmentOffSetVO.getDocId());
 			reverse.setSourceId(dtlsVO.getId());
 			arapAdjustmentsRepo.save(reverse);
 		}
@@ -756,7 +764,7 @@ public class ArAdjustmentOffSetServiceImpl implements ArAdjustmentOffSetService 
 ////	    apAdjustmentOffSetVO.setOutStandingTotal(totalOutstanding);
 //
 //		return apAdjustmentOffSetVO;
-		
+
 		BigDecimal netAmount = BigDecimal.ZERO;
 		BigDecimal totalSettled = BigDecimal.ZERO;
 		BigDecimal onAccount = BigDecimal.ZERO;
@@ -764,40 +772,40 @@ public class ArAdjustmentOffSetServiceImpl implements ArAdjustmentOffSetService 
 		List<ApOffSetInvoiceDetailsVO> invoiceDetailsVOs = new ArrayList<>();
 
 		for (ApOffSetInvoiceDetailsDTO dto : apAdjustmentOffSetDTO.getApOffSetInvoiceDetailsDTO()) {
-		ApOffSetInvoiceDetailsVO vo = new ApOffSetInvoiceDetailsVO();
-		    vo.setInvoiceNo(dto.getInvoiceNo());
-		    vo.setInvoiceDate(dto.getInvoiceDate());
-		    vo.setRefNo(dto.getRefNo());
-		    vo.setRefDate(dto.getRefDate());
-		    vo.setCurr(dto.getCurr());
-		    vo.setExRate(dto.getExRate());
-		    vo.setSetExRate(dto.getSetExRate());
-		    vo.setTnxSettled(dto.getTnxSettled());
-		    vo.setGainOrLoss(dto.getGainOrLoss());
+			ApOffSetInvoiceDetailsVO vo = new ApOffSetInvoiceDetailsVO();
+			vo.setInvoiceNo(dto.getInvoiceNo());
+			vo.setInvoiceDate(dto.getInvoiceDate());
+			vo.setRefNo(dto.getRefNo());
+			vo.setRefDate(dto.getRefDate());
+			vo.setCurr(dto.getCurr());
+			vo.setExRate(dto.getExRate());
+			vo.setSetExRate(dto.getSetExRate());
+			vo.setTnxSettled(dto.getTnxSettled());
+			vo.setGainOrLoss(dto.getGainOrLoss());
 
-		    BigDecimal amount = dto.getInvAmount() != null ? dto.getInvAmount() : BigDecimal.ZERO;
-		    BigDecimal gstAmt = dto.getGstAmount() != null ? dto.getGstAmount() : BigDecimal.ZERO;
-		    BigDecimal chargeAmt = amount.add(gstAmt);
-		    vo.setChargeAmt(chargeAmt);
+			BigDecimal amount = dto.getInvAmount() != null ? dto.getInvAmount() : BigDecimal.ZERO;
+			BigDecimal gstAmt = dto.getGstAmount() != null ? dto.getGstAmount() : BigDecimal.ZERO;
+			BigDecimal chargeAmt = amount.add(gstAmt);
+			vo.setChargeAmt(chargeAmt);
 
-		    BigDecimal settled = dto.getSettled() != null ? dto.getSettled() : BigDecimal.ZERO;
-		    BigDecimal outstanding = chargeAmt.subtract(settled);
+			BigDecimal settled = dto.getSettled() != null ? dto.getSettled() : BigDecimal.ZERO;
+			BigDecimal outstanding = chargeAmt.subtract(settled);
 
-		    vo.setOutStanding(outstanding);
-		    vo.setGstAmount(gstAmt);
-		    vo.setInvAmount(amount);
-		    vo.setSettled(settled);
+			vo.setOutStanding(outstanding);
+			vo.setGstAmount(gstAmt);
+			vo.setInvAmount(amount);
+			vo.setSettled(settled);
 			vo.setApAdjustmentOffSetVO(apAdjustmentOffSetVO);
 
-		    totalSettled = totalSettled.add(settled);
+			totalSettled = totalSettled.add(settled);
 
-		    invoiceDetailsVOs.add(vo);
+			invoiceDetailsVOs.add(vo);
 		}
 
 		netAmount = totalSettled;
 
 		if (netAmount.compareTo(receiptAmount) > 0) {
-		    throw new ApplicationException("Total Settled Amount should not be greater than Receipt Amount");
+			throw new ApplicationException("Total Settled Amount should not be greater than Receipt Amount");
 		}
 
 		onAccount = receiptAmount.subtract(netAmount);
@@ -806,8 +814,7 @@ public class ArAdjustmentOffSetServiceImpl implements ArAdjustmentOffSetService 
 
 		apAdjustmentOffSetVO.setApOffSetInvoiceDetailsVO(invoiceDetailsVOs);
 		return apAdjustmentOffSetVO;
-	
-		
+
 	}
 
 	@Override
@@ -864,8 +871,24 @@ public class ArAdjustmentOffSetServiceImpl implements ArAdjustmentOffSetService 
 			String screenCode1 = "AC";
 			String sourceScreenCode = paymentVO.getScreenCode();
 
-			String accountsDocId = accountsRepo.getApproveDocId(paymentVO.getOrgId(), paymentVO.getFinYear(),
+//			String accountsDocId = accountsRepo.getApproveDocId(paymentVO.getOrgId(), paymentVO.getFinYear(),
+//					paymentVO.getBranchCode(), sourceScreenCode, screenCode1);
+
+			List<Object[]> taxInvoiceDoc = accountsRepo.getApproveDocId(paymentVO.getOrgId(), paymentVO.getFinYear(),
 					paymentVO.getBranchCode(), sourceScreenCode, screenCode1);
+
+			String generatedDocId = null;
+			LocalDate generatedDocDate = null;
+
+			if (taxInvoiceDoc != null && !taxInvoiceDoc.isEmpty()) {
+				Object[] row = taxInvoiceDoc.get(0);
+				generatedDocId = (String) row[0];
+				if (row[1] != null) {
+					generatedDocDate = ((java.sql.Date) row[1]).toLocalDate();
+				}
+			}
+			paymentVO.setPurVoucherNo(generatedDocId);
+			paymentVO.setPurVoucherDate(generatedDocDate);
 
 			MultipleDocIdGenerationDetailsVO multipleDocIdGenerationDetailsVO = multipleDocIdGenerationDetailsRepo
 					.findByOrgIdAndFinYearAndBranchCodeAndSourceScreenCodeAndScreenCode(paymentVO.getOrgId(),
@@ -874,7 +897,8 @@ public class ArAdjustmentOffSetServiceImpl implements ArAdjustmentOffSetService 
 			multipleDocIdGenerationDetailsRepo.save(multipleDocIdGenerationDetailsVO);
 
 			AccountsVO accountsVO = new AccountsVO();
-			accountsVO.setDocId(accountsDocId);
+			accountsVO.setDocId(generatedDocId);
+			accountsVO.setDocDate(generatedDocDate);
 			accountsVO.setSourceScreen(paymentVO.getScreenName());
 			accountsVO.setSourceId(paymentVO.getId());
 			accountsVO.setCreatedBy(paymentVO.getCreatedBy());

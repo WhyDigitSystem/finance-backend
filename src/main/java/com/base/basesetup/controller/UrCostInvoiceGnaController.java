@@ -113,28 +113,64 @@ public class UrCostInvoiceGnaController extends BaseController {
 		return ResponseEntity.ok().body(responseDTO);
 	}
 
+//	@GetMapping("/getUrCostInvoiceGnaDocId")
+//	public ResponseEntity<ResponseDTO> getUrCostInvoiceGnaDocId(@RequestParam Long orgId, @RequestParam String finYear,
+//			@RequestParam String branch, @RequestParam String branchCode) {
+//
+//		String methodName = "getUrCostInvoiceGnaDocId()";
+//		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+//		String errorMsg = null;
+//		Map<String, Object> responseObjectsMap = new HashMap<>();
+//		ResponseDTO responseDTO = null;
+//		String mapp = "";
+//
+//		try {
+//			mapp = urCostInvoiceGnaService.getUrCostInvoiceGnaDocId(orgId, finYear, branch, branchCode);
+//		} catch (Exception e) {
+//			errorMsg = e.getMessage();
+//			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+//		}
+//
+//		if (StringUtils.isBlank(errorMsg)) {
+//			responseObjectsMap.put(CommonConstant.STRING_MESSAGE,
+//					"UrCostInvoiceGnaDocId information retrieved successfully");
+//			responseObjectsMap.put("urCostInvoiceGnaDocId", mapp);
+//			responseDTO = createServiceResponse(responseObjectsMap);
+//		} else {
+//			responseDTO = createServiceResponseError(responseObjectsMap,
+//					"Failed to retrieve UrCostInvoiceGnaDocId information", errorMsg);
+//		}
+//
+//		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+//		return ResponseEntity.ok().body(responseDTO);
+//	}
+	
 	@GetMapping("/getUrCostInvoiceGnaDocId")
 	public ResponseEntity<ResponseDTO> getUrCostInvoiceGnaDocId(@RequestParam Long orgId, @RequestParam String finYear,
 			@RequestParam String branch, @RequestParam String branchCode) {
 
 		String methodName = "getUrCostInvoiceGnaDocId()";
 		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+
 		String errorMsg = null;
 		Map<String, Object> responseObjectsMap = new HashMap<>();
 		ResponseDTO responseDTO = null;
-		String mapp = "";
+
+		Map<String, Object> resultMap = new HashMap<>();
 
 		try {
-			mapp = urCostInvoiceGnaService.getUrCostInvoiceGnaDocId(orgId, finYear, branch, branchCode);
+			resultMap = urCostInvoiceGnaService.getUrCostInvoiceGnaDocId(orgId, finYear, branch, branchCode);
 		} catch (Exception e) {
 			errorMsg = e.getMessage();
 			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
 		}
 
 		if (StringUtils.isBlank(errorMsg)) {
-			responseObjectsMap.put(CommonConstant.STRING_MESSAGE,
-					"UrCostInvoiceGnaDocId information retrieved successfully");
-			responseObjectsMap.put("urCostInvoiceGnaDocId", mapp);
+			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "urCostInvoiceGnaDocId information retrieved successfully");
+
+			responseObjectsMap.put("urCostInvoiceGnaDocId", resultMap.get("docId"));
+			responseObjectsMap.put("docDate", resultMap.get("docDate"));
+
 			responseDTO = createServiceResponse(responseObjectsMap);
 		} else {
 			responseDTO = createServiceResponseError(responseObjectsMap,

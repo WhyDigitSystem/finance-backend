@@ -20,7 +20,7 @@ public interface UrCostInvoiceGnaService {
 
 	List<UrCostInvoiceGnaVO> getUrCostInvoiceGnaById(Long id);
 
-	String getUrCostInvoiceGnaDocId(Long orgId, String finYear, String branch, String branchCode);
+	Map<String, Object> getUrCostInvoiceGnaDocId(Long orgId, String finYear, String branch, String branchCode);
 
 	List<PartyMasterVO> getAllVendorFromPartyMaster(Long orgId, String partyType);
 
