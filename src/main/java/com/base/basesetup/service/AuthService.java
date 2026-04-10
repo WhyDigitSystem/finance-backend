@@ -13,9 +13,11 @@ import com.base.basesetup.dto.RefreshTokenDTO;
 import com.base.basesetup.dto.ResetPasswordFormDTO;
 import com.base.basesetup.dto.ResponsibilityDTO;
 import com.base.basesetup.dto.RolesDTO;
+import com.base.basesetup.dto.RolesPermissionHeaderDTO;
 import com.base.basesetup.dto.SignUpFormDTO;
 import com.base.basesetup.dto.UserResponseDTO;
 import com.base.basesetup.entity.ResponsibilityVO;
+import com.base.basesetup.entity.RolesPermissionHeaderVO;
 import com.base.basesetup.entity.RolesVO;
 import com.base.basesetup.entity.UserVO;
 import com.base.basesetup.exception.ApplicationException;
@@ -58,6 +60,14 @@ public interface AuthService {
 	public UserVO getUserById(Long userId);
 
 	public UserVO getUserByUserName(String userName);
+	
+	// Roles Screen Permission 
+	
+
+	 Map<String, Object> createUpdateRoleScreenPermission(RolesPermissionHeaderDTO rolesPermissionHeaderDTO) throws ApplicationException;
+		
+	 List<RolesPermissionHeaderVO> getRolesPermissionHeaderByRoleandOrgid(String role, Long orgId);
+	
 
 	
 

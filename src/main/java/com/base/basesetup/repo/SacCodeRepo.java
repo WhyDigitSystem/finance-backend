@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import com.base.basesetup.entity.HSNSacCodeVO;
 import com.base.basesetup.entity.SacCodeVO;
 
 @Repository
@@ -21,8 +22,8 @@ public interface SacCodeRepo extends JpaRepository<SacCodeVO, Long> {
 
 	boolean existsByOrgIdAndSacDescriptionIgnoreCase(Long orgId, String sacDescription);
 
-	@Query("SELECT s FROM SacCodeVO s WHERE s.orgId = :orgId AND s.active = true")
-	List<SacCodeVO> getAllActiveSacCodeByOrgId( Long orgId);
+	@Query("SELECT s FROM HSNSacCodeVO s WHERE s.orgId = :orgId AND s.active = true")
+	List<HSNSacCodeVO> getAllActiveSacCodeByOrgId( Long orgId);
 
 
 

@@ -2,8 +2,6 @@ package com.base.basesetup.dto;
 
 import java.util.List;
 
-import javax.persistence.Column;
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -23,6 +21,7 @@ public class TaxMasterDTO {
 	private String cancelRemarks;
 	private boolean cancel;
 	private boolean active;
+
 
 	private List<TaxMasterDetailsDTO> taxMasterDetailsDTO;
 }

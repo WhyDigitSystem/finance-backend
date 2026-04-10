@@ -15,17 +15,19 @@ import com.base.basesetup.exception.ApplicationException;
 public interface IrnCreditNoteService {
 	
 //	IrnCredit
-	List<IrnCreditNoteVO> getAllIrnCreditByOrgId(Long orgId);
+	List<IrnCreditNoteVO> getAllIrnCreditByOrgId(Long orgId,String finYear, String branchCode);
 	
 	List<IrnCreditNoteVO> getAllIrnCreditById(Long id);
 
 	Map<String, Object> updateCreateIrnCreditNote(IrnCreditNoteDTO irnCreditDTO) throws ApplicationException;
 	
-	String getIrnCreditNoteDocId(Long orgId, String finYear, String branch, String branchCode);
+	Map<String, Object> getIrnCreditNoteDocId(Long orgId, String finYear, String branch, String branchCode);
 
 	List<PartyMasterVO> getAllPartyByPartyType(Long orgId, String partyType);
 	
 	List<TaxInvoiceVO>getOriginBillNofromTaxInvoiceByParty(Long orgId,String party,String branchCode);
 	
 	IrnCreditNoteVO approveIrnCreditNote(Long orgId,Long id,String docId,String action,String actionBy) throws ApplicationException;
+
+	List<Map<String, Object>> getIRNCreditNoteCount(Long orgId, String finYear, String branchCode);
 }

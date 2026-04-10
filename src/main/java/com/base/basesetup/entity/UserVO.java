@@ -52,6 +52,8 @@ public class UserVO {
 	private String nickName;
 	@Column(name = "email")
 	private String email;
+	@Column(name = "finyear")
+	private String finYear;
 	@Column(name = "orgid")
 	private Long orgId;
 	@Column(name = "mobileno")
@@ -79,6 +81,9 @@ public class UserVO {
 	@Column(name = "role")
 	private Role role;
 	private boolean allIndiaAcces;
+	
+	@Column(name = "clientid")
+	private Long clientId;
 
 	@Embedded
 	private CreatedUpdatedDate commonDate = new CreatedUpdatedDate();

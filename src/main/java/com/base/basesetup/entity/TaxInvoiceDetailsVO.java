@@ -45,8 +45,10 @@ public class TaxInvoiceDetailsVO {
 	private String chargeName;
 	@Column(name = "taxable",length = 10)
 	private String taxable;
-	@Column(name = "qty")
-	private int qty;
+	@Column(name = "description")
+	private String description;
+	@Column(name = "qty", precision = 10, scale = 2)
+	private BigDecimal qty;
 	
 	@Column(name = "rate", precision = 10, scale = 2)
 	private BigDecimal rate;

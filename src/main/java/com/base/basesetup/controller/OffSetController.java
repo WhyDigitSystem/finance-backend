@@ -10,9 +10,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -20,12 +22,12 @@ import com.base.basesetup.common.CommonConstant;
 import com.base.basesetup.common.UserConstants;
 import com.base.basesetup.dto.OffSetDTO;
 import com.base.basesetup.dto.ResponseDTO;
-import com.base.basesetup.dto.TaxInvoiceDTO;
 import com.base.basesetup.entity.OffSetVO;
-import com.base.basesetup.entity.TaxInvoiceVO;
 import com.base.basesetup.service.OffSetService;
 
+@CrossOrigin
 @RestController
+@RequestMapping("/api/offSetcontroller")
 public class OffSetController extends BaseController {
 	
 	public static final Logger LOGGER = LoggerFactory.getLogger(OffSetController.class);

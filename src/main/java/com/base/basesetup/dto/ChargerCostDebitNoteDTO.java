@@ -11,7 +11,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class ChargerCostDebitNoteDTO {
 
-	private Long id;
 	private String jobNo;
 	private String chargeName;
 	private String chargeCode;
@@ -20,12 +19,17 @@ public class ChargerCostDebitNoteDTO {
 	private String currency;
 	private BigDecimal exRate;
 	private String gst;
+//	private BigDecimal fcAmt;
+//	private BigDecimal lcAmt;
+//	private BigDecimal billAmt;
 	private BigDecimal rate;
 	private int qty;
-	private Float gstPercent;
+	private Float GSTPercent;
+//	private BigDecimal gstAmount;
 	private String ledger;
 	private String govChargeCode;
 	private String taxable;
+	private String description;
 //	private String exempted;
 
 }

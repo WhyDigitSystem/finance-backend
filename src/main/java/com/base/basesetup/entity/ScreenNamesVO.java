@@ -29,7 +29,7 @@ public class ScreenNamesVO {
 	@Column(name = "screennameid")
 	private Long id;
 
-	@Column(name = "screenname", length = 25)
+	@Column(name = "screenname", length = 50)
 	private String screenName;
 
 	@Column(name = "screencode", length = 10)
@@ -48,5 +48,9 @@ public class ScreenNamesVO {
 	
 	@Embedded
 	private CreatedUpdatedDate commonDate = new CreatedUpdatedDate();
+	
+//	@JsonManagedReference
+//	@OneToMany(mappedBy = "rolesVO", cascade = CascadeType.ALL)
+//	private List<RolesPermissionVO> rolesPermissionVO;
 
 }

@@ -17,7 +17,7 @@ import com.base.basesetup.exception.ApplicationException;
 public interface ARService {
 
 	// Receipt
-	List<ReceiptVO> getAllReceiptReceivableByOrgId(Long orgId);
+	List<ReceiptVO> getAllReceiptReceivableByOrgId(Long orgId, String finYear, String branchCode);
 
 	Map<String, Object> updateCreateReceiptReceivable(@Valid ReceiptDTO receiptReceivableDTO)
 			throws ApplicationException;
@@ -28,7 +28,7 @@ public interface ARService {
 
 	List<Map<String, Object>> getCustomerNameAndCodeForReceipt(Long orgId);
 
-	String getReceiptDocId(Long orgId, String finYear, String branch, String branchCode);
+	Map<String, Object> getReceiptDocId(Long orgId, String finYear, String branch, String branchCode);
 
 //	ARBillBalance
 	List<ArBillBalanceVO> getAllArBillBalanceByOrgId(Long orgId);
@@ -40,11 +40,31 @@ public interface ARService {
 	List<ArBillBalanceVO> getArBillBalanceByActive();
 
 	String getArBillBalanceDocId(Long orgId, String finYear, String branch, String branchCode);
-	
+
 	List<Map<String, Object>> getPartyNameAndCodeForArBillBalance(Long orgId);
 
-
 // 	ReceiptRegister
-	List<Map<String, Object>> getAllReceiptRegister(Long orgId,
-			String fromDate, String toDate, String subLedgerName);
+	List<Map<String, Object>> getAllReceiptRegister(Long orgId, String fromDate, String toDate, String subLedgerName);
+
+	List<Map<String, Object>> getReciptFillGrid(Long orgId, String partyCode, String branchCode);
+
+	ReceiptVO approveReceipt(Long orgId, Long id, String docId, String action, String actionBy)
+			throws ApplicationException;
+
+	// Report
+	List<Map<String, Object>> getReceiptDetails(Long orgId, String finYear, String partyname, String fromDate,
+			String toDate, String branchCode);
+
+	List<Map<String, Object>> getReceiptSummary(Long orgId, String finYear, String partyname, String fromDate,
+			String toDate, String branchCode);
+
+	ReceiptVO getReceiptByDocIdAndScreenCode(String docId);
+
+	//TdsReport
+	
+	List<Map<String, Object>> getReceivableTdsDetailsReport(Long orgId, String partyName, String finYear,
+			String fromDate, String toDate, String branchName);
+
+	List<Map<String, Object>> getReceiptCount(Long orgId, String finYear, String branchCode);
+
 }

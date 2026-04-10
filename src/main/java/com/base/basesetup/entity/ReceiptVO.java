@@ -15,8 +15,9 @@ import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
+import org.springframework.format.annotation.DateTimeFormat;
+
 import com.base.basesetup.dto.CreatedUpdatedDate;
-import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import lombok.AllArgsConstructor;
@@ -45,6 +46,9 @@ public class ReceiptVO {
 
 	@Column(name = "branchcode", length = 20)
 	private String branchCode;
+
+	@Column(name = "ledgername", length = 20)
+	private String ledgerName;
 
 	@Column(name = "customer", length = 50)
 	private String customer;
@@ -85,8 +89,8 @@ public class ReceiptVO {
 	private String docId;
 
 	@Column(name = "docdate")
-	@Builder.Default
-	private LocalDate docDate = LocalDate.now();
+//	@Builder.Default
+	private LocalDate docDate;
 
 	@Column(name = "type", length = 50)
 	private String type;
@@ -130,11 +134,11 @@ public class ReceiptVO {
 	@Column(name = "receiptType1", length = 20)
 	private String receiptType1;
 
-	@Column(name = "chequeutino", length = 10)
+	@Column(name = "chequeutino", length = 100)
 	private String chequeUtiNo;
 
-	@Column(name = "chequeutidt")
-	private LocalDate chequeUtiDt;
+	@Column(name = "chequeutidate")
+	private LocalDate chequeUtiDate;
 
 	@Column(name = "receivedfrom", length = 100)
 	private String receivedFrom;
@@ -151,11 +155,39 @@ public class ReceiptVO {
 
 	@Column(name = "netamount", precision = 10, scale = 2)
 	private BigDecimal netAmount;
-	
-	@JsonGetter("active")
-	public String getActive() {
-		return active ? "Active" : "In-Active";
-	}
+
+	@Column(name = "onaccount", precision = 10, scale = 2)
+	private BigDecimal onAccount;
+
+	@Column(name = "approvestatus", length = 20)
+	private String approveStatus;
+
+	@Column(name = "approveby", length = 20)
+	private String approveBy;
+
+	@Column(name = "status", length = 30)
+	private String status;
+
+	@Column(name = "shortname", length = 30)
+	private String shortName;
+
+	@Column(name = "totaloutstanding", precision = 10, scale = 2)
+	private BigDecimal totalOutStanding;
+
+	@Column(name = "totalchargeamount", precision = 10, scale = 2)
+	private BigDecimal totalChargeAmount;
+
+	@Column(name = "receivableamount", precision = 10, scale = 2)
+	private BigDecimal receivableAmount;
+
+	@DateTimeFormat(pattern = "dd-MM-yyyy hh:mm:ss a")
+	@Column(name = "approveon")
+	private String approveOn;
+
+	@Column(name = "purvoucherno", length = 50)
+	private String purVoucherNo;
+	@Column(name = "purvoucherdate")
+	private LocalDate purVoucherDate;
 
 	@OneToMany(mappedBy = "receiptVO", cascade = CascadeType.ALL)
 	@JsonManagedReference

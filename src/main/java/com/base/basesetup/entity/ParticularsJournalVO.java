@@ -48,4 +48,5 @@ public class ParticularsJournalVO {
 	@JsonBackReference
 	@JoinColumn(name = "generaljournalid")
 	GeneralJournalVO generalJournalVO;
+
 }

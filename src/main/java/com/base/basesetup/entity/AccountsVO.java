@@ -62,7 +62,7 @@ public class AccountsVO {
 	@Column(name = "docid",length = 30)
 	private String docId;
 	@Column(name = "docdate")
-	private LocalDate docDate= LocalDate.now();
+	private LocalDate docDate;
 	@Column(name = "refno",length = 30)
 	private String refNo;
 	@Column(name = "refdate")
@@ -111,6 +111,10 @@ public class AccountsVO {
 	private String rc;
 	@Column(name = "salestype",length = 30)
 	private String salesType;
+	@Column(name = "vid", length = 50)
+	private String vId;
+	@Column(name = "vdate")
+	private LocalDate vDate;
 	
 	@DateTimeFormat(pattern = "dd-MM-yyyy hh:mm:ss a")
 	@Column(name="createdon",length = 25)

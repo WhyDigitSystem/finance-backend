@@ -1,8 +1,5 @@
 package com.base.basesetup.dto;
 
-import com.base.basesetup.entity.MultipleDocIdGenerationDetailsVO;
-import com.base.basesetup.entity.MultipleDocIdGenerationVO;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

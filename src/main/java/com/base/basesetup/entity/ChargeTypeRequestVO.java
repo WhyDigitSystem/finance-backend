@@ -34,7 +34,7 @@ public class ChargeTypeRequestVO {
 	private String chargeCode;
 	@Column(name = "chargedescription",length = 150)
 	private String chargeDescription;
-	@Column(name = "product",length = 30)
+	@Column(name = "product",length = 50)
 	private String product;
 	@Column(name = "localchargedescripition",length = 150)
 	private String localChargeDescripition;

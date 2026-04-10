@@ -1,9 +1,9 @@
 package com.base.basesetup.entity;
 
 import java.math.BigDecimal;
+
 import java.math.RoundingMode;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 
 import javax.persistence.CascadeType;
@@ -65,6 +65,8 @@ public class TaxInvoiceVO {
 	private String bizMode;
 	@Column(name = "partyname",length = 150)
 	private String partyName;
+	@Column(name = "duedate")
+	private LocalDate dueDate;
 	@Column(name = "partyid")
 	private Long partyId;
 	@Column(name = "partycode",length = 10)
@@ -97,7 +99,7 @@ public class TaxInvoiceVO {
 	private String screenName="TAX INVOICE";
 
 	@Column(name = "docdate")
-	private LocalDate docDate= LocalDate.now();
+	private LocalDate docDate;
 	@Column(name = "supplierbillno",length = 30)
 	private String supplierBillNo;
 	@Column(name = "supplierbilldate")
@@ -108,6 +110,13 @@ public class TaxInvoiceVO {
 	private BigDecimal billCurrRate;
 	@Column(name = "creditdays",length = 5)
 	private int creditDays;
+	@Column(name = "remarks",length = 255)
+	private String remarks;
+	
+	@Column(name = "vid", length = 50)
+	private String vId;
+	@Column(name = "vdate")
+	private LocalDate vDate;
 	
 	@Column(name = "shipperinvoiceno",length = 30)
 	private String shipperInvoiceNo;
@@ -155,6 +164,13 @@ public class TaxInvoiceVO {
 	private String amountInWords;
 	@Column(name = "billingremarks",length = 30)
 	private String billingRemarks;
+	private double annexureSubTotal;
+	@Column(name = "transactionno")
+	private String trasactionNo;
+	@Column(name = "totalqty")
+	private Long totalQty;
+	@Column(name = "partyshortname")
+	private String partyShortName;
 
 	
 
@@ -167,6 +183,11 @@ public class TaxInvoiceVO {
 	@OneToMany(mappedBy = "taxInvoiceVO", cascade = CascadeType.ALL)
 	@JsonManagedReference
 	List<TaxInvoiceGstVO> taxInvoiceGstVO;
+	
+	@OneToMany(mappedBy = "taxInvoiceVO", cascade = CascadeType.ALL)
+	@JsonManagedReference
+	List<TaxInvoiceAnnexureVO> taxInvoiceAnnexureVO;
+	
 
 	@Embedded
 	@Builder.Default

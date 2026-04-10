@@ -24,10 +24,12 @@ public class ChargerCostInvoiceDTO {
 	private String gst;
 	private BigDecimal rate;
 	private int qty;
+	private String description;
 	private Float gstPercent;
 	private String ledger;
 	private String govChargeCode;
 	private String taxable;
 	private String exempted;
+	private String party;
 
 }

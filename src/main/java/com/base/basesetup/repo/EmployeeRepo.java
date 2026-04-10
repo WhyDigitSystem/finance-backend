@@ -1,6 +1,7 @@
 package com.base.basesetup.repo;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -26,5 +27,12 @@ public interface EmployeeRepo extends JpaRepository<EmployeeVO,Long>{
 
 	@Query(nativeQuery = true,value = "SELECT  employee , employeecode FROM employee  WHERE orgid=?1 and salesflag=1 and active=1")
 	Set<Object[]> findSalesPersonForCustomer(Long orgId);
+	
+    @Query("SELECT e.email FROM EmployeeVO e WHERE e.employeeCode = ?1")
+    Optional<String> findEmailByCode(String employeeCode);
 
+	@Query(nativeQuery = true,value = "select email from employee where orgid=?1  and (employeecode=?2  or email=?2) order by email")
+	Set<Object[]> getEmployeeEmail(Long orgId,String employeeCodeOrEmail);
+
+	   Optional<EmployeeVO> findByEmailAndEmployeeCode(String email, String employeeCode); 
 }

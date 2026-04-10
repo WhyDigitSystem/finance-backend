@@ -59,7 +59,7 @@ public class ChargerCostDebitNoteVO {
 	@Column(name = "qty")
 	private int qty;
 	@Column(name = "gstpercent")
-	private Float GSTPercent;
+	private double GSTPercent;
 //	@Column(name = "tlcamount", precision = 10, scale = 2)
 //	private BigDecimal tlcAmount;
 	@Column(name = "gstamount", precision = 10, scale = 2)
@@ -72,6 +72,8 @@ public class ChargerCostDebitNoteVO {
 //	private String exempted;
 	@Column(name = "taxable", length = 10)
 	private String taxable;
+	@Column(name = "description")
+	private String description;
 
 	@ManyToOne
 	@JoinColumn(name = "costdebitnoteid")

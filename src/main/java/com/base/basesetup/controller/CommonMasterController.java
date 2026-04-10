@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.base.basesetup.common.CommonConstant;
 import com.base.basesetup.common.UserConstants;
@@ -33,6 +34,7 @@ import com.base.basesetup.dto.DepartmentDTO;
 import com.base.basesetup.dto.DesignationDTO;
 import com.base.basesetup.dto.FinScreenDTO;
 import com.base.basesetup.dto.FinancialYearDTO;
+import com.base.basesetup.dto.ProductServiceDTO;
 import com.base.basesetup.dto.RegionDTO;
 import com.base.basesetup.dto.ResponseDTO;
 import com.base.basesetup.dto.ScreenNamesDTO;
@@ -44,6 +46,7 @@ import com.base.basesetup.entity.CurrencyVO;
 import com.base.basesetup.entity.DepartmentVO;
 import com.base.basesetup.entity.DesignationVO;
 import com.base.basesetup.entity.FinancialYearVO;
+import com.base.basesetup.entity.ProductServiceVO;
 import com.base.basesetup.entity.RegionVO;
 import com.base.basesetup.entity.ScreenNamesVO;
 import com.base.basesetup.entity.StateVO;
@@ -643,6 +646,32 @@ public class CommonMasterController extends BaseController {
 		return ResponseEntity.ok().body(responseDTO);
 	}
 
+	@PostMapping("/uploadCompanyLogoInBloob")
+	public ResponseEntity<ResponseDTO> uploadCompanyLogoInBloob(@RequestParam("file") MultipartFile file,
+			@RequestParam Long id) {
+		String methodName = "uploadCompanyLogoInBloob()";
+		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+		String errorMsg = null;
+		Map<String, Object> responseObjectsMap = new HashMap<>();
+		ResponseDTO responseDTO = null;
+		CompanyVO companyVO = null;
+		try {
+			companyVO = commonMasterService.uploadCompanyLogoInBloob(file, id);
+		} catch (Exception e) {
+			errorMsg = e.getMessage();
+			LOGGER.error("Unable To Upload PartImage", methodName, errorMsg);
+		}
+		if (StringUtils.isBlank(errorMsg)) {
+			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "Company Logo Successfully Upload");
+			responseObjectsMap.put("companyVO", companyVO);
+			responseDTO = createServiceResponse(responseObjectsMap);
+		} else {
+			responseDTO = createServiceResponseError(responseObjectsMap, "Company Logo Upload Failed", errorMsg);
+		}
+		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+		return ResponseEntity.ok().body(responseDTO);
+	}
+	
 	// FINANCIAL YEAR
 
 	@PutMapping("/createUpdateFinYear")
@@ -1055,5 +1084,170 @@ public class CommonMasterController extends BaseController {
 		return ResponseEntity.ok().body(responseDTO);
 	}
 	
+	@GetMapping("getBankDetailsByOrgId")
+	public ResponseEntity<ResponseDTO> getCompanyByOrgId(@RequestParam Long orgId) {
+		String methodName = "getCompanyByOrgId()";
+		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+		String errorMsg = null;
+		Map<String, Object> responseObjectsMap = new HashMap<>();
+		ResponseDTO responseDTO = null;
+		List<Map<String, Object>> bankDetailsVO = new ArrayList<>();
+		try {
+			bankDetailsVO = commonMasterService.getCompanyByOrgId(orgId);
+		} catch (Exception e) {
+			errorMsg = e.getMessage();
+			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+		}
+		if (StringUtils.isEmpty(errorMsg)) {
+			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "Bank Details found by ID");
+			responseObjectsMap.put("bankDetailsVO", bankDetailsVO);
+			responseDTO = createServiceResponse(responseObjectsMap);
+		} else {
+			errorMsg = "Bank Details not found for ID: " + orgId;
+			responseDTO = createServiceResponseError(responseObjectsMap, "Bank Details not found", errorMsg);
+		}
+		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+		return ResponseEntity.ok().body(responseDTO);
+	}
+	
+	
+	//ProducutService
+	
+	
+	@GetMapping("/getProductServiceByOrgId")
+	public ResponseEntity<ResponseDTO> getProductServiceByOrgId(@RequestParam Long orgId) {
+		String methodName = "getProductServiceByOrgId()";
+		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+		String errorMsg = null;
+		Map<String, Object> responseObjectsMap = new HashMap<>();
+		ResponseDTO responseDTO = null;
+		List<ProductServiceVO> productServiceVO = new ArrayList<>();
+		try {
+			productServiceVO = commonMasterService.getProductServiceByOrgId(orgId);
+		} catch (Exception e) {
+			errorMsg = e.getMessage();
+			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+		}
+		if (StringUtils.isBlank(errorMsg)) {
+			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "ProductService information get successfully");
+			responseObjectsMap.put("productServiceVO", productServiceVO);
+			responseDTO = createServiceResponse(responseObjectsMap);
+		} else {
+			responseDTO = createServiceResponseError(responseObjectsMap, "ProductService information receive failed",
+					errorMsg);
+		}
+		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+		return ResponseEntity.ok().body(responseDTO);
+	}
 
+	@GetMapping("/getProductServiceById")
+	public ResponseEntity<ResponseDTO> getProductServiceById(@RequestParam Long id) {
+		String methodName = "getProductServiceById()";
+		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+		String errorMsg = null;
+		Map<String, Object> responseObjectsMap = new HashMap<>();
+		ResponseDTO responseDTO = null;
+		ProductServiceVO productServiceVO = new ProductServiceVO();
+		try {
+			productServiceVO = commonMasterService.getProductServiceById(id);
+		} catch (Exception e) {
+			errorMsg = e.getMessage();
+			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+		}
+		if (StringUtils.isEmpty(errorMsg)) {
+			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "ProductService found by ID");
+			responseObjectsMap.put("productServiceVO", productServiceVO);
+			responseDTO = createServiceResponse(responseObjectsMap);
+		} else {
+			errorMsg = "Country not found for ID: " + id;
+			responseDTO = createServiceResponseError(responseObjectsMap, "ProductService not found", errorMsg);
+		}
+		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+		return ResponseEntity.ok().body(responseDTO);
+	}
+
+	@PutMapping("/createUpdateProductService")
+	public ResponseEntity<ResponseDTO> createUpdateProductService(@RequestBody ProductServiceDTO productServiceDTO) {
+		String methodName = "createUpdateProductService()";
+		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+		Map<String, Object> responseObjectsMap = new HashMap<String, Object>();
+		String errorMsg = null;
+		ResponseDTO responseDTO = null;
+		try {
+			Map<String, Object> productServiceVO = commonMasterService.createUpdateProductService(productServiceDTO);
+			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, productServiceVO.get("message"));
+			responseObjectsMap.put("productServiceVO", productServiceVO.get("productServiceVO"));
+			responseDTO = createServiceResponse(responseObjectsMap);
+		} catch (Exception e) {
+			errorMsg = e.getMessage();
+			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+			responseDTO = createServiceResponseError(responseObjectsMap, errorMsg, errorMsg);
+		}
+		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+		return ResponseEntity.ok().body(responseDTO);
+	}
+	
+	
+	
+	 @PostMapping("/uploadImageProductServivceInBloob")
+	    public ResponseEntity<ResponseDTO> uploadImageProductServivceInBloob(@RequestParam("file") MultipartFile file,
+	            @RequestParam Long id) {
+	        String methodName = "uploadImageProductServivceInBloob()";
+	        LOGGER.debug("Starting Method: " + methodName);
+	        String errorMsg = null;
+	        Map<String, Object> responseObjectsMap = new HashMap<>();
+	        ResponseDTO responseDTO = null;
+	        ProductServiceVO productServiceVO = null;
+
+	        try {
+	        	productServiceVO = commonMasterService.uploadImageProductServivceInBloob(file, id);
+	        } catch (Exception e) {
+	            errorMsg = e.getMessage();
+	            LOGGER.error("Unable to Upload Image: " + errorMsg);
+	        }
+
+	        if (StringUtils.isBlank(errorMsg)) {
+	            responseObjectsMap.put("message", "PostImage Successfully Uploaded");
+	            responseObjectsMap.put("productServiceVO", productServiceVO);
+	            responseDTO = createServiceResponse(responseObjectsMap);  // Assuming this is your custom response method
+	        } else {
+	            responseDTO = createServiceResponseError(responseObjectsMap, "Image Upload Failed", errorMsg);
+	        }
+
+	        LOGGER.debug("Ending Method: " + methodName);
+	        return ResponseEntity.ok().body(responseDTO);
+	    }
+	 
+
+
+		
+		
+		@GetMapping("/getFinYearByClient")
+		public ResponseEntity<ResponseDTO> getFinYearByClient(@RequestParam Long orgId,@RequestParam String clientCode) {
+			String methodName = "getFinYearByClient()";
+			LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+			String errorMsg = null;
+			Map<String, Object> responseObjectsMap = new HashMap<>();
+			ResponseDTO responseDTO = null;
+			List<Map<String, Object>> financialYearVOs = new ArrayList<>();
+			try {
+				financialYearVOs = commonMasterService.getFinYearByClient(orgId, clientCode);
+			} catch (Exception e) {
+				errorMsg = e.getMessage();
+				LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+			}
+			if (StringUtils.isBlank(errorMsg)) {
+				responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "FInYear information get successfully");
+				responseObjectsMap.put("financialYearVOs", financialYearVOs);
+				responseDTO = createServiceResponse(responseObjectsMap);
+			} else {
+				responseDTO = createServiceResponseError(responseObjectsMap, "FInYear information receive failed",
+						errorMsg);
+			}
+			LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+			return ResponseEntity.ok().body(responseDTO);
+		}
+
+		
+	
 }

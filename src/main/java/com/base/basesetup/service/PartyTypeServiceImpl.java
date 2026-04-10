@@ -5,6 +5,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -306,21 +307,22 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 //	}
 
 	private String getStringCellValue(Cell cell) {
-	    if (cell == null) return "";
+		if (cell == null)
+			return "";
 
-	    switch (cell.getCellType()) {
-	        case STRING:
-	            return cell.getStringCellValue().trim();
-	        case NUMERIC:
-	            double numericValue = cell.getNumericCellValue();
-	            if (numericValue == Math.floor(numericValue)) {
-	                // If it's a whole number, convert without decimal point
-	                return String.valueOf((long) numericValue);
-	            }
-	            return String.valueOf(numericValue);
-	        default:
-	            return "";
-	    }
+		switch (cell.getCellType()) {
+		case STRING:
+			return cell.getStringCellValue().trim();
+		case NUMERIC:
+			double numericValue = cell.getNumericCellValue();
+			if (numericValue == Math.floor(numericValue)) {
+				// If it's a whole number, convert without decimal point
+				return String.valueOf((long) numericValue);
+			}
+			return String.valueOf(numericValue);
+		default:
+			return "";
+		}
 	}
 
 	private Long getLongCellValue(Cell cell) {
@@ -334,8 +336,11 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 	}
 
 	private LocalDate getLocalDateCellValue(Cell cell) {
-		return (cell == null || !DateUtil.isCellDateFormatted(cell)) ? null
-				: cell.getDateCellValue().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+		if (cell == null || !DateUtil.isCellDateFormatted(cell)) {
+			return null;
+		}
+		Date date = cell.getDateCellValue(); // returns java.util.Date
+		return date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 	}
 
 	@Override
@@ -346,13 +351,13 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 
 		if (ObjectUtils.isEmpty(customersDTO.getId())) {
 			String partyType = "CUSTOMER";
-			if (partyMasterRepo.existsByPartyNameAndOrgIdAndPartyType(customersDTO.getCustomerName(), customersDTO.getOrgId(),partyType)) {
+			if (partyMasterRepo.existsByPartyNameAndOrgIdAndPartyType(customersDTO.getCustomerName(),
+					customersDTO.getOrgId(), partyType)) {
 				String errorMessage = String.format("This CustomerName: %s Already Exists in This Organization",
 						customersDTO.getCustomerName());
 				throw new ApplicationException(errorMessage);
 			}
 
-		
 			// PARTCODE DOCID API
 			String partyTypeDocId = partyTypeRepo.getPartyTypeDocId(customersDTO.getOrgId(), partyType);
 			partyMasterVO.setPartyCode(partyTypeDocId);
@@ -375,7 +380,7 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 			if (!partyMasterVO.getPartyName().equalsIgnoreCase(customersDTO.getCustomerName())) {
 				String partyType = "CUSTOMER";
 				if (partyMasterRepo.existsByPartyNameAndOrgIdAndPartyType(customersDTO.getCustomerName(),
-						customersDTO.getOrgId(),partyType)) {
+						customersDTO.getOrgId(), partyType)) {
 					String errorMessage = String.format("This CustomerName: %s Already Exists in This Organization",
 							customersDTO.getCustomerName());
 					throw new ApplicationException(errorMessage);
@@ -400,6 +405,7 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 			partyStateVO.setStateCode(partyStateDTO.getStateCode());
 			partyStateVO.setEmail(partyStateDTO.getEMail());
 			partyStateVO.setContactPhoneNo(partyStateDTO.getPhoneNo());
+			partyStateVO.setState(partyStateDTO.getState());
 			// partyStateVO.setPartyName(partyStateDTO.getCustomerName());
 			partyStateVO.setPartyMasterVO(partyMasterVO);
 			partyStateVOs.add(partyStateVO);
@@ -478,7 +484,7 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 
 	private void getPartyMasterVOFromCustomersDTO(@Valid CustomersDTO customerDTO, PartyMasterVO partyMasterVO) {
 		partyMasterVO.setPartyType("CUSTOMER");
-		partyMasterVO.setPartyName(customerDTO.getCustomerName());
+		partyMasterVO.setPartyName(customerDTO.getCustomerName().toUpperCase());
 		partyMasterVO.setGstPartyName(customerDTO.getCustomerName());
 		partyMasterVO.setGstIn(customerDTO.getGstIn());
 		partyMasterVO.setPanNo(customerDTO.getPanNo());
@@ -496,6 +502,9 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 		partyMasterVO.setAccountType(customerDTO.getAccountsType());
 //		partyMasterVO.setPartyCode(customerDTO.getCustomerCode());
 		partyMasterVO.setCurrency(customerDTO.getCurrency());
+		partyMasterVO.setPartyShortName(customerDTO.getShortName());
+		partyMasterVO.setCountry(customerDTO.getCountry());
+		
 
 		if (customerDTO.isApproved()) {
 			partyMasterVO.setActive(true);
@@ -512,6 +521,11 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 	public List<PartyMasterVO> getAllCustomers(Long orgId) {
 		return partyMasterRepo.getAllCustomers(orgId);
 	}
+	
+	@Override
+	public List<PartyMasterVO> getAllActiveCustomers(Long orgId) {
+		return partyMasterRepo.getAllActiveCustomers(orgId);
+	}
 
 	@Override
 	public Map<String, Object> createUpdateVendor(@Valid VendorDTO vendorDTO) throws ApplicationException {
@@ -520,13 +534,13 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 
 		if (ObjectUtils.isEmpty(vendorDTO.getId())) {
 			String partyType = "VENDOR";
-			if (partyMasterRepo.existsByPartyNameAndOrgIdAndPartyType(vendorDTO.getVendorName(), vendorDTO.getOrgId(),partyType)) {
-				String errorMessage = String.format("This CustomerName: %s Already Exists in This Organization",
+			if (partyMasterRepo.existsByPartyNameAndOrgIdAndPartyType(vendorDTO.getVendorName(), vendorDTO.getOrgId(),
+					partyType)) {
+				String errorMessage = String.format("This Vendor Name: %s Already Exists in This Organization",
 						vendorDTO.getVendorName());
 				throw new ApplicationException(errorMessage);
 			}
 
-			
 			// PARTCODE DOCID API
 			String partyTypeDocId = partyTypeRepo.getPartyTypeVendorDocId(vendorDTO.getOrgId(), partyType);
 			partyMasterVO.setPartyCode(partyTypeDocId);
@@ -546,8 +560,9 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 
 			if (!partyMasterVO.getPartyName().equalsIgnoreCase(vendorDTO.getVendorName())) {
 				String partyType = "VENDOR";
-				if (partyMasterRepo.existsByPartyNameAndOrgIdAndPartyType(vendorDTO.getVendorName(), vendorDTO.getOrgId(),partyType)) {
-					String errorMessage = String.format("This VendorName: %s Already Exists in This Organization",
+				if (partyMasterRepo.existsByPartyNameAndOrgIdAndPartyType(vendorDTO.getVendorName(),
+						vendorDTO.getOrgId(), partyType)) {
+					String errorMessage = String.format("This Vendor Name: %s Already Exists in This Organization",
 							vendorDTO.getVendorName());
 					throw new ApplicationException(errorMessage);
 				}
@@ -570,7 +585,7 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 
 	private PartyMasterVO getpartyMasterVOFromVendorDTO(PartyMasterVO partyMasterVO, @Valid VendorDTO vendorDTO) {
 
-		partyMasterVO.setPartyName(vendorDTO.getVendorName());
+		partyMasterVO.setPartyName(vendorDTO.getVendorName().toUpperCase());
 		partyMasterVO.setGstIn(vendorDTO.getGstIn());
 		partyMasterVO.setPanNo(vendorDTO.getPanNo());
 		partyMasterVO.setOrgId(vendorDTO.getOrgId());
@@ -583,6 +598,8 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 		partyMasterVO.setBussinessType(vendorDTO.getBussinessType());
 		partyMasterVO.setBussinessCate(vendorDTO.getBussinessCategory());
 		partyMasterVO.setAccountType(vendorDTO.getAccountsType());
+		partyMasterVO.setPartyShortName(vendorDTO.getShortName());
+		partyMasterVO.setActive(vendorDTO.isActive());
 
 		if (vendorDTO.isApproved()) {
 			partyMasterVO.setActive(true);
@@ -598,7 +615,7 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 
 			List<PartySpecialTDSVO> partySpecialTDSVO1 = partySpecialTDSRepo.findByPartyMasterVO(partyMasterVO);
 			partySpecialTDSRepo.deleteAll(partySpecialTDSVO1);
-			
+
 			List<PartyCurrencyMappingVO> partyCurrencyMappingVO1 = partyCurrencyMappingRepo
 					.findByPartyMasterVO(partyMasterVO);
 			partyCurrencyMappingRepo.deleteAll(partyCurrencyMappingVO1);
@@ -609,11 +626,14 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 		for (VendorsStateDTO vendorsStateDTO : vendorDTO.getVendorStateDTO()) {
 
 			PartyStateVO partyStateVO = new PartyStateVO();
+			
+			partyStateVO.setCountry(vendorsStateDTO.getCountry());
 
 			partyStateVO.setState(vendorsStateDTO.getState());
 			partyStateVO.setStateCode(vendorsStateDTO.getStateCode());
 			partyStateVO.setStateNo(vendorsStateDTO.getStateNo());
 			partyStateVO.setGstIn(vendorsStateDTO.getGstIn());
+			partyStateVO.setCountry(vendorsStateDTO.getCountry());
 			partyStateVO.setContactPerson(vendorsStateDTO.getContactPerson());
 			partyStateVO.setContactPhoneNo(vendorsStateDTO.getPhoneNo());
 			partyStateVO.setEmail(vendorsStateDTO.getEMail());
@@ -628,7 +648,9 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 		List<PartyAddressVO> addressVOs = new ArrayList<>();
 		for (VendorsAddressDTO vendorsAddressDTO : vendorDTO.getVendorAddressDTO()) {
 			PartyAddressVO partyAddressVO = new PartyAddressVO();
+			
 
+			partyAddressVO.setCountry(vendorsAddressDTO.getCountry());
 			partyAddressVO.setState(vendorsAddressDTO.getState());
 			partyAddressVO.setCity(vendorsAddressDTO.getCity());
 			partyAddressVO.setBusinessPlace(vendorsAddressDTO.getBussinesPlace());
@@ -657,7 +679,7 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 			PartySpecialTDSVO.setTdsWithSec(specialTdsDTO.getWhSection());
 			PartySpecialTDSVO.setSection(specialTdsDTO.getSection());
 			PartySpecialTDSVO.setRateFrom(specialTdsDTO.getRateFrom());
-			PartySpecialTDSVO.setRateTo(specialTdsDTO.getRateTo());
+			PartySpecialTDSVO.setRateTo(specialTdsDTO.getRateTo()); 
 			PartySpecialTDSVO.setTdsWithPer(specialTdsDTO.getWhPercentage());
 			PartySpecialTDSVO.setSurchargePer(specialTdsDTO.getSurPercentage());
 			PartySpecialTDSVO.setEdPercentage(specialTdsDTO.getEdPercentage());
@@ -670,19 +692,17 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 			// Add the SalesItemParticularsVO to the list
 			partyMasterVO.setPartySpecialTDSVO(specialTDSVOs);
 		}
-	
-		
+
 		List<PartyCurrencyMappingVO> partyCurrencyMappingVOs = new ArrayList<>();
 		for (VendorCurrencyMappingDTO vendorCurrencyMappingDTO : vendorDTO.getVendorCurrencyMappingDTO()) {
 			PartyCurrencyMappingVO partyCurrencyMappingVO = new PartyCurrencyMappingVO();
 			partyCurrencyMappingVO.setTransCurrency(vendorCurrencyMappingDTO.getTransCurrency());
 			partyCurrencyMappingVO.setPartyMasterVO(partyMasterVO);
-//			partyCurrencyMappingVOs.add(partyCurrencyMappingVO);
 			partyCurrencyMappingVOs.add(partyCurrencyMappingVO);
 
-			  partyMasterVO.setPartyCurrencyMappingVO(partyCurrencyMappingVOs);
-		}	
-      
+			partyMasterVO.setPartyCurrencyMappingVO(partyCurrencyMappingVOs);
+		}
+
 		return partyMasterVO;
 	}
 
@@ -696,8 +716,6 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 	public List<PartyMasterVO> getAllVendors(Long orgId) {
 		return partyMasterRepo.getAllVendors(orgId);
 	}
-
-
 
 	@Override
 	public List<Map<String, Object>> getSectionNameFromTds(Long orgId, String section) {
@@ -716,18 +734,19 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 	}
 
 //Vendor file upload
-
 	@Override
 	@Transactional
 	public void vendorUpload(MultipartFile files, Long orgId, String createdBy) throws Exception {
 		List<VendorDTO> vendorDTOList = new ArrayList<>();
 
-		try (InputStream inputStream = files.getInputStream(); Workbook workbook = WorkbookFactory.create(inputStream)) {
+		try (InputStream inputStream = files.getInputStream();
+				Workbook workbook = WorkbookFactory.create(inputStream)) {
 
 			processVendorSheet(workbook.getSheetAt(0), vendorDTOList, orgId, createdBy);
 			processStateSheets(workbook.getSheetAt(1), vendorDTOList);
 			processAddressSheets(workbook.getSheetAt(2), vendorDTOList);
 			processSpecialTds(workbook.getSheetAt(3), vendorDTOList);
+			processCurrencyMapping(workbook.getSheetAt(4), vendorDTOList);
 
 			for (VendorDTO vendor : vendorDTOList) {
 				createUpdateVendor(vendor);
@@ -756,6 +775,12 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 			vendor.setOrgId(orgId);
 			vendor.setActive(true);
 
+			// Initialize lists to prevent null pointer issues
+			vendor.setVendorStateDTO(new ArrayList<>());
+			vendor.setVendorAddressDTO(new ArrayList<>());
+			vendor.setSpecialTdsDTO(new ArrayList<>());
+			vendor.setVendorCurrencyMappingDTO(new ArrayList<>());
+
 			vendorDTOList.add(vendor);
 		}
 	}
@@ -767,9 +792,6 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 			String vendorName = getStringCellValue(row.getCell(7));
 
 			vendorDTOList.stream().filter(v -> v.getVendorName().equals(vendorName)).findFirst().ifPresent(vendor -> {
-				if (vendor.getVendorStateDTO() == null) {
-					vendor.setVendorStateDTO(new ArrayList<>());
-				}
 				VendorsStateDTO state = new VendorsStateDTO();
 				state.setState(getStringCellValue(row.getCell(0)));
 				state.setStateCode(getStringCellValue(row.getCell(1)));
@@ -791,9 +813,6 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 			String vendorName = getStringCellValue(row.getCell(10));
 
 			vendorDTOList.stream().filter(v -> v.getVendorName().equals(vendorName)).findFirst().ifPresent(vendor -> {
-				if (vendor.getVendorAddressDTO() == null) {
-					vendor.setVendorAddressDTO(new ArrayList<>());
-				}
 				VendorsAddressDTO address = new VendorsAddressDTO();
 				address.setState(getStringCellValue(row.getCell(0)));
 				address.setCity(getStringCellValue(row.getCell(1)));
@@ -818,9 +837,6 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 			String vendorName = getStringCellValue(row.getCell(8));
 
 			vendorDTOList.stream().filter(v -> v.getVendorName().equals(vendorName)).findFirst().ifPresent(vendor -> {
-				if (vendor.getSpecialTdsDTO() == null) {
-					vendor.setSpecialTdsDTO(new ArrayList<>());
-				}
 				SpecialTdsDTO tds = new SpecialTdsDTO();
 				tds.setSection(getStringCellValue(row.getCell(0)));
 				tds.setWhSection(getStringCellValue(row.getCell(1)));
@@ -832,6 +848,21 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 				tds.setTdsCertificateNo(getStringCellValue(row.getCell(7)));
 
 				vendor.getSpecialTdsDTO().add(tds);
+			});
+		}
+	}
+
+	private void processCurrencyMapping(Sheet sheet, List<VendorDTO> vendorDTOList) {
+		for (Row row : sheet) {
+			if (row.getRowNum() == 0)
+				continue;
+			String vendorName = getStringCellValue(row.getCell(1));
+
+			vendorDTOList.stream().filter(v -> v.getVendorName().equals(vendorName)).findFirst().ifPresent(vendor -> {
+				VendorCurrencyMappingDTO cm = new VendorCurrencyMappingDTO();
+				cm.setTransCurrency(getStringCellValue(row.getCell(0)));
+
+				vendor.getVendorCurrencyMappingDTO().add(cm);
 			});
 		}
 	}
@@ -852,4 +883,229 @@ public class PartyTypeServiceImpl implements PartyTypeService {
 		}
 	}
 
+	@Override
+	public List<Map<String, Object>> getAllPartyLedgerReport(Long orgId, String partyName, String partyType,
+			String branch, String fromDate, String toDate) {
+		Set<Object[]> chType = partyMasterRepo.getAllPartyLedgerReport(orgId, partyName, partyType, branch, fromDate,
+				toDate);
+		return getAllPartyLedger(chType);
+	}
+
+	private List<Map<String, Object>> getAllPartyLedger(Set<Object[]> chType) {
+		List<Map<String, Object>> List1 = new ArrayList<>();
+		for (Object[] ch : chType) {
+			Map<String, Object> map = new HashMap<>();
+			map.put("Sno", ch[0] != null ? ch[0].toString() : null);
+			map.put("DocId", ch[1] != null ? ch[1].toString() : null);
+			map.put("DocDate", ch[2] != null ? ch[2].toString() : null);
+			map.put("RefNo", ch[3] != null ? ch[3].toString() : null);
+			map.put("RefDate", ch[4] != null ? ch[4].toString() : null);
+			map.put("SuppRefNo", ch[5] != null ? ch[5].toString() : null);
+			map.put("SuppRefName", ch[6] != null ? ch[6].toString() : null);
+			map.put("Particulars", ch[7] != null ? ch[7].toString() : null);
+			map.put("Currency", ch[8] != null ? ch[8].toString() : null);
+			map.put("DbAmount", ch[9] != null ? new BigDecimal(ch[9].toString()) : BigDecimal.ZERO);
+			map.put("CrAmount", ch[10] != null ? new BigDecimal(ch[10].toString()) : BigDecimal.ZERO);
+			map.put("SortOrder", ch[11] != null ? ch[11].toString() : null);
+
+			List1.add(map);
+		}
+		return List1;
+	}
+
+	@Override
+	public List<Map<String, Object>> getAllLedgerReport(Long orgId, String accountName, String branchCode,
+			String fromDate, String toDate) {
+		Set<Object[]> chType = partyMasterRepo.getAllLedgerReport(orgId, accountName, branchCode, fromDate, toDate);
+		return getAllLedger(chType);
+	}
+
+	private List<Map<String, Object>> getAllLedger(Set<Object[]> chType) {
+		List<Map<String, Object>> List1 = new ArrayList<>();
+		for (Object[] ch : chType) {
+			Map<String, Object> map = new HashMap<>();
+			map.put("Ids", ch[0].toString());
+			map.put("RecordId", ch[1] != null ? ch[1].toString() : "");
+			map.put("BranchName", ch[2] != null ? ch[2].toString() : "");
+			map.put("Vdate", ch[3] != null ? ch[3].toString() : "");
+			map.put("Vid", ch[4] != null ? ch[4].toString() : "");
+			map.put("PartyName", ch[5] != null ? ch[5].toString() : "");
+			map.put("OpBal", ch[6] != null ? new BigDecimal(ch[6].toString()) : BigDecimal.ZERO);
+			map.put("Currency", ch[7] != null ? ch[7].toString() : ""); // Handle as string, empty if null
+			map.put("DbAmount", ch[8] != null ? new BigDecimal(ch[8].toString()) : BigDecimal.ZERO);
+			map.put("CrAmount", ch[9] != null ? new BigDecimal(ch[9].toString()) : BigDecimal.ZERO);
+			map.put("NdAmount", ch[10] != null ? new BigDecimal(ch[10].toString()) : BigDecimal.ZERO);
+			map.put("NcAmount", ch[11] != null ? new BigDecimal(ch[11].toString()) : BigDecimal.ZERO);
+			map.put("ClBal", ch[12] != null ? new BigDecimal(ch[12].toString()) : BigDecimal.ZERO);
+			List1.add(map);
+		}
+		return List1;
+	}
+
+	@Override
+	public List<Map<String, Object>> getAllTransporters(Long orgId) {
+	    Set<Object[]> chType = partyMasterRepo.getAllTransprtersReport(orgId);
+	    return getAllTransporterData(chType);
+	}
+
+	private List<Map<String, Object>> getAllTransporterData(Set<Object[]> chType) {
+	    List<Map<String, Object>> resultList = new ArrayList<>();
+	    for (Object[] ch : chType) {
+	        Map<String, Object> map = new HashMap<>();
+	        map.put("partyCode", ch[0] != null ? ch[0].toString() : "");
+	        map.put("partyName", ch[1] != null ? ch[1].toString() : "");
+	        map.put("partyShortName", ch[2] != null ? ch[2].toString() : "");
+	        resultList.add(map);
+	    }
+	    return resultList;
+	}
+
+	
+	
+//	@Override
+//	public List<PartyMasterVO> getAllTransporters(Long orgId) {
+//		Set<Object[]> chType = partyMasterRepo.getAllTransprtersReport(orgId);
+//		return getAllTransprters(chType);
+//	}
+//
+//	private List<PartyMasterVO> getAllTransprters(Set<Object[]> chType) {
+//		Map<String, Object> list1 = new ArrayList<>();
+//	    for (Object[] ch : chType) {
+//	        PartyMasterVO vo = new PartyMasterVO();
+//	        vo.put("partyName", ch[0].toString());
+//			vo.put("amt", ch[1] != null ? ch[1].toString() : "");
+//	        list1.add(vo);
+//	    }
+//	    return list1;
+//	}
+
+	
+	
+	@Override
+	public List<Map<String, Object>> getAccountNameFromGroup(Long orgId) {
+		Set<Object[]> chType = partyMasterRepo.getAccountNameFromGroup(orgId);
+		return getAccountName(chType);
+	}
+
+	private List<Map<String, Object>> getAccountName(Set<Object[]> chType) {
+		List<Map<String, Object>> List1 = new ArrayList<>();
+		for (Object[] ch : chType) {
+			Map<String, Object> map = new HashMap<>();
+			map.put("accountName", ch[0].toString());
+			List1.add(map);
+		}
+		return List1;
+
+	}
+
+	@Override
+	public List<Map<String, Object>> getMonthlyAndYearWiseData(Long orgId, String month, String finYear,
+			String branchCode) {
+		Set<Object[]> chType = partyMasterRepo.getMonthlyAndYearWiseData(orgId, month, finYear, branchCode);
+		return getMonthlyAndYear(chType);
+	}  
+
+	private List<Map<String, Object>> getMonthlyAndYear(Set<Object[]> chType) {
+		List<Map<String, Object>> List1 = new ArrayList<>();
+		for (Object[] ch : chType) {
+			Map<String, Object> map = new HashMap<>();
+			map.put("partyName", ch[0].toString());
+			map.put("amt", ch[1] != null ? ch[1].toString() : "");
+			map.put("partyShortName", ch[2] != null ? ch[2].toString() : "");
+			// map.put("preMnthAmt", ch[3].toString());
+			List1.add(map);
+		}
+		return List1;
+
+	}
+
+	@Override
+	public List<Map<String, Object>> getSalesDistributionData(Long orgId, String month, String finYear,
+			String branchCode) {
+		Set<Object[]> chType = partyMasterRepo.getSalesDistributionData(orgId, month, finYear, branchCode);
+		return getSalesDistribution(chType);
+	}
+
+	private List<Map<String, Object>> getSalesDistribution(Set<Object[]> chType) {
+		List<Map<String, Object>> List1 = new ArrayList<>();
+		for (Object[] ch : chType) {
+			Map<String, Object> map = new HashMap<>();
+			map.put("product", ch[0] != null ? ch[0].toString() : "");
+			map.put("amt", ch[1] != null ? ch[1].toString() : ""); 
+			List1.add(map);
+		}
+		return List1;
+
+	}
+
+	@Override
+	public List<Map<String, Object>> getVedorsAddressDetails(Long orgId) {
+		Set<Object[]> chType = partyMasterRepo.getVedorsAddressDetails(orgId);
+		return getVedorsAddressDetails(chType);
+	}
+
+	private List<Map<String, Object>> getVedorsAddressDetails(Set<Object[]> chType) {
+		List<Map<String, Object>> List1 = new ArrayList<>();
+		for (Object[] ch : chType) {
+			Map<String, Object> map = new HashMap<>();
+			map.put("partyName", ch[0] != null ? ch[0].toString() : "");
+			map.put("FullAddress", ch[1] != null ? ch[1].toString() : "");
+			map.put("gstin", ch[2] != null ? ch[2].toString() : "");
+			List1.add(map);
+		}
+		return List1;
+	}
+
+	@Override
+	public List<Map<String, Object>> getCustomersAddressDetails(Long orgId) {
+		Set<Object[]> chType = partyMasterRepo.getCustomersAddressDetails(orgId);
+		return getCustomersAddressDetails(chType);
+	}
+
+	private List<Map<String, Object>> getCustomersAddressDetails(Set<Object[]> chType) {
+		List<Map<String, Object>> List1 = new ArrayList<>();
+		for (Object[] ch : chType) {
+			Map<String, Object> map = new HashMap<>();
+			map.put("partyName", ch[0] != null ? ch[0].toString() : "");
+			map.put("FullAddress", ch[1] != null ? ch[1].toString() : "");
+			map.put("gstin", ch[2] != null ? ch[2].toString() : "");
+			List1.add(map);
+		}
+		return List1;
+	}
+
+	@Override
+	public List<Map<String, Object>> getLedgerReport(Long orgId,String branch, String fromdate, String toDate,
+			String accountName, String details) { 
+		Set<Object[]> chType = partyMasterRepo.getLedgerReport(orgId,branch,fromdate, toDate, accountName,details);
+		return getLedgerReports(chType);
+	}
+
+	private List<Map<String, Object>> getLedgerReports(Set<Object[]> chType) {
+		List<Map<String, Object>> List1 = new ArrayList<>();
+		for (Object[] ch : chType) {
+			Map<String, Object> map = new HashMap<>();
+			map.put("Ids", ch[0] != null ? ch[0].toString() : 0);
+			map.put("finyear", ch[1] != null ? ch[1].toString() : 0);
+			map.put("startDate", ch[2] != null ? ch[2].toString() : "");
+			map.put("endDate", ch[3] != null ? ch[3].toString() : "");
+			map.put("recordId", ch[4] != null ? ch[4].toString() : 0);
+			map.put("branch", ch[5] != null ? ch[5].toString() : "");
+			map.put("voucherDate", ch[6] != null ?  ch[6].toString() : "");
+			map.put("voucherNumber", ch[7] != null ? ch[7].toString() : ""); // Handle as string, empty if null
+			map.put("accountName", ch[8] != null ?  ch[8].toString() : "");
+			map.put("obBal", ch[9] != null ? new BigDecimal(ch[9].toString()) : BigDecimal.ZERO);
+			map.put("currency", ch[10] != null ? ch[10].toString() : "");
+			map.put("dbAmnt", ch[11] != null ? new BigDecimal(ch[11].toString()) : BigDecimal.ZERO);
+			map.put("crAmnt", ch[12] != null ? new BigDecimal(ch[12].toString()) : BigDecimal.ZERO);
+			map.put("ndbAmnt", ch[13] != null ? new BigDecimal(ch[13].toString()) : BigDecimal.ZERO);
+			map.put("ncrAmnt", ch[14] != null ? new BigDecimal(ch[14].toString()) : BigDecimal.ZERO);
+			map.put("particulars", ch[15] != null ? ch[15].toString() : "");
+			map.put("partyName", ch[16] != null ? ch[16].toString() : "");
+			map.put("narration", ch[17] != null ? ch[17].toString() : "");
+			map.put("tStruct", ch[18] != null ? ch[18].toString() : "");
+			List1.add(map);
+		}
+		return List1;
+	}
 }

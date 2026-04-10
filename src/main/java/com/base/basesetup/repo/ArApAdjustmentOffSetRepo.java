@@ -2,7 +2,6 @@ package com.base.basesetup.repo;
 
 import java.util.List;
 
-
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -24,3 +23,4 @@ public interface ArApAdjustmentOffSetRepo extends JpaRepository<ArApAdjustmentOf
 	String getArApAdjustmentOffSetDocId(Long orgId, String finYear, String branchCode, String screenCode);
 
 }
+ 	

@@ -51,6 +51,8 @@ public class RolesVO {
 	@JsonManagedReference
 	@OneToMany(mappedBy = "rolesVO", cascade = CascadeType.ALL)
 	private List<RolesResponsibilityVO> rolesReposibilitiesVO;
+	
+	
 
 	@JsonGetter("active")
     public String getActive() {

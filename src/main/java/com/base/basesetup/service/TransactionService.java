@@ -118,6 +118,10 @@ public interface TransactionService {
 	List<GeneralJournalVO> getGeneralJournalByActive();
 
 	List<Map<String, Object>> getAccountNameFromGroup(Long orgId);
+	
+	List<Map<String, Object>> getAccountNameFromGroupLedgerGeneral(Long orgId);
+	
+	List<Map<String, Object>> getSubLedgerNameFromPartyMaster(Long orgId,String accountName);
 
 // DebitNote
 	List<DebitNoteVO> getAllDebitNoteByOrgId(Long orgId);
@@ -305,6 +309,13 @@ public interface TransactionService {
 	Map<String, Object> updateCreateContraVoucher(@Valid ContraVoucherDTO contraVoucherDTO) throws ApplicationException;
 
 	List<Map<String, Object>> getAccountNamefromGroupLedgerforCV(Long orgId);
+
+	List<Map<String, Object>> getAccountNameFromGroupLedgerGeneralfordepositandwithdraw(Long orgId);
+
+	List<Map<String, Object>> getIncomeAndExponseAndProfit(Long orgId, String partyName,String jobNo);
+
+	List<Map<String, Object>> getIncomeAndExponseAndProfitDetails(Long orgId, String partyName, String finYear,
+			String branch);
 
 
 }

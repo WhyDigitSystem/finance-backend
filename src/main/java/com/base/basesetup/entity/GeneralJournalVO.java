@@ -98,6 +98,11 @@ public class GeneralJournalVO {
 	
 	@Column(name = "orgid")
 	private Long orgId;
+	
+	@Column(name = "purvoucherno", length = 50)
+	private String purVoucherNo;
+	@Column(name = "purvoucherdate")
+	private LocalDate purVoucherDate;
 
 	@OneToMany(mappedBy = "generalJournalVO", cascade = CascadeType.ALL)
 	@JsonManagedReference

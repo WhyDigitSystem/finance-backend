@@ -89,7 +89,7 @@ public class AdjustmentJournalVO {
 	private String updatedBy;
 
 	@Column(name = "active")
-	private boolean active;
+	private boolean active=true;
 
 	@Column(name = "cancel")
 	private boolean cancel;
@@ -101,6 +101,11 @@ public class AdjustmentJournalVO {
 
 	@Column(name = "orgid")
 	private Long orgId;
+	
+	@Column(name = "purvoucherno", length = 50)
+	private String purVoucherNo;
+	@Column(name = "purvoucherdate")
+	private LocalDate purVoucherDate;
 
 	@OneToMany(mappedBy = "adjustmentJournalVO", cascade = CascadeType.ALL)
 	@JsonManagedReference

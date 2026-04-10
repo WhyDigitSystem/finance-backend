@@ -17,7 +17,7 @@ public interface CostDebitNoteService {
 
 	Map<String, Object> updateCreateCostDebitNote(@Valid CostDebitNoteDTO costDebitNoteDTO) throws ApplicationException;
 
-	List<CostDebitNoteVO> getCostDebitNoteByOrgId(Long orgId);
+	List<CostDebitNoteVO> getCostDebitNoteByOrgId(Long orgId,String finYear, String branchCode);
 
 	List<CostDebitNoteVO> getCostDebitNoteById(Long id);
 
@@ -25,7 +25,7 @@ public interface CostDebitNoteService {
 
 	CostDebitNoteVO getAllCostDebitNoteByDocId(Long orgId, String docId);
 
-	String getCostDebitNoteDocId(Long orgId, String finYear, String branch, String branchCode);
+	Map<String, Object> getCostDebitNoteDocId(Long orgId, String finYear, String branch, String branchCode);
 
 	List<Map<String, Object>> partyDetailsForCostDebitNote(Long orgId, String branch, String finYear);
 
@@ -44,5 +44,7 @@ public interface CostDebitNoteService {
 
 	CostDebitNoteVO approveCostDebitNote(Long orgId, Long id, String docId, String action, String actionBy)
 			throws ApplicationException;
+
+	List<Map<String, Object>> getCostDebitNoteCount(Long orgId, String finYear, String branchCode);
 
 }
