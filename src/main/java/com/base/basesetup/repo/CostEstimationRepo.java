@@ -21,8 +21,15 @@ public interface CostEstimationRepo extends JpaRepository<CostEstimationVO, Long
 	@Query(nativeQuery = true, value = "select employee,employeecode from employee where orgid=?1 and active=1")
    Set<Object []> getAllEmployees(Long orgId);
    
-   @Query(nativeQuery = true, value = "select concat(prefixfield,lpad(lastno,5,0)) AS docid from documenttypemappingdetails where orgid=?1 and finyear=?2 and branchcode=?3 and screencode=?4")
-	String getCostEstimationDocId(Long orgId, String finYear, String branchCode, String screenCode);
+//   @Query(nativeQuery = true, value = "select concat(prefixfield,lpad(lastno,5,0)) AS docid from documenttypemappingdetails where orgid=?1 and finyear=?2 and branchcode=?3 and screencode=?4")
+//	String getCostEstimationDocId(Long orgId, String finYear, String branchCode, String screenCode);
+   
+   @Query(value = "SELECT " + "CONCAT(d.prefixfield, LPAD(d.lastno, 5, '0')) AS docid, " + "CASE "
+			+ "   WHEN CURDATE() BETWEEN f.startdate AND f.enddate " + "   THEN CURDATE() " + "   ELSE f.enddate "
+			+ "END AS docdate " + "FROM documenttypemappingdetails d " + "JOIN financialyear f "
+			+ "ON d.finyear = f.finyear AND d.orgid = f.orgid " + "WHERE d.orgid = ?1 " + "AND d.finyear = ?2 "
+			+ "AND d.branchcode = ?3 " + "AND d.screencode = ?4", nativeQuery = true)
+	List<Object[]> getCostEstimationDocId(Long orgId, String finYear, String branchCode, String screenCode);
 
 CostEstimationVO findByOrgIdAndIdAndDocId(Long orgId, Long id, String docId);
 

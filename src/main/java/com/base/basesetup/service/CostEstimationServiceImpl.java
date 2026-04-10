@@ -96,9 +96,25 @@ public class CostEstimationServiceImpl implements CostEstimationService {
 		} else {
 			// GETDOCID API
 			createUpdateCostEstimationVOByCostEstimationDTO(costEstimationDTO, costEstimationVO);
-			String docId = costEstimationRepo.getCostEstimationDocId(costEstimationDTO.getOrgId(),
+//			String docId = costEstimationRepo.getCostEstimationDocId(costEstimationDTO.getOrgId(),
+//					costEstimationDTO.getFinYear(), costEstimationDTO.getBranchCode(), screenCode);
+//			costEstimationVO.setDocId(docId);
+
+			List<Object[]> taxInvoiceDoc = costEstimationRepo.getCostEstimationDocId(costEstimationDTO.getOrgId(),
 					costEstimationDTO.getFinYear(), costEstimationDTO.getBranchCode(), screenCode);
-			costEstimationVO.setDocId(docId);
+
+			if (taxInvoiceDoc != null && !taxInvoiceDoc.isEmpty()) {
+
+				Object[] row = taxInvoiceDoc.get(0);
+
+				// ✅ Set docId
+				costEstimationVO.setDocId((String) row[0]);
+
+				// ✅ Convert java.sql.Date → LocalDate
+				if (row[1] != null) {
+					costEstimationVO.setDocDate(((java.sql.Date) row[1]).toLocalDate());
+				}
+			}
 
 			// GETDOCID LASTNO +1
 			DocumentTypeMappingDetailsVO documentTypeMappingDetailsVO = documentTypeMappingDetailsRepo
@@ -185,12 +201,32 @@ public class CostEstimationServiceImpl implements CostEstimationService {
 		return doctypeMappingDetails;
 	}
 
+//	@Override
+//	public String getCostEstimationDocId(Long orgId, String finYear, String branch, String branchCode) {
+//		String ScreenCode = "CE";
+//		return costEstimationRepo.getCostEstimationDocId(orgId, finYear, branchCode, ScreenCode);
+//
+//	}
+	
 	@Override
-	public String getCostEstimationDocId(Long orgId, String finYear, String branch, String branchCode) {
-		String ScreenCode = "CE";
-		return costEstimationRepo.getCostEstimationDocId(orgId, finYear, branchCode, ScreenCode);
+	public Map<String, Object> getCostEstimationDocId(Long orgId, String finYear, String branch, String branchCode) {
 
+		String screenCode = "CE";
+
+		List<Object[]> results = costEstimationRepo.getCostEstimationDocId(orgId, finYear, branchCode, screenCode);
+
+		Map<String, Object> map = new HashMap<>();
+
+		if (results != null && !results.isEmpty()) {
+			Object[] row = results.get(0);
+
+			map.put("docId", row[0]);
+			map.put("docDate", row.length > 1 ? row[1] : null);
+		}
+
+		return map;
 	}
+
 
 	@Override
 	public CostEstimationVO approveCostEstimation(Long orgId, Long id, String docId, String action, String actionBy)

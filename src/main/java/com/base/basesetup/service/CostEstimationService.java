@@ -25,7 +25,7 @@ public interface CostEstimationService {
 
 	List<Map<String, Object>> getAllEmployees(Long orgId);
 
-	String getCostEstimationDocId(Long orgId, String finYear, String branch, String branchCode);
+	Map<String, Object> getCostEstimationDocId(Long orgId, String finYear, String branch, String branchCode);
 
 	CostEstimationVO approveCostEstimation(Long orgId, Long id, String docId, String action, String actionBy)
 			throws ApplicationException;
