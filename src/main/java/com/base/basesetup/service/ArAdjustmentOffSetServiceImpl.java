@@ -129,10 +129,27 @@ public class ArAdjustmentOffSetServiceImpl implements ArAdjustmentOffSetService 
 			message = "ArAdjustmentOffSet Updated Successfully";
 		} else {
 			// GETDOCID API
-			String docId = arAdjustmentOffSetRepo.getArAdjustmentOffSetByDocId(arAdjustmentOffSetDTO.getOrgId(),
-					arAdjustmentOffSetDTO.getFinYear(), arAdjustmentOffSetDTO.getBranchCode(), screenCode);
+//			String docId = arAdjustmentOffSetRepo.getArAdjustmentOffSetByDocId(arAdjustmentOffSetDTO.getOrgId(),
+//					arAdjustmentOffSetDTO.getFinYear(), arAdjustmentOffSetDTO.getBranchCode(), screenCode);
+//
+//			arAdjustmentOffSetVO.setDocId(docId);
 
-			arAdjustmentOffSetVO.setDocId(docId);
+			List<Object[]> taxInvoiceDoc = arAdjustmentOffSetRepo.getArAdjustmentOffSetByDocId(
+					arAdjustmentOffSetDTO.getOrgId(), arAdjustmentOffSetDTO.getFinYear(),
+					arAdjustmentOffSetDTO.getBranchCode(), screenCode);
+
+			if (taxInvoiceDoc != null && !taxInvoiceDoc.isEmpty()) {
+
+				Object[] row = taxInvoiceDoc.get(0);
+
+				// ✅ Set docId
+				arAdjustmentOffSetVO.setDocId((String) row[0]);
+
+				// ✅ Convert java.sql.Date → LocalDate
+				if (row[1] != null) {
+					arAdjustmentOffSetVO.setDocDate(((java.sql.Date) row[1]).toLocalDate());
+				}
+			}
 
 //						// GETDOCID LASTNO +1
 			DocumentTypeMappingDetailsVO documentTypeMappingDetailsVO = documentTypeMappingDetailsRepo
@@ -322,11 +339,32 @@ public class ArAdjustmentOffSetServiceImpl implements ArAdjustmentOffSetService 
 
 	}
 
+//	@Override
+//	public String getArAdjustmentOffSetDocId(Long orgId, String finYear, String branch, String branchCode) {
+//		String ScreenCode = "ARA";
+//		String result = arAdjustmentOffSetRepo.getArAdjustmentOffSetDocId(orgId, finYear, branchCode, ScreenCode);
+//		return result;
+//	}
+
 	@Override
-	public String getArAdjustmentOffSetDocId(Long orgId, String finYear, String branch, String branchCode) {
-		String ScreenCode = "ARA";
-		String result = arAdjustmentOffSetRepo.getArAdjustmentOffSetDocId(orgId, finYear, branchCode, ScreenCode);
-		return result;
+	public Map<String, Object> getArAdjustmentOffSetDocId(Long orgId, String finYear, String branch,
+			String branchCode) {
+
+		String screenCode = "ARA";
+
+		List<Object[]> results = arAdjustmentOffSetRepo.getArAdjustmentOffSetDocId(orgId, finYear, branchCode,
+				screenCode);
+
+		Map<String, Object> map = new HashMap<>();
+
+		if (results != null && !results.isEmpty()) {
+			Object[] row = results.get(0);
+
+			map.put("docId", row[0]);
+			map.put("docDate", row.length > 1 ? row[1] : null);
+		}
+
+		return map;
 	}
 
 	@Override

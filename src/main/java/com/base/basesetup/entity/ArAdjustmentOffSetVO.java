@@ -42,7 +42,7 @@ public class ArAdjustmentOffSetVO {
 	@Column(name = "docid", length = 50)
 	private String docId;
 	@Column(name = "docdate")
-	private LocalDate docDate = LocalDate.now();
+	private LocalDate docDate;
 	@Column(name = "receiptdocid", length = 50)
 	private String receiptDocId;
 	@Column(name = "receiptdocdate")

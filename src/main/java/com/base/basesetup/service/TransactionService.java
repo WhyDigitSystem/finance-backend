@@ -113,15 +113,15 @@ public interface TransactionService {
 
 	List<GeneralJournalVO> getGeneralJournalById(Long id);
 
-	String getGeneralJournalDocId(Long orgId, String finYear, String branch, String branchCode);
+	Map<String, Object> getGeneralJournalDocId(Long orgId, String finYear, String branch, String branchCode);
 
 	List<GeneralJournalVO> getGeneralJournalByActive();
 
 	List<Map<String, Object>> getAccountNameFromGroup(Long orgId);
-	
+
 	List<Map<String, Object>> getAccountNameFromGroupLedgerGeneral(Long orgId);
-	
-	List<Map<String, Object>> getSubLedgerNameFromPartyMaster(Long orgId,String accountName);
+
+	List<Map<String, Object>> getSubLedgerNameFromPartyMaster(Long orgId, String accountName);
 
 // DebitNote
 	List<DebitNoteVO> getAllDebitNoteByOrgId(Long orgId);
@@ -154,7 +154,7 @@ public interface TransactionService {
 
 	PaymentVoucherVO getpaymentVoucherByDocId(Long orgId, String docId);
 
-	String getpaymentVoucherDocId(Long orgId, String finYear, String branch, String branchCode);
+	Map<String, Object> getpaymentVoucherDocId(Long orgId, String finYear, String branch, String branchCode);
 
 //	ReceiptReversal
 	List<ReceiptReversalVO> getAllReceiptReversalByOrgId(Long orgId);
@@ -257,12 +257,12 @@ public interface TransactionService {
 
 	List<Map<String, Object>> getAllCustomersFromPartyMaster(Long orgId);
 
-	String getJobCardDocId(Long orgId, String finYear, String branch, String branchCode);
-	
+	Map<String, Object> getJobCardDocId(Long orgId, String finYear, String branch, String branchCode);
+
 	List<Map<String, Object>> getIncomeByTaxInvoice(Long orgId, String customerName);
-	
-	List<Map<String, Object>> getExponesByCostInvoice(Long orgId,String customerName);
-	
+
+	List<Map<String, Object>> getExponesByCostInvoice(Long orgId, String customerName);
+
 	// AdjustmentJournal
 
 	List<AdjustmentJournalVO> getAllAdjustmentJournalByOrgId(Long orgId);
@@ -272,7 +272,7 @@ public interface TransactionService {
 	Map<String, Object> updateCreateAdjustmentJournal(@Valid AdjustmentJournalDTO adjustmentJournalDTO)
 			throws ApplicationException;
 
-	String getAdjustmentJournalDocId(Long orgId, String finYear, String branch, String branchCode);
+	Map<String, Object> getAdjustmentJournalDocId(Long orgId, String finYear, String branch, String branchCode);
 
 	// BankingDeposit
 	List<BankingDepositVO> getAllBankingDepositByOrgId(Long orgId);
@@ -282,7 +282,7 @@ public interface TransactionService {
 	Map<String, Object> updateCreateBankingDeposit(@Valid BankingDepositDTO bankingDepositDTO)
 			throws ApplicationException;
 
-	String getBankingDepositDocId(Long orgId, String finYear, String branch, String branchCode);
+	Map<String, Object> getBankingDepositDocId(Long orgId, String finYear, String branch, String branchCode);
 
 	List<Map<String, Object>> getBankNameFromGroupforBankingDeposit(Long orgId);
 
@@ -312,10 +312,9 @@ public interface TransactionService {
 
 	List<Map<String, Object>> getAccountNameFromGroupLedgerGeneralfordepositandwithdraw(Long orgId);
 
-	List<Map<String, Object>> getIncomeAndExponseAndProfit(Long orgId, String partyName,String jobNo);
+	List<Map<String, Object>> getIncomeAndExponseAndProfit(Long orgId, String partyName, String jobNo);
 
 	List<Map<String, Object>> getIncomeAndExponseAndProfitDetails(Long orgId, String partyName, String finYear,
 			String branch);
-
 
 }

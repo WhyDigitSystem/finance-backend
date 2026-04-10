@@ -44,7 +44,7 @@ public class AdjustmentJournalVO {
 	private String docId;
 
 	@Column(name = "docdate")
-	private LocalDate docDate = LocalDate.now();
+	private LocalDate docDate;
 
 	@Column(name = "currency", length = 10)
 	private String currency;

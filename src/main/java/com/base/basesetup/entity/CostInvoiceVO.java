@@ -49,6 +49,9 @@ public class CostInvoiceVO {
 	private LocalDate purVoucherDate;
 	@Column(name = "supplierbillno", length = 50)
 	private String supplierBillNo;
+	
+	@Column(name = "supplierbilldate", length = 50)
+	private LocalDate supplierBillDate;
 	@Column(name = "supplietype", length = 10)
 	private String supplierType;
 	@Column(name = "suppliercode", length = 15)

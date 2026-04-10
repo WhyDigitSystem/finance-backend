@@ -43,7 +43,7 @@ public class GeneralJournalVO {
     private String docId;
 
     @Column(name = "docdate")
-    private LocalDate docDate = LocalDate.now();
+    private LocalDate docDate;
 
 
 	@Column(name = "currency", length = 10)

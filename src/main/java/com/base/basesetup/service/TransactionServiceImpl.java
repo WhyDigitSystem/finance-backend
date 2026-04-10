@@ -970,9 +970,25 @@ public class TransactionServiceImpl implements TransactionService {
 			createUpdateJournalVOByGeneralJournalDTO(generalJournalDTO, generalJournalVO);
 
 			// Generate new document ID
-			String docId = generalJournalRepo.getGeneralJournalDocId(generalJournalDTO.getOrgId(),
+//			String docId = generalJournalRepo.getGeneralJournalDocId(generalJournalDTO.getOrgId(),
+//					generalJournalDTO.getFinYear(), generalJournalDTO.getBranchCode(), screenCode);
+//			generalJournalVO.setDocId(docId);
+
+			List<Object[]> taxInvoiceDoc = generalJournalRepo.getGeneralJournalDocId(generalJournalDTO.getOrgId(),
 					generalJournalDTO.getFinYear(), generalJournalDTO.getBranchCode(), screenCode);
-			generalJournalVO.setDocId(docId);
+
+			if (taxInvoiceDoc != null && !taxInvoiceDoc.isEmpty()) {
+
+				Object[] row = taxInvoiceDoc.get(0);
+
+				// ✅ Set docId
+				generalJournalVO.setDocId((String) row[0]);
+
+				// ✅ Convert java.sql.Date → LocalDate
+				if (row[1] != null) {
+					generalJournalVO.setDocDate(((java.sql.Date) row[1]).toLocalDate());
+				}
+			}
 
 			// Update last document number
 			DocumentTypeMappingDetailsVO documentTypeMappingDetailsVO = documentTypeMappingDetailsRepo
@@ -1187,11 +1203,30 @@ public class TransactionServiceImpl implements TransactionService {
 
 	}
 
+//	@Override
+//	public String getGeneralJournalDocId(Long orgId, String finYear, String branch, String branchCode) {
+//		String ScreenCode = "GJ";
+//		String result = generalJournalRepo.getGeneralJournalDocId(orgId, finYear, branchCode, ScreenCode);
+//		return result;
+//	}
+
 	@Override
-	public String getGeneralJournalDocId(Long orgId, String finYear, String branch, String branchCode) {
-		String ScreenCode = "GJ";
-		String result = generalJournalRepo.getGeneralJournalDocId(orgId, finYear, branchCode, ScreenCode);
-		return result;
+	public Map<String, Object> getGeneralJournalDocId(Long orgId, String finYear, String branch, String branchCode) {
+
+		String screenCode = "GJ";
+
+		List<Object[]> results = generalJournalRepo.getGeneralJournalDocId(orgId, finYear, branchCode, screenCode);
+
+		Map<String, Object> map = new HashMap<>();
+
+		if (results != null && !results.isEmpty()) {
+			Object[] row = results.get(0);
+
+			map.put("docId", row[0]);
+			map.put("docDate", row.length > 1 ? row[1] : null);
+		}
+
+		return map;
 	}
 
 	@Override
@@ -1517,9 +1552,25 @@ public class TransactionServiceImpl implements TransactionService {
 //			paymentVoucherVO = new PaymentVoucherVO();
 			getPaymentVoucherVOFromPaymentVoucherDTO(paymentVoucherDTO, paymentVoucherVO);
 			// GETDOCID API
-			String docId = paymentVoucherRepo.getpaymentVoucherDocId(paymentVoucherDTO.getOrgId(),
+//			String docId = paymentVoucherRepo.getpaymentVoucherDocId(paymentVoucherDTO.getOrgId(),
+//					paymentVoucherDTO.getFinyear(), paymentVoucherDTO.getBranchCode(), screenCode);
+//			paymentVoucherVO.setDocId(docId);
+
+			List<Object[]> taxInvoiceDoc = paymentVoucherRepo.getpaymentVoucherDocId(paymentVoucherDTO.getOrgId(),
 					paymentVoucherDTO.getFinyear(), paymentVoucherDTO.getBranchCode(), screenCode);
-			paymentVoucherVO.setDocId(docId);
+
+			if (taxInvoiceDoc != null && !taxInvoiceDoc.isEmpty()) {
+
+				Object[] row = taxInvoiceDoc.get(0);
+
+				// ✅ Set docId
+				paymentVoucherVO.setDocId((String) row[0]);
+
+				// ✅ Convert java.sql.Date → LocalDate
+				if (row[1] != null) {
+					paymentVoucherVO.setDocDate(((java.sql.Date) row[1]).toLocalDate());
+				}
+			}
 
 			// GETDOCID LASTNO +1
 			DocumentTypeMappingDetailsVO documentTypeMappingDetailsVO = documentTypeMappingDetailsRepo
@@ -2594,11 +2645,30 @@ public class TransactionServiceImpl implements TransactionService {
 		return paymentVoucherRepo.findAllPaymentVoucherByDocId(orgId, docId);
 	}
 
+//	@Override
+//	public String getpaymentVoucherDocId(Long orgId, String finYear, String branch, String branchCode) {
+//		String ScreenCode = "PV";
+//		String result = paymentVoucherRepo.getpaymentVoucherDocId(orgId, finYear, branchCode, ScreenCode);
+//		return result;
+//	}
+
 	@Override
-	public String getpaymentVoucherDocId(Long orgId, String finYear, String branch, String branchCode) {
-		String ScreenCode = "PV";
-		String result = paymentVoucherRepo.getpaymentVoucherDocId(orgId, finYear, branchCode, ScreenCode);
-		return result;
+	public Map<String, Object> getpaymentVoucherDocId(Long orgId, String finYear, String branch, String branchCode) {
+
+		String screenCode = "PV";
+
+		List<Object[]> results = paymentVoucherRepo.getpaymentVoucherDocId(orgId, finYear, branchCode, screenCode);
+
+		Map<String, Object> map = new HashMap<>();
+
+		if (results != null && !results.isEmpty()) {
+			Object[] row = results.get(0);
+
+			map.put("docId", row[0]);
+			map.put("docDate", row.length > 1 ? row[1] : null);
+		}
+
+		return map;
 	}
 
 	// TMS-TT-JobCard
@@ -2642,10 +2712,26 @@ public class TransactionServiceImpl implements TransactionService {
 			message = "TmsJobCard Updated Successfully";
 		} else {
 			// GETDOCID API
-			String docId = tmsJobCardRepo.getJobCardDocId(tmsJobCardDTO.getOrgId(), tmsJobCardDTO.getFinYear(),
-					tmsJobCardDTO.getBranchCode(), screenCode);
+//			String docId = tmsJobCardRepo.getJobCardDocId(tmsJobCardDTO.getOrgId(), tmsJobCardDTO.getFinYear(),
+//					tmsJobCardDTO.getBranchCode(), screenCode);
+//
+//			tmsJobCardVO.setJobNo(docId);
 
-			tmsJobCardVO.setJobNo(docId);
+			List<Object[]> taxInvoiceDoc = tmsJobCardRepo.getJobCardDocId(tmsJobCardDTO.getOrgId(),
+					tmsJobCardDTO.getFinYear(), tmsJobCardDTO.getBranchCode(), screenCode);
+
+			if (taxInvoiceDoc != null && !taxInvoiceDoc.isEmpty()) {
+
+				Object[] row = taxInvoiceDoc.get(0);
+
+				// ✅ Set docId
+				tmsJobCardVO.setJobNo((String) row[0]);
+
+				// ✅ Convert java.sql.Date → LocalDate
+				if (row[1] != null) {
+					tmsJobCardVO.setDate(((java.sql.Date) row[1]).toLocalDate());
+				}
+			}
 
 //			// GETDOCID LASTNO +1
 			DocumentTypeMappingDetailsVO documentTypeMappingDetailsVO = documentTypeMappingDetailsRepo
@@ -2720,12 +2806,31 @@ public class TransactionServiceImpl implements TransactionService {
 
 	}
 
-	@Override
-	public String getJobCardDocId(Long orgId, String finYear, String branch, String branchCode) {
-		String ScreenCode = "JC";
-		String result = tmsJobCardRepo.getJobCardDocId(orgId, finYear, branchCode, ScreenCode);
-		return result;
+//	@Override
+//	public String getJobCardDocId(Long orgId, String finYear, String branch, String branchCode) {
+//		String ScreenCode = "JC";
+//		String result = tmsJobCardRepo.getJobCardDocId(orgId, finYear, branchCode, ScreenCode);
+//		return result;
+//
+//	}
 
+	@Override
+	public Map<String, Object> getJobCardDocId(Long orgId, String finYear, String branch, String branchCode) {
+
+		String screenCode = "JC";
+
+		List<Object[]> results = tmsJobCardRepo.getJobCardDocId(orgId, finYear, branchCode, screenCode);
+
+		Map<String, Object> map = new HashMap<>();
+
+		if (results != null && !results.isEmpty()) {
+			Object[] row = results.get(0);
+
+			map.put("docId", row[0]);
+			map.put("docDate", row.length > 1 ? row[1] : null);
+		}
+
+		return map;
 	}
 
 	@Override
@@ -2796,9 +2901,26 @@ public class TransactionServiceImpl implements TransactionService {
 			message = "AdjustmentJournal Updated Successfully";
 		} else {
 			// GETDOCID API
-			String docId = adjustmentJournalRepo.getAdjustmentJournalDocId(adjustmentJournalDTO.getOrgId(),
-					adjustmentJournalDTO.getFinYear(), adjustmentJournalDTO.getBranchCode(), screenCode);
-			adjustmentJournalVO.setDocId(docId);
+//			String docId = adjustmentJournalRepo.getAdjustmentJournalDocId(adjustmentJournalDTO.getOrgId(),
+//					adjustmentJournalDTO.getFinYear(), adjustmentJournalDTO.getBranchCode(), screenCode);
+//			adjustmentJournalVO.setDocId(docId);
+
+			List<Object[]> taxInvoiceDoc = adjustmentJournalRepo.getAdjustmentJournalDocId(
+					adjustmentJournalDTO.getOrgId(), adjustmentJournalDTO.getFinYear(),
+					adjustmentJournalDTO.getBranchCode(), screenCode);
+
+			if (taxInvoiceDoc != null && !taxInvoiceDoc.isEmpty()) {
+
+				Object[] row = taxInvoiceDoc.get(0);
+
+				// ✅ Set docId
+				adjustmentJournalVO.setDocId((String) row[0]);
+
+				// ✅ Convert java.sql.Date → LocalDate
+				if (row[1] != null) {
+					adjustmentJournalVO.setDocDate(((java.sql.Date) row[1]).toLocalDate());
+				}
+			}
 
 //				// GETDOCID LASTNO +1
 			DocumentTypeMappingDetailsVO documentTypeMappingDetailsVO = documentTypeMappingDetailsRepo
@@ -3035,11 +3157,31 @@ public class TransactionServiceImpl implements TransactionService {
 		adjustmentJournalVO.setAccountParticularsVO(accountParticularsVOs);
 	}
 
+//	@Override
+//	public String getAdjustmentJournalDocId(Long orgId, String finYear, String branch, String branchCode) {
+//		String ScreenCode = "AJ";
+//		String result = adjustmentJournalRepo.getAdjustmentJournalByDocId(orgId, finYear, branchCode, ScreenCode);
+//		return result;
+//	}
+
 	@Override
-	public String getAdjustmentJournalDocId(Long orgId, String finYear, String branch, String branchCode) {
-		String ScreenCode = "AJ";
-		String result = adjustmentJournalRepo.getAdjustmentJournalByDocId(orgId, finYear, branchCode, ScreenCode);
-		return result;
+	public Map<String, Object> getAdjustmentJournalDocId(Long orgId, String finYear, String branch, String branchCode) {
+
+		String screenCode = "AJ";
+
+		List<Object[]> results = adjustmentJournalRepo.getAdjustmentJournalDocId(orgId, finYear, branchCode,
+				screenCode);
+
+		Map<String, Object> map = new HashMap<>();
+
+		if (results != null && !results.isEmpty()) {
+			Object[] row = results.get(0);
+
+			map.put("docId", row[0]);
+			map.put("docDate", row.length > 1 ? row[1] : null);
+		}
+
+		return map;
 	}
 
 	// BankingDeposit
@@ -3079,10 +3221,26 @@ public class TransactionServiceImpl implements TransactionService {
 			message = "BankingDeposit Updated Successfully";
 		} else {
 			// GETDOCID API
-			String docId = bankingDepositRepo.getBankingDepositDocId(bankingDepositDTO.getOrgId(),
+//			String docId = bankingDepositRepo.getBankingDepositDocId(bankingDepositDTO.getOrgId(),
+//					bankingDepositDTO.getFinYear(), bankingDepositDTO.getBranchCode(), screenCode);
+//
+//			bankingDepositVO.setDocId(docId);
+			
+			List<Object[]> taxInvoiceDoc =bankingDepositRepo.getBankingDepositDocId(bankingDepositDTO.getOrgId(),
 					bankingDepositDTO.getFinYear(), bankingDepositDTO.getBranchCode(), screenCode);
 
-			bankingDepositVO.setDocId(docId);
+			if (taxInvoiceDoc != null && !taxInvoiceDoc.isEmpty()) {
+
+				Object[] row = taxInvoiceDoc.get(0);
+
+				// ✅ Set docId
+				bankingDepositVO.setDocId((String) row[0]);
+
+				// ✅ Convert java.sql.Date → LocalDate
+				if (row[1] != null) {
+					bankingDepositVO.setDocDate(((java.sql.Date) row[1]).toLocalDate());
+				}
+			}
 
 //						// GETDOCID LASTNO +1
 			DocumentTypeMappingDetailsVO documentTypeMappingDetailsVO = documentTypeMappingDetailsRepo
@@ -3278,11 +3436,30 @@ public class TransactionServiceImpl implements TransactionService {
 
 	}
 
+//	@Override
+//	public String getBankingDepositDocId(Long orgId, String finYear, String branch, String branchCode) {
+//		String ScreenCode = "BD";
+//		String result = bankingDepositRepo.getBankingDepositByDocId(orgId, finYear, branchCode, ScreenCode);
+//		return result;
+//	}
+	
 	@Override
-	public String getBankingDepositDocId(Long orgId, String finYear, String branch, String branchCode) {
-		String ScreenCode = "BD";
-		String result = bankingDepositRepo.getBankingDepositByDocId(orgId, finYear, branchCode, ScreenCode);
-		return result;
+	public Map<String, Object> getBankingDepositDocId(Long orgId, String finYear, String branch, String branchCode) {
+
+		String screenCode = "BD";
+
+		List<Object[]> results = bankingDepositRepo.getBankingDepositDocId(orgId, finYear, branchCode, screenCode);
+
+		Map<String, Object> map = new HashMap<>();
+
+		if (results != null && !results.isEmpty()) {
+			Object[] row = results.get(0);
+
+			map.put("docId", row[0]);
+			map.put("docDate", row.length > 1 ? row[1] : null);
+		}
+
+		return map;
 	}
 
 	@Override
