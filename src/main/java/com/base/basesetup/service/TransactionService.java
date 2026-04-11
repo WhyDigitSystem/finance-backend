@@ -239,7 +239,7 @@ public interface TransactionService {
 
 	FundTransferVO getFundTranferByDocId(Long orgId, String docId);
 
-	String getFundTranferDocId(Long orgId, String finYear, String branch, String branchCode);
+	Map<String, Object> getFundTranferDocId(Long orgId, String finYear, String branch, String branchCode);
 
 	Map<String, Object> getReconcileCashDocId(Long orgId, String finYear, String branch, String branchCode);
 
@@ -294,7 +294,7 @@ public interface TransactionService {
 	Map<String, Object> updateCreateBankingWithdrawal(@Valid BankingWithdrawalDTO bankingWithdrawalDTO)
 			throws ApplicationException;
 
-	String getBankingWithdrawalDocId(Long orgId, String finYear, String branch, String branchCode);
+	Map<String, Object> getBankingWithdrawalDocId(Long orgId, String finYear, String branch, String branchCode);
 
 	List<Map<String, Object>> getCurrencyAndExrates(Long orgId);
 

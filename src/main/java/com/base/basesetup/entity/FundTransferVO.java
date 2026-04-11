@@ -38,7 +38,7 @@ public class FundTransferVO {
 	@Column(name = "docid")
 	private String docId;
 	@Column(name = "docdate")
-	private LocalDate docDate=LocalDate.now();
+	private LocalDate docDate;
 	@Column(name = "currency",length =10)
 	private String currency;
 	@Column(name = "exrate",precision =10,scale =2)
