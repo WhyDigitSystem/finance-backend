@@ -833,19 +833,53 @@ public class TransactionController extends BaseController {
 		return ResponseEntity.ok().body(responseDTO);
 	}
 
+//	@GetMapping("/getGeneralJournalDocId")
+//	public ResponseEntity<ResponseDTO> getGeneralJournalDocId(@RequestParam Long orgId, @RequestParam String finYear,
+//			@RequestParam String branch, @RequestParam String branchCode) {
+//
+//		String methodName = "getGeneralJournalDocId()";
+//		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+//		String errorMsg = null;
+//		Map<String, Object> responseObjectsMap = new HashMap<>();
+//		ResponseDTO responseDTO = null;
+//		String mapp = "";
+//
+//		try {
+//			mapp = transactionService.getGeneralJournalDocId(orgId, finYear, branch, branchCode);
+//		} catch (Exception e) {
+//			errorMsg = e.getMessage();
+//			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+//		}
+//
+//		if (StringUtils.isBlank(errorMsg)) {
+//			responseObjectsMap.put(CommonConstant.STRING_MESSAGE,
+//					"GeneralJournalDocId information retrieved successfully");
+//			responseObjectsMap.put("generalJournalDocId", mapp);
+//			responseDTO = createServiceResponse(responseObjectsMap);
+//		} else {
+//			responseDTO = createServiceResponseError(responseObjectsMap,
+//					"Failed to retrieve GeneralJournalDocId information", errorMsg);
+//		}
+//
+//		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+//		return ResponseEntity.ok().body(responseDTO);
+//	}
+
 	@GetMapping("/getGeneralJournalDocId")
 	public ResponseEntity<ResponseDTO> getGeneralJournalDocId(@RequestParam Long orgId, @RequestParam String finYear,
 			@RequestParam String branch, @RequestParam String branchCode) {
 
 		String methodName = "getGeneralJournalDocId()";
 		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+
 		String errorMsg = null;
 		Map<String, Object> responseObjectsMap = new HashMap<>();
 		ResponseDTO responseDTO = null;
-		String mapp = "";
+
+		Map<String, Object> resultMap = new HashMap<>();
 
 		try {
-			mapp = transactionService.getGeneralJournalDocId(orgId, finYear, branch, branchCode);
+			resultMap = transactionService.getGeneralJournalDocId(orgId, finYear, branch, branchCode);
 		} catch (Exception e) {
 			errorMsg = e.getMessage();
 			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
@@ -854,7 +888,10 @@ public class TransactionController extends BaseController {
 		if (StringUtils.isBlank(errorMsg)) {
 			responseObjectsMap.put(CommonConstant.STRING_MESSAGE,
 					"GeneralJournalDocId information retrieved successfully");
-			responseObjectsMap.put("generalJournalDocId", mapp);
+
+			responseObjectsMap.put("generalJournalDocId", resultMap.get("docId"));
+			responseObjectsMap.put("docDate", resultMap.get("docDate"));
+
 			responseDTO = createServiceResponse(responseObjectsMap);
 		} else {
 			responseDTO = createServiceResponseError(responseObjectsMap,
@@ -1240,33 +1277,37 @@ public class TransactionController extends BaseController {
 
 	}
 
-	@GetMapping("/getpaymentVoucherByDocId")
-	public ResponseEntity<ResponseDTO> getpaymentVoucherByDocId(@RequestParam Long orgId, @RequestParam String docId) {
-		String methodName = "getpaymentVoucherByDocId()";
-		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
-		String errorMsg = null;
-		Map<String, Object> responseObjectsMap = new HashMap<>();
-		ResponseDTO responseDTO = null;
-		PaymentVoucherVO paymentVoucherVO = new PaymentVoucherVO();
-		try {
-			paymentVoucherVO = transactionService.getpaymentVoucherByDocId(orgId, docId);
-		} catch (Exception e) {
-			errorMsg = e.getMessage();
-			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
-		}
-		if (StringUtils.isBlank(errorMsg)) {
-			responseObjectsMap.put(CommonConstant.STRING_MESSAGE,
-					"PaymentVoucher information get successfully By docid");
-			responseObjectsMap.put("paymentVoucherVO", paymentVoucherVO);
-			responseDTO = createServiceResponse(responseObjectsMap);
-		} else {
-			responseDTO = createServiceResponseError(responseObjectsMap,
-					"PaymentVoucher information receive failed By docid", errorMsg);
-		}
-		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
-		return ResponseEntity.ok().body(responseDTO);
-
-	}
+//	@GetMapping("/getpaymentVoucherDocId")
+//	public ResponseEntity<ResponseDTO> getpaymentVoucherDocId(@RequestParam Long orgId, @RequestParam String finYear,
+//			@RequestParam String branch, @RequestParam String branchCode) {
+//
+//		String methodName = "getpaymentVoucherDocId()";
+//		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+//		String errorMsg = null;
+//		Map<String, Object> responseObjectsMap = new HashMap<>();
+//		ResponseDTO responseDTO = null;
+//		String mapp = "";
+//
+//		try {
+//			mapp = transactionService.getpaymentVoucherDocId(orgId, finYear, branch, branchCode);
+//		} catch (Exception e) {
+//			errorMsg = e.getMessage();
+//			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+//		}
+//
+//		if (StringUtils.isBlank(errorMsg)) {
+//			responseObjectsMap.put(CommonConstant.STRING_MESSAGE,
+//					"paymentVoucher DocId information retrieved successfully");
+//			responseObjectsMap.put("paymentVoucherDocId", mapp);
+//			responseDTO = createServiceResponse(responseObjectsMap);
+//		} else {
+//			responseDTO = createServiceResponseError(responseObjectsMap,
+//					"Failed to retrieve  paymentVoucher DocId information", errorMsg);
+//		}
+//
+//		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+//		return ResponseEntity.ok().body(responseDTO);
+//	}
 
 	@GetMapping("/getpaymentVoucherDocId")
 	public ResponseEntity<ResponseDTO> getpaymentVoucherDocId(@RequestParam Long orgId, @RequestParam String finYear,
@@ -1274,13 +1315,15 @@ public class TransactionController extends BaseController {
 
 		String methodName = "getpaymentVoucherDocId()";
 		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+
 		String errorMsg = null;
 		Map<String, Object> responseObjectsMap = new HashMap<>();
 		ResponseDTO responseDTO = null;
-		String mapp = "";
+
+		Map<String, Object> resultMap = new HashMap<>();
 
 		try {
-			mapp = transactionService.getpaymentVoucherDocId(orgId, finYear, branch, branchCode);
+			resultMap = transactionService.getpaymentVoucherDocId(orgId, finYear, branch, branchCode);
 		} catch (Exception e) {
 			errorMsg = e.getMessage();
 			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
@@ -1288,12 +1331,15 @@ public class TransactionController extends BaseController {
 
 		if (StringUtils.isBlank(errorMsg)) {
 			responseObjectsMap.put(CommonConstant.STRING_MESSAGE,
-					"paymentVoucher DocId information retrieved successfully");
-			responseObjectsMap.put("paymentVoucherDocId", mapp);
+					"paymentVoucherDocId information retrieved successfully");
+
+			responseObjectsMap.put("paymentVoucherDocId", resultMap.get("docId"));
+			responseObjectsMap.put("docDate", resultMap.get("docDate"));
+
 			responseDTO = createServiceResponse(responseObjectsMap);
 		} else {
 			responseDTO = createServiceResponseError(responseObjectsMap,
-					"Failed to retrieve  paymentVoucher DocId information", errorMsg);
+					"Failed to retrieve paymentVoucherDocId information", errorMsg);
 		}
 
 		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
@@ -2417,19 +2463,53 @@ public class TransactionController extends BaseController {
 		return ResponseEntity.ok().body(responseDTO);
 	}
 
+//	@GetMapping("/getAdjustmentJournalDocId")
+//	public ResponseEntity<ResponseDTO> getAdjustmentJournalDocId(@RequestParam Long orgId, @RequestParam String finYear,
+//			@RequestParam String branch, @RequestParam String branchCode) {
+//
+//		String methodName = "getAdjustmentJournalDocId()";
+//		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+//		String errorMsg = null;
+//		Map<String, Object> responseObjectsMap = new HashMap<>();
+//		ResponseDTO responseDTO = null;
+//		String mapp = "";
+//
+//		try {
+//			mapp = transactionService.getAdjustmentJournalDocId(orgId, finYear, branch, branchCode);
+//		} catch (Exception e) {
+//			errorMsg = e.getMessage();
+//			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+//		}
+//
+//		if (StringUtils.isBlank(errorMsg)) {
+//			responseObjectsMap.put(CommonConstant.STRING_MESSAGE,
+//					"AdjustmentJournal DocId information retrieved successfully");
+//			responseObjectsMap.put("adjustmentJournalDocId", mapp);
+//			responseDTO = createServiceResponse(responseObjectsMap);
+//		} else {
+//			responseDTO = createServiceResponseError(responseObjectsMap,
+//					"Failed to retrieve AdjustmentJournal Docid information", errorMsg);
+//		}
+//
+//		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+//		return ResponseEntity.ok().body(responseDTO);
+//	}
+
 	@GetMapping("/getAdjustmentJournalDocId")
 	public ResponseEntity<ResponseDTO> getAdjustmentJournalDocId(@RequestParam Long orgId, @RequestParam String finYear,
 			@RequestParam String branch, @RequestParam String branchCode) {
 
 		String methodName = "getAdjustmentJournalDocId()";
 		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+
 		String errorMsg = null;
 		Map<String, Object> responseObjectsMap = new HashMap<>();
 		ResponseDTO responseDTO = null;
-		String mapp = "";
+
+		Map<String, Object> resultMap = new HashMap<>();
 
 		try {
-			mapp = transactionService.getAdjustmentJournalDocId(orgId, finYear, branch, branchCode);
+			resultMap = transactionService.getAdjustmentJournalDocId(orgId, finYear, branch, branchCode);
 		} catch (Exception e) {
 			errorMsg = e.getMessage();
 			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
@@ -2437,12 +2517,15 @@ public class TransactionController extends BaseController {
 
 		if (StringUtils.isBlank(errorMsg)) {
 			responseObjectsMap.put(CommonConstant.STRING_MESSAGE,
-					"AdjustmentJournal DocId information retrieved successfully");
-			responseObjectsMap.put("adjustmentJournalDocId", mapp);
+					"adjustmentJournalDocId information retrieved successfully");
+
+			responseObjectsMap.put("adjustmentJournalDocId", resultMap.get("docId"));
+			responseObjectsMap.put("docDate", resultMap.get("docDate"));
+
 			responseDTO = createServiceResponse(responseObjectsMap);
 		} else {
 			responseDTO = createServiceResponseError(responseObjectsMap,
-					"Failed to retrieve AdjustmentJournal Docid information", errorMsg);
+					"Failed to retrieve adjustmentJournalDocId information", errorMsg);
 		}
 
 		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
@@ -2580,31 +2663,67 @@ public class TransactionController extends BaseController {
 		return ResponseEntity.ok().body(responseDTO);
 	}
 
+//	@GetMapping("/getTmsJobCardDocId")
+//	public ResponseEntity<ResponseDTO> getJobCardDocId(@RequestParam Long orgId, @RequestParam String finYear,
+//			@RequestParam String branch, @RequestParam String branchCode) {
+//
+//		String methodName = "getTmsJobCardDocId()";
+//		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+//		String errorMsg = null;
+//		Map<String, Object> responseObjectsMap = new HashMap<>();
+//		ResponseDTO responseDTO = null;
+//		String mapp = "";
+//
+//		try {
+//			mapp = transactionService.getJobCardDocId(orgId, finYear, branch, branchCode);
+//		} catch (Exception e) {
+//			errorMsg = e.getMessage();
+//			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+//		}
+//
+//		if (StringUtils.isBlank(errorMsg)) {
+//			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "TmsJobCardDocId information retrieved successfully");
+//			responseObjectsMap.put("tmsJobCardDocId", mapp);
+//			responseDTO = createServiceResponse(responseObjectsMap);
+//		} else {
+//			responseDTO = createServiceResponseError(responseObjectsMap,
+//					"Failed to retrieve TmsJobCardDocId information", errorMsg);
+//		}
+//
+//		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+//		return ResponseEntity.ok().body(responseDTO);
+//	}
+
 	@GetMapping("/getTmsJobCardDocId")
 	public ResponseEntity<ResponseDTO> getJobCardDocId(@RequestParam Long orgId, @RequestParam String finYear,
 			@RequestParam String branch, @RequestParam String branchCode) {
 
-		String methodName = "getTmsJobCardDocId()";
+		String methodName = "getJobCardDocId()";
 		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+
 		String errorMsg = null;
 		Map<String, Object> responseObjectsMap = new HashMap<>();
 		ResponseDTO responseDTO = null;
-		String mapp = "";
+
+		Map<String, Object> resultMap = new HashMap<>();
 
 		try {
-			mapp = transactionService.getJobCardDocId(orgId, finYear, branch, branchCode);
+			resultMap = transactionService.getJobCardDocId(orgId, finYear, branch, branchCode);
 		} catch (Exception e) {
 			errorMsg = e.getMessage();
 			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
 		}
 
 		if (StringUtils.isBlank(errorMsg)) {
-			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "TmsJobCardDocId information retrieved successfully");
-			responseObjectsMap.put("tmsJobCardDocId", mapp);
+			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "tmsJobCardDocId information retrieved successfully");
+
+			responseObjectsMap.put("tmsJobCardDocId", resultMap.get("docId"));
+			responseObjectsMap.put("docDate", resultMap.get("docDate"));
+
 			responseDTO = createServiceResponse(responseObjectsMap);
 		} else {
 			responseDTO = createServiceResponseError(responseObjectsMap,
-					"Failed to retrieve TmsJobCardDocId information", errorMsg);
+					"Failed to retrieve tmsJobCardDocIdinformation", errorMsg);
 		}
 
 		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
@@ -2748,19 +2867,53 @@ public class TransactionController extends BaseController {
 		return ResponseEntity.ok().body(responseDTO);
 	}
 
+//	@GetMapping("/getBankingDepositDocId")
+//	public ResponseEntity<ResponseDTO> getBankingDepositDocId(@RequestParam Long orgId, @RequestParam String finYear,
+//			@RequestParam String branch, @RequestParam String branchCode) {
+//
+//		String methodName = "getBankingDepositDocId()";
+//		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+//		String errorMsg = null;
+//		Map<String, Object> responseObjectsMap = new HashMap<>();
+//		ResponseDTO responseDTO = null;
+//		String mapp = "";
+//
+//		try {
+//			mapp = transactionService.getBankingDepositDocId(orgId, finYear, branch, branchCode);
+//		} catch (Exception e) {
+//			errorMsg = e.getMessage();
+//			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+//		}
+//
+//		if (StringUtils.isBlank(errorMsg)) {
+//			responseObjectsMap.put(CommonConstant.STRING_MESSAGE,
+//					"BankingDeposit DocId information retrieved successfully");
+//			responseObjectsMap.put("bankingDepositDocId", mapp);
+//			responseDTO = createServiceResponse(responseObjectsMap);
+//		} else {
+//			responseDTO = createServiceResponseError(responseObjectsMap,
+//					"Failed to retrieve BankingDeposit Docid information", errorMsg);
+//		}
+//
+//		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+//		return ResponseEntity.ok().body(responseDTO);
+//	}
+
 	@GetMapping("/getBankingDepositDocId")
 	public ResponseEntity<ResponseDTO> getBankingDepositDocId(@RequestParam Long orgId, @RequestParam String finYear,
 			@RequestParam String branch, @RequestParam String branchCode) {
 
 		String methodName = "getBankingDepositDocId()";
 		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+
 		String errorMsg = null;
 		Map<String, Object> responseObjectsMap = new HashMap<>();
 		ResponseDTO responseDTO = null;
-		String mapp = "";
+
+		Map<String, Object> resultMap = new HashMap<>();
 
 		try {
-			mapp = transactionService.getBankingDepositDocId(orgId, finYear, branch, branchCode);
+			resultMap = transactionService.getBankingDepositDocId(orgId, finYear, branch, branchCode);
 		} catch (Exception e) {
 			errorMsg = e.getMessage();
 			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
@@ -2768,12 +2921,15 @@ public class TransactionController extends BaseController {
 
 		if (StringUtils.isBlank(errorMsg)) {
 			responseObjectsMap.put(CommonConstant.STRING_MESSAGE,
-					"BankingDeposit DocId information retrieved successfully");
-			responseObjectsMap.put("bankingDepositDocId", mapp);
+					"bankingDepositDocId information retrieved successfully");
+
+			responseObjectsMap.put("bankingDepositDocId", resultMap.get("docId"));
+			responseObjectsMap.put("docDate", resultMap.get("docDate"));
+
 			responseDTO = createServiceResponse(responseObjectsMap);
 		} else {
 			responseDTO = createServiceResponseError(responseObjectsMap,
-					"Failed to retrieve BankingDeposit Docid information", errorMsg);
+					"Failed to retrieve bankingDepositDocId information", errorMsg);
 		}
 
 		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
@@ -3160,8 +3316,7 @@ public class TransactionController extends BaseController {
 		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
 		return ResponseEntity.ok().body(responseDTO);
 	}
-	
-	
+
 //	@GetMapping("/getIncomeAndExponseAndProfit")
 //	public ResponseEntity<ResponseDTO> getIncomeAndExponseAndProfit(@RequestParam Long OrgId,
 //			@RequestParam String partyName,@RequestParam String jobNo ) {
@@ -3191,10 +3346,10 @@ public class TransactionController extends BaseController {
 //		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
 //		return ResponseEntity.ok().body(responseDTO);
 //	}
-	
+
 	@GetMapping("/getIncomeAndExponseAndProfitDetails")
 	public ResponseEntity<ResponseDTO> getIncomeAndExponseAndProfitDetails(@RequestParam Long OrgId,
-			@RequestParam String partyName,@RequestParam  String finYear,@RequestParam String branch ) {
+			@RequestParam String partyName, @RequestParam String finYear, @RequestParam String branch) {
 
 		String methodName = "getIncomeAndExponseAndProfitDetails()";
 		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
@@ -3203,7 +3358,7 @@ public class TransactionController extends BaseController {
 		ResponseDTO responseDTO = null;
 		List<Map<String, Object>> mov = new ArrayList<>();
 		try {
-			mov = transactionService.getIncomeAndExponseAndProfitDetails(OrgId, partyName,finYear,branch);
+			mov = transactionService.getIncomeAndExponseAndProfitDetails(OrgId, partyName, finYear, branch);
 		} catch (Exception e) {
 			errorMsg = e.getMessage();
 			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);

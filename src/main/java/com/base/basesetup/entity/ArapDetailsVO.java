@@ -109,6 +109,11 @@ public class ArapDetailsVO {
 	private String branchCode;
 	@Column(name = "salestype", length = 20)
 	private String salesType;
+	@Column(name = "supplierbillno")
+	private String supplierBillNo;
+
+	@Column(name = "supplierbilldate")
+	private LocalDate supplierBillDate;
 
 	@Embedded
 	@Builder.Default

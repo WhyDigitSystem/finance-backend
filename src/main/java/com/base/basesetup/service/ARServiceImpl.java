@@ -639,8 +639,8 @@ public class ARServiceImpl implements ARService {
 		String screenCode1 = "AC";
 		String sourceScreenCode = receiptVO.getScreenCode();
 
-		List<Object[]> taxInvoiceDoc = accountsRepo.getApproveDocId(receiptVO.getOrgId(),
-				receiptVO.getFinYear(), receiptVO.getBranchCode(), sourceScreenCode, screenCode1);
+		List<Object[]> taxInvoiceDoc = accountsRepo.getApproveDocId(receiptVO.getOrgId(), receiptVO.getFinYear(),
+				receiptVO.getBranchCode(), sourceScreenCode, screenCode1);
 
 		String generatedDocId = null;
 		LocalDate generatedDocDate = null;
@@ -928,9 +928,15 @@ public class ARServiceImpl implements ARService {
 			map.put("panNo", ch[9] != null ? ch[9].toString() : "");
 			map.put("tanNo", ch[10] != null ? ch[10].toString() : "");
 			map.put("tdsAmount", ch[11] != null ? new BigDecimal(ch[11].toString()) : BigDecimal.ZERO);
-
-//			map.put("gstAmount", ch[12] != null ? new BigDecimal(ch[12].toString()) : BigDecimal.ZERO);
-//			map.put("chargeAmount", ch[13] != null ? new BigDecimal(ch[13].toString()) : BigDecimal.ZERO);
+//			if ("2".equals(ch[0].toString())) {
+//				map.put("billAmount", "");
+//				map.put("tdsPercentage", "");
+//			} else {
+//				map.put("billAmount", ch[12] != null ? new BigDecimal(ch[12].toString()) : BigDecimal.ZERO);
+//				map.put("tdsPercentage", ch[13] != null ? new BigDecimal(ch[13].toString()) : BigDecimal.ZERO);
+//			}
+			map.put("billAmount", ch[12] != null ? new BigDecimal(ch[12].toString()) : BigDecimal.ZERO);
+			map.put("tdsPercentage", ch[13] != null ? new BigDecimal(ch[13].toString()) : BigDecimal.ZERO);
 //			map.put("billAmount", ch[14] != null ? new BigDecimal(ch[14].toString()) : BigDecimal.ZERO);
 //			map.put("totalAmountLc", ch[15] != null ? new BigDecimal(ch[15].toString()) : BigDecimal.ZERO);
 			List1.add(map);
