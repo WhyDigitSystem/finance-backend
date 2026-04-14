@@ -50,7 +50,7 @@ public class CostInvoiceVO {
 	@Column(name = "supplierbillno", length = 50)
 	private String supplierBillNo;
 	
-	@Column(name = "supplierbilldate", length = 50)
+	@Column(name = "supplierbilldate")
 	private LocalDate supplierBillDate;
 	@Column(name = "supplietype", length = 10)
 	private String supplierType;

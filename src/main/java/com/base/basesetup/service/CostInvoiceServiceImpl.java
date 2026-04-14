@@ -988,8 +988,24 @@ public class CostInvoiceServiceImpl implements CostInvoiceService {
 		} else {
 			// Create new AccountsVO with docId generation
 			accountsVO = new AccountsVO();
-			String accountsDocId = accountsRepo.getCostInvoiceDocId(costInvoiceVO.getOrgId(),
+//			String accountsDocId = accountsRepo.getCostInvoiceDocId(costInvoiceVO.getOrgId(),
+//					costInvoiceVO.getFinYear(), costInvoiceVO.getBranchCode(), sourceScreenCode, screenCode);
+			
+			List<Object[]> taxInvoiceDoc = accountsRepo.getApproveDocId(costInvoiceVO.getOrgId(),
 					costInvoiceVO.getFinYear(), costInvoiceVO.getBranchCode(), sourceScreenCode, screenCode);
+
+			String generatedDocId = null;
+			LocalDate generatedDocDate = null;
+
+			if (taxInvoiceDoc != null && !taxInvoiceDoc.isEmpty()) {
+				Object[] row = taxInvoiceDoc.get(0);
+				generatedDocId = (String) row[0];
+				if (row[1] != null) {
+					generatedDocDate = ((java.sql.Date) row[1]).toLocalDate();
+				}
+			}
+			costInvoiceVO.setPurVoucherNo(generatedDocId);
+			costInvoiceVO.setPurVoucherDate(generatedDocDate);
 
 			MultipleDocIdGenerationDetailsVO mulDocId = multipleDocIdGenerationDetailsRepo
 					.findByOrgIdAndFinYearAndBranchCodeAndSourceScreenCodeAndScreenCode(costInvoiceVO.getOrgId(),
@@ -997,7 +1013,8 @@ public class CostInvoiceServiceImpl implements CostInvoiceService {
 
 			mulDocId.setLastno(mulDocId.getLastno() + 1);
 			multipleDocIdGenerationDetailsRepo.save(mulDocId);
-			accountsVO.setDocId(accountsDocId);
+			accountsVO.setDocId(generatedDocId);
+			accountsVO.setDocDate(generatedDocDate);
 		}
 
 		// Populate AccountsVO
@@ -1015,6 +1032,8 @@ public class CostInvoiceServiceImpl implements CostInvoiceService {
 		accountsVO.setRefDate(costInvoiceVO.getDocDate());
 		accountsVO.setVId(costInvoiceVO.getVId());
 		accountsVO.setVDate(costInvoiceVO.getVDate());
+		accountsVO.setSupplierBillNo(costInvoiceVO.getSupplierBillNo());
+		accountsVO.setSupplierBillDate(costInvoiceVO.getSupplierBillDate());
 		accountsVO.setDueDate(costInvoiceVO.getDueDate());
 		accountsVO.setAmountInWords(costInvoiceVO.getAmountInWords());
 		accountsVO.setChargeableAmount(costInvoiceVO.getTotChargesLcAmt());
@@ -1146,6 +1165,8 @@ public class CostInvoiceServiceImpl implements CostInvoiceService {
 		arapDetailsVO.setSalesType(savedAccountsVO.getSalesType());
 		arapDetailsVO.setNativeAmt(payableEntry.getArapAmount());
 		arapDetailsVO.setOrgId(savedAccountsVO.getOrgId());
+		arapDetailsVO.setSupplierBillNo(savedAccountsVO.getSupplierBillNo());
+		arapDetailsVO.setSupplierBillDate(savedAccountsVO.getSupplierBillDate());
 		arapDetailsRepo.save(arapDetailsVO);
 
 		// Final invoice updates
