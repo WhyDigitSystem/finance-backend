@@ -39,7 +39,7 @@ public class ReconcileBankVO {
 	@Column(name = "docid",length = 25)
 	private String docId;
 	@Column(name = "docdate")
-	private LocalDate docDate= LocalDate.now();
+	private LocalDate docDate;
 	@Column(name="bankaccount",length = 30)
 	private String bankAccount;
 	@Column(name = "bankstmtdate")

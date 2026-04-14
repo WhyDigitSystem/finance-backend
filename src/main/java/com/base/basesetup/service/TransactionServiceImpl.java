@@ -867,9 +867,26 @@ public class TransactionServiceImpl implements TransactionService {
 			fundTransferVO = new FundTransferVO();
 
 			// GETDOCID API
-			String docId = fundTransferRepo.getFundTranferDocId(fundTransferDTO.getOrgId(),
+//			String docId = fundTransferRepo.getFundTranferDocId(fundTransferDTO.getOrgId(),
+//					fundTransferDTO.getFinYear(), fundTransferDTO.getBranchCode(), screenCode);
+//			fundTransferVO.setDocId(docId);
+			
+			List<Object[]> taxInvoiceDoc = fundTransferRepo.getFundTranferDocId(fundTransferDTO.getOrgId(),
 					fundTransferDTO.getFinYear(), fundTransferDTO.getBranchCode(), screenCode);
-			fundTransferVO.setDocId(docId);
+
+			if (taxInvoiceDoc != null && !taxInvoiceDoc.isEmpty()) {
+
+				Object[] row = taxInvoiceDoc.get(0);
+
+				// ✅ Set docId
+				fundTransferVO.setDocId((String) row[0]);
+
+				// ✅ Convert java.sql.Date → LocalDate
+				if (row[1] != null) {
+					fundTransferVO.setDocDate(((java.sql.Date) row[1]).toLocalDate());
+				}
+			}
+			
 
 			// GETDOCID LASTNO +1
 			DocumentTypeMappingDetailsVO documentTypeMappingDetailsVO = documentTypeMappingDetailsRepo
@@ -892,6 +909,8 @@ public class TransactionServiceImpl implements TransactionService {
 
 			message = "FundTransfer Updation Successfully";
 		}
+		
+		
 
 		getFundTransferVOFromFundTransferDTO(fundTransferDTO, fundTransferVO);
 		fundTransferRepo.save(fundTransferVO);
@@ -2293,9 +2312,25 @@ public class TransactionServiceImpl implements TransactionService {
 
 			getReconcileBankVOFromReconcileBankDTO(reconcileBankDTO, reconcileBankVO);
 			// GETDOCID API
-			String docId = reconcileBankRepo.getReconcileBankDocId(reconcileBankDTO.getOrgId(),
+//			String docId = reconcileBankRepo.getReconcileBankDocId(reconcileBankDTO.getOrgId(),
+//					reconcileBankDTO.getFinYear(), reconcileBankDTO.getBranchCode(), screenCode);
+//			reconcileBankVO.setDocId(docId);
+
+			List<Object[]> taxInvoiceDoc = reconcileBankRepo.getReconcileBankDocId(reconcileBankDTO.getOrgId(),
 					reconcileBankDTO.getFinYear(), reconcileBankDTO.getBranchCode(), screenCode);
-			reconcileBankVO.setDocId(docId);
+
+			if (taxInvoiceDoc != null && !taxInvoiceDoc.isEmpty()) {
+
+				Object[] row = taxInvoiceDoc.get(0);
+
+				// ✅ Set docId
+				reconcileBankVO.setDocId((String) row[0]);
+
+				// ✅ Convert java.sql.Date → LocalDate
+				if (row[1] != null) {
+					reconcileBankVO.setDocDate(((java.sql.Date) row[1]).toLocalDate());
+				}
+			}
 
 			// GETDOCID LASTNO +1
 			DocumentTypeMappingDetailsVO documentTypeMappingDetailsVO = documentTypeMappingDetailsRepo
@@ -2372,11 +2407,30 @@ public class TransactionServiceImpl implements TransactionService {
 		reconcileBankVO.setParticularsReconcileVO(particularsReconcileVOs);
 	}
 
+//	@Override
+//	public String getReconcileBankDocId(Long orgId, String finYear, String branch, String branchCode) {
+//		String ScreenCode = "RB";
+//		String result = reconcileBankRepo.getReconcileBankDocId(orgId, finYear, branchCode, ScreenCode);
+//		return result;
+//	}
+
 	@Override
-	public String getReconcileBankDocId(Long orgId, String finYear, String branch, String branchCode) {
-		String ScreenCode = "RB";
-		String result = reconcileBankRepo.getReconcileBankDocId(orgId, finYear, branchCode, ScreenCode);
-		return result;
+	public Map<String, Object> getReconcileBankDocId(Long orgId, String finYear, String branch, String branchCode) {
+
+		String screenCode = "RB";
+
+		List<Object[]> results = reconcileBankRepo.getReconcileBankDocId(orgId, finYear, branchCode, screenCode);
+
+		Map<String, Object> map = new HashMap<>();
+
+		if (results != null && !results.isEmpty()) {
+			Object[] row = results.get(0);
+
+			map.put("docId", row[0]);
+			map.put("docDate", row.length > 1 ? row[1] : null);
+		}
+
+		return map;
 	}
 
 	@Override
@@ -2541,14 +2595,31 @@ public class TransactionServiceImpl implements TransactionService {
 			reconcileCashVO.setUpdatedBy(reconcileCashDTO.getCreatedBy());
 			message = "ReconcileCash Updated Successfully";
 		} else {
-			String docId = reconcileCashRepo.getReconcileCashDocId(reconcileCashDTO.getOrgId(),
+//			String docId = reconcileCashRepo.getReconcileCashDocId(reconcileCashDTO.getOrgId(),
+//					reconcileCashDTO.getFinYear(), reconcileCashDTO.getBranchCode(), screenCode);
+//			reconcileCashVO.setDocId(docId);
+			
+			List<Object[]> taxInvoiceDoc = reconcileCashRepo.getReconcileCashDocId(reconcileCashDTO.getOrgId(),
 					reconcileCashDTO.getFinYear(), reconcileCashDTO.getBranchCode(), screenCode);
-			reconcileCashVO.setDocId(docId);
+
+			if (taxInvoiceDoc != null && !taxInvoiceDoc.isEmpty()) {
+
+				Object[] row = taxInvoiceDoc.get(0);
+
+				// ✅ Set docId
+				reconcileCashVO.setDocId((String) row[0]);
+
+				// ✅ Convert java.sql.Date → LocalDate
+				if (row[1] != null) {
+					reconcileCashVO.setDocDate(((java.sql.Date) row[1]).toLocalDate());
+				}
+			}
 
 			// GETDOCID LASTNO +1
 			DocumentTypeMappingDetailsVO documentTypeMappingDetailsVO = documentTypeMappingDetailsRepo
 					.findByOrgIdAndFinYearAndBranchCodeAndScreenCode(reconcileCashDTO.getOrgId(),
 							reconcileCashDTO.getFinYear(), reconcileCashDTO.getBranchCode(), screenCode);
+
 			documentTypeMappingDetailsVO.setLastno(documentTypeMappingDetailsVO.getLastno() + 1);
 			documentTypeMappingDetailsRepo.save(documentTypeMappingDetailsVO);
 			System.out.println(reconcileCashDTO.getCreatedBy());
@@ -2625,20 +2696,59 @@ public class TransactionServiceImpl implements TransactionService {
 		return fundTransferRepo.findAllFundTransferByDocId(orgId, docId);
 	}
 
+//	@Override
+//	public String getReconcileCashDocId(Long orgId, String finYear, String branch, String branchCode) {
+//		String ScreenCode = "RCH";
+//		String result = reconcileCashRepo.getReconcileCashDocId(orgId, finYear, branchCode, ScreenCode);
+//		return result;
+//
+//	}
+	
 	@Override
-	public String getReconcileCashDocId(Long orgId, String finYear, String branch, String branchCode) {
-		String ScreenCode = "RCH";
-		String result = reconcileCashRepo.getReconcileCashDocId(orgId, finYear, branchCode, ScreenCode);
-		return result;
+	public Map<String, Object> getReconcileCashDocId(Long orgId, String finYear, String branch, String branchCode) {
 
+		String screenCode = "RCH";
+
+		List<Object[]> results = reconcileCashRepo.getReconcileCashDocId(orgId, finYear, branchCode, screenCode);
+
+		Map<String, Object> map = new HashMap<>();
+
+		if (results != null && !results.isEmpty()) {
+			Object[] row = results.get(0);
+
+			map.put("docId", row[0]);
+			map.put("docDate", row.length > 1 ? row[1] : null);
+		}
+
+		return map;
 	}
 
+//	@Override
+//	public String getFundTranferDocId(Long orgId, String finYear, String branch, String branchCode) {
+//		String ScreenCode = "FT";
+//		String result = fundTransferRepo.getFundTranferDocId(orgId, finYear, branchCode, ScreenCode);
+//		return result;
+//	}
+	
 	@Override
-	public String getFundTranferDocId(Long orgId, String finYear, String branch, String branchCode) {
-		String ScreenCode = "FT";
-		String result = fundTransferRepo.getFundTranferDocId(orgId, finYear, branchCode, ScreenCode);
-		return result;
+	public Map<String, Object> getFundTranferDocId(Long orgId, String finYear, String branch, String branchCode) {
+
+		String screenCode = "FT";
+
+		List<Object[]> results = fundTransferRepo.getFundTranferDocId(orgId, finYear, branchCode, screenCode);
+
+		Map<String, Object> map = new HashMap<>();
+
+		if (results != null && !results.isEmpty()) {
+			Object[] row = results.get(0);
+
+			map.put("docId", row[0]);
+			map.put("docDate", row.length > 1 ? row[1] : null);
+		}
+
+		return map;
 	}
+
 
 	@Override
 	public PaymentVoucherVO getpaymentVoucherByDocId(Long orgId, String docId) {
@@ -3501,12 +3611,32 @@ public class TransactionServiceImpl implements TransactionService {
 		return bankingWithdrawalVO;
 	}
 
+//	@Override
+//	public String getBankingWithdrawalDocId(Long orgId, String finYear, String branch, String branchCode) {
+//		String ScreenCode = "BW";
+//		String result = bankingWithdrawalRepo.getBankingWithdrawalDocId(orgId, finYear, branchCode, ScreenCode);
+//		return result;
+//	}
+	
 	@Override
-	public String getBankingWithdrawalDocId(Long orgId, String finYear, String branch, String branchCode) {
-		String ScreenCode = "BW";
-		String result = bankingWithdrawalRepo.getBankingWithdrawalDocId(orgId, finYear, branchCode, ScreenCode);
-		return result;
+	public Map<String, Object> getBankingWithdrawalDocId(Long orgId, String finYear, String branch, String branchCode) {
+
+		String screenCode = "BW";
+
+		List<Object[]> results = bankingWithdrawalRepo.getBankingWithdrawalDocId(orgId, finYear, branchCode, screenCode);
+
+		Map<String, Object> map = new HashMap<>();
+
+		if (results != null && !results.isEmpty()) {
+			Object[] row = results.get(0);
+
+			map.put("docId", row[0]);
+			map.put("docDate", row.length > 1 ? row[1] : null);
+		}
+
+		return map;
 	}
+
 
 	@Override
 	public Map<String, Object> updateCreateBankingWithdrawal(@Valid BankingWithdrawalDTO bankingWithdrawalDTO)
@@ -3523,10 +3653,28 @@ public class TransactionServiceImpl implements TransactionService {
 			message = "BankingWithdrawal Updated Successfully";
 		} else {
 			// GETDOCID API
-			String docId = bankingWithdrawalRepo.getBankingWithdrawalByDocId(bankingWithdrawalDTO.getOrgId(),
+//			String docId = bankingWithdrawalRepo.getBankingWithdrawalByDocId(bankingWithdrawalDTO.getOrgId(),
+//					bankingWithdrawalDTO.getFinYear(), bankingWithdrawalDTO.getBranchCode(), screenCode);
+//
+//			bankingWithdrawalVO.setDocId(docId);
+			
+			List<Object[]> taxInvoiceDoc = bankingWithdrawalRepo.getBankingWithdrawalByDocId(bankingWithdrawalDTO.getOrgId(),
 					bankingWithdrawalDTO.getFinYear(), bankingWithdrawalDTO.getBranchCode(), screenCode);
 
-			bankingWithdrawalVO.setDocId(docId);
+			if (taxInvoiceDoc != null && !taxInvoiceDoc.isEmpty()) {
+
+				Object[] row = taxInvoiceDoc.get(0);
+
+				// ✅ Set docId
+				bankingWithdrawalVO.setDocId((String) row[0]);
+
+				// ✅ Convert java.sql.Date → LocalDate
+				if (row[1] != null) {
+					bankingWithdrawalVO.setDocDate(((java.sql.Date) row[1]).toLocalDate());
+				}
+			}
+			
+			
 
 //						// GETDOCID LASTNO +1
 			DocumentTypeMappingDetailsVO documentTypeMappingDetailsVO = documentTypeMappingDetailsRepo

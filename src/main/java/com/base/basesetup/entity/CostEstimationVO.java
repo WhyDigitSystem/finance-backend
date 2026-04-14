@@ -29,8 +29,8 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name = "costestimation")
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 @Builder
 public class CostEstimationVO {
 	@Id
@@ -43,8 +43,8 @@ public class CostEstimationVO {
 	private String docId;
 
 	@Column(name = "docdate")
-	@Builder.Default
-	private LocalDate docDate = LocalDate.now();
+//	@Builder.Default
+	private LocalDate docDate;
 	
 	@Column(name = "employeename")
 	private String employeeName;

@@ -215,7 +215,7 @@ public interface TransactionService {
 
 	ReconcileBankVO getAllReconcileBankById(Long id);
 
-	String getReconcileBankDocId(Long orgId, String finYear, String branch, String branchCode);
+	Map<String, Object> getReconcileBankDocId(Long orgId, String finYear, String branch, String branchCode);
 
 	List<Map<String, Object>> getBankNameForGroupLedger(Long orgId);
 
@@ -239,9 +239,9 @@ public interface TransactionService {
 
 	FundTransferVO getFundTranferByDocId(Long orgId, String docId);
 
-	String getFundTranferDocId(Long orgId, String finYear, String branch, String branchCode);
+	Map<String, Object> getFundTranferDocId(Long orgId, String finYear, String branch, String branchCode);
 
-	String getReconcileCashDocId(Long orgId, String finYear, String branch, String branchCode);
+	Map<String, Object> getReconcileCashDocId(Long orgId, String finYear, String branch, String branchCode);
 
 	String getChartCostCenterDocId(Long orgId, String finYear, String branch, String branchCode);
 
@@ -294,7 +294,7 @@ public interface TransactionService {
 	Map<String, Object> updateCreateBankingWithdrawal(@Valid BankingWithdrawalDTO bankingWithdrawalDTO)
 			throws ApplicationException;
 
-	String getBankingWithdrawalDocId(Long orgId, String finYear, String branch, String branchCode);
+	Map<String, Object> getBankingWithdrawalDocId(Long orgId, String finYear, String branch, String branchCode);
 
 	List<Map<String, Object>> getCurrencyAndExrates(Long orgId);
 
