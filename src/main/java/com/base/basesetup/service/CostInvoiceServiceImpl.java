@@ -260,7 +260,7 @@ public class CostInvoiceServiceImpl implements CostInvoiceService {
 		costInvoiceVO.setSupplierId(costInvoiceDTO.getSupplierId());
 		costInvoiceVO.setJobOrderNo(costInvoiceDTO.getJobOrderNo());
 		costInvoiceVO.setVId(costInvoiceDTO.getVId());
-		costInvoiceVO.setVDate(costInvoiceDTO.getVDate());
+//		costInvoiceVO.setVDate(costInvoiceDTO.getVDate());
 
 		if (costInvoiceDTO.getId() != null) {
 
@@ -990,7 +990,7 @@ public class CostInvoiceServiceImpl implements CostInvoiceService {
 			accountsVO = new AccountsVO();
 //			String accountsDocId = accountsRepo.getCostInvoiceDocId(costInvoiceVO.getOrgId(),
 //					costInvoiceVO.getFinYear(), costInvoiceVO.getBranchCode(), sourceScreenCode, screenCode);
-			
+
 			List<Object[]> taxInvoiceDoc = accountsRepo.getApproveDocId(costInvoiceVO.getOrgId(),
 					costInvoiceVO.getFinYear(), costInvoiceVO.getBranchCode(), sourceScreenCode, screenCode);
 
@@ -1181,6 +1181,7 @@ public class CostInvoiceServiceImpl implements CostInvoiceService {
 		costInvoiceVO.setDueDate(dueDate);
 		costInvoiceVO.setApproveStatus(action);
 		costInvoiceVO.setApproveBy(actionBy);
+		costInvoiceVO.setVDate(LocalDate.now());
 		costInvoiceVO.setApproveOn(
 				LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd-MM-yyyy hh:mm:ss a")).toUpperCase());
 

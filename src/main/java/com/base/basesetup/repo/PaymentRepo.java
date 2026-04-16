@@ -142,8 +142,8 @@ public interface PaymentRepo extends JpaRepository<PaymentVO, Long> {
 			+ "select ROW_NUMBER() OVER () AS id,\r\n"
 			+ "    a.branch,\r\n"
 			+ "    a.subledgercode,\r\n"
-			+ "    c.vid,\r\n"
-			+ "    c.vdate,\r\n"
+			+ "    c.supplierbillno,\r\n"
+			+ "    c.supplierbilldate,\r\n"
 			+ "    a.refno,\r\n"
 			+ "    a.refdate,\r\n"
 			+ "    a.supprefno,\r\n"
@@ -158,7 +158,7 @@ public interface PaymentRepo extends JpaRepository<PaymentVO, Long> {
 			+ "    ON d.docid = h.orginbill and h.approvestatus='Approved' JOIN accounts c \r\n"
 			+ "    ON a.docid = c.docid left JOIN n \r\n"
 			+ "    ON n.orgid = a.orgid \r\n"
-			+ "    AND n.refno = c.vid  LEFT JOIN b \r\n"
+			+ "    AND n.refno = c.supplierbillno  LEFT JOIN b \r\n"
 			+ "    ON a.subledgercode = b.subledgercode \r\n"
 			+ "    AND a.docid = b.docid WHERE \r\n"
 			+ "    d.branchcode = ?3 \r\n"
@@ -167,8 +167,8 @@ public interface PaymentRepo extends JpaRepository<PaymentVO, Long> {
 			+ "    AND a.orgid = ?1  group by\r\n"
 			+ "    a.branch,\r\n"
 			+ "    a.subledgercode,\r\n"
-			+ "    c.vid,\r\n"
-			+ "    c.vdate,\r\n"
+			+ "    c.supplierbillno,\r\n"
+			+ "    c.supplierbilldate,\r\n"
 			+ "    a.refno,\r\n"
 			+ "    a.refdate,\r\n"
 			+ "    a.supprefno,\r\n"
@@ -259,10 +259,10 @@ public interface PaymentRepo extends JpaRepository<PaymentVO, Long> {
 	@Query(nativeQuery = true, value = "select * from payment where orgid=?1 and docid=?2")
 	PaymentVO findAllPaymentByDocId(Long orgId, String docId);
 	
-	@Query(nativeQuery = true, value = "select 1 as sno, a.vid,a.vdate,a.refno,a.refdate,a1.accountname,c.suppliername,p.partytype,p.gstin,p.panno,p.tanno,c1.totaltds,sum(c2.gstamount) as gstAmount,sum(c2.lcamt) as chargeAmount ,sum(c2.billamt) as billAmount,c.actbillcurramt as totalAmountLc,c1.tdswithholdingper,c2.gstpercent  from accounts a,accountsdetails a1,costinvoice c,tdscostinvoice c1,chargercostinvoice c2,  partymaster p,branch b\r\n"
+	@Query(nativeQuery = true, value = "select 1 as sno, a.supplierbillno,a.supplierbilldate,a.refno,a.refdate,a1.accountname,c.suppliername,p.partytype,p.gstin,p.panno,p.tanno,c1.totaltds,sum(c2.gstamount) as gstAmount,sum(c2.lcamt) as chargeAmount ,sum(c2.billamt) as billAmount,c.actbillcurramt as totalAmountLc,c1.tdswithholdingper,c2.gstpercent  from accounts a,accountsdetails a1,costinvoice c,tdscostinvoice c1,chargercostinvoice c2,  partymaster p,branch b\r\n"
 			+ " where b.branch=c.branch and c.costinvoiceid=c2.costinvoiceid  and c.costinvoiceid=c1.costinvoiceid and  p.partyname=c.suppliername  and  a.accountsid=a1.accountsid and a.refno=c.docid and a.sourcescreencode in('CI') and a1.accountname='TDS PAYABLE' and c2.billamt <> 0.00 and (b.branch=?6 or ?6='ALL')\r\n"
 			+ " and (c.suppliername=?2 or ?2='ALL') and a.docdate between ?4 and ?5 and c.finyear=?3 and c.orgid=?1\r\n"
-			+ " group by a.vid,a.vdate,a.refno,a.refdate,a1.accountname,c.suppliername,p.partytype,p.gstin,p.panno,p.tanno,c1.totaltds,c.actbillcurramt,c1.tdswithholdingper,c2.gstpercent\r\n"
+			+ " group by a.supplierbillno,a.supplierbilldate,a.refno,a.refdate,a1.accountname,c.suppliername,p.partytype,p.gstin,p.panno,p.tanno,c1.totaltds,c.actbillcurramt,c1.tdswithholdingper,c2.gstpercent\r\n"
 			+ " union\r\n"
 			+ "select 2 as sno, a.vid,a.vdate,a.refno,a.refdate,a1.accountname,c.suppliername,p.partytype,p.gstin,p.panno,p.tanno,c1.totaltds,sum(c2.gstamount) as gstAmount,sum(c2.lcamt) as chargeAmount ,sum(c2.billamt) as billAmount,c.actbillcurramt as totalAmountLc,c1.tdswithholdingper,c2.gstpercent  from accounts a,accountsdetails a1,costdebitnote c,costdebitnotetaxprtcul c1,chargercostdebitnote c2,  partymaster p,branch b\r\n"
 			+ " where b.branch=c.branch and c.costdebitnoteid=c2.costdebitnoteid  and c.costdebitnoteid=c1.costdebitnoteid and  p.partyname=c.suppliername  and  a.accountsid=a1.accountsid and a.refno=c.docid and a.sourcescreencode in('CDN') and a1.accountname='TDS PAYABLE' and c2.billamt <> 0.00 and (b.branch=?6 or ?6='ALL')\r\n"
@@ -299,10 +299,10 @@ public interface PaymentRepo extends JpaRepository<PaymentVO, Long> {
 			+ "    NULL AS tdswithholdingper,\r\n"
 			+ "    NULL AS gstpercent\r\n"
 			+ "FROM (\r\n"
-			+ "select 1 as sno, a.vid,a.vdate,a.refno,a.refdate,a1.accountname,c.suppliername,p.partytype,p.gstin,p.panno,p.tanno,c1.totaltds,sum(c2.gstamount) as gstAmount,sum(c2.lcamt) as chargeAmount ,sum(c2.billamt) as billAmount,c.actbillcurramt as totalAmountLc,c1.tdswithholdingper,c2.gstpercent  from accounts a,accountsdetails a1,costinvoice c,tdscostinvoice c1,chargercostinvoice c2,  partymaster p,branch b\r\n"
+			+ "select 1 as sno, a.supplierbillno,a.supplierbilldate,a.refno,a.refdate,a1.accountname,c.suppliername,p.partytype,p.gstin,p.panno,p.tanno,c1.totaltds,sum(c2.gstamount) as gstAmount,sum(c2.lcamt) as chargeAmount ,sum(c2.billamt) as billAmount,c.actbillcurramt as totalAmountLc,c1.tdswithholdingper,c2.gstpercent  from accounts a,accountsdetails a1,costinvoice c,tdscostinvoice c1,chargercostinvoice c2,  partymaster p,branch b\r\n"
 			+ " where b.branch=c.branch and c.costinvoiceid=c2.costinvoiceid  and c.costinvoiceid=c1.costinvoiceid and  p.partyname=c.suppliername  and  a.accountsid=a1.accountsid and a.refno=c.docid and a.sourcescreencode in('CI') and a1.accountname='TDS PAYABLE' and c2.billamt <> 0.00 and (b.branch=?6 or ?6='ALL')\r\n"
 			+ " and (c.suppliername=?2 or ?2='ALL') and a.docdate between ?4 and ?5 and c.finyear=?3 and c.orgid=?1\r\n"
-			+ " group by a.vid,a.vdate,a.refno,a.refdate,a1.accountname,c.suppliername,p.partytype,p.gstin,p.panno,p.tanno,c1.totaltds,c.actbillcurramt,c1.tdswithholdingper,c2.gstpercent\r\n"
+			+ " group by a.supplierbillno,a.supplierbilldate,a.refno,a.refdate,a1.accountname,c.suppliername,p.partytype,p.gstin,p.panno,p.tanno,c1.totaltds,c.actbillcurramt,c1.tdswithholdingper,c2.gstpercent\r\n"
 			+ " union all\r\n"
 			+ "select 2 as sno, a.vid,a.vdate,a.refno,a.refdate,a1.accountname,c.suppliername,p.partytype,p.gstin,p.panno,p.tanno,c1.totaltds,sum(c2.gstamount) as gstAmount,sum(c2.lcamt) as chargeAmount ,sum(c2.billamt) as billAmount,c.actbillcurramt as totalAmountLc,c1.tdswithholdingper,c2.gstpercent  from accounts a,accountsdetails a1,costdebitnote c,costdebitnotetaxprtcul c1,chargercostdebitnote c2,  partymaster p,branch b\r\n"
 			+ " where b.branch=c.branch and c.costdebitnoteid=c2.costdebitnoteid  and c.costdebitnoteid=c1.costdebitnoteid and  p.partyname=c.suppliername  and  a.accountsid=a1.accountsid and a.refno=c.docid and a.sourcescreencode in('CDN') and a1.accountname='TDS PAYABLE' and c2.billamt <> 0.00 and (b.branch=?6 or ?6='ALL')\r\n"
@@ -320,7 +320,7 @@ public interface PaymentRepo extends JpaRepository<PaymentVO, Long> {
 			+ " group by a.vid,a.vdate,a.refno,a.refdate,a1.accountname,c.suppliername,p.partytype,p.gstin,p.panno,p.tanno,c1.totaltdswithamt,c.actbillamtlc,c1.tdswithholdingper,c2.gstpercent\r\n"
 			+ "   \r\n"
 			+ ") AS summary\r\n"
-			+ "ORDER BY sno, vid, vdate, refno")
+			+ "ORDER BY sno, supplierbillno, supplierbilldate, refno")
 	Set<Object[]> getPaybaleTdsDetailsReport(Long orgId,String partyName,String finYear,String fromDate,String toDate,String branchName);
 	
 	@Query(nativeQuery = true, value = "select \r\n"

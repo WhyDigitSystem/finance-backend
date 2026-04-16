@@ -115,7 +115,7 @@ public interface CostInvoiceRepo extends JpaRepository<CostInvoiceVO, Long> {
 			+ "    FROM costinvoice a \r\n" + "    JOIN tdscostinvoice b ON a.costinvoiceid = b.costinvoiceid\r\n"
 			+ "    JOIN partymaster p ON p.partyname = a.suppliername\r\n" + "    WHERE \r\n"
 			+ "        a.orgid = ?1\r\n" + "        AND ?2 = 'MONTH'\r\n"
-			+ "        AND CAST(a.finyear AS SIGNED) = ?3\r\n" + "        AND MONTH(a.vdate) = MONTH(CURDATE())\r\n"
+			+ "        AND CAST(a.finyear AS SIGNED) = ?3\r\n" + "        AND MONTH(a.supplierbilldate) = MONTH(CURDATE())\r\n"
 			+ "    GROUP BY a.suppliername, a.finyear, p.partyshortname\r\n" + "\r\n" + "    UNION \r\n" + "\r\n"
 			+ "    -- ✅ YEAR block (runs only when ?2 = 'YEAR')\r\n" + "    SELECT \r\n" + "        a.suppliername,\r\n"
 			+ "        SUM(b.totaltds) AS total_amount,\r\n"
@@ -126,8 +126,8 @@ public interface CostInvoiceRepo extends JpaRepository<CostInvoiceVO, Long> {
 			+ "    FROM costinvoice a \r\n" + "    JOIN tdscostinvoice b ON a.costinvoiceid = b.costinvoiceid\r\n"
 			+ "    JOIN partymaster p ON p.partyname = a.suppliername\r\n" + "    WHERE \r\n"
 			+ "        a.orgid = ?1\r\n" + "        AND ?2 = 'YEAR'\r\n" + "        AND (\r\n"
-			+ "            (MONTH(a.vdate) >= 4 AND CAST(a.finyear AS SIGNED) = ?3)\r\n" + "            OR\r\n"
-			+ "            (MONTH(a.vdate) < 4 AND CAST(a.finyear AS SIGNED) = (?3 + 1))\r\n" + "        )\r\n"
+			+ "            (MONTH(a.supplierbilldate) >= 4 AND CAST(a.finyear AS SIGNED) = ?3)\r\n" + "            OR\r\n"
+			+ "            (MONTH(a.supplierbilldate) < 4 AND CAST(a.finyear AS SIGNED) = (?3 + 1))\r\n" + "        )\r\n"
 			+ "    GROUP BY a.suppliername, a.finyear, p.partyshortname\r\n" + ") t\r\n"
 			+ "GROUP BY suppliername, financial_year, partyshortname\r\n" + "")
 	Set<Object[]> getTdsSummary(Long orgId, String month, Long finYear);
@@ -278,14 +278,14 @@ public interface CostInvoiceRepo extends JpaRepository<CostInvoiceVO, Long> {
 	Set<Object[]> getPercentageFromReceipt(Long orgId, Long finYear, String month);
 
 	@Query(nativeQuery = true, value = "select c.suppliername,p.partyshortname,sum(d.totaltds) as totaltds,c.finyear  from tdscostinvoice d join costinvoice c  on d.costinvoiceid=c.costinvoiceid\r\n"
-			+ "join accounts a on a.vid=c.vid join partymaster p on c.suppliercode=p.partycode where c.finyear=?2 and c.orgid=?1 and c.branchcode=?3 \r\n"
+			+ "join accounts a on a.supplierbillno=c.supplierbillno join partymaster p on c.suppliercode=p.partycode where c.finyear=?2 and c.orgid=?1 and c.branchcode=?3 \r\n"
 			+ " group by c.suppliername,p.partyshortname,c.finyear")
 	Set<Object[]> getTotaltdsFromCustomer(Long orgId, Long finYear, String branchCode);
 
-	@Query(nativeQuery = true, value = "select c.vid,c.vdate, c.suppliername,p.partyshortname,d.totaltds,c.finyear  from tdscostinvoice d join costinvoice c  on d.costinvoiceid=c.costinvoiceid\r\n"
-			+ "join accounts a on a.vid=c.vid join partymaster p on c.suppliercode=p.partycode where c.suppliername=?4 \r\n"
+	@Query(nativeQuery = true, value = "select c.supplierbillno,c.supplierbilldate, c.suppliername,p.partyshortname,d.totaltds,c.finyear  from tdscostinvoice d join costinvoice c  on d.costinvoiceid=c.costinvoiceid\r\n"
+			+ "join accounts a on a.supplierbillno=c.supplierbillno join partymaster p on c.suppliercode=p.partycode where c.suppliername=?4 \r\n"
 			+ "and c.finyear=?2 and c.orgid=?1 and c.branchcode=?3 \r\n"
-			+ "group by c.vid,c.vdate, c.suppliername,p.partyshortname,d.totaltds,c.finyear")
+			+ "group by c.supplierbillno,c.supplierbilldate, c.suppliername,p.partyshortname,d.totaltds,c.finyear")
 	Set<Object[]> getTotaltdsFromCustomerBillWise(Long orgId, Long finYear, String branchCode, String partyName);
 
 	// cost invoice hyperlink
@@ -302,7 +302,7 @@ public interface CostInvoiceRepo extends JpaRepository<CostInvoiceVO, Long> {
 			+ "    a.finyear,\r\n"
 			+ "    a.docid,\r\n"
 			+ "    a.docdate,\r\n"
-			+ "    a.vid,\r\n"
+			+ "    a.supplierbillno,\r\n"
 			+ "    a.purvoucherno,\r\n"
 			+ "    a.purvoucherdate,\r\n"
 			+ "    a.suppliercode,\r\n"
@@ -311,7 +311,7 @@ public interface CostInvoiceRepo extends JpaRepository<CostInvoiceVO, Long> {
 			+ "    a.gsttype,\r\n"
 			+ "    a.totchargeslcamt,\r\n"
 			+ "    a.payment,\r\n"
-			+ "    a.vdate,\r\n"
+			+ "    a.supplierbilldate,\r\n"
 			+ "    a.gstinputlcamt,\r\n"
 			+ "    a.netbilllcamt,\r\n"
 			+ "    a.totchargeslcamt + a.gstinputlcamt AS totalAmount,\r\n"
@@ -325,8 +325,8 @@ public interface CostInvoiceRepo extends JpaRepository<CostInvoiceVO, Long> {
 			+ "    a.costinvoiceid = a1.costinvoiceid\r\n"
 			+ "    AND a.orgid = ?1\r\n"
 			+ "    AND a.finyear = ?4\r\n"
-			+ "    AND (?2 IS NULL OR a.vdate >= ?2)\r\n"
-			+ "    AND (?3 IS NULL OR a.vdate <= ?3)\r\n"
+			+ "    AND (?2 IS NULL OR a.supplierbilldate >= ?2)\r\n"
+			+ "    AND (?3 IS NULL OR a.supplierbilldate <= ?3)\r\n"
 			+ "    AND (?5 IS NULL OR ?5 = 'ALL' OR a.suppliername = ?5)\r\n"
 			+ "    AND (a.branchcode = ?6 OR ?6 = 'ALL')\r\n"
 			+ "ORDER BY \r\n"
@@ -338,7 +338,7 @@ public interface CostInvoiceRepo extends JpaRepository<CostInvoiceVO, Long> {
 			+ "    a.finyear,\r\n"
 			+ "    a.docid,\r\n"
 			+ "    a.docdate,\r\n"
-			+ "    a.vid,\r\n"
+			+ "    a.supplierbillno,\r\n"
 			+ "    a.purvoucherno,\r\n"
 			+ "    a.purvoucherdate,\r\n"
 			+ "    a.suppliercode,\r\n"
@@ -361,7 +361,7 @@ public interface CostInvoiceRepo extends JpaRepository<CostInvoiceVO, Long> {
 			+ "    c.qty,\r\n"
 			+ "    c.rate,\r\n"
 			+ "    c.lcamt + c.gst AS totalLcAmount,\r\n"
-			+ "    a.vdate,\r\n"
+			+ "    a.supplierbilldate,\r\n"
 			+ "    a.netbilllcamt,\r\n"
 			+ "    c.gstpercent,\r\n"
 			+ "    CASE \r\n"
@@ -378,8 +378,8 @@ public interface CostInvoiceRepo extends JpaRepository<CostInvoiceVO, Long> {
 			+ "    a.orgid = ?1\r\n"
 			+ "    AND c.ledger NOT LIKE ('%GST%')\r\n"
 			+ "    AND a.finyear = ?4\r\n"
-			+ "    AND (?2 IS NULL OR a.vdate >= ?2)\r\n"
-			+ "    AND (?3 IS NULL OR a.vdate <= ?3)\r\n"
+			+ "    AND (?2 IS NULL OR a.supplierbilldate >= ?2)\r\n"
+			+ "    AND (?3 IS NULL OR a.supplierbilldate <= ?3)\r\n"
 			+ "    AND (?5 IS NULL OR ?5 = 'ALL' OR a.suppliername = ?5)\r\n"
 			+ "    AND (a.branchcode = ?6 OR ?6 = 'ALL')\r\n"
 			+ "ORDER BY \r\n"
@@ -388,9 +388,9 @@ public interface CostInvoiceRepo extends JpaRepository<CostInvoiceVO, Long> {
 			String branchCode);
 	
 	
-	@Query(nativeQuery = true, value = "select 1 as sno, a.vid,a.vdate,a.refno,a.refdate,c.supplietype,c.suppliercode,c.suppliername,c.suppliergstin,d.currency,d.exrate,d.gstpercent,sum(d.gstamount) as gstAmount,sum(d.lcamt) as chargeAmount ,sum(d.billamt) as billAmount,c.actbillcurramt as totalAmountLc from accountsdetails b, accounts a,costinvoice c,chargercostinvoice d where \r\n"
+	@Query(nativeQuery = true, value = "select 1 as sno, a.supplierbillno,a.supplierbilldate,a.refno,a.refdate,c.supplietype,c.suppliercode,c.suppliername,c.suppliergstin,d.currency,d.exrate,d.gstpercent,sum(d.gstamount) as gstAmount,sum(d.lcamt) as chargeAmount ,sum(d.billamt) as billAmount,c.actbillcurramt as totalAmountLc from accountsdetails b, accounts a,costinvoice c,chargercostinvoice d where \r\n"
 			+ " a.accountsid=b.accountsid and a.refno=c.docid and c.cancel=0  and b.acategory='TAX' and c.costinvoiceid=d.costinvoiceid and a.sourcescreencode in('CI') and c.finyear=?3 and d.exrate <> 0.00 and  a.docdate between ?4 and ?5 and (c.suppliername=?2 or ?2='ALL') and c.orgid=?1\r\n"
-			+ "group by a.vid,a.vdate,a.refno,a.refdate,c.supplietype,c.suppliercode,c.suppliername,c.suppliergstin,d.currency,d.exrate,d.gstpercent,c.actbillcurramt\r\n"
+			+ "group by a.supplierbillno,a.supplierbilldate,a.refno,a.refdate,c.supplietype,c.suppliercode,c.suppliername,c.suppliergstin,d.currency,d.exrate,d.gstpercent,c.actbillcurramt\r\n"
 			+ " union\r\n"
 			+ "select 2 as sno, a.vid,a.vdate,a.refno,a.refdate,c.supplietype,c.suppliercode,c.suppliername,c.suppliergstin,d.currency,d.exrate,d.gstpercent,sum(d.gstamount) as gstAmount,sum(d.lcamt) as chargeAmount ,sum(d.billamt) as billAmount,c.actbillcurramt as totalAmountLc from accountsdetails b, accounts a,costdebitnote c,chargercostdebitnote d where \r\n"
 			+ " a.accountsid=b.accountsid and a.refno=c.docid and c.cancel=0  and b.acategory='TAX' and c.costdebitnoteid=d.costdebitnoteid and a.sourcescreencode in('CDN') and c.finyear=?3 and   d.exrate <> 0.00  and  a.docdate between ?4 and ?5 and (c.suppliername=?2 or ?2='ALL') and c.orgid=?1\r\n"
@@ -416,8 +416,8 @@ public interface CostInvoiceRepo extends JpaRepository<CostInvoiceVO, Long> {
 			+ "FROM (\r\n"
 			+ "    SELECT \r\n"
 			+ "        1 AS sno, \r\n"
-			+ "        a.vid,\r\n"
-			+ "        a.vdate,\r\n"
+			+ "        a.supplierbillno,\r\n"
+			+ "        a.supplierbilldate,\r\n"
 			+ "        a.refno,\r\n"
 			+ "        a.refdate,\r\n"
 			+ "        c.supplietype,\r\n"
@@ -446,7 +446,7 @@ public interface CostInvoiceRepo extends JpaRepository<CostInvoiceVO, Long> {
 			+ "        AND (c.suppliername =?2 OR ?2= 'ALL')\r\n"
 			+ "        AND c.orgid =?1\r\n"
 			+ "    GROUP BY \r\n"
-			+ "        a.vid, a.vdate, a.refno, a.refdate,\r\n"
+			+ "        a.supplierbillno, a.supplierbilldate, a.refno, a.refdate,\r\n"
 			+ "        c.supplietype, c.suppliercode, c.suppliername, c.suppliergstin,\r\n"
 			+ "        d.currency, d.exrate, d.gstpercent, c.actbillcurramt\r\n"
 			+ "\r\n"
