@@ -1327,6 +1327,8 @@ public class TaxInvoiceServiceImpl implements TaxInvoiceService {
 			map.put("gstamount", ch[23] != null ? new BigDecimal(ch[23].toString()) : BigDecimal.ZERO); // 22
 			map.put("totalLcAmount", ch[24] != null ? new BigDecimal(ch[24].toString()) : BigDecimal.ZERO); // 22
 			map.put("approvestatus", ch[25] != null ? ch[25].toString() : "");
+			map.put("sNo", ch[26] != null ? ch[26].toString() : "");
+			map.put("createdOn", ch[27] != null ? ch[27].toString() : "");
 
 			List1.add(map);
 		}
@@ -1361,6 +1363,8 @@ public class TaxInvoiceServiceImpl implements TaxInvoiceService {
 			map.put("cgst", ch[13] != null ? new BigDecimal(ch[13].toString()) : BigDecimal.ZERO);
 			map.put("sgst", ch[14] != null ? new BigDecimal(ch[14].toString()) : BigDecimal.ZERO);
 			map.put("approvestatus", ch[15] != null ? ch[15].toString() : "");
+			map.put("sNo", ch[16] != null ? ch[16].toString() : "");
+			map.put("createdOn", ch[17] != null ? ch[17].toString() : "");
 
 			List1.add(map);
 		}

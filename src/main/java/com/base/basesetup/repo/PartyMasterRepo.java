@@ -526,7 +526,7 @@ public interface PartyMasterRepo extends JpaRepository<PartyMasterVO, Long> {
 			+ "        t2.debitamount,\r\n"
 			+ "        t2.creditamount,\r\n"
 			+ "        CASE \r\n"
-			+ "            WHEN UPPER('?6') = 'YES' THEN \r\n"
+			+ "            WHEN UPPER(?6) = 'YES' THEN \r\n"
 			+ "                CONCAT(\r\n"
 			+ "                    'Party : ', IFNULL(p.subledgername, ''), \r\n"
 			+ "                    IFNULL(CONCAT(' - Refno: ', t1.refno, ' Ref Date: ', t1.refdate), '')\r\n"

@@ -1277,6 +1277,8 @@ public class CostInvoiceServiceImpl implements CostInvoiceService {
 				map.put("totalAmount", ch[15] != null ? new BigDecimal(ch[15].toString()) : BigDecimal.ZERO);
 				map.put("tdsAmount", ch[16] != null ? new BigDecimal(ch[16].toString()) : BigDecimal.ZERO);
 				map.put("approvestatus", ch[17] != null ? ch[17].toString() : "");
+				map.put("sNo", ch[18] != null ? ch[18].toString() : "");
+				map.put("createdOn", ch[19] != null ? ch[19].toString() : "");
 				List1.add(map);
 			}
 		}
@@ -1328,6 +1330,8 @@ public class CostInvoiceServiceImpl implements CostInvoiceService {
 				map.put("netAmount", ch[27] != null ? new BigDecimal(ch[27].toString()) : BigDecimal.ZERO);
 				map.put("gstPercentage", ch[28] != null ? new BigDecimal(ch[28].toString()) : BigDecimal.ZERO);
 				map.put("approvestatus", ch[29] != null ? ch[29].toString() : "");
+				map.put("sNo", ch[30] != null ? ch[30].toString() : "");
+				map.put("createdOn", ch[31] != null ? ch[31].toString() : "");
 //				map.put("gstType", ch[29] != null ? ch[29].toString() : "");
 
 				List1.add(map);
