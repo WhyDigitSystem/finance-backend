@@ -988,6 +988,7 @@ public class APServiceImpl implements APService {
 			map.put("outstanding", ch[19] != null ? new BigDecimal(ch[19].toString()) : BigDecimal.ZERO);
 			map.put("status", ch[20] != null ? ch[20].toString() : "");
 			map.put("approvestatus", ch[21] != null ? ch[21].toString() : "");
+			map.put("sNo", ch[22] != null ? ch[22].toString() : "");
 			List1.add(map);
 		}
 		return List1;
@@ -1018,6 +1019,7 @@ public class APServiceImpl implements APService {
 			map.put("bankcashacc", ch[11] != null ? ch[11].toString() : "");
 			map.put("status", ch[12] != null ? ch[12].toString() : "");
 			map.put("approvestatus", ch[13] != null ? ch[13].toString() : "");
+			map.put("sNo", ch[14] != null ? ch[14].toString() : "");
 			List1.add(map);
 		}
 		return List1;
