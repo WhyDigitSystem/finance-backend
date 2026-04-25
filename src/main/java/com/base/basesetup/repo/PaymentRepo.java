@@ -341,7 +341,7 @@ public interface PaymentRepo extends JpaRepository<PaymentVO, Long> {
 			+ " union\r\n"
 			+ " SELECT \r\n"
 			+ "     5 AS sno,\r\n"
-			+ "    NULL AS vid,\r\n"
+			+ "    'Total Amount' AS vid,\r\n"
 			+ "    NULL AS vdate,\r\n"
 			+ "    NULL AS refno,\r\n"
 			+ "    NULL AS refdate,\r\n"

@@ -1,6 +1,9 @@
 package com.base.basesetup.controller;
 
 
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -32,6 +35,7 @@ import com.base.basesetup.dto.ResponseDTO;
 import com.base.basesetup.dto.TicketDTO;
 import com.base.basesetup.entity.CommentsVO;
 import com.base.basesetup.entity.TicketVO;
+import com.base.basesetup.repo.TicketRepo;
 import com.base.basesetup.service.TicketService;
 
 
@@ -46,6 +50,10 @@ public class TicketController extends BaseController{
 	
 	@Autowired
 	TicketService ticketService;
+	
+	@Autowired
+	private TicketRepo ticketRepo;
+	
 	
 	@PutMapping("/createUpdateTicket")
 	public ResponseEntity<ResponseDTO> CreateUpdateTicket(@Valid @RequestBody TicketDTO ticketDTO) {
@@ -384,6 +392,40 @@ public class TicketController extends BaseController{
 
 	    LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
 	    return ResponseEntity.ok().body(responseDTO);
+	}
+	
+	
+	@PutMapping("/updateTicketFromRemote")
+	public ResponseEntity<ResponseDTO> updateTicketFromRemote(@RequestParam Long orgId, @RequestParam Long id,
+			@RequestParam String status, @RequestParam String empCode,@RequestParam String email,@RequestParam String ticketStatus) {
+
+		Map<String, Object> map = new HashMap<>();
+		ResponseDTO response;
+
+		try {
+			TicketVO ticket = ticketRepo.findByOrgIdAndIdEmail(orgId, id,email);
+
+			if (ticket == null) {
+				throw new RuntimeException("Ticket not found");
+			}
+			String decodedStatus = URLDecoder.decode(ticketStatus, StandardCharsets.UTF_8);
+			ticket.setStatus(status);
+			ticket.setTicketStatus(decodedStatus);
+			ticket.setUpdatedBy(empCode);
+
+			ticket.setUpdatedDate(LocalDate.now());
+			ticketRepo.save(ticket);
+
+			map.put("message", "✅ Remote ticket updated");
+			map.put("ticket", ticket);
+
+			response = createServiceResponse(map);
+
+		} catch (Exception e) {
+			response = createServiceResponseError(map, "❌ Remote update failed", e.getMessage());
+		}
+
+		return ResponseEntity.ok(response);
 	}
 }
 

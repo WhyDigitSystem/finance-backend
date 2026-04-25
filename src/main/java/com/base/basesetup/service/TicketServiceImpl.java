@@ -2,6 +2,7 @@ package com.base.basesetup.service;
 
 
 import java.io.IOException;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -15,7 +16,16 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.base.basesetup.dto.CommentsDTO;
@@ -41,72 +51,183 @@ public class TicketServiceImpl implements TicketService {
 //	@Autowired
 //	NotificationRepo notificationRepo;
 
+	@Autowired
+	private AsyncService asyncService;
+	
+	@Autowired
+	RestTemplate restTemplate;
+
+//	@Override
+//	public Map<String, Object> createUpdateTicket(@Valid TicketDTO ticketDTO) throws ApplicationException {
+//
+//		TicketVO ticketVO = new TicketVO();
+//		String toEmail = adminEmail;
+//		String fromMail = noReplayEmail;
+//
+//		String message = null;
+//
+//		ticketVO.setCreatedBy(ticketDTO.getCreatedBy());
+//		ticketVO.setUpdatedBy(ticketDTO.getCreatedBy());
+//		message = "Ticket Creation Successfully";
+//
+//		ticketVO = getTicketVOFroTticketDTO(ticketVO, ticketDTO);
+//		ticketRepo.save(ticketVO);
+//		boolean mailSent = false;
+//		
+//		Date currentDate = new Date();
+//		SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy hh:mm:ss a");
+//		String createdOn=dateFormat.format(currentDate);
+//
+//		try {
+//			// Prepare HTML mail content
+//			String htmlContent = loadHtmlTemplate(ticketVO.getId(), ticketVO.getSubject(), ticketVO.getStatus(),
+//					ticketVO.getDescription(),ticketVO.getCreatedBy(),ticketVO.getEmail(),createdOn);
+//
+//			// Send the mail
+//			emailService.sendHtmlEmail(fromMail, toEmail, ticketVO.getSubject(), htmlContent);
+//			
+//			String Acknowledgement = loadHtmlTemplate(ticketVO.getId(), ticketVO.getSubject(), ticketVO.getStatus(),
+//					ticketVO.getDescription(),ticketVO.getCreatedBy(),ticketVO.getEmail(),createdOn);
+//
+//			// Send the mail
+//			emailService.sendHtmlEmail(fromMail, ticketVO.getEmail(), ticketVO.getSubject(), Acknowledgement);
+//			
+//			mailSent = true;
+//
+//		} catch (Exception e) {
+//			System.err.println("❌ Failed to send mail for ticket ID " + ticketVO.getId() + ": " + e.getMessage());
+//			e.printStackTrace();
+//		}
+//
+//		// Prepare response message
+//		if (mailSent) {
+//			message = "Ticket created successfully and mail sent.";
+//		} else {
+//			message = "Ticket created successfully, but mail not sent.";
+//		}
+//
+//		Map<String, Object> response = new HashMap<>();
+//		response.put("message", message);
+//		response.put("ticketVO", ticketVO);
+//		return response;
+//	}
+//
+//	private TicketVO getTicketVOFroTticketDTO(TicketVO ticketVO, @Valid TicketDTO ticketDTO) {
+//
+//		ticketVO.setSubject(ticketDTO.getSubject());
+//		ticketVO.setDescription(ticketDTO.getDescription());
+//		ticketVO.setUserName(ticketDTO.getUserName());
+//		ticketVO.setOrgId(ticketDTO.getOrgId());
+//		ticketVO.setStatus(ticketDTO.getStatus());
+//		ticketVO.setEmail(ticketDTO.getEmail());
+//
+//		return ticketVO;
+//
+//	}
+
 	@Override
-	public Map<String, Object> createUpdateTicket(@Valid TicketDTO ticketDTO) throws ApplicationException {
+	@Transactional
+	public Map<String, Object> createUpdateTicket(@Valid TicketDTO ticketDTO) {
 
-		TicketVO ticketVO;
+		TicketVO ticketVO = new TicketVO();
 
-		String message = null;
+		ticketVO.setCreatedBy(ticketDTO.getCreatedBy());
+		ticketVO.setUpdatedBy(ticketDTO.getCreatedBy());
 
-		if (ObjectUtils.isEmpty(ticketDTO.getId())) {
+		mapDtoToVo(ticketVO, ticketDTO);
 
-			ticketVO = new TicketVO();
+		ticketVO = ticketRepo.save(ticketVO);
 
-			ticketVO.setCreatedBy(ticketDTO.getCreatedBy());
-			ticketVO.setUpdatedBy(ticketDTO.getCreatedBy());
+		Long generatedId = ticketVO.getId();
+		ticketVO.setSourceId(generatedId);
+		ticketRepo.saveAndFlush(ticketVO);
 
-			message = "Ticket Creation Successfully";
-		}
-
-		else {
-			ticketVO = ticketRepo.findById(ticketDTO.getId())
-					.orElseThrow(() -> new ApplicationException("TicketVO Not Found with id: " + ticketDTO.getId()));
-			ticketVO.setUpdatedBy(ticketDTO.getCreatedBy());
-
-			message = "Ticket Updation Successfully";
-		}
-
-		ticketVO = getTicketVOFroTticketDTO(ticketVO, ticketDTO);
-		ticketRepo.save(ticketVO);
-
-//		NotificationVO notificationVO = new NotificationVO();
-//
-//		notificationVO.setTicketId(ticketVO.getId());
-//		notificationVO.setDescription(ticketVO.getDescription());
-//		notificationVO.setMessage("New ticket created by :" + ticketVO.getCreatedBy());
-//		notificationVO.setNotifiedTo("EBSPL/ITADMIN");
-//		notificationVO.setSubject(ticketVO.getSubject());
-//		notificationVO.setCreatedBy(ticketVO.getCreatedBy());
-//		notificationVO.setOrgId(ticketVO.getOrgId());
-//		notificationVO.setUpdatedBy(ticketVO.getCreatedBy());
-//
-//		notificationRepo.save(notificationVO);
+		asyncService.externalApiCallAsync(ticketVO);
+		asyncService.sendEmailAsync(ticketVO);
 
 		Map<String, Object> response = new HashMap<>();
-		response.put("message", message);
+		response.put("ticketId", ticketVO.getId());
+		response.put("sourceId", ticketVO.getSourceId());
 		response.put("ticketVO", ticketVO);
+		response.put("message", "Ticket created successfully. Email & sync in progress.");
+
 		return response;
 	}
 
-	private TicketVO getTicketVOFroTticketDTO(TicketVO ticketVO, @Valid TicketDTO ticketDTO) {
+	private void mapDtoToVo(TicketVO vo, TicketDTO dto) {
+		vo.setSubject(dto.getSubject());
+		vo.setDescription(dto.getDescription());
+		vo.setUserName(dto.getUserName());
+		vo.setOrgId(dto.getOrgId());
+		vo.setStatus(dto.getStatus());
+		vo.setEmail(dto.getEmail());
+		vo.setBranch(dto.getBranch());
+		vo.setBranchCode(dto.getBranchCode());
+		vo.setCompanyName(dto.getCompanyName());
+		vo.setTicketStatus(dto.getTicketStatus());
+	}
 
-		ticketVO.setSubject(ticketDTO.getSubject());
-		ticketVO.setDescription(ticketDTO.getDescription());
-		ticketVO.setUserName(ticketDTO.getUserName());
-		ticketVO.setOrgId(ticketDTO.getOrgId());
-		ticketVO.setStatus(ticketDTO.getStatus());
+//	@Override
+//	public TicketVO uploadTicketScreenShotInBloob(MultipartFile file, Long id) throws IOException {
+//		TicketVO ticketVO = ticketRepo.findById(id).get();
+//		ticketVO.setScreenShot(file.getBytes());
+//		return ticketRepo.save(ticketVO);
+//	}
+
+	public TicketVO uploadTicketScreenShotInBloob(MultipartFile file, Long id) throws IOException {
+
+		TicketVO ticketVO = ticketRepo.findById(id).orElseThrow(() -> new RuntimeException("Ticket not found"));
+
+		ticketVO.setScreenShot(file.getBytes());
+
+		ticketVO = ticketRepo.save(ticketVO);
+
+		callExternalImageAPI(file, id);
 
 		return ticketVO;
-
 	}
 
-	@Override
-	public TicketVO uploadTicketScreenShotInBloob(MultipartFile file, Long id) throws IOException {
-		TicketVO ticketVO = ticketRepo.findById(id).get();
-		ticketVO.setScreenShot(file.getBytes());
-		return ticketRepo.save(ticketVO);
-	}
+	private void callExternalImageAPI(MultipartFile file, Long sourceId) {
 
+		try {
+
+			String url = "http://139.5.190.244:8061/api/ticket/uploadTicketBySourceId";
+
+//			String url = "http://localhost:8061/api/ticket/uploadTicketBySourceId";
+
+			HttpHeaders headers = new HttpHeaders();
+			headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+
+			MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
+
+			// 🔥 file convert
+			body.add("file", new ByteArrayResource(file.getBytes()) {
+				@Override
+				public String getFilename() {
+					return file.getOriginalFilename();
+				}
+			});
+
+			// 🔥 send sourceId
+			body.add("sourceId", sourceId.toString());
+
+			HttpEntity<MultiValueMap<String, Object>> request = new HttpEntity<>(body, headers);
+
+			ResponseEntity<String> response = restTemplate.postForEntity(url, request, String.class);
+
+			if (response.getStatusCode().is2xxSuccessful()) {
+				LOGGER.info("✅ Image synced to external server");
+			} else {
+				LOGGER.error("❌ External image upload failed");
+			}
+
+		} catch (Exception e) {
+			LOGGER.error("❌ External API Exception: ", e);
+		}
+	}
+	
+	
+	
 	@Override
 	public Optional<TicketVO> getTicketById(Long id) {
 		return ticketRepo.findById(id);
@@ -169,7 +290,7 @@ public class TicketServiceImpl implements TicketService {
 
 	@Override
 	public List<CommentsVO> getCommentsByTicketId(Long ticketId, Long orgId) {
-		// TODO Auto-generated method stub
+		// TODO Auto-generated method stubt
 		return commentsRepo.getComments(ticketId, orgId);
 	}
 
@@ -332,6 +453,5 @@ public class TicketServiceImpl implements TicketService {
 
 		return null;
 	}
-
 }
 

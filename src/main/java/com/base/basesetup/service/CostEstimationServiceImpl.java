@@ -470,6 +470,7 @@ public class CostEstimationServiceImpl implements CostEstimationService {
 //			map.put("category", ch[11] != null ?  ch[11].toString() : ""); // 11
 			map.put("remarks", ch[11] != null ?  ch[11].toString() : ""); // 12
 			map.put("amount", ch[12] != null ? new BigDecimal(ch[12].toString()) : BigDecimal.ZERO); // 13
+			map.put("sNo", ch[15] != null ?  ch[15].toString() : "");
 			 if (ch[13] != null && ch[13] instanceof byte[]) {
 		            byte[] imageBytes = (byte[]) ch[13];
 		            String base64Image = Base64.getEncoder().encodeToString(imageBytes);
@@ -480,6 +481,7 @@ public class CostEstimationServiceImpl implements CostEstimationService {
 			map.put("approvestatus", ch[14] != null ? ch[14].toString() : ""); 		
 			List1.add(map);
 		}
+		
 		return List1;
 	}
 
@@ -505,6 +507,7 @@ public class CostEstimationServiceImpl implements CostEstimationService {
 			map.put("approvalremarks", ch[7] != null ? ch[7].toString() : ""); // 7
 			map.put("totalAmount", ch[8] != null ? new BigDecimal(ch[8].toString()) : BigDecimal.ZERO); // 8
 			map.put("approvestatus", ch[9] != null ? ch[9].toString() : "");
+			map.put("sNo", ch[10] != null ?  ch[10].toString() : "");
 //			map.put("totalchargeamountlc", ch[10] != null ? new BigDecimal(ch[10].toString()) : BigDecimal.ZERO);
 //			map.put("totalinvamountlc", ch[11] != null ? new BigDecimal(ch[11].toString()) : BigDecimal.ZERO);
 //			map.put("totaltaxamountlc", ch[12] != null ? new BigDecimal(ch[12].toString()) : BigDecimal.ZERO);
