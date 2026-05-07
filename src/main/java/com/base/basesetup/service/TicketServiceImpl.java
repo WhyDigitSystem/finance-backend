@@ -1,6 +1,5 @@
 package com.base.basesetup.service;
 
-
 import java.io.IOException;
 
 import java.util.ArrayList;
@@ -36,7 +35,6 @@ import com.base.basesetup.exception.ApplicationException;
 import com.base.basesetup.repo.CommentsRepo;
 import com.base.basesetup.repo.TicketRepo;
 
-
 @Service
 public class TicketServiceImpl implements TicketService {
 
@@ -53,9 +51,12 @@ public class TicketServiceImpl implements TicketService {
 
 	@Autowired
 	private AsyncService asyncService;
-	
+
 	@Autowired
 	RestTemplate restTemplate;
+
+	@Autowired
+	CommentSyncService commentSyncService;
 
 //	@Override
 //	public Map<String, Object> createUpdateTicket(@Valid TicketDTO ticketDTO) throws ApplicationException {
@@ -225,9 +226,7 @@ public class TicketServiceImpl implements TicketService {
 			LOGGER.error("❌ External API Exception: ", e);
 		}
 	}
-	
-	
-	
+
 	@Override
 	public Optional<TicketVO> getTicketById(Long id) {
 		return ticketRepo.findById(id);
@@ -453,5 +452,134 @@ public class TicketServiceImpl implements TicketService {
 
 		return null;
 	}
-}
 
+	@Override
+	public Map<String, Object> createComments(CommentsDTO commentDTO) {
+
+		Map<String, Object> response = new HashMap<>();
+
+		try {
+			System.out.println("📥 Incoming SourceId: " + commentDTO.getSourceId());
+
+			CommentsVO vo = new CommentsVO();
+
+			vo.setComments(commentDTO.getComments());
+			vo.setUserName(commentDTO.getUserName());
+			vo.setTicketId(commentDTO.getTicketId());
+			vo.setSourceUserName(commentDTO.getSourceUserName());
+			vo.setOrgId(commentDTO.getOrgId());
+			vo.setSourceTicketId(commentDTO.getSourceTicketId());
+			vo.setCreatedBy(commentDTO.getCreatedBy());
+			vo.setUpdatedBy(commentDTO.getCreatedBy());
+
+			// 🔥 VERY IMPORTANT
+			vo.setSourceId(commentDTO.getSourceId());
+
+			commentsRepo.saveAndFlush(vo);
+
+			System.out.println("💾 Saved in Server A: " + vo.getId());
+
+			// ✅ FIXED CONDITION
+			if (commentDTO.getSourceId() == null || commentDTO.getSourceId() == 0) {
+				System.out.println("🔁 A → B Triggered");
+				commentSyncService.sendToServerB(vo);
+			} else {
+				System.out.println("⛔ Skipping A → B (Synced data)");
+			}
+
+			response.put("status", true);
+			response.put("message", "Saved in Server A");
+			response.put("commentVO", vo);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			response.put("status", false);
+			response.put("message", e.getMessage());
+		}
+
+		return response;
+	}
+
+	@Override
+	public List<CommentsVO> getAllCommentsAnotherServer(Long ticketId) {
+		return commentsRepo.getAllCommentsAnotherServer(ticketId);
+
+	}
+
+	@Override
+	public List<CommentsVO> getAllCommentsMyServer(Long ticketId) {
+		return commentsRepo.getAllCommentsMyServer(ticketId);
+
+	}
+
+	@Override
+	public CommentsVO updateComments(CommentsDTO dto) {
+
+		CommentsVO vo;
+
+		if (dto.getId() != null) {
+
+			vo = commentsRepo.findById(dto.getId()).orElseThrow(() -> new RuntimeException("Not found in A by id"));
+
+			System.out.println("✏️ Updating in A using commentsid");
+
+			vo.setComments(dto.getComments());
+			vo.setUserName(dto.getUserName());
+			vo.setTicketId(dto.getTicketId());
+
+			commentsRepo.save(vo);
+
+			commentSyncService.updateToServerB(vo);
+		}
+
+		// ✅ 2. SYNC UPDATE FROM B
+		else if (dto.getSourceId() != null) {
+
+			vo = commentsRepo.findBySourceId(dto.getSourceId())
+					.orElseThrow(() -> new RuntimeException("Not found in A by sourceId"));
+
+			System.out.println("✏️ Updating in A using sourceId");
+
+			vo.setComments(dto.getComments());
+			vo.setUserName(dto.getUserName());
+			vo.setTicketId(dto.getTicketId());
+
+			commentsRepo.save(vo);
+		}
+
+		else {
+			throw new RuntimeException("❌ id and sourceId both NULL");
+		}
+
+		return vo;
+	}
+
+	@Override
+	public void deleteComments(Long id, Long sourceId) {
+
+		// ✅ 1. LOCAL DELETE (A UI)
+		if (id != null) {
+
+			commentsRepo.deleteById(id);
+			System.out.println("🗑️ Deleted in Server A (LOCAL)");
+
+			// 🔥 Sync to B
+			commentSyncService.deleteInServerB(id);
+		}
+
+		// ✅ 2. SYNC DELETE (coming from B)
+		else if (sourceId != null) {
+
+			CommentsVO vo = commentsRepo.findBySourceId(sourceId)
+					.orElseThrow(() -> new RuntimeException("Not found in A by sourceId"));
+
+			commentsRepo.delete(vo);
+
+			System.out.println("🗑️ Deleted in Server A (SYNC)");
+		}
+
+		else {
+			throw new RuntimeException("❌ id and sourceId both NULL");
+		}
+	}
+}

@@ -9,16 +9,19 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class CommentsDTO {
 
-private Long id;
-	
+	private Long id;
+
 	private String comments;
-	
+
 	private String createdBy;
 	private String userName;
 	private Long orgId;
 	private Long ticketId;
-	
-//	private String status;
-	
-}
+	private String sourceUserName;
+	private Long sourceOrgId;
+	private Long sourceId;
+	private Long sourceTicketId;
 
+//	private String status;
+
+}
