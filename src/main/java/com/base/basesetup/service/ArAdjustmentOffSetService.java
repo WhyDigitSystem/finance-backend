@@ -25,7 +25,7 @@ public interface ArAdjustmentOffSetService {
 
 	Map<String, Object> updateCreateArAdjustmentOffSet(@Valid ArAdjustmentOffSetDTO arAdjustmentOffSetDTO) throws ApplicationException;
 
-	String getArAdjustmentOffSetDocId(Long orgId, String finYear, String branch, String branchCode);
+	Map<String, Object> getArAdjustmentOffSetDocId(Long orgId, String finYear, String branch, String branchCode);
 
 	List<Map<String, Object>> getAllCustomerReceiptByOrgIdAndBranchCode(Long orgId, String branchCode,String customerName);
 

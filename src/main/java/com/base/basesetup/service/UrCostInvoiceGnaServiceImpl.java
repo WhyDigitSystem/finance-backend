@@ -103,9 +103,25 @@ public class UrCostInvoiceGnaServiceImpl implements UrCostInvoiceGnaService {
 			message = "UR CostInvoice GNA Updated Successfully";
 		} else {
 			// GETDOCID API
-			String docId = urCostInvoiceGnaRepo.getUrCostInvoiceGnaDocId(urCostInvoiceGnaDTO.getOrgId(),
+//			String docId = urCostInvoiceGnaRepo.getUrCostInvoiceGnaDocId(urCostInvoiceGnaDTO.getOrgId(),
+//					urCostInvoiceGnaDTO.getFinYear(), urCostInvoiceGnaDTO.getBranchCode(), screenCode);
+//			urCostInvoiceGnaVO.setDocId(docId);
+
+			List<Object[]> taxInvoiceDoc = urCostInvoiceGnaRepo.getUrCostInvoiceGnaDocId(urCostInvoiceGnaDTO.getOrgId(),
 					urCostInvoiceGnaDTO.getFinYear(), urCostInvoiceGnaDTO.getBranchCode(), screenCode);
-			urCostInvoiceGnaVO.setDocId(docId);
+
+			if (taxInvoiceDoc != null && !taxInvoiceDoc.isEmpty()) {
+
+				Object[] row = taxInvoiceDoc.get(0);
+
+				// ✅ Set docId
+				urCostInvoiceGnaVO.setDocId((String) row[0]);
+
+				// ✅ Convert java.sql.Date → LocalDate
+				if (row[1] != null) {
+					urCostInvoiceGnaVO.setDocDate(((java.sql.Date) row[1]).toLocalDate());
+				}
+			}
 
 			// GETDOCID LASTNO +1
 			DocumentTypeMappingDetailsVO documentTypeMappingDetailsVO = documentTypeMappingDetailsRepo
@@ -378,11 +394,30 @@ public class UrCostInvoiceGnaServiceImpl implements UrCostInvoiceGnaService {
 
 	}
 
+//	@Override
+//	public String getUrCostInvoiceGnaDocId(Long orgId, String finYear, String branch, String branchCode) {
+//		String ScreenCode = "URCI";
+//		String result = urCostInvoiceGnaRepo.getUrCostInvoiceGnaDocId(orgId, finYear, branchCode, ScreenCode);
+//		return result;
+//	}
+
 	@Override
-	public String getUrCostInvoiceGnaDocId(Long orgId, String finYear, String branch, String branchCode) {
-		String ScreenCode = "URCI";
-		String result = urCostInvoiceGnaRepo.getUrCostInvoiceGnaDocId(orgId, finYear, branchCode, ScreenCode);
-		return result;
+	public Map<String, Object> getUrCostInvoiceGnaDocId(Long orgId, String finYear, String branch, String branchCode) {
+
+		String screenCode = "URCI";
+
+		List<Object[]> results = urCostInvoiceGnaRepo.getUrCostInvoiceGnaDocId(orgId, finYear, branchCode, screenCode);
+
+		Map<String, Object> map = new HashMap<>();
+
+		if (results != null && !results.isEmpty()) {
+			Object[] row = results.get(0);
+
+			map.put("docId", row[0]);
+			map.put("docDate", row.length > 1 ? row[1] : null);
+		}
+
+		return map;
 	}
 
 	@Override
@@ -475,9 +510,25 @@ public class UrCostInvoiceGnaServiceImpl implements UrCostInvoiceGnaService {
 				|| (!urCostInvoiceGnaVO.getApproveStatus().equalsIgnoreCase("Approved")
 						&& !urCostInvoiceGnaVO.getApproveStatus().equalsIgnoreCase("Rejected"))) {
 
-			String accountsDocId = accountsRepo.geturCostInvoiceGnaDocId(urCostInvoiceGnaVO.getOrgId(),
+//			String accountsDocId = accountsRepo.geturCostInvoiceGnaDocId(urCostInvoiceGnaVO.getOrgId(),
+//					urCostInvoiceGnaVO.getFinYear(), urCostInvoiceGnaVO.getBranchCode(), sourceScreenCode, screenCode);
+//			urCostInvoiceGnaVO.setDocId(docId);
+
+			List<Object[]> taxInvoiceDoc = accountsRepo.getApproveDocId(urCostInvoiceGnaVO.getOrgId(),
 					urCostInvoiceGnaVO.getFinYear(), urCostInvoiceGnaVO.getBranchCode(), sourceScreenCode, screenCode);
-			urCostInvoiceGnaVO.setDocId(docId);
+
+			String generatedDocId = null;
+			LocalDate generatedDocDate = null;
+
+			if (taxInvoiceDoc != null && !taxInvoiceDoc.isEmpty()) {
+				Object[] row = taxInvoiceDoc.get(0);
+				generatedDocId = (String) row[0];
+				if (row[1] != null) {
+					generatedDocDate = ((java.sql.Date) row[1]).toLocalDate();
+				}
+			}
+			urCostInvoiceGnaVO.setPurVoucherNo(generatedDocId);
+			urCostInvoiceGnaVO.setPurVoucherDate(generatedDocDate);
 
 			// GETDOCID LASTNO +1
 			MultipleDocIdGenerationDetailsVO mulDocId = multipleDocIdGenerationDetailsRepo
@@ -488,7 +539,8 @@ public class UrCostInvoiceGnaServiceImpl implements UrCostInvoiceGnaService {
 			multipleDocIdGenerationDetailsRepo.save(mulDocId);
 
 			AccountsVO accountsVO = new AccountsVO();
-			accountsVO.setDocId(accountsDocId);
+			accountsVO.setDocId(generatedDocId);
+			accountsVO.setDocDate(generatedDocDate);
 			accountsVO.setSourceId(urCostInvoiceGnaVO.getId());
 			accountsVO.setCreatedBy(urCostInvoiceGnaVO.getCreatedBy());
 			accountsVO.setModifiedon(
@@ -739,17 +791,17 @@ public class UrCostInvoiceGnaServiceImpl implements UrCostInvoiceGnaService {
 		}
 	}
 
-	//urcostinvoice hyperlink
-	
+	// urcostinvoice hyperlink
+
 	@Override
 	public UrCostInvoiceGnaVO getUrCostInvoiceByDocIdandScreenCode(String ScreenCode, String docId) {
 		// TODO Auto-generated method stub
-				return urCostInvoiceGnaRepo.getUrCostInvoiceByDocIdandScreenCode(ScreenCode, docId);
+		return urCostInvoiceGnaRepo.getUrCostInvoiceByDocIdandScreenCode(ScreenCode, docId);
 	}
-	
+
 	@Override
-	public List<Map<String, Object>> getChargeAccountFromChargeLedger(Long orgId,String chargeLedger) {
-		Set<Object[]> chCode = urCostInvoiceGnaRepo.getChargeAccountFromChargeLedger(orgId,chargeLedger);
+	public List<Map<String, Object>> getChargeAccountFromChargeLedger(Long orgId, String chargeLedger) {
+		Set<Object[]> chCode = urCostInvoiceGnaRepo.getChargeAccountFromChargeLedger(orgId, chargeLedger);
 		return getChargeAccount(chCode);
 	}
 
@@ -762,11 +814,10 @@ public class UrCostInvoiceGnaServiceImpl implements UrCostInvoiceGnaService {
 		}
 		return List1;
 	}
-	
-	
+
 	@Override
-	public List<Map<String, Object>> getURCostInvoiceGnaCount(Long orgId,String finYear, String branchCode) {
-		Set<Object[]> chType = urCostInvoiceGnaRepo.getURCostInvoiceGnaCount(  orgId, finYear,  branchCode);
+	public List<Map<String, Object>> getURCostInvoiceGnaCount(Long orgId, String finYear, String branchCode) {
+		Set<Object[]> chType = urCostInvoiceGnaRepo.getURCostInvoiceGnaCount(orgId, finYear, branchCode);
 		return getURCostInvoiceGnaCount(chType);
 	}
 
@@ -774,10 +825,10 @@ public class UrCostInvoiceGnaServiceImpl implements UrCostInvoiceGnaService {
 		List<Map<String, Object>> List1 = new ArrayList<>();
 		for (Object[] ch : chType) {
 			Map<String, Object> map = new HashMap<>();
-			map.put("Complete", ch[0] != null ? ch[0].toString() : "");	
+			map.put("Complete", ch[0] != null ? ch[0].toString() : "");
 			map.put("Approved", ch[1] != null ? ch[1].toString() : "");
 			map.put("Pending", ch[2] != null ? ch[2].toString() : "");
-			map.put("Reject", ch[3] != null ?  ch[3].toString() : "");
+			map.put("Reject", ch[3] != null ? ch[3].toString() : "");
 
 			List1.add(map);
 		}

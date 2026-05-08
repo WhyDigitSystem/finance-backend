@@ -96,9 +96,25 @@ public class CostEstimationServiceImpl implements CostEstimationService {
 		} else {
 			// GETDOCID API
 			createUpdateCostEstimationVOByCostEstimationDTO(costEstimationDTO, costEstimationVO);
-			String docId = costEstimationRepo.getCostEstimationDocId(costEstimationDTO.getOrgId(),
+//			String docId = costEstimationRepo.getCostEstimationDocId(costEstimationDTO.getOrgId(),
+//					costEstimationDTO.getFinYear(), costEstimationDTO.getBranchCode(), screenCode);
+//			costEstimationVO.setDocId(docId);
+
+			List<Object[]> taxInvoiceDoc = costEstimationRepo.getCostEstimationDocId(costEstimationDTO.getOrgId(),
 					costEstimationDTO.getFinYear(), costEstimationDTO.getBranchCode(), screenCode);
-			costEstimationVO.setDocId(docId);
+
+			if (taxInvoiceDoc != null && !taxInvoiceDoc.isEmpty()) {
+
+				Object[] row = taxInvoiceDoc.get(0);
+
+				// ✅ Set docId
+				costEstimationVO.setDocId((String) row[0]);
+
+				// ✅ Convert java.sql.Date → LocalDate
+				if (row[1] != null) {
+					costEstimationVO.setDocDate(((java.sql.Date) row[1]).toLocalDate());
+				}
+			}
 
 			// GETDOCID LASTNO +1
 			DocumentTypeMappingDetailsVO documentTypeMappingDetailsVO = documentTypeMappingDetailsRepo
@@ -185,12 +201,32 @@ public class CostEstimationServiceImpl implements CostEstimationService {
 		return doctypeMappingDetails;
 	}
 
+//	@Override
+//	public String getCostEstimationDocId(Long orgId, String finYear, String branch, String branchCode) {
+//		String ScreenCode = "CE";
+//		return costEstimationRepo.getCostEstimationDocId(orgId, finYear, branchCode, ScreenCode);
+//
+//	}
+	
 	@Override
-	public String getCostEstimationDocId(Long orgId, String finYear, String branch, String branchCode) {
-		String ScreenCode = "CE";
-		return costEstimationRepo.getCostEstimationDocId(orgId, finYear, branchCode, ScreenCode);
+	public Map<String, Object> getCostEstimationDocId(Long orgId, String finYear, String branch, String branchCode) {
 
+		String screenCode = "CE";
+
+		List<Object[]> results = costEstimationRepo.getCostEstimationDocId(orgId, finYear, branchCode, screenCode);
+
+		Map<String, Object> map = new HashMap<>();
+
+		if (results != null && !results.isEmpty()) {
+			Object[] row = results.get(0);
+
+			map.put("docId", row[0]);
+			map.put("docDate", row.length > 1 ? row[1] : null);
+		}
+
+		return map;
 	}
+
 
 	@Override
 	public CostEstimationVO approveCostEstimation(Long orgId, Long id, String docId, String action, String actionBy)
@@ -434,6 +470,7 @@ public class CostEstimationServiceImpl implements CostEstimationService {
 //			map.put("category", ch[11] != null ?  ch[11].toString() : ""); // 11
 			map.put("remarks", ch[11] != null ?  ch[11].toString() : ""); // 12
 			map.put("amount", ch[12] != null ? new BigDecimal(ch[12].toString()) : BigDecimal.ZERO); // 13
+			map.put("sNo", ch[15] != null ?  ch[15].toString() : "");
 			 if (ch[13] != null && ch[13] instanceof byte[]) {
 		            byte[] imageBytes = (byte[]) ch[13];
 		            String base64Image = Base64.getEncoder().encodeToString(imageBytes);
@@ -444,6 +481,7 @@ public class CostEstimationServiceImpl implements CostEstimationService {
 			map.put("approvestatus", ch[14] != null ? ch[14].toString() : ""); 		
 			List1.add(map);
 		}
+		
 		return List1;
 	}
 
@@ -469,6 +507,7 @@ public class CostEstimationServiceImpl implements CostEstimationService {
 			map.put("approvalremarks", ch[7] != null ? ch[7].toString() : ""); // 7
 			map.put("totalAmount", ch[8] != null ? new BigDecimal(ch[8].toString()) : BigDecimal.ZERO); // 8
 			map.put("approvestatus", ch[9] != null ? ch[9].toString() : "");
+			map.put("sNo", ch[10] != null ?  ch[10].toString() : "");
 //			map.put("totalchargeamountlc", ch[10] != null ? new BigDecimal(ch[10].toString()) : BigDecimal.ZERO);
 //			map.put("totalinvamountlc", ch[11] != null ? new BigDecimal(ch[11].toString()) : BigDecimal.ZERO);
 //			map.put("totaltaxamountlc", ch[12] != null ? new BigDecimal(ch[12].toString()) : BigDecimal.ZERO);

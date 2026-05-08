@@ -45,7 +45,7 @@ public class JobCardVO {
 	@Column(name = "operationclosed")
 	private boolean operationClosed;
 	@Column(name = "date")
-	private LocalDate date=LocalDate.now();
+	private LocalDate date;
 	@Column(name = "salescategory", length = 50)
 	private String salesCategory;
 	@Column(name = "financeclosed")

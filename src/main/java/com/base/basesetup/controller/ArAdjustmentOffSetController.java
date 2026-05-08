@@ -39,7 +39,7 @@ public class ArAdjustmentOffSetController extends BaseController {
 
 	@Autowired
 	ArAdjustmentOffSetService arAdjustmentOffSetService;
-	
+
 	@GetMapping("/getAllArAdjustmentOffSetByOrgId")
 	public ResponseEntity<ResponseDTO> getAllArAdjustmentOffSetByOrgId(@RequestParam Long orgId) {
 		String methodName = "getAllArAdjustmentOffSetByOrgId()";
@@ -55,20 +55,19 @@ public class ArAdjustmentOffSetController extends BaseController {
 			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
 		}
 		if (StringUtils.isBlank(errorMsg)) {
-			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "ArAdjustmentOffSet information get successfully By OrgId");
+			responseObjectsMap.put(CommonConstant.STRING_MESSAGE,
+					"ArAdjustmentOffSet information get successfully By OrgId");
 			responseObjectsMap.put("arAdjustmentOffSetVO", arAdjustmentOffSetVO);
 			responseDTO = createServiceResponse(responseObjectsMap);
 		} else {
-			responseDTO = createServiceResponseError(responseObjectsMap, "ArAdjustmentOffSet information receive failed By OrgId",
-					errorMsg);
+			responseDTO = createServiceResponseError(responseObjectsMap,
+					"ArAdjustmentOffSet information receive failed By OrgId", errorMsg);
 		}
 		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
 		return ResponseEntity.ok().body(responseDTO);
 
 	}
-	
-	
-	
+
 	@GetMapping("/getArAdjustmentOffSetById")
 	public ResponseEntity<ResponseDTO> getArAdjustmentOffSetById(@RequestParam(required = false) Long id) {
 		String methodName = "getArAdjustmentOffSetById()";
@@ -84,7 +83,8 @@ public class ArAdjustmentOffSetController extends BaseController {
 			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
 		}
 		if (StringUtils.isBlank(errorMsg)) {
-			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "ArAdjustmentOffSet information get successfully By id");
+			responseObjectsMap.put(CommonConstant.STRING_MESSAGE,
+					"ArAdjustmentOffSet information get successfully By id");
 			responseObjectsMap.put("arAdjustmentOffSetVO", arAdjustmentOffSetVO);
 			responseDTO = createServiceResponse(responseObjectsMap);
 		} else {
@@ -94,7 +94,7 @@ public class ArAdjustmentOffSetController extends BaseController {
 		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
 		return ResponseEntity.ok().body(responseDTO);
 	}
-	
+
 	@PutMapping("/updateCreateArAdjustmentOffSet")
 	public ResponseEntity<ResponseDTO> updateCreateArAdjustmentOffSet(
 			@Valid @RequestBody ArAdjustmentOffSetDTO arAdjustmentOffSetDTO) {
@@ -109,7 +109,8 @@ public class ArAdjustmentOffSetController extends BaseController {
 			Map<String, Object> arAdjustmentOffSetVO = arAdjustmentOffSetService
 					.updateCreateArAdjustmentOffSet(arAdjustmentOffSetDTO);
 			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, arAdjustmentOffSetVO.get("message"));
-			responseObjectsMap.put("arAdjustmentOffSetVO", arAdjustmentOffSetVO.get("arAdjustmentOffSetVO")); // Corrected key
+			responseObjectsMap.put("arAdjustmentOffSetVO", arAdjustmentOffSetVO.get("arAdjustmentOffSetVO")); // Corrected
+																												// key
 			responseDTO = createServiceResponse(responseObjectsMap);
 		} catch (Exception e) {
 			errorMsg = e.getMessage();
@@ -120,41 +121,78 @@ public class ArAdjustmentOffSetController extends BaseController {
 		return ResponseEntity.ok().body(responseDTO);
 	}
 
+//	@GetMapping("/getArAdjustmentOffSetDocId")
+//	public ResponseEntity<ResponseDTO> getArAdjustmentOffSetDocId(@RequestParam Long orgId, @RequestParam String finYear,
+//			@RequestParam String branch, @RequestParam String branchCode) {
+//
+//		String methodName = "getArAdjustmentOffSetDocId()";
+//		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+//		String errorMsg = null;
+//		Map<String, Object> responseObjectsMap = new HashMap<>();
+//		ResponseDTO responseDTO = null;
+//		String mapp = "";
+//
+//		try {
+//			mapp = arAdjustmentOffSetService.getArAdjustmentOffSetDocId(orgId, finYear, branch, branchCode);
+//		} catch (Exception e) {
+//			errorMsg = e.getMessage();
+//			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+//		}
+//
+//		if (StringUtils.isBlank(errorMsg)) {
+//			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "ArAdjustmentOffSet information retrieved successfully");
+//			responseObjectsMap.put("arAdjustmentOffSetDocId", mapp);
+//			responseDTO = createServiceResponse(responseObjectsMap);
+//		} else {
+//			responseDTO = createServiceResponseError(responseObjectsMap,
+//					"Failed to retrieve ArAdjustmentOffSet Docid information", errorMsg);
+//		}
+//
+//		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+//		return ResponseEntity.ok().body(responseDTO);
+//	}
 	@GetMapping("/getArAdjustmentOffSetDocId")
-	public ResponseEntity<ResponseDTO> getArAdjustmentOffSetDocId(@RequestParam Long orgId, @RequestParam String finYear,
-			@RequestParam String branch, @RequestParam String branchCode) {
+	public ResponseEntity<ResponseDTO> getArAdjustmentOffSetDocId(@RequestParam Long orgId,
+			@RequestParam String finYear, @RequestParam String branch, @RequestParam String branchCode) {
 
 		String methodName = "getArAdjustmentOffSetDocId()";
 		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+
 		String errorMsg = null;
 		Map<String, Object> responseObjectsMap = new HashMap<>();
 		ResponseDTO responseDTO = null;
-		String mapp = "";
+
+		Map<String, Object> resultMap = new HashMap<>();
 
 		try {
-			mapp = arAdjustmentOffSetService.getArAdjustmentOffSetDocId(orgId, finYear, branch, branchCode);
+			resultMap = arAdjustmentOffSetService.getArAdjustmentOffSetDocId(orgId, finYear, branch, branchCode);
 		} catch (Exception e) {
 			errorMsg = e.getMessage();
 			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
 		}
 
 		if (StringUtils.isBlank(errorMsg)) {
-			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "ArAdjustmentOffSet information retrieved successfully");
-			responseObjectsMap.put("arAdjustmentOffSetDocId", mapp);
+			responseObjectsMap.put(CommonConstant.STRING_MESSAGE,
+					"arAdjustmentOffSetDocId information retrieved successfully");
+
+			responseObjectsMap.put("arAdjustmentOffSetDocId", resultMap.get("docId"));
+			responseObjectsMap.put("docDate", resultMap.get("docDate"));
+
 			responseDTO = createServiceResponse(responseObjectsMap);
 		} else {
 			responseDTO = createServiceResponseError(responseObjectsMap,
-					"Failed to retrieve ArAdjustmentOffSet Docid information", errorMsg);
+					"Failed to retrieve arAdjustmentOffSetDocId information", errorMsg);
 		}
 
 		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
 		return ResponseEntity.ok().body(responseDTO);
 	}
-	
-	//DropDown Api ARAdjustmentOffSet
-	
+
+	// DropDown Api ARAdjustmentOffSet
+
 	@GetMapping("/getAllCustomerReceiptByOrgIdAndBranchCode")
-	public ResponseEntity<ResponseDTO> getAllCustomerReceiptByOrgIdAndBranchCode(@RequestParam Long orgId,@RequestParam String branchCode,String customerName) {
+	public ResponseEntity<ResponseDTO> getAllCustomerReceiptByOrgIdAndBranchCode(@RequestParam Long orgId,
+			@RequestParam String branchCode, String customerName) {
 		String methodName = "getAllCustomerReceiptByOrgIdAndBranchCode()";
 		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
 		String errorMsg = null;
@@ -162,27 +200,28 @@ public class ArAdjustmentOffSetController extends BaseController {
 		ResponseDTO responseDTO = null;
 		List<Map<String, Object>> receiptVO = new ArrayList<>();
 		try {
-			receiptVO = arAdjustmentOffSetService.getAllCustomerReceiptByOrgIdAndBranchCode(orgId,branchCode,customerName);
+			receiptVO = arAdjustmentOffSetService.getAllCustomerReceiptByOrgIdAndBranchCode(orgId, branchCode,
+					customerName);
 		} catch (Exception e) {
 			errorMsg = e.getMessage();
 			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
 		}
 		if (StringUtils.isBlank(errorMsg)) {
-			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "ArAdjustmentOffSet information get successfully By OrgId");
+			responseObjectsMap.put(CommonConstant.STRING_MESSAGE,
+					"ArAdjustmentOffSet information get successfully By OrgId");
 			responseObjectsMap.put("receiptVO", receiptVO);
 			responseDTO = createServiceResponse(responseObjectsMap);
 		} else {
-			responseDTO = createServiceResponseError(responseObjectsMap, "ArAdjustmentOffSet information receive failed By OrgId",
-					errorMsg);
+			responseDTO = createServiceResponseError(responseObjectsMap,
+					"ArAdjustmentOffSet information receive failed By OrgId", errorMsg);
 		}
 		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
 		return ResponseEntity.ok().body(responseDTO);
 
 	}
-	
-	
-	//AP ADJUSTMENT OFFSET
-	
+
+	// AP ADJUSTMENT OFFSET
+
 	@GetMapping("/getAllApAdjustmentOffSetByOrgId")
 	public ResponseEntity<ResponseDTO> getAllApAdjustmentOffSetByOrgId(@RequestParam Long orgId) {
 		String methodName = "getAllApAdjustmentOffSetByOrgId()";
@@ -198,18 +237,19 @@ public class ArAdjustmentOffSetController extends BaseController {
 			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
 		}
 		if (StringUtils.isBlank(errorMsg)) {
-			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "ApAdjustmentOffSet information get successfully By OrgId");
+			responseObjectsMap.put(CommonConstant.STRING_MESSAGE,
+					"ApAdjustmentOffSet information get successfully By OrgId");
 			responseObjectsMap.put("apAdjustmentOffSetVO", apAdjustmentOffSetVO);
 			responseDTO = createServiceResponse(responseObjectsMap);
 		} else {
-			responseDTO = createServiceResponseError(responseObjectsMap, "ApAdjustmentOffSet information receive failed By OrgId",
-					errorMsg);
+			responseDTO = createServiceResponseError(responseObjectsMap,
+					"ApAdjustmentOffSet information receive failed By OrgId", errorMsg);
 		}
 		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
 		return ResponseEntity.ok().body(responseDTO);
 
 	}
-	
+
 	@GetMapping("/getApAdjustmentOffSetById")
 	public ResponseEntity<ResponseDTO> getApAdjustmentOffSetById(@RequestParam(required = false) Long id) {
 		String methodName = "getApAdjustmentOffSetById()";
@@ -225,7 +265,8 @@ public class ArAdjustmentOffSetController extends BaseController {
 			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
 		}
 		if (StringUtils.isBlank(errorMsg)) {
-			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "ApAdjustmentOffSet information get successfully By id");
+			responseObjectsMap.put(CommonConstant.STRING_MESSAGE,
+					"ApAdjustmentOffSet information get successfully By id");
 			responseObjectsMap.put("apAdjustmentOffSetVO", apAdjustmentOffSetVO);
 			responseDTO = createServiceResponse(responseObjectsMap);
 		} else {
@@ -235,10 +276,10 @@ public class ArAdjustmentOffSetController extends BaseController {
 		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
 		return ResponseEntity.ok().body(responseDTO);
 	}
-	
+
 	@GetMapping("/getApAdjustmentOffSetDocId")
-	public ResponseEntity<ResponseDTO> getApAdjustmentOffSetDocId(@RequestParam Long orgId, @RequestParam String finYear,
-			@RequestParam String branch, @RequestParam String branchCode) {
+	public ResponseEntity<ResponseDTO> getApAdjustmentOffSetDocId(@RequestParam Long orgId,
+			@RequestParam String finYear, @RequestParam String branch, @RequestParam String branchCode) {
 
 		String methodName = "getApAdjustmentOffSetDocId()";
 		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
@@ -255,7 +296,8 @@ public class ArAdjustmentOffSetController extends BaseController {
 		}
 
 		if (StringUtils.isBlank(errorMsg)) {
-			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "ApAdjustmentOffSet information retrieved successfully");
+			responseObjectsMap.put(CommonConstant.STRING_MESSAGE,
+					"ApAdjustmentOffSet information retrieved successfully");
 			responseObjectsMap.put("apAdjustmentOffSetDocId", mapp);
 			responseDTO = createServiceResponse(responseObjectsMap);
 		} else {
@@ -266,130 +308,135 @@ public class ArAdjustmentOffSetController extends BaseController {
 		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
 		return ResponseEntity.ok().body(responseDTO);
 	}
-	
-	//DropDown Api ARAdjustmentOffSet
-	
-		@GetMapping("/getAllVendorPaymentByOrgIdAndBranchCode")
-		public ResponseEntity<ResponseDTO> getAllVendorPaymentByOrgIdAndBranchCode(@RequestParam Long orgId,@RequestParam String branchCode) {
-			String methodName = "getAllVendorPaymentByOrgIdAndBranchCode()";
-			LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
-			String errorMsg = null;
-			Map<String, Object> responseObjectsMap = new HashMap<>();
-			ResponseDTO responseDTO = null;
-			List<PaymentVO> paymentVO = new ArrayList<>();
-			try {
-				paymentVO = arAdjustmentOffSetService.getAllVendorPaymentByOrgIdAndBranchCode(orgId,branchCode);
-			} catch (Exception e) {
-				errorMsg = e.getMessage();
-				LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
-			}
-			if (StringUtils.isBlank(errorMsg)) {
-				responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "VendorPayment information get successfully By OrgId");
-				responseObjectsMap.put("paymentVO", paymentVO);
-				responseDTO = createServiceResponse(responseObjectsMap);
-			} else {
-				responseDTO = createServiceResponseError(responseObjectsMap, "VendorPayment information receive failed By OrgId",
-						errorMsg);
-			}
-			LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
-			return ResponseEntity.ok().body(responseDTO);
 
-		}
-		
-		
-		@PutMapping("/updateCreateApAdjustmentOffSet")
-		public ResponseEntity<ResponseDTO> updateCreateApAdjustmentOffSet(
-				@Valid @RequestBody ApAdjustmentOffSetDTO apAdjustmentOffSetDTO) {
-			String methodName = "updateCreateApAdjustmentOffSet()";
+	// DropDown Api ARAdjustmentOffSet
 
-			LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
-			String errorMsg = null;
-			Map<String, Object> responseObjectsMap = new HashMap<>();
-			ResponseDTO responseDTO = null;
+	@GetMapping("/getAllVendorPaymentByOrgIdAndBranchCode")
+	public ResponseEntity<ResponseDTO> getAllVendorPaymentByOrgIdAndBranchCode(@RequestParam Long orgId,
+			@RequestParam String branchCode) {
+		String methodName = "getAllVendorPaymentByOrgIdAndBranchCode()";
+		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+		String errorMsg = null;
+		Map<String, Object> responseObjectsMap = new HashMap<>();
+		ResponseDTO responseDTO = null;
+		List<PaymentVO> paymentVO = new ArrayList<>();
+		try {
+			paymentVO = arAdjustmentOffSetService.getAllVendorPaymentByOrgIdAndBranchCode(orgId, branchCode);
+		} catch (Exception e) {
+			errorMsg = e.getMessage();
+			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+		}
+		if (StringUtils.isBlank(errorMsg)) {
+			responseObjectsMap.put(CommonConstant.STRING_MESSAGE,
+					"VendorPayment information get successfully By OrgId");
+			responseObjectsMap.put("paymentVO", paymentVO);
+			responseDTO = createServiceResponse(responseObjectsMap);
+		} else {
+			responseDTO = createServiceResponseError(responseObjectsMap,
+					"VendorPayment information receive failed By OrgId", errorMsg);
+		}
+		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+		return ResponseEntity.ok().body(responseDTO);
 
-			try {
-				Map<String, Object> apAdjustmentOffSetVO = arAdjustmentOffSetService
-						.updateCreateApAdjustmentOffSet(apAdjustmentOffSetDTO);
-				responseObjectsMap.put(CommonConstant.STRING_MESSAGE, apAdjustmentOffSetVO.get("message"));
-				responseObjectsMap.put("apAdjustmentOffSetVO", apAdjustmentOffSetVO.get("apAdjustmentOffSetVO")); // Corrected key
-				responseDTO = createServiceResponse(responseObjectsMap);
-			} catch (Exception e) {
-				errorMsg = e.getMessage();
-				LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
-				responseDTO = createServiceResponseError(responseObjectsMap, errorMsg, errorMsg);
-			}
-			LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
-			return ResponseEntity.ok().body(responseDTO);
+	}
+
+	@PutMapping("/updateCreateApAdjustmentOffSet")
+	public ResponseEntity<ResponseDTO> updateCreateApAdjustmentOffSet(
+			@Valid @RequestBody ApAdjustmentOffSetDTO apAdjustmentOffSetDTO) {
+		String methodName = "updateCreateApAdjustmentOffSet()";
+
+		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+		String errorMsg = null;
+		Map<String, Object> responseObjectsMap = new HashMap<>();
+		ResponseDTO responseDTO = null;
+
+		try {
+			Map<String, Object> apAdjustmentOffSetVO = arAdjustmentOffSetService
+					.updateCreateApAdjustmentOffSet(apAdjustmentOffSetDTO);
+			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, apAdjustmentOffSetVO.get("message"));
+			responseObjectsMap.put("apAdjustmentOffSetVO", apAdjustmentOffSetVO.get("apAdjustmentOffSetVO")); // Corrected
+																												// key
+			responseDTO = createServiceResponse(responseObjectsMap);
+		} catch (Exception e) {
+			errorMsg = e.getMessage();
+			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+			responseDTO = createServiceResponseError(responseObjectsMap, errorMsg, errorMsg);
 		}
-		
-		@GetMapping("/getArOffsetFillgrid")
-		public ResponseEntity<ResponseDTO> getArOffsetFillgrid(@RequestParam Long orgId, @RequestParam String subLedgerCode,@RequestParam String docId,
-				@RequestParam String branch,@RequestParam String docDate) {
-			String methodName = "getReciptFillGrid()";
-			LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
-			String errorMsg = null;
-			Map<String, Object> responseObjectsMap = new HashMap<>();
-			ResponseDTO responseDTO = null;
-			List<Map<String, Object>> reciptFillGrid = new ArrayList<>();
-			try {
-				reciptFillGrid = arAdjustmentOffSetService.getArOffsetFillgrid(orgId,subLedgerCode,docId,branch,docDate);
-			} catch (Exception e) {
-				errorMsg = e.getMessage();
-				LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
-			}
-			if (StringUtils.isBlank(errorMsg)) {
-				responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "ArOffsetFillgrid Fill Grid information get successfully");
-				responseObjectsMap.put("reciptFillGrid", reciptFillGrid);
-				responseDTO = createServiceResponse(responseObjectsMap);
-			} else {
-				responseDTO = createServiceResponseError(responseObjectsMap, "ArOffsetFillgrid Fill Grid information receive failed",
-						errorMsg);
-			}
-			LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
-			return ResponseEntity.ok().body(responseDTO);
+		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+		return ResponseEntity.ok().body(responseDTO);
+	}
+
+	@GetMapping("/getArOffsetFillgrid")
+	public ResponseEntity<ResponseDTO> getArOffsetFillgrid(@RequestParam Long orgId, @RequestParam String subLedgerCode,
+			@RequestParam String docId, @RequestParam String branch, @RequestParam String docDate) {
+		String methodName = "getReciptFillGrid()";
+		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+		String errorMsg = null;
+		Map<String, Object> responseObjectsMap = new HashMap<>();
+		ResponseDTO responseDTO = null;
+		List<Map<String, Object>> reciptFillGrid = new ArrayList<>();
+		try {
+			reciptFillGrid = arAdjustmentOffSetService.getArOffsetFillgrid(orgId, subLedgerCode, docId, branch,
+					docDate);
+		} catch (Exception e) {
+			errorMsg = e.getMessage();
+			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
 		}
-		
-		
-		@PutMapping("/approveApAdjustmentOffSet")
-		public ResponseEntity<ResponseDTO> approveApAdjustmentOffSet(@RequestParam Long orgId, @RequestParam Long id,
-				@RequestParam String docId, @RequestParam String action, @RequestParam String actionBy) {
-			String methodName = "approveApAdjustmentOffSet()";
-			LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
-			String errorMsg = null;
-			Map<String, Object> responseObjectsMap = new HashMap<>();
-			ResponseDTO responseDTO = null;
-			try {
-				ApAdjustmentOffSetVO taxInvoiceVO = arAdjustmentOffSetService.approveApAdjustmentOffSet(orgId, id, docId, action, actionBy);
-				responseObjectsMap.put("taxInvoiceVO", taxInvoiceVO);
-				responseDTO = createServiceResponse(responseObjectsMap);
-			} catch (Exception e) {
-				errorMsg = e.getMessage();
-				LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
-				responseDTO = createServiceResponseError(responseObjectsMap, errorMsg, errorMsg);
-			}
-			LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
-			return ResponseEntity.ok().body(responseDTO);
+		if (StringUtils.isBlank(errorMsg)) {
+			responseObjectsMap.put(CommonConstant.STRING_MESSAGE,
+					"ArOffsetFillgrid Fill Grid information get successfully");
+			responseObjectsMap.put("reciptFillGrid", reciptFillGrid);
+			responseDTO = createServiceResponse(responseObjectsMap);
+		} else {
+			responseDTO = createServiceResponseError(responseObjectsMap,
+					"ArOffsetFillgrid Fill Grid information receive failed", errorMsg);
 		}
-		
-		@PutMapping("/approveArAdjustmentOffSet")
-		public ResponseEntity<ResponseDTO> approveArAdjustmentOffSet(@RequestParam Long orgId, @RequestParam Long id,
-				@RequestParam String docId, @RequestParam String action, @RequestParam String actionBy) {
-			String methodName = "approveArAdjustmentOffSet()";
-			LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
-			String errorMsg = null;
-			Map<String, Object> responseObjectsMap = new HashMap<>();
-			ResponseDTO responseDTO = null;
-			try {
-				ArAdjustmentOffSetVO taxInvoiceVO = arAdjustmentOffSetService.approveArAdjustmentOffSet(orgId, id, docId, action, actionBy);
-				responseObjectsMap.put("taxInvoiceVO", taxInvoiceVO);
-				responseDTO = createServiceResponse(responseObjectsMap);
-			} catch (Exception e) {
-				errorMsg = e.getMessage();
-				LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
-				responseDTO = createServiceResponseError(responseObjectsMap, errorMsg, errorMsg);
-			}
-			LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
-			return ResponseEntity.ok().body(responseDTO);
+		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+		return ResponseEntity.ok().body(responseDTO);
+	}
+
+	@PutMapping("/approveApAdjustmentOffSet")
+	public ResponseEntity<ResponseDTO> approveApAdjustmentOffSet(@RequestParam Long orgId, @RequestParam Long id,
+			@RequestParam String docId, @RequestParam String action, @RequestParam String actionBy) {
+		String methodName = "approveApAdjustmentOffSet()";
+		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+		String errorMsg = null;
+		Map<String, Object> responseObjectsMap = new HashMap<>();
+		ResponseDTO responseDTO = null;
+		try {
+			ApAdjustmentOffSetVO taxInvoiceVO = arAdjustmentOffSetService.approveApAdjustmentOffSet(orgId, id, docId,
+					action, actionBy);
+			responseObjectsMap.put("taxInvoiceVO", taxInvoiceVO);
+			responseDTO = createServiceResponse(responseObjectsMap);
+		} catch (Exception e) {
+			errorMsg = e.getMessage();
+			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+			responseDTO = createServiceResponseError(responseObjectsMap, errorMsg, errorMsg);
 		}
+		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+		return ResponseEntity.ok().body(responseDTO);
+	}
+
+	@PutMapping("/approveArAdjustmentOffSet")
+	public ResponseEntity<ResponseDTO> approveArAdjustmentOffSet(@RequestParam Long orgId, @RequestParam Long id,
+			@RequestParam String docId, @RequestParam String action, @RequestParam String actionBy) {
+		String methodName = "approveArAdjustmentOffSet()";
+		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+		String errorMsg = null;
+		Map<String, Object> responseObjectsMap = new HashMap<>();
+		ResponseDTO responseDTO = null;
+		try {
+			ArAdjustmentOffSetVO taxInvoiceVO = arAdjustmentOffSetService.approveArAdjustmentOffSet(orgId, id, docId,
+					action, actionBy);
+			responseObjectsMap.put("taxInvoiceVO", taxInvoiceVO);
+			responseDTO = createServiceResponse(responseObjectsMap);
+		} catch (Exception e) {
+			errorMsg = e.getMessage();
+			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+			responseDTO = createServiceResponseError(responseObjectsMap, errorMsg, errorMsg);
+		}
+		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+		return ResponseEntity.ok().body(responseDTO);
+	}
 
 }

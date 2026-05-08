@@ -21,7 +21,7 @@ public interface IrnCreditNoteService {
 
 	Map<String, Object> updateCreateIrnCreditNote(IrnCreditNoteDTO irnCreditDTO) throws ApplicationException;
 	
-	String getIrnCreditNoteDocId(Long orgId, String finYear, String branch, String branchCode);
+	Map<String, Object> getIrnCreditNoteDocId(Long orgId, String finYear, String branch, String branchCode);
 
 	List<PartyMasterVO> getAllPartyByPartyType(Long orgId, String partyType);
 	

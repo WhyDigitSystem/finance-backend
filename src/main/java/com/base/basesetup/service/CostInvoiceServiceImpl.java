@@ -15,6 +15,7 @@ import java.util.Set;
 import javax.validation.Valid;
 
 import org.apache.commons.lang3.ObjectUtils;
+import org.apache.poi.util.StringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -148,16 +149,34 @@ public class CostInvoiceServiceImpl implements CostInvoiceService {
 
 			costInvoiceVO = new CostInvoiceVO();
 
-			if (costInvoiceRepo.existsByvIdAndOrgId(costInvoiceDTO.getVId(), costInvoiceDTO.getOrgId())) {
+			if (costInvoiceDTO.getVId() != null && !costInvoiceDTO.getVId().trim().isEmpty()) {
+				if (costInvoiceRepo.existsByvIdAndOrgId(costInvoiceDTO.getVId(), costInvoiceDTO.getOrgId())) {
 
-				String errorMessage = String.format("This VId: %s already exists for this organization.",
-						costInvoiceDTO.getVId());
-				throw new ApplicationException(errorMessage);
+					String errorMessage = String.format("This VId: %s already exists for this organization.",
+							costInvoiceDTO.getVId());
+					throw new ApplicationException(errorMessage);
+				}
 			}
 
-			String docId = costInvoiceRepo.getCostInvoiceDocId(costInvoiceDTO.getOrgId(), costInvoiceDTO.getFinYear(),
-					costInvoiceDTO.getBranchCode(), screenCode);
-			costInvoiceVO.setDocId(docId);
+//			String docId = costInvoiceRepo.getCostInvoiceDocId(costInvoiceDTO.getOrgId(), costInvoiceDTO.getFinYear(),
+//					costInvoiceDTO.getBranchCode(), screenCode);
+//			costInvoiceVO.setDocId(docId);
+
+			List<Object[]> taxInvoiceDoc = costInvoiceRepo.getCostInvoiceDocId(costInvoiceDTO.getOrgId(),
+					costInvoiceDTO.getFinYear(), costInvoiceDTO.getBranchCode(), screenCode);
+
+			if (taxInvoiceDoc != null && !taxInvoiceDoc.isEmpty()) {
+
+				Object[] row = taxInvoiceDoc.get(0);
+
+				// ✅ Set docId
+				costInvoiceVO.setDocId((String) row[0]);
+
+				// ✅ Convert java.sql.Date → LocalDate
+				if (row[1] != null) {
+					costInvoiceVO.setDocDate(((java.sql.Date) row[1]).toLocalDate());
+				}
+			}
 
 			// GETDOCID LASTNO +1
 			DocumentTypeMappingDetailsVO documentTypeMappingDetailsVO = documentTypeMappingDetailsRepo
@@ -179,13 +198,15 @@ public class CostInvoiceServiceImpl implements CostInvoiceService {
 					() -> new ApplicationException("Cost Invoice Not Found with id: " + costInvoiceDTO.getId()));
 			costInvoiceVO.setUpdatedBy(costInvoiceDTO.getCreatedBy());
 
-			if (!costInvoiceVO.getVId().equals(costInvoiceDTO.getVId())) {
-				if (costInvoiceRepo.existsByvIdAndOrgId(costInvoiceDTO.getVId(), costInvoiceDTO.getOrgId())) {
-					String errorMessage = String.format("This VId: %s already exists for this organization.",
-							costInvoiceDTO.getVId());
-					throw new ApplicationException(errorMessage);
+			if (costInvoiceDTO.getVId() != null && !costInvoiceDTO.getVId().trim().isEmpty()) {
+				if (!costInvoiceVO.getVId().equals(costInvoiceDTO.getVId())) {
+					if (costInvoiceRepo.existsByvIdAndOrgId(costInvoiceDTO.getVId(), costInvoiceDTO.getOrgId())) {
+						String errorMessage = String.format("This VId: %s already exists for this organization.",
+								costInvoiceDTO.getVId());
+						throw new ApplicationException(errorMessage);
+					}
+					costInvoiceVO.setVId(costInvoiceDTO.getVId());
 				}
-				costInvoiceVO.setVId(costInvoiceDTO.getVId());
 			}
 
 			getCostInvoiceVOFromCostInvoiceDTO(costInvoiceVO, costInvoiceDTO);
@@ -221,6 +242,7 @@ public class CostInvoiceServiceImpl implements CostInvoiceService {
 		costInvoiceVO.setRemarks(costInvoiceDTO.getRemarks());
 		costInvoiceVO.setAddress(costInvoiceDTO.getAddress());
 		costInvoiceVO.setOtherInfo(costInvoiceDTO.getOtherInfo());
+		costInvoiceVO.setSupplierBillDate(costInvoiceDTO.getSupplierBillDate());
 		costInvoiceVO.setShipperRefNo(costInvoiceDTO.getShipperRefNo());
 		costInvoiceVO.setGstType(costInvoiceDTO.getGstType());
 		costInvoiceVO.setOrgId(costInvoiceDTO.getOrgId());
@@ -238,7 +260,7 @@ public class CostInvoiceServiceImpl implements CostInvoiceService {
 		costInvoiceVO.setSupplierId(costInvoiceDTO.getSupplierId());
 		costInvoiceVO.setJobOrderNo(costInvoiceDTO.getJobOrderNo());
 		costInvoiceVO.setVId(costInvoiceDTO.getVId());
-		costInvoiceVO.setVDate(costInvoiceDTO.getVDate());
+//		costInvoiceVO.setVDate(costInvoiceDTO.getVDate());
 
 		if (costInvoiceDTO.getId() != null) {
 
@@ -470,11 +492,30 @@ public class CostInvoiceServiceImpl implements CostInvoiceService {
 		return costInvoiceRepo.findAllCostInvoiceByDocId(orgId, docId);
 	}
 
+//	@Override
+//	public String getCostInvoiceDocId(Long orgId, String finYear, String branch, String branchCode) {
+//		String ScreenCode = "CI";
+//		String result = costInvoiceRepo.getCostInvoiceDocId(orgId, finYear, branchCode, ScreenCode);
+//		return result;
+//	}
+
 	@Override
-	public String getCostInvoiceDocId(Long orgId, String finYear, String branch, String branchCode) {
-		String ScreenCode = "CI";
-		String result = costInvoiceRepo.getCostInvoiceDocId(orgId, finYear, branchCode, ScreenCode);
-		return result;
+	public Map<String, Object> getCostInvoiceDocId(Long orgId, String finYear, String branch, String branchCode) {
+
+		String screenCode = "CI";
+
+		List<Object[]> results = costInvoiceRepo.getCostInvoiceDocId(orgId, finYear, branchCode, screenCode);
+
+		Map<String, Object> map = new HashMap<>();
+
+		if (results != null && !results.isEmpty()) {
+			Object[] row = results.get(0);
+
+			map.put("docId", row[0]);
+			map.put("docDate", row.length > 1 ? row[1] : null);
+		}
+
+		return map;
 	}
 
 	@Override
@@ -947,8 +988,24 @@ public class CostInvoiceServiceImpl implements CostInvoiceService {
 		} else {
 			// Create new AccountsVO with docId generation
 			accountsVO = new AccountsVO();
-			String accountsDocId = accountsRepo.getCostInvoiceDocId(costInvoiceVO.getOrgId(),
+//			String accountsDocId = accountsRepo.getCostInvoiceDocId(costInvoiceVO.getOrgId(),
+//					costInvoiceVO.getFinYear(), costInvoiceVO.getBranchCode(), sourceScreenCode, screenCode);
+
+			List<Object[]> taxInvoiceDoc = accountsRepo.getApproveDocId(costInvoiceVO.getOrgId(),
 					costInvoiceVO.getFinYear(), costInvoiceVO.getBranchCode(), sourceScreenCode, screenCode);
+
+			String generatedDocId = null;
+			LocalDate generatedDocDate = null;
+
+			if (taxInvoiceDoc != null && !taxInvoiceDoc.isEmpty()) {
+				Object[] row = taxInvoiceDoc.get(0);
+				generatedDocId = (String) row[0];
+				if (row[1] != null) {
+					generatedDocDate = ((java.sql.Date) row[1]).toLocalDate();
+				}
+			}
+			costInvoiceVO.setPurVoucherNo(generatedDocId);
+			costInvoiceVO.setPurVoucherDate(generatedDocDate);
 
 			MultipleDocIdGenerationDetailsVO mulDocId = multipleDocIdGenerationDetailsRepo
 					.findByOrgIdAndFinYearAndBranchCodeAndSourceScreenCodeAndScreenCode(costInvoiceVO.getOrgId(),
@@ -956,7 +1013,8 @@ public class CostInvoiceServiceImpl implements CostInvoiceService {
 
 			mulDocId.setLastno(mulDocId.getLastno() + 1);
 			multipleDocIdGenerationDetailsRepo.save(mulDocId);
-			accountsVO.setDocId(accountsDocId);
+			accountsVO.setDocId(generatedDocId);
+			accountsVO.setDocDate(generatedDocDate);
 		}
 
 		// Populate AccountsVO
@@ -974,6 +1032,8 @@ public class CostInvoiceServiceImpl implements CostInvoiceService {
 		accountsVO.setRefDate(costInvoiceVO.getDocDate());
 		accountsVO.setVId(costInvoiceVO.getVId());
 		accountsVO.setVDate(costInvoiceVO.getVDate());
+		accountsVO.setSupplierBillNo(costInvoiceVO.getSupplierBillNo());
+		accountsVO.setSupplierBillDate(costInvoiceVO.getSupplierBillDate());
 		accountsVO.setDueDate(costInvoiceVO.getDueDate());
 		accountsVO.setAmountInWords(costInvoiceVO.getAmountInWords());
 		accountsVO.setChargeableAmount(costInvoiceVO.getTotChargesLcAmt());
@@ -1105,6 +1165,8 @@ public class CostInvoiceServiceImpl implements CostInvoiceService {
 		arapDetailsVO.setSalesType(savedAccountsVO.getSalesType());
 		arapDetailsVO.setNativeAmt(payableEntry.getArapAmount());
 		arapDetailsVO.setOrgId(savedAccountsVO.getOrgId());
+		arapDetailsVO.setSupplierBillNo(savedAccountsVO.getSupplierBillNo());
+		arapDetailsVO.setSupplierBillDate(savedAccountsVO.getSupplierBillDate());
 		arapDetailsRepo.save(arapDetailsVO);
 
 		// Final invoice updates
@@ -1119,6 +1181,7 @@ public class CostInvoiceServiceImpl implements CostInvoiceService {
 		costInvoiceVO.setDueDate(dueDate);
 		costInvoiceVO.setApproveStatus(action);
 		costInvoiceVO.setApproveBy(actionBy);
+		costInvoiceVO.setVDate(LocalDate.now());
 		costInvoiceVO.setApproveOn(
 				LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd-MM-yyyy hh:mm:ss a")).toUpperCase());
 
@@ -1214,6 +1277,8 @@ public class CostInvoiceServiceImpl implements CostInvoiceService {
 				map.put("totalAmount", ch[15] != null ? new BigDecimal(ch[15].toString()) : BigDecimal.ZERO);
 				map.put("tdsAmount", ch[16] != null ? new BigDecimal(ch[16].toString()) : BigDecimal.ZERO);
 				map.put("approvestatus", ch[17] != null ? ch[17].toString() : "");
+				map.put("sNo", ch[18] != null ? ch[18].toString() : "");
+				map.put("createdOn", ch[19] != null ? ch[19].toString() : "");
 				List1.add(map);
 			}
 		}
@@ -1265,6 +1330,8 @@ public class CostInvoiceServiceImpl implements CostInvoiceService {
 				map.put("netAmount", ch[27] != null ? new BigDecimal(ch[27].toString()) : BigDecimal.ZERO);
 				map.put("gstPercentage", ch[28] != null ? new BigDecimal(ch[28].toString()) : BigDecimal.ZERO);
 				map.put("approvestatus", ch[29] != null ? ch[29].toString() : "");
+				map.put("sNo", ch[30] != null ? ch[30].toString() : "");
+				map.put("createdOn", ch[31] != null ? ch[31].toString() : "");
 //				map.put("gstType", ch[29] != null ? ch[29].toString() : "");
 
 				List1.add(map);
@@ -1306,12 +1373,10 @@ public class CostInvoiceServiceImpl implements CostInvoiceService {
 		}
 		return List1;
 	}
-	
-	
-	
+
 	@Override
-	public List<Map<String, Object>> getCostInvoiceCount(Long orgId,String finYear, String branchCode) {
-		Set<Object[]> chType = costInvoiceRepo.getCostInvoiceCount(  orgId, finYear,  branchCode);
+	public List<Map<String, Object>> getCostInvoiceCount(Long orgId, String finYear, String branchCode) {
+		Set<Object[]> chType = costInvoiceRepo.getCostInvoiceCount(orgId, finYear, branchCode);
 		return getCostInvoiceCount(chType);
 	}
 
@@ -1319,10 +1384,10 @@ public class CostInvoiceServiceImpl implements CostInvoiceService {
 		List<Map<String, Object>> List1 = new ArrayList<>();
 		for (Object[] ch : chType) {
 			Map<String, Object> map = new HashMap<>();
-			map.put("Complete", ch[0] != null ? ch[0].toString() : "");	
+			map.put("Complete", ch[0] != null ? ch[0].toString() : "");
 			map.put("Approved", ch[1] != null ? ch[1].toString() : "");
 			map.put("Pending", ch[2] != null ? ch[2].toString() : "");
-			map.put("Reject", ch[3] != null ?  ch[3].toString() : "");
+			map.put("Reject", ch[3] != null ? ch[3].toString() : "");
 
 			List1.add(map);
 		}

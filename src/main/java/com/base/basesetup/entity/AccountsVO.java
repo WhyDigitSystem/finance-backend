@@ -29,7 +29,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class AccountsVO {
-	
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "accountsgen")
 	@SequenceGenerator(name = "accountsgen", sequenceName = "accountsseq", initialValue = 1000000001, allocationSize = 1)
@@ -37,41 +37,41 @@ public class AccountsVO {
 	private Long id;
 	@Column(name = "orgid")
 	private Long orgId;
-	@Column(name = "branch",length = 30)
+	@Column(name = "branch", length = 30)
 	private String branch;
-	@Column(name = "branchcode",length = 10)
+	@Column(name = "branchcode", length = 10)
 	private String branchCode;
-	@Column(name = "finyear",length =10)
+	@Column(name = "finyear", length = 10)
 	private String finYear;
-	@Column(name = "createdby",length = 30)
+	@Column(name = "createdby", length = 30)
 	private String createdBy;
-	@Column(name = "modifiedby",length = 30)
+	@Column(name = "modifiedby", length = 30)
 	private String modifiedBy;
 	@Column(name = "active")
-	private boolean active=true;
+	private boolean active = true;
 	@Column(name = "cancel")
-	private boolean cancel=false;
-	@Column(name = "cancelremarks",length = 150)
+	private boolean cancel = false;
+	@Column(name = "cancelremarks", length = 150)
 	private String cancelRemarks;
 	@Column(name = "sourceid")
 	private Long sourceId;
-	@Column(name = "sourcescreen",length = 30)
+	@Column(name = "sourcescreen", length = 30)
 	private String sourceScreen;
-	@Column(name = "sourcescreencode",length = 10)
+	@Column(name = "sourcescreencode", length = 10)
 	private String sourceScreenCode;
-	@Column(name = "docid",length = 30)
+	@Column(name = "docid", length = 30)
 	private String docId;
 	@Column(name = "docdate")
-	private LocalDate docDate= LocalDate.now();
-	@Column(name = "refno",length = 30)
+	private LocalDate docDate;
+	@Column(name = "refno", length = 30)
 	private String refNo;
 	@Column(name = "refdate")
 	private LocalDate refDate;
-	@Column(name = "currency",length = 30)
+	@Column(name = "currency", length = 30)
 	private String currency;
 	@Column(name = "exrate", precision = 10, scale = 2)
 	private BigDecimal exRate;
-	@Column(name = "remarks",length = 150)
+	@Column(name = "remarks", length = 150)
 	private String remarks;
 	@Column(name = "totaldebitamount", precision = 10, scale = 2)
 	private BigDecimal totalDebitAmount;
@@ -81,53 +81,56 @@ public class AccountsVO {
 	private BigDecimal stTaxAmount;
 	@Column(name = "chargeableamount", precision = 10, scale = 2)
 	private BigDecimal chargeableAmount;
-	@Column(name = "creditdays",length = 5)
+	@Column(name = "creditdays", length = 5)
 	private int creditDays;
 	@Column(name = "duedate")
 	private LocalDate dueDate;
-	@Column(name = "chequeno",length = 30)
+	@Column(name = "chequeno", length = 30)
 	private String chequeNo;
 	@Column(name = "chequedate")
 	private LocalDate chequeDate;
-	@Column(name = "chequebank",length = 150)
+	@Column(name = "chequebank", length = 150)
 	private String chequeBank;
-	@Column(name = "product",length = 10)
+	@Column(name = "product", length = 10)
 	private String product;
-	@Column(name = "amountinwords",length = 150)
+	@Column(name = "amountinwords", length = 150)
 	private String amountInWords;
-	@Column(name = "supplierrefno",length = 30)
+	@Column(name = "supplierrefno", length = 30)
 	private String supplierRefNo;
 	@Column(name = "supplierrefdate")
 	private LocalDate supplierRefDate;
-	@Column(name = "billmonth",length = 30)
+	@Column(name = "billmonth", length = 30)
 	private String billMonth;
 	@Column(name = "acknowledgementno")
 	private Long acknowledgementNo;
 	@Column(name = "acknowledgementdate")
 	private LocalDateTime acknowledgementDate;
-	@Column(name = "irnid",length = 150)
+	@Column(name = "irnid", length = 150)
 	private String irnId;
-	@Column(name = "rc",length = 30)
+	@Column(name = "rc", length = 30)
 	private String rc;
-	@Column(name = "salestype",length = 30)
+	@Column(name = "salestype", length = 30)
 	private String salesType;
 	@Column(name = "vid", length = 50)
 	private String vId;
 	@Column(name = "vdate")
 	private LocalDate vDate;
-	
+	@Column(name = "supplierbillno")
+	private String supplierBillNo;
+
+	@Column(name = "supplierbilldate")
+	private LocalDate supplierBillDate;
+
 	@DateTimeFormat(pattern = "dd-MM-yyyy hh:mm:ss a")
-	@Column(name="createdon",length = 25)
+	@Column(name = "createdon", length = 25)
 	private String createdon;
 
 	@DateTimeFormat(pattern = "dd-MM-yyyy hh:mm:ss a")
-	@Column(name="modifiedon",length = 25)
+	@Column(name = "modifiedon", length = 25)
 	private String modifiedon;
-		
-
 
 	@OneToMany(mappedBy = "accountsVO", cascade = CascadeType.ALL)
 	@JsonManagedReference
-	List<AccountsDetailsVO> accountsDetailsVO ;
+	List<AccountsDetailsVO> accountsDetailsVO;
 
 }

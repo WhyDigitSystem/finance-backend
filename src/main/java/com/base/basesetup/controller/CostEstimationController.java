@@ -139,38 +139,74 @@ public class CostEstimationController extends BaseController {
 		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
 		return ResponseEntity.ok().body(responseDTO);
 	}
-
+//
+//	@GetMapping("/getCostEstimationDocId")
+//	public ResponseEntity<ResponseDTO> getCostEstimationDocId(@RequestParam Long orgId, @RequestParam String finYear,
+//			@RequestParam String branch, @RequestParam String branchCode) {
+//
+//		String methodName = "getCostEstimationDocId()";
+//		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+//		String errorMsg = null;
+//		Map<String, Object> responseObjectsMap = new HashMap<>();
+//		ResponseDTO responseDTO = null;
+//		String mapp = "";
+//
+//		try {
+//			mapp = costEstimationService.getCostEstimationDocId(orgId, finYear, branch, branchCode);
+//		} catch (Exception e) {
+//			errorMsg = e.getMessage();
+//			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+//		}
+//
+//		if (StringUtils.isBlank(errorMsg)) {
+//			responseObjectsMap.put(CommonConstant.STRING_MESSAGE,
+//					"costEstimationDocid information retrieved successfully");
+//			responseObjectsMap.put("costEstimationDocId", mapp);
+//			responseDTO = createServiceResponse(responseObjectsMap);
+//		} else {
+//			responseDTO = createServiceResponseError(responseObjectsMap,
+//					"Failed to retrieve costEstimationDocid information", errorMsg);
+//		}
+//
+//		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+//		return ResponseEntity.ok().body(responseDTO);
+//	}
 	@GetMapping("/getCostEstimationDocId")
 	public ResponseEntity<ResponseDTO> getCostEstimationDocId(@RequestParam Long orgId, @RequestParam String finYear,
 			@RequestParam String branch, @RequestParam String branchCode) {
 
 		String methodName = "getCostEstimationDocId()";
 		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+
 		String errorMsg = null;
 		Map<String, Object> responseObjectsMap = new HashMap<>();
 		ResponseDTO responseDTO = null;
-		String mapp = "";
+
+		Map<String, Object> resultMap = new HashMap<>();
 
 		try {
-			mapp = costEstimationService.getCostEstimationDocId(orgId, finYear, branch, branchCode);
+			resultMap = costEstimationService.getCostEstimationDocId(orgId, finYear, branch, branchCode);
 		} catch (Exception e) {
 			errorMsg = e.getMessage();
 			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
 		}
 
 		if (StringUtils.isBlank(errorMsg)) {
-			responseObjectsMap.put(CommonConstant.STRING_MESSAGE,
-					"costEstimationDocid information retrieved successfully");
-			responseObjectsMap.put("costEstimationDocId", mapp);
+			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "CostEstimationDocId information retrieved successfully");
+
+			responseObjectsMap.put("costEstimationDocId", resultMap.get("docId"));
+			responseObjectsMap.put("docDate", resultMap.get("docDate"));
+
 			responseDTO = createServiceResponse(responseObjectsMap);
 		} else {
 			responseDTO = createServiceResponseError(responseObjectsMap,
-					"Failed to retrieve costEstimationDocid information", errorMsg);
+					"Failed to retrieve costEstimationDocId information", errorMsg);
 		}
 
 		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
 		return ResponseEntity.ok().body(responseDTO);
 	}
+
 
 	@PutMapping("/approveCostEstimation")
 	public ResponseEntity<ResponseDTO> approveCostEstimation(@RequestParam Long orgId, @RequestParam Long id,

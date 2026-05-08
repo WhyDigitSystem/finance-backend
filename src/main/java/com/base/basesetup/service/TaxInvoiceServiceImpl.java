@@ -1,6 +1,8 @@
+
 package com.base.basesetup.service;
 
 import java.math.BigDecimal;
+
 import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -38,6 +40,7 @@ import com.base.basesetup.repo.AccountsRepo;
 import com.base.basesetup.repo.ArapDetailsRepo;
 import com.base.basesetup.repo.ChargeTypeRequestRepo;
 import com.base.basesetup.repo.DocumentTypeMappingDetailsRepo;
+import com.base.basesetup.repo.FinancialYearRepo;
 import com.base.basesetup.repo.GroupLedgerRepo;
 import com.base.basesetup.repo.IrnCreditNoteRepo;
 import com.base.basesetup.repo.MultipleDocIdGenerationDetailsRepo;
@@ -94,6 +97,9 @@ public class TaxInvoiceServiceImpl implements TaxInvoiceService {
 	@Autowired
 	TaxInvoiceAnnexureRepo taxInvoiceAnnexureRepo;
 
+	@Autowired
+	FinancialYearRepo financialYearRepo;
+
 	// TaxInvoice
 	@Override
 	public List<TaxInvoiceVO> getAllTaxInvoiceByFinYearAndOrgId(Long orgId, String finYear, String branchCode) {
@@ -144,9 +150,25 @@ public class TaxInvoiceServiceImpl implements TaxInvoiceService {
 				throw new ApplicationException(errorMessage);
 			}
 
-			String docId = taxInvoiceRepo.getTaxInvoiceDocId(taxInvoiceDTO.getOrgId(), taxInvoiceDTO.getFinYear(),
-					taxInvoiceDTO.getBranchCode(), screenCode);
-			taxInvoiceVO.setDocId(docId);
+//			String docId = taxInvoiceRepo.getTaxInvoiceDocId(taxInvoiceDTO.getOrgId(), taxInvoiceDTO.getFinYear(),
+//					taxInvoiceDTO.getBranchCode(), screenCode);
+//			taxInvoiceVO.setDocId(docId);
+
+			List<Object[]> taxInvoiceDoc = taxInvoiceRepo.getTaxInvoiceDocId(taxInvoiceDTO.getOrgId(),
+					taxInvoiceDTO.getFinYear(), taxInvoiceDTO.getBranchCode(), screenCode);
+
+			if (taxInvoiceDoc != null && !taxInvoiceDoc.isEmpty()) {
+
+				Object[] row = taxInvoiceDoc.get(0);
+
+				// ✅ Set docId
+				taxInvoiceVO.setDocId((String) row[0]);
+
+				// ✅ Convert java.sql.Date → LocalDate
+				if (row[1] != null) {
+					taxInvoiceVO.setDocDate(((java.sql.Date) row[1]).toLocalDate());
+				}
+			}
 
 			// GETDOCID LASTNO +1
 			DocumentTypeMappingDetailsVO documentTypeMappingDetailsVO = documentTypeMappingDetailsRepo
@@ -207,6 +229,39 @@ public class TaxInvoiceServiceImpl implements TaxInvoiceService {
 		taxInvoiceVO.setVId(taxInvoiceDTO.getVId());
 		taxInvoiceVO.setVDate(taxInvoiceDTO.getVDate());
 		taxInvoiceVO.setTrasactionNo(taxInvoiceDTO.getTrasactionNo());
+//
+//		LocalDate today = LocalDate.now();
+//
+//		// 🔹 Get current financial year based on today's date
+//		FinancialYearVO currentFY = financialYearRepo.findCurrentYearByDate(taxInvoiceDTO.getOrgId(), today);
+//
+//		if (currentFY == null) {
+//			throw new RuntimeException("No Financial Year found for today");
+//		}
+//
+//		// 🔹 Get values
+//		String currentYear = String.valueOf(currentFY.getFinYear());
+//		String inputYear = taxInvoiceDTO.getFinYear();
+//
+//		// 🔥 MAIN CONDITION
+//		if (inputYear == null || inputYear.trim().isEmpty()) {
+//			throw new RuntimeException("Financial Year is required");
+//		}
+//
+//		if (!inputYear.equals(currentYear)) {
+//
+//			// 🔹 PREVIOUS YEAR LOGIC
+//			FinancialYearVO previousFY = financialYearRepo.findByOrgIdAndFinyear(taxInvoiceDTO.getOrgId(), inputYear);
+//
+//			if (previousFY == null) {
+//			}
+//
+//			// ✅ Set last date of that FY
+//			taxInvoiceVO.setDocDate(previousFY.getEndDate());
+//
+//		} else {
+//			taxInvoiceVO.setDocDate(today);
+//		}
 
 		if (ObjectUtils.isNotEmpty(taxInvoiceVO.getId())) {
 			List<TaxInvoiceDetailsVO> taxInvoiceDetailsVO1 = taxInvoiceDetailsRepo.findByTaxInvoiceVO(taxInvoiceVO);
@@ -538,11 +593,30 @@ public class TaxInvoiceServiceImpl implements TaxInvoiceService {
 		return taxInvoiceRepo.findAllTaxInvoiceByDocId(orgId, docId);
 	}
 
+//	@Override
+//	public String getTaxInvoiceDocId(Long orgId, String finYear, String branch, String branchCode) {
+//		String ScreenCode = "TI";
+//		String result = taxInvoiceRepo.getTaxInvoiceDocId(orgId, finYear, branchCode, ScreenCode);
+//		return result;
+//	}
+
 	@Override
-	public String getTaxInvoiceDocId(Long orgId, String finYear, String branch, String branchCode) {
-		String ScreenCode = "TI";
-		String result = taxInvoiceRepo.getTaxInvoiceDocId(orgId, finYear, branchCode, ScreenCode);
-		return result;
+	public Map<String, Object> getTaxInvoiceDocId(Long orgId, String finYear, String branch, String branchCode) {
+
+		String screenCode = "TI";
+
+		List<Object[]> results = taxInvoiceRepo.getTaxInvoiceDocId(orgId, finYear, branchCode, screenCode);
+
+		Map<String, Object> map = new HashMap<>();
+
+		if (results != null && !results.isEmpty()) {
+			Object[] row = results.get(0);
+
+			map.put("docId", row[0]);
+			map.put("docDate", row.length > 1 ? row[1] : null);
+		}
+
+		return map;
 	}
 
 	@Override
@@ -679,9 +753,25 @@ public class TaxInvoiceServiceImpl implements TaxInvoiceService {
 		if (taxInvoiceVO.getApproveStatus() == null || (!taxInvoiceVO.getApproveStatus().equals("Approved")
 				&& !taxInvoiceVO.getApproveStatus().equals("Rejected"))) {
 
-			String accountsDocId = accountsRepo.getApproveDocId(taxInvoiceVO.getOrgId(), taxInvoiceVO.getFinYear(),
-					taxInvoiceVO.getBranchCode(), sourceScreenCode, screenCode);
-			taxInvoiceVO.setDocId(docId);
+//			String accountsDocId = accountsRepo.getApproveDocId(taxInvoiceVO.getOrgId(), taxInvoiceVO.getFinYear(),
+//					taxInvoiceVO.getBranchCode(), sourceScreenCode, screenCode);
+//			taxInvoiceVO.setDocId(docId);
+//			
+			List<Object[]> taxInvoiceDoc = accountsRepo.getApproveDocId(taxInvoiceVO.getOrgId(),
+					taxInvoiceVO.getFinYear(), taxInvoiceVO.getBranchCode(), sourceScreenCode, screenCode);
+
+			String generatedDocId = null;
+			LocalDate generatedDocDate = null;
+
+			if (taxInvoiceDoc != null && !taxInvoiceDoc.isEmpty()) {
+				Object[] row = taxInvoiceDoc.get(0);
+				generatedDocId = (String) row[0];
+				if (row[1] != null) {
+					generatedDocDate = ((java.sql.Date) row[1]).toLocalDate();
+				}
+			}
+			taxInvoiceVO.setInvoiceNo(generatedDocId);
+			taxInvoiceVO.setInvoiceDate(generatedDocDate);
 
 			// GETDOCID LASTNO +1
 			MultipleDocIdGenerationDetailsVO multipleDocIdGenerationDetailsVO = multipleDocIdGenerationDetailsRepo
@@ -694,7 +784,8 @@ public class TaxInvoiceServiceImpl implements TaxInvoiceService {
 			LocalDate dueDate = LocalDate.now().plusDays(creditDays);
 			// Create AccountsVO object and populate its fields
 			AccountsVO accountsVO = new AccountsVO();
-			accountsVO.setDocId(accountsDocId);
+			accountsVO.setDocId(generatedDocId);
+			accountsVO.setDocDate(generatedDocDate);
 			accountsVO.setSourceScreen(taxInvoiceVO.getScreenName());
 			accountsVO.setSourceScreenCode(taxInvoiceVO.getScreenCode());
 			accountsVO.setSourceId(taxInvoiceVO.getId());
@@ -1236,6 +1327,8 @@ public class TaxInvoiceServiceImpl implements TaxInvoiceService {
 			map.put("gstamount", ch[23] != null ? new BigDecimal(ch[23].toString()) : BigDecimal.ZERO); // 22
 			map.put("totalLcAmount", ch[24] != null ? new BigDecimal(ch[24].toString()) : BigDecimal.ZERO); // 22
 			map.put("approvestatus", ch[25] != null ? ch[25].toString() : "");
+			map.put("sNo", ch[26] != null ? ch[26].toString() : "");
+			map.put("createdOn", ch[27] != null ? ch[27].toString() : "");
 
 			List1.add(map);
 		}
@@ -1270,6 +1363,8 @@ public class TaxInvoiceServiceImpl implements TaxInvoiceService {
 			map.put("cgst", ch[13] != null ? new BigDecimal(ch[13].toString()) : BigDecimal.ZERO);
 			map.put("sgst", ch[14] != null ? new BigDecimal(ch[14].toString()) : BigDecimal.ZERO);
 			map.put("approvestatus", ch[15] != null ? ch[15].toString() : "");
+			map.put("sNo", ch[16] != null ? ch[16].toString() : "");
+			map.put("createdOn", ch[17] != null ? ch[17].toString() : "");
 
 			List1.add(map);
 		}
@@ -1316,7 +1411,7 @@ public class TaxInvoiceServiceImpl implements TaxInvoiceService {
 			map.put("partyName", ch[7] != null ? ch[7].toString() : "");
 			map.put("gstNo", ch[8] != null ? ch[8].toString() : "");
 			map.put("currency", ch[9] != null ? ch[9].toString() : "");
-     		map.put("exRate", ch[10] != null ? ch[10].toString() : "");
+			map.put("exRate", ch[10] != null ? ch[10].toString() : "");
 			map.put("gstPercent", ch[11] != null ? ch[11].toString() : 0);
 			map.put("gstAmount", ch[12] != null ? new BigDecimal(ch[12].toString()) : BigDecimal.ZERO);
 			map.put("chargeAmount", ch[13] != null ? new BigDecimal(ch[13].toString()) : BigDecimal.ZERO);
@@ -1326,13 +1421,11 @@ public class TaxInvoiceServiceImpl implements TaxInvoiceService {
 		}
 		return List1;
 	}
-	
-	
-	//Profit&Loss
-	
+
+	// Profit&Loss
+
 	@Override
-	public List<Map<String, Object>> getProfitAndLossReport(Long orgId,  String fromDate,
-			String toDate) {
+	public List<Map<String, Object>> getProfitAndLossReport(Long orgId, String fromDate, String toDate) {
 		Set<Object[]> chType = taxInvoiceRepo.getProfitAndLossReport(orgId, fromDate, toDate);
 		return getProfitAndLossReport(chType);
 	}
@@ -1347,12 +1440,10 @@ public class TaxInvoiceServiceImpl implements TaxInvoiceService {
 		}
 		return List1;
 	}
-	
-	
+
 	@Override
-	public List<Map<String, Object>> getNetProfit(Long orgId,  String fromDate,
-			String toDate,String groupName) {
-		Set<Object[]> chType = taxInvoiceRepo.getNetProfit(orgId, fromDate, toDate,groupName);
+	public List<Map<String, Object>> getNetProfit(Long orgId, String fromDate, String toDate, String groupName) {
+		Set<Object[]> chType = taxInvoiceRepo.getNetProfit(orgId, fromDate, toDate, groupName);
 		return getNetProfit(chType);
 	}
 
@@ -1367,10 +1458,11 @@ public class TaxInvoiceServiceImpl implements TaxInvoiceService {
 		}
 		return List1;
 	}
-	
+
 	@Override
-	public List<Map<String, Object>> getTrailBalance(String branch,String finYear,String fromDate,String toDate,Long orgId,String details) {
-		Set<Object[]> chType = taxInvoiceRepo.getTrailBalance( branch, finYear, fromDate, toDate, orgId, details);
+	public List<Map<String, Object>> getTrailBalance(String branch, String finYear, String fromDate, String toDate,
+			Long orgId, String details) {
+		Set<Object[]> chType = taxInvoiceRepo.getTrailBalance(branch, finYear, fromDate, toDate, orgId, details);
 		return getTrailBalance(chType);
 	}
 
@@ -1384,20 +1476,20 @@ public class TaxInvoiceServiceImpl implements TaxInvoiceService {
 			map.put("partyCode", ch[3] != null ? ch[3].toString() : "");
 			map.put("partyName", ch[4] != null ? ch[4].toString() : "");
 			map.put("odbamount", ch[5] != null ? new BigDecimal(ch[5].toString()) : BigDecimal.ZERO);
-			map.put("ocramount", ch[6] != null ?new BigDecimal(ch[6].toString()) : BigDecimal.ZERO);
+			map.put("ocramount", ch[6] != null ? new BigDecimal(ch[6].toString()) : BigDecimal.ZERO);
 			map.put("tdbamount", ch[7] != null ? new BigDecimal(ch[7].toString()) : BigDecimal.ZERO);
 			map.put("tcramount", ch[8] != null ? new BigDecimal(ch[8].toString()) : BigDecimal.ZERO);
 			map.put("cdbamount", ch[9] != null ? new BigDecimal(ch[9].toString()) : BigDecimal.ZERO);
-     		map.put("ccramount", ch[10] != null ? new BigDecimal(ch[10].toString()) : BigDecimal.ZERO);
+			map.put("ccramount", ch[10] != null ? new BigDecimal(ch[10].toString()) : BigDecimal.ZERO);
 
 			List1.add(map);
 		}
 		return List1;
 	}
-	
+
 	@Override
-	public List<Map<String, Object>> getTaxInvoiceCount(Long orgId,String finYear, String branchCode) {
-		Set<Object[]> chType = taxInvoiceRepo.getTaxInvoiceCount(  orgId, finYear,  branchCode);
+	public List<Map<String, Object>> getTaxInvoiceCount(Long orgId, String finYear, String branchCode) {
+		Set<Object[]> chType = taxInvoiceRepo.getTaxInvoiceCount(orgId, finYear, branchCode);
 		return getTaxInvoiceCount(chType);
 	}
 
@@ -1405,19 +1497,19 @@ public class TaxInvoiceServiceImpl implements TaxInvoiceService {
 		List<Map<String, Object>> List1 = new ArrayList<>();
 		for (Object[] ch : chType) {
 			Map<String, Object> map = new HashMap<>();
-			map.put("Complete", ch[0] != null ? ch[0].toString() : "");	
+			map.put("Complete", ch[0] != null ? ch[0].toString() : "");
 			map.put("Approved", ch[1] != null ? ch[1].toString() : "");
 			map.put("Pending", ch[2] != null ? ch[2].toString() : "");
-			map.put("Reject", ch[3] != null ?  ch[3].toString() : "");
+			map.put("Reject", ch[3] != null ? ch[3].toString() : "");
 
 			List1.add(map);
 		}
 		return List1;
 	}
-	
+
 	@Override
-	public List<Map<String, Object>> getFinYearDetails(Long orgId,Long finYear) {
-		Set<Object[]> chType = taxInvoiceRepo.getFinYearDetails(  orgId, finYear);
+	public List<Map<String, Object>> getFinYearDetails(Long orgId, Long finYear) {
+		Set<Object[]> chType = taxInvoiceRepo.getFinYearDetails(orgId, finYear);
 		return getFinYearDetails(chType);
 	}
 
@@ -1425,7 +1517,7 @@ public class TaxInvoiceServiceImpl implements TaxInvoiceService {
 		List<Map<String, Object>> List1 = new ArrayList<>();
 		for (Object[] ch : chType) {
 			Map<String, Object> map = new HashMap<>();
-			map.put("startdate", ch[0] != null ? ch[0].toString() : "");	
+			map.put("startdate", ch[0] != null ? ch[0].toString() : "");
 			map.put("enddate", ch[1] != null ? ch[1].toString() : "");
 
 			List1.add(map);

@@ -50,7 +50,7 @@ public class PaymentVoucherVO {
 	@Column(name = "exrate", precision = 10, scale = 2)
 	private BigDecimal exRate;
 	@Column(name = "docdate")
-	private LocalDate docDate = LocalDate.now();
+	private LocalDate docDate ;
 	@Column(name = "chequeno", length = 25)
 	private String chequeNo;
 	@Column(name = "chequedate")

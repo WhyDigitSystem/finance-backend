@@ -1,5 +1,9 @@
 package com.base.basesetup.dto;
 
+import java.time.LocalDate;
+
+import javax.persistence.Column;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -17,7 +21,7 @@ public class TicketDTO {
 
 	private String createdBy;
 
-	//private byte[] screenShot;
+	// private byte[] screenShot;
 
 	private String userName;
 
@@ -25,5 +29,14 @@ public class TicketDTO {
 
 	private String status;
 
-}
+	private String email;
 
+	private String branch;
+
+	private String branchCode;
+
+	private String companyName;
+
+	private String ticketStatus;
+
+}

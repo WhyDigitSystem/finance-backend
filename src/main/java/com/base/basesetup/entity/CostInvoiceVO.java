@@ -49,6 +49,9 @@ public class CostInvoiceVO {
 	private LocalDate purVoucherDate;
 	@Column(name = "supplierbillno", length = 50)
 	private String supplierBillNo;
+	
+	@Column(name = "supplierbilldate")
+	private LocalDate supplierBillDate;
 	@Column(name = "supplietype", length = 10)
 	private String supplierType;
 	@Column(name = "suppliercode", length = 15)
@@ -110,7 +113,7 @@ public class CostInvoiceVO {
 	@Column(name = "docid", length = 30)
 	private String docId;
 	@Column(name = "docdate")
-	private LocalDate docDate = LocalDate.now();
+	private LocalDate docDate;
 	@Column(name = "payment", length = 20)
 	private String payment;
 	@Column(name = "accuralid", length = 20)
@@ -145,7 +148,7 @@ public class CostInvoiceVO {
 	@Column(name = "vid", length = 50)
 	private String vId;
 	@Column(name = "vdate")
-	private LocalDate vDate;
+	private LocalDate vDate=LocalDate.now();
 
 //	APPROVED
 	@Column(name = "approvestatus", length = 20)

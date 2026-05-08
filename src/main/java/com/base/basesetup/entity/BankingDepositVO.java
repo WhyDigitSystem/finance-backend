@@ -45,7 +45,7 @@ public class BankingDepositVO {
     private String docId;
 
     @Column(name = "docdate")
-    private LocalDate docDate= LocalDate.now();
+    private LocalDate docDate;
 
     @Column(name = "receivedfrom", length = 50)
     private String receivedFrom;

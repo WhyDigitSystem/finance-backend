@@ -34,7 +34,7 @@ public class ReconcileCashVO {
 	@Column(name = "docid",length = 30)
 	private String docId;
 	@Column(name = "docdate")
-	private LocalDate docDate=LocalDate.now();
+	private LocalDate docDate;
 	@Column(name="accountname",length=30)
 	private String cashAccount;
 	@Column(name="bookbalance",precision = 10,scale = 2)

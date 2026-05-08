@@ -172,31 +172,67 @@ public class CostDebitNoteController extends BaseController {
 
 	}
 
+//	@GetMapping("/getCostDebitNoteDocId")
+//	public ResponseEntity<ResponseDTO> getCostDebitNoteDocId(@RequestParam Long orgId, @RequestParam String finYear,
+//			@RequestParam String branch, @RequestParam String branchCode) {
+//
+//		String methodName = "getCostDebitNoteDocId()";
+//		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+//		String errorMsg = null;
+//		Map<String, Object> responseObjectsMap = new HashMap<>();
+//		ResponseDTO responseDTO = null;
+//		String mapp = "";
+//
+//		try {
+//			mapp = costDebitNoteService.getCostDebitNoteDocId(orgId, finYear, branch, branchCode);
+//		} catch (Exception e) {
+//			errorMsg = e.getMessage();
+//			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+//		}
+//
+//		if (StringUtils.isBlank(errorMsg)) {
+//			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "Cost Debit Note information retrieved successfully");
+//			responseObjectsMap.put("costDebitNoteDocId", mapp);
+//			responseDTO = createServiceResponse(responseObjectsMap);
+//		} else {
+//			responseDTO = createServiceResponseError(responseObjectsMap,
+//					"Failed to retrieve Cost Debit Note Docid information", errorMsg);
+//		}
+//
+//		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+//		return ResponseEntity.ok().body(responseDTO);
+//	}
+	
 	@GetMapping("/getCostDebitNoteDocId")
 	public ResponseEntity<ResponseDTO> getCostDebitNoteDocId(@RequestParam Long orgId, @RequestParam String finYear,
 			@RequestParam String branch, @RequestParam String branchCode) {
 
 		String methodName = "getCostDebitNoteDocId()";
 		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+
 		String errorMsg = null;
 		Map<String, Object> responseObjectsMap = new HashMap<>();
 		ResponseDTO responseDTO = null;
-		String mapp = "";
+
+		Map<String, Object> resultMap = new HashMap<>();
 
 		try {
-			mapp = costDebitNoteService.getCostDebitNoteDocId(orgId, finYear, branch, branchCode);
+			resultMap = costDebitNoteService.getCostDebitNoteDocId(orgId, finYear, branch, branchCode);
 		} catch (Exception e) {
 			errorMsg = e.getMessage();
 			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
 		}
 
 		if (StringUtils.isBlank(errorMsg)) {
-			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "Cost Debit Note information retrieved successfully");
-			responseObjectsMap.put("costDebitNoteDocId", mapp);
+			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "CostDebitNoteDocId information retrieved successfully");
+
+			responseObjectsMap.put("costDebitNoteDocId", resultMap.get("docId"));
+			responseObjectsMap.put("docDate", resultMap.get("docDate"));
+
 			responseDTO = createServiceResponse(responseObjectsMap);
 		} else {
 			responseDTO = createServiceResponseError(responseObjectsMap,
-					"Failed to retrieve Cost Debit Note Docid information", errorMsg);
+					"Failed to retrieve CostDebitNoteDocId information", errorMsg);
 		}
 
 		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);

@@ -139,19 +139,52 @@ public class TaxInvoiceController extends BaseController {
 
 	}
 
+//	@GetMapping("/getTaxInvoiceDocId")
+//	public ResponseEntity<ResponseDTO> getTaxInvoiceDocId(@RequestParam Long orgId, @RequestParam String finYear,
+//			@RequestParam String branch, @RequestParam String branchCode) {
+//
+//		String methodName = "getTaxInvoiceDocId()";
+//		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+//		String errorMsg = null;
+//		Map<String, Object> responseObjectsMap = new HashMap<>();
+//		ResponseDTO responseDTO = null;
+//		String mapp = "";
+//
+//		try {
+//			mapp = taxInvoiceService.getTaxInvoiceDocId(orgId, finYear, branch, branchCode);
+//		} catch (Exception e) {
+//			errorMsg = e.getMessage();
+//			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+//		}
+//
+//		if (StringUtils.isBlank(errorMsg)) {
+//			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "TaxInvoiceDocid information retrieved successfully");
+//			responseObjectsMap.put("taxInvoiceDocId", mapp);
+//			responseDTO = createServiceResponse(responseObjectsMap);
+//		} else {
+//			responseDTO = createServiceResponseError(responseObjectsMap,
+//					"Failed to retrieve TaxInvoice Docid information", errorMsg);
+//		}
+//
+//		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+//		return ResponseEntity.ok().body(responseDTO);
+//	}
+
 	@GetMapping("/getTaxInvoiceDocId")
 	public ResponseEntity<ResponseDTO> getTaxInvoiceDocId(@RequestParam Long orgId, @RequestParam String finYear,
 			@RequestParam String branch, @RequestParam String branchCode) {
 
 		String methodName = "getTaxInvoiceDocId()";
 		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+
 		String errorMsg = null;
 		Map<String, Object> responseObjectsMap = new HashMap<>();
 		ResponseDTO responseDTO = null;
-		String mapp = "";
+
+		Map<String, Object> resultMap = new HashMap<>();
 
 		try {
-			mapp = taxInvoiceService.getTaxInvoiceDocId(orgId, finYear, branch, branchCode);
+			resultMap = taxInvoiceService.getTaxInvoiceDocId(orgId, finYear, branch, branchCode);
 		} catch (Exception e) {
 			errorMsg = e.getMessage();
 			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
@@ -159,7 +192,10 @@ public class TaxInvoiceController extends BaseController {
 
 		if (StringUtils.isBlank(errorMsg)) {
 			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "TaxInvoiceDocid information retrieved successfully");
-			responseObjectsMap.put("taxInvoiceDocId", mapp);
+
+			responseObjectsMap.put("taxInvoiceDocId", resultMap.get("docId"));
+			responseObjectsMap.put("docDate", resultMap.get("docDate"));
+
 			responseDTO = createServiceResponse(responseObjectsMap);
 		} else {
 			responseDTO = createServiceResponseError(responseObjectsMap,
@@ -822,10 +858,10 @@ public class TaxInvoiceController extends BaseController {
 		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
 		return ResponseEntity.ok().body(responseDTO);
 	}
-	
+
 	@GetMapping("/getTaxInvoiceCount")
-	public ResponseEntity<ResponseDTO> getTaxInvoiceCount(@RequestParam Long orgId,
-			@RequestParam String finYear, @RequestParam String branchCode) {
+	public ResponseEntity<ResponseDTO> getTaxInvoiceCount(@RequestParam Long orgId, @RequestParam String finYear,
+			@RequestParam String branchCode) {
 		String methodName = "getTaxInvoiceCount()";
 		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
 		String errorMsg = null;
@@ -850,10 +886,9 @@ public class TaxInvoiceController extends BaseController {
 		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
 		return ResponseEntity.ok().body(responseDTO);
 	}
-	
+
 	@GetMapping("/getFinYearDetails")
-	public ResponseEntity<ResponseDTO> getFinYearDetails(@RequestParam Long orgId,
-			@RequestParam Long finYear) {
+	public ResponseEntity<ResponseDTO> getFinYearDetails(@RequestParam Long orgId, @RequestParam Long finYear) {
 		String methodName = "getFinYearDetails()";
 		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
 		String errorMsg = null;
@@ -872,7 +907,8 @@ public class TaxInvoiceController extends BaseController {
 			responseObjectsMap.put("mapp", mapp);
 			responseDTO = createServiceResponse(responseObjectsMap);
 		} else {
-			responseDTO = createServiceResponseError(responseObjectsMap, "Failed to retrieve  FinYearDetails", errorMsg);
+			responseDTO = createServiceResponseError(responseObjectsMap, "Failed to retrieve  FinYearDetails",
+					errorMsg);
 		}
 
 		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);

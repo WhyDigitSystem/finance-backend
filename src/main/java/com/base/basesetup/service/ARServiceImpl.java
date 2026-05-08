@@ -2,6 +2,7 @@ package com.base.basesetup.service;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -112,9 +113,25 @@ public class ARServiceImpl implements ARService {
 			message = "Receipt Updated Successfully";
 		} else {
 			// GETDOCID API
-			String docId = receiptRepo.getReceiptDocId(receiptDTO.getOrgId(), receiptDTO.getFinYear(),
+//			String docId = receiptRepo.getReceiptDocId(receiptDTO.getOrgId(), receiptDTO.getFinYear(),
+//					receiptDTO.getBranchCode(), screenCode);
+//			receiptVO.setDocId(docId);
+
+			List<Object[]> taxInvoiceDoc = receiptRepo.getReceiptDocId(receiptDTO.getOrgId(), receiptDTO.getFinYear(),
 					receiptDTO.getBranchCode(), screenCode);
-			receiptVO.setDocId(docId);
+
+			if (taxInvoiceDoc != null && !taxInvoiceDoc.isEmpty()) {
+
+				Object[] row = taxInvoiceDoc.get(0);
+
+				// ✅ Set docId
+				receiptVO.setDocId((String) row[0]);
+
+				// ✅ Convert java.sql.Date → LocalDate
+				if (row[1] != null) {
+					receiptVO.setDocDate(((java.sql.Date) row[1]).toLocalDate());
+				}
+			}
 
 			// GETDOCID LASTNO +1
 			DocumentTypeMappingDetailsVO documentTypeMappingDetailsVO = documentTypeMappingDetailsRepo
@@ -381,11 +398,29 @@ public class ARServiceImpl implements ARService {
 		return doctypeMappingDetails;
 	}
 
+//	@Override
+//	public String getReceiptDocId(Long orgId, String finYear, String branch, String branchCode) {
+//		String ScreenCode = "RT";
+//		String result = receiptRepo.getReceiptDocId(orgId, finYear, branchCode, ScreenCode);
+//		return result;
+//	}
 	@Override
-	public String getReceiptDocId(Long orgId, String finYear, String branch, String branchCode) {
-		String ScreenCode = "RT";
-		String result = receiptRepo.getReceiptDocId(orgId, finYear, branchCode, ScreenCode);
-		return result;
+	public Map<String, Object> getReceiptDocId(Long orgId, String finYear, String branch, String branchCode) {
+
+		String screenCode = "RT";
+
+		List<Object[]> results = receiptRepo.getReceiptDocId(orgId, finYear, branchCode, screenCode);
+
+		Map<String, Object> map = new HashMap<>();
+
+		if (results != null && !results.isEmpty()) {
+			Object[] row = results.get(0);
+
+			map.put("docId", row[0]);
+			map.put("docDate", row.length > 1 ? row[1] : null);
+		}
+
+		return map;
 	}
 
 	// ArBillBalance
@@ -604,8 +639,21 @@ public class ARServiceImpl implements ARService {
 		String screenCode1 = "AC";
 		String sourceScreenCode = receiptVO.getScreenCode();
 
-		String accountsDocId = accountsRepo.getApproveDocId(receiptVO.getOrgId(), receiptVO.getFinYear(),
+		List<Object[]> taxInvoiceDoc = accountsRepo.getApproveDocId(receiptVO.getOrgId(), receiptVO.getFinYear(),
 				receiptVO.getBranchCode(), sourceScreenCode, screenCode1);
+
+		String generatedDocId = null;
+		LocalDate generatedDocDate = null;
+
+		if (taxInvoiceDoc != null && !taxInvoiceDoc.isEmpty()) {
+			Object[] row = taxInvoiceDoc.get(0);
+			generatedDocId = (String) row[0];
+			if (row[1] != null) {
+				generatedDocDate = ((java.sql.Date) row[1]).toLocalDate();
+			}
+		}
+		receiptVO.setPurVoucherNo(generatedDocId);
+		receiptVO.setPurVoucherDate(generatedDocDate);
 
 		MultipleDocIdGenerationDetailsVO multipleDocIdGenerationDetailsVO = multipleDocIdGenerationDetailsRepo
 				.findByOrgIdAndFinYearAndBranchCodeAndSourceScreenCodeAndScreenCode(receiptVO.getOrgId(),
@@ -620,7 +668,8 @@ public class ARServiceImpl implements ARService {
 				: receiptVO.getCurrency();
 
 		AccountsVO accountsVO = new AccountsVO();
-		accountsVO.setDocId(accountsDocId);
+		accountsVO.setDocId(generatedDocId);
+		accountsVO.setDocDate(generatedDocDate);
 		accountsVO.setSourceScreen(receiptVO.getScreenName());
 		accountsVO.setSourceScreenCode(receiptVO.getScreenCode());
 		accountsVO.setModifiedon(receiptVO.getCommonDate().getModifiedon().toUpperCase());
@@ -812,6 +861,7 @@ public class ARServiceImpl implements ARService {
 			map.put("outStanding", ch[20] != null ? new BigDecimal(ch[20].toString()) : BigDecimal.ZERO);
 			map.put("tdsAmount1", ch[21] != null ? new BigDecimal(ch[21].toString()) : BigDecimal.ZERO); // 20
 			map.put("approvestatus", ch[22] != null ? ch[22].toString() : "");
+			map.put("sNo", ch[23] != null ? ch[23].toString() : "");
 			List1.add(map);
 		}
 		return List1;
@@ -841,6 +891,7 @@ public class ARServiceImpl implements ARService {
 			map.put("onAccount", ch[10] != null ? new BigDecimal(ch[10].toString()) : BigDecimal.ZERO);
 			map.put("bankAccount", ch[11] != null ? ch[11].toString() : "");
 			map.put("approvedStatus", ch[12] != null ? ch[12].toString() : "");
+			map.put("sNo", ch[13] != null ? ch[13].toString() : "");
 			List1.add(map);
 		}
 		return List1;
@@ -879,9 +930,15 @@ public class ARServiceImpl implements ARService {
 			map.put("panNo", ch[9] != null ? ch[9].toString() : "");
 			map.put("tanNo", ch[10] != null ? ch[10].toString() : "");
 			map.put("tdsAmount", ch[11] != null ? new BigDecimal(ch[11].toString()) : BigDecimal.ZERO);
-
-//			map.put("gstAmount", ch[12] != null ? new BigDecimal(ch[12].toString()) : BigDecimal.ZERO);
-//			map.put("chargeAmount", ch[13] != null ? new BigDecimal(ch[13].toString()) : BigDecimal.ZERO);
+//			if ("2".equals(ch[0].toString())) {
+//				map.put("billAmount", "");
+//				map.put("tdsPercentage", "");
+//			} else {
+//				map.put("billAmount", ch[12] != null ? new BigDecimal(ch[12].toString()) : BigDecimal.ZERO);
+//				map.put("tdsPercentage", ch[13] != null ? new BigDecimal(ch[13].toString()) : BigDecimal.ZERO);
+//			}
+			map.put("billAmount", ch[12] != null ? new BigDecimal(ch[12].toString()) : BigDecimal.ZERO);
+			map.put("tdsPercentage", ch[13] != null ? new BigDecimal(ch[13].toString()) : BigDecimal.ZERO);
 //			map.put("billAmount", ch[14] != null ? new BigDecimal(ch[14].toString()) : BigDecimal.ZERO);
 //			map.put("totalAmountLc", ch[15] != null ? new BigDecimal(ch[15].toString()) : BigDecimal.ZERO);
 			List1.add(map);

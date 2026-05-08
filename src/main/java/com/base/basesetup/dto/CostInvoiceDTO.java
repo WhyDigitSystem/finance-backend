@@ -46,6 +46,7 @@ public class CostInvoiceDTO {
 	private String utrRef;
 	private String costType;
 	private String jobOrderNo;
+	private LocalDate supplierBillDate;
 	
 	private String vId;
 	private LocalDate vDate;

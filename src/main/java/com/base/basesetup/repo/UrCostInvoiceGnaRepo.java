@@ -19,8 +19,15 @@ public interface UrCostInvoiceGnaRepo extends JpaRepository<UrCostInvoiceGnaVO, 
 	@Query(value = "select a from UrCostInvoiceGnaVO a where a.id=?1")
 	List<UrCostInvoiceGnaVO> getUrCostInvoiceGnaById(Long id);
 
-	@Query(nativeQuery = true, value = "select concat(prefixfield,lpad(lastno,5,0)) AS docid from documenttypemappingdetails where orgid=?1 and finyear=?2 and branchcode=?3 and screencode=?4")
-	String getUrCostInvoiceGnaDocId(Long orgId, String finYear, String branchCode, String screenCode);
+//	@Query(nativeQuery = true, value = "select concat(prefixfield,lpad(lastno,5,0)) AS docid from documenttypemappingdetails where orgid=?1 and finyear=?2 and branchcode=?3 and screencode=?4")
+//	String getUrCostInvoiceGnaDocId(Long orgId, String finYear, String branchCode, String screenCode);
+
+	@Query(value = "SELECT " + "CONCAT(d.prefixfield, LPAD(d.lastno, 5, '0')) AS docid, " + "CASE "
+			+ "   WHEN CURDATE() BETWEEN f.startdate AND f.enddate " + "   THEN CURDATE() " + "   ELSE f.enddate "
+			+ "END AS docdate " + "FROM documenttypemappingdetails d " + "JOIN financialyear f "
+			+ "ON d.finyear = f.finyear AND d.orgid = f.orgid " + "WHERE d.orgid = ?1 " + "AND d.finyear = ?2 "
+			+ "AND d.branchcode = ?3 " + "AND d.screencode = ?4", nativeQuery = true)
+	List<Object[]> getUrCostInvoiceGnaDocId(Long orgId, String finYear, String branchCode, String screenCode);
 
 	@Query(value = "select a from PartyMasterVO a where a.orgId=?1 and a.partyType=?2 and a.active=true and a.gstRegistered='NO'")
 	List<PartyMasterVO> getAllVendorFromPartyMaster(Long orgId, String partyType);
@@ -56,64 +63,50 @@ public interface UrCostInvoiceGnaRepo extends JpaRepository<UrCostInvoiceGnaVO, 
 	@Query(nativeQuery = true, value = "SELECT * FROM chargesurcostinvoicegna a, urcostinvoicegna a1 WHERE \r\n"
 			+ "LOWER(chargeLedger) LIKE '%output%' AND a.urcostinvoicegnaid =?1 and a1.orgid=?2 and a.urcostinvoicegnaid=a1.urcostinvoicegnaid")
 	Set<Object[]> findAccountsOutputPostinInvoiceGnaPosting(Long id);
-	
+
 	@Query(nativeQuery = true, value = "SELECT * FROM chargesurcostinvoicegna WHERE  urcostinvoicegnaid =?1 and chargeledger=?2")
-	Set<Object[]> getUrChargeLedgerDetails(Long id,String chargeLedger);
+	Set<Object[]> getUrChargeLedgerDetails(Long id, String chargeLedger);
 
 	UrCostInvoiceGnaVO findByOrgIdAndIdAndDocId(Long orgId, Long id, String docId);
-	
+
 	@Query(nativeQuery = true, value = "select  accountgroupname,category from groupledger where orgid=?1 and gsttaxflag!='NA' and \r\n"
 			+ "category='TAX' and gsttaxflag IN ('OUTPUT TAX') and gsttype=?2  and accountgroupname=?3\r\n"
 			+ " group by  accountgroupname")
-	Set<Object[]>  getOuputPosting(Long orgId, String gstType, String  accountName);
-	
+	Set<Object[]> getOuputPosting(Long orgId, String gstType, String accountName);
+
 	@Query(nativeQuery = true, value = "select  accountgroupname,category from groupledger where orgid=?1 and gsttaxflag!='NA' and \r\n"
 			+ "category='TAX' and gsttaxflag IN ('INPUT TAX') and gsttype=?2  and accountgroupname=?3\r\n"
 			+ " group by  accountgroupname")
-	Set<Object[]>  getInputPosting(Long orgId, String gstType, String  accountName);
-	
-	@Query(nativeQuery = true, value = "select accountgroupname,category from groupledger where accountgroupname=?1")
-	Set<Object[]>  getLedgerPosting( String  accountName);
+	Set<Object[]> getInputPosting(Long orgId, String gstType, String accountName);
 
-	
+	@Query(nativeQuery = true, value = "select accountgroupname,category from groupledger where accountgroupname=?1")
+	Set<Object[]> getLedgerPosting(String accountName);
+
 	@Query(nativeQuery = true, value = "select * from urcostinvoicegna where screencode=?1 and docid=?2")
 	UrCostInvoiceGnaVO getUrCostInvoiceByDocIdandScreenCode(String screenCode, String docId);
 
-	@Query(nativeQuery = true,value = "select accountgroupname from groupledger where orgid=?1 and groupname=?2  and type='ACCOUNT'  and active = 1  group by accountgroupname  order by accountgroupname")
+	@Query(nativeQuery = true, value = "select accountgroupname from groupledger where orgid=?1 and groupname=?2  and type='ACCOUNT'  and active = 1  group by accountgroupname  order by accountgroupname")
 	Set<Object[]> getChargeAccountFromChargeLedger(Long orgId, String chargeLedger);
 
-	@Query(nativeQuery = true, value = "select \r\n"
-			+ "    sum(t.complete) as complete, \r\n"
-			+ "    sum(t.Approved) as Approved,\r\n"
-			+ "    sum(t.Pending) as Pending,\r\n"
-			+ "    sum(t.Reject) as Reject\r\n"
-			+ "from (\r\n"
+	@Query(nativeQuery = true, value = "select \r\n" + "    sum(t.complete) as complete, \r\n"
+			+ "    sum(t.Approved) as Approved,\r\n" + "    sum(t.Pending) as Pending,\r\n"
+			+ "    sum(t.Reject) as Reject\r\n" + "from (\r\n"
 			+ "    select count(*) as complete, 0 as Approved, 0 as Pending, 0 as Reject\r\n"
 			+ "    from urcostinvoicegna \r\n"
-			+ "    where orgid = ?1 and finyear = ?2 and branchcode = ?3 and cancel = 0\r\n"
-			+ "\r\n"
-			+ "    union all\r\n"
-			+ "\r\n"
+			+ "    where orgid = ?1 and finyear = ?2 and branchcode = ?3 and cancel = 0\r\n" + "\r\n"
+			+ "    union all\r\n" + "\r\n"
 			+ "    select 0 as complete, count(*) as Approved, 0 as Pending, 0 as Reject\r\n"
 			+ "    from urcostinvoicegna \r\n"
 			+ "    where orgid = ?1 and finyear = ?2 and branchcode = ?3 and cancel = 0 \r\n"
-			+ "      and approvestatus = 'APPROVED'\r\n"
-			+ "\r\n"
-			+ "    union all\r\n"
-			+ "\r\n"
+			+ "      and approvestatus = 'APPROVED'\r\n" + "\r\n" + "    union all\r\n" + "\r\n"
 			+ "    select 0 as complete, 0 as Approved, count(*) as Pending, 0 as Reject\r\n"
 			+ "    from urcostinvoicegna \r\n"
 			+ "    where orgid = ?1 and finyear = ?2 and branchcode = ?3 and cancel = 0 \r\n"
-			+ "      and mode = 'PROFOMA'\r\n"
-			+ "\r\n"
-			+ "    union all\r\n"
-			+ "\r\n"
+			+ "      and mode = 'PROFOMA'\r\n" + "\r\n" + "    union all\r\n" + "\r\n"
 			+ "    select 0 as complete, 0 as Approved, 0 as Pending, count(*) as Reject\r\n"
 			+ "    from urcostinvoicegna \r\n"
 			+ "    where orgid = ?1 and finyear = ?2 and branchcode = ?3 and cancel = 0 \r\n"
-			+ "      and approvestatus = 'REJECTED'\r\n"
-			+ ") t")
-	Set<Object[]> getURCostInvoiceGnaCount(Long orgId,String finYear, String branchCode);
-
+			+ "      and approvestatus = 'REJECTED'\r\n" + ") t")
+	Set<Object[]> getURCostInvoiceGnaCount(Long orgId, String finYear, String branchCode);
 
 }
