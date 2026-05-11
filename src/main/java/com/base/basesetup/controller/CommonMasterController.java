@@ -572,8 +572,8 @@ public class CommonMasterController extends BaseController {
 		return ResponseEntity.ok().body(responseDTO);
 	}
 
-	@GetMapping("/company/{companyid}")
-	public ResponseEntity<ResponseDTO> getcompanyById(@PathVariable Long companyid) {
+	@GetMapping("/company/{orgId}")
+	public ResponseEntity<ResponseDTO> getcompanyById(@PathVariable Long orgId) {
 		String methodName = "getCompanyById()";
 		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
 		String errorMsg = null;
@@ -581,7 +581,7 @@ public class CommonMasterController extends BaseController {
 		ResponseDTO responseDTO = null;
 		List<CompanyVO> companyVO = new ArrayList<CompanyVO>();
 		try {
-			companyVO = commonMasterService.getCompanyById(companyid);
+			companyVO = commonMasterService.getCompanyById(orgId);
 		} catch (Exception e) {
 			errorMsg = e.getMessage();
 			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
@@ -592,7 +592,7 @@ public class CommonMasterController extends BaseController {
 			responseObjectsMap.put("companyVO", companyVO);
 			responseDTO = createServiceResponse(responseObjectsMap);
 		} else {
-			errorMsg = "company not found for companyID: " + companyid;
+			errorMsg = "company not found for companyID: " + orgId;
 			responseDTO = createServiceResponseError(responseObjectsMap, "company not found", errorMsg);
 		}
 		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
