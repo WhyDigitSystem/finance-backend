@@ -104,22 +104,57 @@ public interface CostDebitNoteRepo extends JpaRepository<CostDebitNoteVO, Long> 
 	@Query(nativeQuery = true, value = "SELECT * FROM costdebitnote WHERE screencode = ?1 AND docid = ?2")
 	CostDebitNoteVO getDebitNoteByDocIdandScreenCode(String screenCode, String docId);
 
-	@Query(nativeQuery = true, value = "SELECT \r\n" + "    income_data.suppliername,\r\n"
-			+ "    income_data.docid,\r\n" + "    income_data.income,\r\n"
-			+ "    COALESCE(expense_data.expense, 0) AS expense,\r\n"
-			+ "    income_data.income - COALESCE(expense_data.expense, 0) AS amount\r\n" + "FROM (\r\n"
-			+ "    SELECT \r\n" + "        a.suppliername, \r\n" + "        a.docid, \r\n"
-			+ "        SUM(a.netbilllcamt) AS income\r\n" + "    FROM \r\n" + "        costinvoice a \r\n"
-			+ "    WHERE \r\n" + "        a.orgid =?1\r\n" + "        AND a.docid =?2\r\n" + "    GROUP BY \r\n"
-			+ "        a.suppliername, a.docid\r\n" + ") AS income_data\r\n" + "LEFT JOIN (\r\n" + "    SELECT \r\n"
-			+ "        b.suppliername, \r\n" + "        b.orginbill, \r\n"
-			+ "        COALESCE(SUM(b.netbilllcamt), 0) AS expense\r\n" + "    FROM \r\n"
-			+ "        costdebitnote b\r\n" + "    WHERE \r\n" + "        b.orgid =?1\r\n"
-			+ "        AND b.orginbill =?2\r\n" + "    GROUP BY \r\n" + "        b.suppliername, b.orginbill\r\n"
-			+ ") AS expense_data\r\n" + "ON \r\n" + "    income_data.suppliername = expense_data.suppliername \r\n"
-			+ "    AND income_data.docid = expense_data.orginbill")
-	Set<Object[]> findByOrginBillBased(Long orgId, String orginbillNo);
+//	@Query(nativeQuery = true, value = "SELECT \r\n" + "    income_data.suppliername,\r\n"
+//			+ "    income_data.docid,\r\n" + "    income_data.income,\r\n"
+//			+ "    COALESCE(expense_data.expense, 0) AS expense,\r\n"
+//			+ "    income_data.income - COALESCE(expense_data.expense, 0) AS amount\r\n" + "FROM (\r\n"
+//			+ "    SELECT \r\n" + "        a.suppliername, \r\n" + "        a.docid, \r\n"
+//			+ "        SUM(a.netbilllcamt) AS income\r\n" + "    FROM \r\n" + "        costinvoice a \r\n"
+//			+ "    WHERE \r\n" + "        a.orgid =?1\r\n" + "        AND a.docid =?2\r\n" + "    GROUP BY \r\n"
+//			+ "        a.suppliername, a.docid\r\n" + ") AS income_data\r\n" + "LEFT JOIN (\r\n" + "    SELECT \r\n"
+//			+ "        b.suppliername, \r\n" + "        b.orginbill, \r\n"
+//			+ "        COALESCE(SUM(b.netbilllcamt), 0) AS expense\r\n" + "    FROM \r\n"
+//			+ "        costdebitnote b\r\n" + "    WHERE \r\n" + "        b.orgid =?1\r\n"
+//			+ "        AND b.orginbill =?2\r\n" + "    GROUP BY \r\n" + "        b.suppliername, b.orginbill\r\n"
+//			+ ") AS expense_data\r\n" + "ON \r\n" + "    income_data.suppliername = expense_data.suppliername \r\n"
+//			+ "    AND income_data.docid = expense_data.orginbill")
+//	Set<Object[]> findByOrginBillBased(Long orgId, String orginbillNo);
 
+	@Query(nativeQuery = true,
+			value =
+			"SELECT " +
+			"    income_data.suppliername, " +
+			"    income_data.docid, " +
+			"    income_data.income, " +
+			"    COALESCE(expense_data.expense, 0) AS expense, " +
+			"    income_data.income - COALESCE(expense_data.expense, 0) AS amount " +
+			"FROM ( " +
+			"    SELECT " +
+			"        a.suppliername, " +
+			"        a.docid, " +
+			"        SUM(a.netbilllcamt) AS income " +
+			"    FROM costinvoice a " +
+			"    WHERE a.orgid = ?1 " +
+			"    AND a.docid = ?2 " +
+			"    GROUP BY a.suppliername, a.docid " +
+			") AS income_data " +
+			"LEFT JOIN ( " +
+			"    SELECT " +
+			"        b.suppliername, " +
+			"        b.orginbill, " +
+			"        COALESCE(SUM(b.netbilllcamt),0) AS expense " +
+			"    FROM costdebitnote b " +
+			"    WHERE b.orgid = ?1 " +
+			"    AND b.orginbill = ?2 " +
+			"    AND (?3 IS NULL OR b.costdebitnoteid <> ?3) " +
+			"    GROUP BY b.suppliername, b.orginbill " +
+			") AS expense_data " +
+			"ON income_data.suppliername = expense_data.suppliername " +
+			"AND income_data.docid = expense_data.orginbill")
+			Set<Object[]> findByOrginBillBased(
+			        Long orgId,
+			        String orginbillNo,
+			        Long id);
 	@Query(nativeQuery = true, value = "select \r\n" + "    sum(t.complete) as complete, \r\n"
 			+ "    sum(t.Approved) as Approved, \r\n" + "    sum(t.Pending) as Pending, \r\n"
 			+ "    sum(t.Reject) as Reject\r\n" + "from (\r\n"
