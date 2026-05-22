@@ -99,7 +99,7 @@ public interface CommonMasterService {
 
 	List<CompanyVO> getAllCompany();
 
-	List<CompanyVO> getCompanyById(Long companyid);
+	List<CompanyVO> getCompanyById(Long orgId);
 
 	CompanyVO createCompany(CompanyDTO companyDTO) throws Exception;
 
