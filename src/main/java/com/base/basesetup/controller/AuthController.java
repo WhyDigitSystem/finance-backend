@@ -1,6 +1,7 @@
 package com.base.basesetup.controller;
 
 import java.util.ArrayList;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,6 +26,7 @@ import com.base.basesetup.common.AuthConstant;
 import com.base.basesetup.common.CommonConstant;
 import com.base.basesetup.common.UserConstants;
 import com.base.basesetup.dto.ChangePasswordFormDTO;
+import com.base.basesetup.dto.ForgotPasswordRequestDTO;
 import com.base.basesetup.dto.LoginFormDTO;
 import com.base.basesetup.dto.RefreshTokenDTO;
 import com.base.basesetup.dto.ResetPasswordFormDTO;
@@ -560,6 +562,91 @@ public class AuthController extends BaseController {
 	}
 	
 
+	@PostMapping("/forgot-password")
+	public ResponseEntity<ResponseDTO> forgotPassword(@RequestBody ForgotPasswordRequestDTO dto) {
+
+	    String methodName = "forgotPassword()";
+	    LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+
+	    String errorMsg = null;
+	    Map<String, Object> responseObjectsMap = new HashMap<>();
+	    ResponseDTO responseDTO = null;
+
+	    try {
+
+	        Map<String, Object> result = authService.sendOtp(dto.getUserName());
+
+	        responseObjectsMap.put("message", result.get("message"));
+	        responseObjectsMap.put("userName", result.get("userName"));
+
+	        responseDTO = createServiceResponse(responseObjectsMap);
+
+	    } catch (Exception e) {
+
+	        errorMsg = e.getMessage();
+
+	        LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+
+	        responseDTO = createServiceResponseError(
+	                responseObjectsMap,
+	                "Forgot password failed",
+	                errorMsg
+	        );
+	    }
+
+	    LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+
+	    return ResponseEntity.ok().body(responseDTO);
+	}
+	
+	 @PostMapping("/reset-passwordNew")
+	 public ResponseEntity<ResponseDTO> resetPasswordNew(@RequestBody ResetPasswordFormDTO resetPasswordRequest) {
+
+	     String methodName = "resetPassword()";
+	     LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+
+	     String errorMsg = null;
+	     Map<String, Object> responseObjectsMap = new HashMap<>();
+	     ResponseDTO responseDTO = null;
+
+	     try {
+
+	         authService.resetPasswordNew(resetPasswordRequest);
+
+	     } catch (Exception e) {
+
+	         errorMsg = e.getMessage();
+
+	         LOGGER.error(
+	                 UserConstants.ERROR_MSG_METHOD_NAME_WITH_USER_NAME,
+	                 methodName,
+	                 resetPasswordRequest.getUserName(),
+	                 errorMsg
+	         );
+	     }
+
+	     if (StringUtils.isBlank(errorMsg)) {
+
+	         responseObjectsMap.put(
+	                 CommonConstant.STRING_MESSAGE,
+	                 "Password reset successfully"
+	         );
+
+	         responseDTO = createServiceResponse(responseObjectsMap);
+
+	     } else {
+
+	         responseDTO = createServiceResponseError(
+	                 responseObjectsMap,
+	                 "Reset password failed",
+	                 errorMsg
+	         );
+	     }
+
+	     LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+
+	     return ResponseEntity.ok().body(responseDTO);
+	 }
 
 
 }

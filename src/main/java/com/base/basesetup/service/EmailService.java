@@ -12,4 +12,8 @@ public interface EmailService {
 	 */
 	void sendHtmlEmail(String fromEail, String toEmail, String subject, String htmlContent);
 
+
+
+	void sendOtpEmail(String email, String employeeName, String otp);
+
 }
