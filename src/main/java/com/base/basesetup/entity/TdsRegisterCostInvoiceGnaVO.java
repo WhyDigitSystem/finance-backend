@@ -12,7 +12,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -23,7 +23,13 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class TdsRCostInvoiceGnaVO {
+public class TdsRegisterCostInvoiceGnaVO {
+
+//	@Id
+//	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "tdsregistercostinvoicegnagen")
+//	@SequenceGenerator(name = "tdsregistercostinvoicegnagen", sequenceName = "tdsregistercostinvoicegnaseq", initialValue = 1000000001, allocationSize = 1)
+//	@Column(name = "tdsregistercostinvoicegnaid")
+//	private Long id;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "tdsrcostinvoicegnagen")
@@ -42,9 +48,8 @@ public class TdsRCostInvoiceGnaVO {
 	private BigDecimal totalTdsAmt;
 
 	@ManyToOne
+	@JsonBackReference
 	@JoinColumn(name = "rcostinvoicegnaid")
-//	@JsonBackReference("tdsrCostInvoiceGnaVO")
-	@JsonIgnore
-	private RCostInvoiceGnaVO rCostInvoiceGnaVO;
+	RegisterCostInvoiceGnaVO registerCostInvoiceGnaVO;
 
 }

@@ -11,8 +11,8 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class RCostInvoiceGnaDTO {
-	
+public class RegisterCostInvoiceGnaDTO {
+
 	private Long id;
 	private String mode;
 	private String partyType;
@@ -35,19 +35,16 @@ public class RCostInvoiceGnaDTO {
 	private String addressType;
 	private String state;
 
-	
-	//Default fields
+	// Default fields
 	private Long orgId;
 	private boolean active;
 	private String createdBy;
 	private String branch;
 	private String branchCode;
 	private String finYear;
-	
-	
-	private List<ChargeRCostInvoiceGnaDTO> chargeRCostInvoiceGnaDTO;
-	
-	private List<TdsRCostInvoiceGnaDTO> tdsRCostInvoiceGnaDTO;
 
+	private List<ChargeRegisterCostInvoiceGnaDTO> chargeRegisterCostInvoiceGnaDTO;
+
+	private List<TdsRegisterCostInvoiceGnaDTO> TdsRegisterCostInvoiceGnaVO;
 
 }
