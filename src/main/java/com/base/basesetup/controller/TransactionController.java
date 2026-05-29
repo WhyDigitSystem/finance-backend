@@ -324,7 +324,7 @@ public class TransactionController extends BaseController {
 
 	@PostMapping("/excelUploadForBrs")
 	public ResponseEntity<ResponseDTO> ExcelUploadForBrs(@RequestParam MultipartFile[] files, @RequestParam Long orgId,
-			@RequestParam String createdBy, String branch, String branchCode) {
+			@RequestParam String createdBy,@RequestParam String branch,@RequestParam String branchCode) {
 		String methodName = "ExcelUploadForBrs()";
 		int totalRows = 0;
 		Map<String, Object> responseObjectsMap = new HashMap<>();
