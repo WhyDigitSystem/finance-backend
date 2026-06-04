@@ -47,7 +47,7 @@ public interface ReportService {
 		
 	    Map<String, Object> createUpdateRetrievalManifest(RetrievalManifestProviderDTO retrievalManifestProviderDTO) throws ApplicationException;
 		
-		List<RetrievalManifestProviderVO> getAllRetrievalManifestProvider();
+//		List<RetrievalManifestProviderVO> getAllRetrievalManifestProvider();
 		
 		Optional<RetrievalManifestProviderVO> getRetrievalManifestProviderById(Long id);
 		
@@ -100,6 +100,8 @@ public interface ReportService {
 		String getIssueManifestProviderDocId(Long orgId, String finYear, String branch, String branchCode);
 
 		String getRetrievalManifestProviderDocId(Long orgId, String finYear, String branch, String branchCode);
+
+		List<RetrievalManifestProviderVO> getAllRetrievalManifestProvider(Long orgId, Long finYear);
 
 
 //		List<RetrievalManifestProviderVO> findRIMMIMReports(String type, Long orgId, String customerName,

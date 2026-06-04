@@ -1,7 +1,6 @@
 package com.base.basesetup.service;
 
 import java.io.IOException;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -582,4 +581,10 @@ public class TicketServiceImpl implements TicketService {
 			throw new RuntimeException("❌ id and sourceId both NULL");
 		}
 	}
+	
+	@Override
+	public List<TicketVO> getTicketReport(Long orgId, String fromDate, String toDate) {
+		return ticketRepo.getTicketReport( orgId,  fromDate,  toDate);
+	}
+
 }

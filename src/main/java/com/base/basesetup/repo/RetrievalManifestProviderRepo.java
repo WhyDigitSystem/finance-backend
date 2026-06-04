@@ -64,4 +64,7 @@ List<RetrievalManifestProviderVO> findRIMReports(String type, Long orgId, String
 	@Query(nativeQuery = true,value="select concat(prefixfield,lpad(lastno,4,0)) AS docid from documenttypemappingdetails where orgid=?1 and finyear=?2 and branchcode='BLR' and screencode=?3")
 	String getRetrievalManifestProviderDocId(Long orgId, String finYear,  String screenCode);
 
+	@Query(nativeQuery = true,value = "select * from rim where orgid=?1 and finyear=?2  order by transactionno desc")	
+	List<RetrievalManifestProviderVO> getAllRetrievalManifestProvider(Long orgId, Long finYear);
+
 }
