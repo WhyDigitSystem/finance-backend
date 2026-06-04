@@ -539,82 +539,87 @@ public class TransactionServiceImpl implements TransactionService {
 
 	@Transactional
 	public void ExcelUploadForBrs(MultipartFile[] files, Long orgId, String createdBy, String branch, String branchCode)
-			throws ApplicationException {
-		List<BrsExcelUploadVO> brsExcelUploadVOsToSave = new ArrayList<>();
-		totalRows = 0;
-		successfulUploads = 0;
+	        throws ApplicationException {
+	    List<BrsOpeningVO> brsOpeningVOsToSave = new ArrayList<>();  // ✅ Changed to BrsOpeningVO
+	    totalRows = 0;
+	    successfulUploads = 0;
 
-		for (MultipartFile file : files) {
-			if (file.isEmpty()) {
-				throw new ApplicationException(
-						"The supplied file '" + file.getOriginalFilename() + "' is empty (zero bytes long).");
-			}
+	    for (MultipartFile file : files) {
+	        if (file.isEmpty()) {
+	            throw new ApplicationException(
+	                    "The supplied file '" + file.getOriginalFilename() + "' is empty (zero bytes long).");
+	        }
 
-			try (Workbook workbook = WorkbookFactory.create(file.getInputStream())) {
-				Sheet sheet = workbook.getSheetAt(0);
-				List<String> errorMessages = new ArrayList<>();
-				System.out.println("Processing file: " + file.getOriginalFilename());
+	        try (Workbook workbook = WorkbookFactory.create(file.getInputStream())) {
+	            Sheet sheet = workbook.getSheetAt(0);
+	            List<String> errorMessages = new ArrayList<>();
+	            System.out.println("Processing file: " + file.getOriginalFilename());
 
-				Row headerRow = sheet.getRow(0);
-				if (!isHeaderValid(headerRow)) {
-					throw new ApplicationException("Invalid Excel format in file '" + file.getOriginalFilename()
-							+ "'. Expected headers are: Type, From location, From location type, Location pick, partno, partdesc, sku, Grn No, GRN date, Batch No, Exp date, Entry no, From Status, To Status");
-				}
+	            Row headerRow = sheet.getRow(0);
+	            if (!isHeaderValid(headerRow)) {
+	                throw new ApplicationException("Invalid Excel format in file '" + file.getOriginalFilename()
+	                        + "'. Expected headers are: Bill No, Bill Date, Cheque No, Cheque Date, Bank, Currency, Ex Rate, Receipt Amount, Payment Amount, Reconcile");
+	            }
 
-				for (Row row : sheet) {
-					if (row.getRowNum() == 0 || isRowEmpty(row)) {
-						continue;
-					}
+	            for (Row row : sheet) {
+	                if (row.getRowNum() == 0 || isRowEmpty(row)) {
+	                    continue;
+	                }
 
-					totalRows++;
-					System.out.println("Validating row: " + (row.getRowNum() + 1));
+	                totalRows++;
+	                System.out.println("Validating row: " + (row.getRowNum() + 1));
 
-					try {
-						String billNo = getStringCellValue(row.getCell(0));
-						LocalDate billDate = parseDate(row.getCell(1));
-						String chqNo = getStringCellValue(row.getCell(2));
-						LocalDate chqDate = parseDate(row.getCell(3));
-						String bank = getStringCellValue(row.getCell(4));
-						String currency = getStringCellValue(row.getCell(5));
-						String exRate = getStringCellValue(row.getCell(6));
-						BigDecimal receiptAmount = getBigDecimalCellValue(row.getCell(7));
-						BigDecimal paymentAmount = getBigDecimalCellValue(row.getCell(8));
-						boolean reconcile = getBooleanCellValue(row.getCell(9));
+	                try {
+	                    String billNo           = getStringCellValue(row.getCell(0));
+	                    LocalDate billDate      = parseDate(row.getCell(1));
+	                    String chqNo            = getStringCellValue(row.getCell(2));
+	                    LocalDate chqDate       = parseDate(row.getCell(3));
+	                    String bank             = getStringCellValue(row.getCell(4));
+	                    String currency         = getStringCellValue(row.getCell(5));
+	                    BigDecimal exRate       = getBigDecimalCellValue(row.getCell(6));  // ✅ BigDecimal (BrsOpeningVO exRate is BigDecimal)
+	                    BigDecimal receiptAmount = getBigDecimalCellValue(row.getCell(7));
+	                    BigDecimal paymentAmount = getBigDecimalCellValue(row.getCell(8));
+	                    boolean reconcile       = getBooleanCellValue(row.getCell(9));
 
-						// Create and populate SrsExcelUploadVO object
-						BrsExcelUploadVO brsExcelUploadVO = new BrsExcelUploadVO();
-						brsExcelUploadVO.setBillNo(billNo);
-						brsExcelUploadVO.setBillDate(billDate);
-						brsExcelUploadVO.setChqNo(chqNo);
-						brsExcelUploadVO.setChqDate(chqDate);
-						brsExcelUploadVO.setBank(bank);
-						brsExcelUploadVO.setCurrency(currency);
-						brsExcelUploadVO.setExRate(exRate);
-						brsExcelUploadVO.setReceiptAmount(receiptAmount);
-						brsExcelUploadVO.setPaymentAmount(paymentAmount);
-						brsExcelUploadVO.setReconcile(reconcile);
-						brsExcelUploadVO.setOrgId(orgId);
-						brsExcelUploadVO.setBranch(branch);
-						brsExcelUploadVO.setBranchCode(branchCode);
-						brsExcelUploadVO.setCreatedBy(createdBy);
-						brsExcelUploadVO.setUpdatedBy(createdBy);
-						brsExcelUploadVO.setActive(true);
-						brsExcelUploadVO.setCancel(false);
-						brsExcelUploadVO.setCancelRemarks("");
+	                    // ✅ Save to BrsOpeningVO
+	                    BrsOpeningVO brsOpeningVO = new BrsOpeningVO();
+	                    brsOpeningVO.setBillNo(billNo);
+	                    brsOpeningVO.setBillDate(billDate);
+	                    brsOpeningVO.setChqNo(chqNo);
+	                    brsOpeningVO.setChqDate(chqDate);
+	                    brsOpeningVO.setBank(bank);
+	                    brsOpeningVO.setCurrency(currency);
+	                    brsOpeningVO.setExRate(exRate);           // ✅ BigDecimal directly
+	                    brsOpeningVO.setReceiptAmount(receiptAmount);
+	                    brsOpeningVO.setPaymentAmount(paymentAmount);
+	                    brsOpeningVO.setReconcile(reconcile);
+	                    brsOpeningVO.setOrgId(orgId);
+	                    brsOpeningVO.setBranch(branch);
+	                    brsOpeningVO.setBranchCode(branchCode);
+	                    brsOpeningVO.setCreatedBy(createdBy);
+	                    brsOpeningVO.setUpdatedBy(createdBy);
+	                    brsOpeningVO.setActive(true);
+	                    brsOpeningVO.setCancel(false);
+	                    brsOpeningVO.setCancelRemarks("");
+	                    // ✅ BrsOpeningVO extra fields with default values
+	                    brsOpeningVO.setScreenCode("ARBB");
+	                    brsOpeningVO.setScreenName("AR BILL BALANCE");
 
-						brsExcelUploadVOsToSave.add(brsExcelUploadVO);
-						successfulUploads++;
-					} catch (Exception e) {
-						// Optionally handle specific row processing exceptions here
-					}
-				}
+	                    brsOpeningVOsToSave.add(brsOpeningVO);
+	                    successfulUploads++;
 
-				brsExcelUploadRepo.saveAll(brsExcelUploadVOsToSave);
-			} catch (IOException e) {
-				throw new ApplicationException(
-						"Failed to process file: " + file.getOriginalFilename() + " - " + e.getMessage());
-			}
-		}
+	                } catch (Exception e) {
+	                    // Optionally handle specific row processing exceptions here
+	                }
+	            }
+
+	            brsOpeningRepo.saveAll(brsOpeningVOsToSave);  // ✅ Changed to brsOpeningRepo
+
+	        } catch (IOException e) {
+	            throw new ApplicationException(
+	                    "Failed to process file: " + file.getOriginalFilename() + " - " + e.getMessage());
+	        }
+	    }
 	}
 
 	private boolean getBooleanCellValue(Cell cell) {
@@ -2398,7 +2403,7 @@ public class TransactionServiceImpl implements TransactionService {
 			particularsReconcileVO.setReconcileBankVO(reconcileBankVO);
 			particularsReconcileVOs.add(particularsReconcileVO);
 		}
-		if (totalDeposit.equals(totalWithdrawal)) {
+		if (!totalDeposit.equals(totalWithdrawal)) {
 			reconcileBankVO.setTotalDeposit(totalDeposit);
 			reconcileBankVO.setTotalWithdrawal(totalWithdrawal);
 		} else {
