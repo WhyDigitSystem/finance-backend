@@ -9,11 +9,10 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class TdsRCostInvoiceGnaDTO {
+public class TdsRegisterCostInvoiceGnaDTO {
 
 	private String tds;
 	private BigDecimal tdsPer;
 	private String section;
-//	private BigDecimal totalTdsAmt;
 
 }

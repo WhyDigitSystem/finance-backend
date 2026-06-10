@@ -20,10 +20,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.base.basesetup.common.CommonConstant;
 import com.base.basesetup.common.UserConstants;
-import com.base.basesetup.dto.RCostInvoiceGnaDTO;
+import com.base.basesetup.dto.RegisterCostInvoiceGnaDTO;
 import com.base.basesetup.dto.ResponseDTO;
 import com.base.basesetup.entity.PartyMasterVO;
-import com.base.basesetup.entity.RCostInvoiceGnaVO;
+import com.base.basesetup.entity.RegisterCostInvoiceGnaVO;
 import com.base.basesetup.service.RCostInvoiceGnaService;
 
 @CrossOrigin
@@ -44,7 +44,7 @@ public class RCostInvoiceGnaController extends BaseController {
 		String errorMsg = null;
 		Map<String, Object> responseObjectsMap = new HashMap<>();
 		ResponseDTO responseDTO = null;
-		List<RCostInvoiceGnaVO> rCostInvoiceGnaVO = new ArrayList<>();
+		List<RegisterCostInvoiceGnaVO> rCostInvoiceGnaVO = new ArrayList<>();
 		try {
 			rCostInvoiceGnaVO = rCostInvoiceGnaService.getAllRCostInvoiceGnaByOrgId(orgId, finYear, branchCode);
 		} catch (Exception e) {
@@ -73,7 +73,7 @@ public class RCostInvoiceGnaController extends BaseController {
 		Map<String, Object> responseObjectsMap = new HashMap<>();
 		ResponseDTO responseDTO = null;
 //		RCostInvoiceGnaVO rCostInvoiceGnaVO = new RCostInvoiceGnaVO() ;
-		List<RCostInvoiceGnaVO> rCostInvoiceGnaVO = new ArrayList<>();
+		List<RegisterCostInvoiceGnaVO> rCostInvoiceGnaVO = new ArrayList<>();
 
 		try {
 			rCostInvoiceGnaVO = rCostInvoiceGnaService.getAllRCostInvoiceGnaById(id);
@@ -92,38 +92,6 @@ public class RCostInvoiceGnaController extends BaseController {
 		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
 		return ResponseEntity.ok().body(responseDTO);
 	}
-
-//	@GetMapping("/getRCostInvoiceGnaDocId")
-//	public ResponseEntity<ResponseDTO> getRCostInvoiceGnaDocId(@RequestParam Long orgId, @RequestParam String finYear,
-//			@RequestParam String branch, @RequestParam String branchCode) {
-//
-//		String methodName = "getRCostInvoiceGnaDocId()";
-//		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
-//		String errorMsg = null;
-//		Map<String, Object> responseObjectsMap = new HashMap<>();
-//		ResponseDTO responseDTO = null;
-//		String mapp = "";
-//
-//		try {
-//			mapp = rCostInvoiceGnaService.getRCostInvoiceGnaDocId(orgId, finYear, branch, branchCode);
-//		} catch (Exception e) {
-//			errorMsg = e.getMessage();
-//			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
-//		}
-//
-//		if (StringUtils.isBlank(errorMsg)) {
-//			responseObjectsMap.put(CommonConstant.STRING_MESSAGE,
-//					"RCostInvoiceGnaDocId information retrieved successfully");
-//			responseObjectsMap.put("rcostInvoiceGnaDocId", mapp);
-//			responseDTO = createServiceResponse(responseObjectsMap);
-//		} else {
-//			responseDTO = createServiceResponseError(responseObjectsMap,
-//					"Failed to retrieve RCostInvoiceGna Docid information", errorMsg);
-//		}
-//
-//		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
-//		return ResponseEntity.ok().body(responseDTO);
-//	}
 
 	@GetMapping("/getRCostInvoiceGnaDocId")
 	public ResponseEntity<ResponseDTO> getRCostInvoiceGnaDocId(@RequestParam Long orgId, @RequestParam String finYear,
@@ -163,17 +131,19 @@ public class RCostInvoiceGnaController extends BaseController {
 	}
 
 	@PutMapping("/updateCreateRCostInvoiceGna")
-	public ResponseEntity<ResponseDTO> updateCreateRCostInvoiceGna(@RequestBody RCostInvoiceGnaDTO rCostInvoiceGnaDTO) {
+	public ResponseEntity<ResponseDTO> updateCreateRCostInvoiceGna(
+			@RequestBody RegisterCostInvoiceGnaDTO registerCostInvoiceGnaDTO) {
 		String methodName = "updateCreateRCostInvoiceGna()";
 		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
 		String errorMsg = null;
 		Map<String, Object> responseObjectsMap = new HashMap<>();
 		ResponseDTO responseDTO = null;
 		try {
-			Map<String, Object> rCostInvoiceGnaVO = rCostInvoiceGnaService
-					.updateCreateRCostInvoiceGna(rCostInvoiceGnaDTO);
-			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, rCostInvoiceGnaVO.get("message"));
-			responseObjectsMap.put("rCostInvoiceGnaVO", rCostInvoiceGnaVO.get("rCostInvoiceGnaVO"));
+			Map<String, Object> registerCostInvoiceGnaVO = rCostInvoiceGnaService
+					.updateCreateRCostInvoiceGna(registerCostInvoiceGnaDTO);
+			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, registerCostInvoiceGnaVO.get("message"));
+			responseObjectsMap.put("registerCostInvoiceGnaVO",
+					registerCostInvoiceGnaVO.get("registerCostInvoiceGnaVO"));
 			responseDTO = createServiceResponse(responseObjectsMap);
 		} catch (Exception e) {
 			errorMsg = e.getMessage();
@@ -412,28 +382,6 @@ public class RCostInvoiceGnaController extends BaseController {
 		return ResponseEntity.ok().body(responseDTO);
 	}
 
-	@PutMapping("/approveRCostInvoiceGna")
-	public ResponseEntity<ResponseDTO> approveRCostInvoiceGna(@RequestParam Long orgId, @RequestParam Long id,
-			@RequestParam String docId, @RequestParam String action, @RequestParam String actionBy) {
-		String methodName = "approveRCostInvoiceGna()";
-		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
-		String errorMsg = null;
-		Map<String, Object> responseObjectsMap = new HashMap<>();
-		ResponseDTO responseDTO = null;
-		try {
-			RCostInvoiceGnaVO rCostInvoiceGnaVO = rCostInvoiceGnaService.approveRCostInvoiceGna(orgId, id, docId,
-					action, actionBy);
-			responseObjectsMap.put("rCostInvoiceGnaVO", rCostInvoiceGnaVO);
-			responseDTO = createServiceResponse(responseObjectsMap);
-		} catch (Exception e) {
-			errorMsg = e.getMessage();
-			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
-			responseDTO = createServiceResponseError(responseObjectsMap, errorMsg, errorMsg);
-		}
-		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
-		return ResponseEntity.ok().body(responseDTO);
-	}
-
 	@GetMapping("/getRegisterCostInvoiceReport")
 	public ResponseEntity<ResponseDTO> getRegisterCosiInvoiceReport(@RequestParam(required = true) Long orgId,
 			@RequestParam(required = true) String branchCode, @RequestParam(required = false) String fromDate,
@@ -475,7 +423,7 @@ public class RCostInvoiceGnaController extends BaseController {
 		String errorMsg = null;
 		Map<String, Object> responseObjectsMap = new HashMap<>();
 		ResponseDTO responseDTO = null;
-		RCostInvoiceGnaVO rCostInvoiceGnaVO = new RCostInvoiceGnaVO();
+		RegisterCostInvoiceGnaVO rCostInvoiceGnaVO = new RegisterCostInvoiceGnaVO();
 		try {
 			rCostInvoiceGnaVO = rCostInvoiceGnaService.getRCostInvoiceGnaByDocIdandScreenCode(ScreenCode, docId);
 		} catch (Exception e) {
@@ -521,6 +469,125 @@ public class RCostInvoiceGnaController extends BaseController {
 			responseDTO = createServiceResponseError(responseObjectsMap, "Failed to retrieve  Count", errorMsg);
 		}
 
+		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+		return ResponseEntity.ok().body(responseDTO);
+	}
+
+//	@GetMapping("/getAllRCostInvoiceGnaByOrgId")
+//	public ResponseEntity<ResponseDTO> getAllRCostInvoiceGnaByOrgId(@RequestParam Long orgId,
+//			@RequestParam String finYear, @RequestParam String branchCode) {
+//		String methodName = "getAllRCostInvoiceGnaByOrgId()";
+//		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+//		String errorMsg = null;
+//		Map<String, Object> responseObjectsMap = new HashMap<>();
+//		ResponseDTO responseDTO = null;
+//		List<RegisterCostInvoiceGnaVO> registerCostInvoiceGnaVO = new ArrayList<>();
+//		try {
+//			registerCostInvoiceGnaVO = registerCostInvoiceGnaService.getAllRCostInvoiceGnaByOrgId(orgId, finYear,
+//					branchCode);
+//		} catch (Exception e) {
+//			errorMsg = e.getMessage();
+//			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+//		}
+//		if (StringUtils.isBlank(errorMsg)) {
+//			responseObjectsMap.put(CommonConstant.STRING_MESSAGE,
+//					"RCostInvoiceGna information get successfully By OrgId");
+//			responseObjectsMap.put("registerCostInvoiceGnaVO", registerCostInvoiceGnaVO);
+//			responseDTO = createServiceResponse(responseObjectsMap);
+//		} else {
+//			responseDTO = createServiceResponseError(responseObjectsMap,
+//					"RCostInvoiceGna information receive failed By OrgId", errorMsg);
+//		}
+//		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+//		return ResponseEntity.ok().body(responseDTO);
+//
+//	}
+//
+//	@GetMapping("/getAllRCostInvoiceGnaById")
+//	public ResponseEntity<ResponseDTO> getAllRCostInvoiceGnaById(@RequestParam Long id) {
+//		String methodName = "getAllRCostInvoiceGnaById()";
+//		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+//		String errorMsg = null;
+//		Map<String, Object> responseObjectsMap = new HashMap<>();
+//		ResponseDTO responseDTO = null;
+////		RCostInvoiceGnaVO rCostInvoiceGnaVO = new RCostInvoiceGnaVO() ;
+//		List<RegisterCostInvoiceGnaVO> registerCostInvoiceGnaVO = new ArrayList<>();
+//
+//		try {
+//			registerCostInvoiceGnaVO = registerCostInvoiceGnaService.getAllRCostInvoiceGnaById(id);
+//		} catch (Exception e) {
+//			errorMsg = e.getMessage();
+//			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+//		}
+//		if (StringUtils.isBlank(errorMsg)) {
+//			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "RCostInvoiceGna information get successfully By id");
+//			responseObjectsMap.put("registerCostInvoiceGnaVO", registerCostInvoiceGnaVO);
+//			responseDTO = createServiceResponse(responseObjectsMap);
+//		} else {
+//			responseDTO = createServiceResponseError(responseObjectsMap,
+//					"RCostInvoiceGna information receive failed By OrgId", errorMsg);
+//		}
+//		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+//		return ResponseEntity.ok().body(responseDTO);
+//	}
+//
+//	@GetMapping("/getRCostInvoiceGnaDocId")
+//	public ResponseEntity<ResponseDTO> getRCostInvoiceGnaDocId(@RequestParam Long orgId,
+//			@RequestParam String finYear, @RequestParam String branch, @RequestParam String branchCode) {
+//
+//		String methodName = "getRCostInvoiceGnaDocId()";
+//		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+//
+//		String errorMsg = null;
+//		Map<String, Object> responseObjectsMap = new HashMap<>();
+//		ResponseDTO responseDTO = null;
+//
+//		Map<String, Object> resultMap = new HashMap<>();
+//
+//		try {
+//			resultMap = registerCostInvoiceGnaService.getRCostInvoiceGnaDocId(orgId, finYear, branch,
+//					branchCode);
+//		} catch (Exception e) {
+//			errorMsg = e.getMessage();
+//			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+//		}
+//
+//		if (StringUtils.isBlank(errorMsg)) {
+//			responseObjectsMap.put(CommonConstant.STRING_MESSAGE,
+//					"RcostInvoiceGnaDocId information retrieved successfully");
+//
+//			responseObjectsMap.put("rcostInvoiceGnaDocId", resultMap.get("docId"));
+//			responseObjectsMap.put("docDate", resultMap.get("docDate"));
+//
+//			responseDTO = createServiceResponse(responseObjectsMap);
+//		} else {
+//			responseDTO = createServiceResponseError(responseObjectsMap,
+//					"Failed to retrieve RcostInvoiceGnaDocId information", errorMsg);
+//		}
+//
+//		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+//		return ResponseEntity.ok().body(responseDTO);
+//	}
+//
+
+	@PutMapping("/approveRCostInvoiceGna")
+	public ResponseEntity<ResponseDTO> approveRCostInvoiceGna(@RequestParam Long orgId, @RequestParam Long id,
+			@RequestParam String docId, @RequestParam String action, @RequestParam String actionBy) {
+		String methodName = "approveRCostInvoiceGna()";
+		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+		String errorMsg = null;
+		Map<String, Object> responseObjectsMap = new HashMap<>();
+		ResponseDTO responseDTO = null;
+		try {
+			RegisterCostInvoiceGnaVO rCostInvoiceGnaVO = rCostInvoiceGnaService.approveRCostInvoiceGna(orgId, id, docId,
+					action, actionBy);
+			responseObjectsMap.put("rCostInvoiceGnaVO", rCostInvoiceGnaVO);
+			responseDTO = createServiceResponse(responseObjectsMap);
+		} catch (Exception e) {
+			errorMsg = e.getMessage();
+			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+			responseDTO = createServiceResponseError(responseObjectsMap, errorMsg, errorMsg);
+		}
 		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
 		return ResponseEntity.ok().body(responseDTO);
 	}

@@ -8,7 +8,6 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -32,8 +31,14 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class RCostInvoiceGnaVO {
+public class RegisterCostInvoiceGnaVO {
 
+//	@Id
+//	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "registercostinvoicegnagen")
+//	@SequenceGenerator(name = "registercostinvoicegnagen", sequenceName = "registercostinvoicegnaseq", initialValue = 1000000001, allocationSize = 1)
+//	@Column(name = "registercostinvoicegnaid")
+//	private Long id;
+	
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "rcostinvoicegnagen")
 	@SequenceGenerator(name = "rcostinvoicegnagen", sequenceName = "rcostinvoicegnaseq", initialValue = 1000000001, allocationSize = 1)
@@ -148,19 +153,19 @@ public class RCostInvoiceGnaVO {
 	@Column(name = "approveon")
 	private String approveOn;
 	
-	@OneToMany(mappedBy = "rCostInvoiceGnaVO", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@OneToMany(mappedBy = "registerCostInvoiceGnaVO", cascade = CascadeType.ALL)
 	@JsonManagedReference
-	private List<ChargeRCostInvoiceGnaVO> chargeRCostInvoiceGnaVO;
+	private List<ChargeRegisterCostInvoiceGnaVO> chargeRegisterCostInvoiceGnaVO;
 
 	@Transient
-	List<ChargeRCostInvoiceGnaVO> gstLines;
+	List<ChargeRegisterCostInvoiceGnaVO> gstLines;
 
 	@Transient
-	List<ChargeRCostInvoiceGnaVO> normalCharges;
+	List<ChargeRegisterCostInvoiceGnaVO> normalCharges;
 
-	@OneToMany(mappedBy = "rCostInvoiceGnaVO", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@OneToMany(mappedBy = "registerCostInvoiceGnaVO", cascade = CascadeType.ALL)
 	@JsonManagedReference
-	private List<TdsRCostInvoiceGnaVO> tdsRCostInvoiceGnaVO;
+	private List<TdsRegisterCostInvoiceGnaVO> tdsRegisterCostInvoiceGnaVO;
 
 	@JsonGetter("active")
 	public String getActive() {

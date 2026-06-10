@@ -1,6 +1,7 @@
 package com.base.basesetup.repo;
 
 import java.util.List;
+
 import java.util.Set;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -8,19 +9,16 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import com.base.basesetup.entity.PartyMasterVO;
-import com.base.basesetup.entity.RCostInvoiceGnaVO;
+import com.base.basesetup.entity.RegisterCostInvoiceGnaVO;
 
 @Repository
-public interface RCostInvoiceGnaRepo extends JpaRepository<RCostInvoiceGnaVO, Long> {
+public interface RegisterCostInvoiceGnaRepo extends JpaRepository<RegisterCostInvoiceGnaVO, Long> {
 
 	@Query(nativeQuery = true, value = "select * from rcostinvoicegna where orgid=?1 and finyear=?2 and branchcode=?3 ")
-	List<RCostInvoiceGnaVO> getAllCostInvoiceByOrgId(Long orgId, String finYear, String branchCode);
+	List<RegisterCostInvoiceGnaVO> getAllRCostInvoiceGnaByOrgId(Long orgId, String finYear, String branchCode);
 
 	@Query(nativeQuery = true, value = "select * from rcostinvoicegna where rcostinvoicegnaid=?1 and active=1 ")
-	List<RCostInvoiceGnaVO> getAllRCostInvoiceGnaById(Long id);
-
-//	@Query(nativeQuery = true, value = "select concat(prefixfield,lpad(lastno,5,0)) AS docid from documenttypemappingdetails where orgid=?1 and finyear=?2 and branchcode=?3 and screencode=?4")
-//	String getRCostInvoiceGnaDocId(Long orgId, String finYear, String branchCode, String screenCode);
+	List<RegisterCostInvoiceGnaVO> getAllRCostInvoiceGnaById(Long id);
 
 	@Query(value = "SELECT " + "CONCAT(d.prefixfield, LPAD(d.lastno, 5, '0')) AS docid, " + "CASE "
 			+ "   WHEN CURDATE() BETWEEN f.startdate AND f.enddate " + "   THEN CURDATE() " + "   ELSE f.enddate "
@@ -28,9 +26,6 @@ public interface RCostInvoiceGnaRepo extends JpaRepository<RCostInvoiceGnaVO, Lo
 			+ "ON d.finyear = f.finyear AND d.orgid = f.orgid " + "WHERE d.orgid = ?1 " + "AND d.finyear = ?2 "
 			+ "AND d.branchcode = ?3 " + "AND d.screencode = ?4", nativeQuery = true)
 	List<Object[]> getRCostInvoiceGnaDocId(Long orgId, String finYear, String branchCode, String screenCode);
-
-//	@Query(nativeQuery = true, value = "SELECT * FROM finance.partymaster WHERE partytype = ?1 and gstregistered='YES'  AND active = 1")
-//	List<PartyMasterVO> getPartyDetailsForRCostInvoice(String partyType);
 
 	@Query(value = "select a from PartyMasterVO a where a.orgId=?1 and a.partyType=?2 and a.active=true and a.gstRegistered='YES'")
 	List<PartyMasterVO> getAllVendorFromPartyMaster(Long orgId, String partyType);
@@ -49,14 +44,6 @@ public interface RCostInvoiceGnaRepo extends JpaRepository<RCostInvoiceGnaVO, Lo
 
 	@Query(nativeQuery = true, value = "select currency,currencydescripition,buyingexrate,sellingexrate,ROW_NUMBER() OVER (ORDER BY currency) AS id from vw_exrates where orgid=?1 ")
 	Set<Object[]> getCurrencyAndExrateDetails(Long orgId);
-
-//	@Query(nativeQuery = true,value=" SELECT b.statecode, b.state, a.gstin, c.city,\r\n"
-//			+ " CONCAT(c.addressline1, ', ', c.addressline2, ', ', c.addressline3) AS address  ,ROW_NUMBER() OVER (ORDER BY currency) AS id \r\n"
-//			+ " FROM partymaster a JOIN partystate b ON a.partymasterid = b.partymasterid JOIN \r\n"
-//			+ " partyaddress c ON a.partymasterid = c.partymasterid AND b.state = c.state\r\n"
-//			+ " WHERE a.orgid = ?1 AND a.partytype ='VENDOR' and partycode=?2 AND a.active = 1 ORDER BY b.statecode, \r\n"
-//			+ " b.state, a.gstin, c.city, address")
-//	Set<Object[]> getStatedetailsFromPartyMaster(Long orgId, String partyCode);
 
 	@Query(nativeQuery = true, value = " SELECT b.statecode  , b.state, a.gstin ,ROW_NUMBER() OVER (ORDER BY currency) AS id \r\n"
 			+ "			FROM partymaster a JOIN partystate b ON a.partymasterid = b.partymasterid "
@@ -79,7 +66,10 @@ public interface RCostInvoiceGnaRepo extends JpaRepository<RCostInvoiceGnaVO, Lo
 	@Query(nativeQuery = true, value = "select accountgroupname,currency,gstpercentage from groupledger where orgid=?1 and gsttaxflag!='NA' and category='TAX' and gsttaxflag='INPUT TAX' and gsttype=?2 and gstpercentage=?3  order by gstpercentage desc")
 	Set<Object[]> findIntraDetailsForrCostInvoiceGnaPosting(Long orgId, String gstType, Double gstPercent);
 
-	RCostInvoiceGnaVO findByOrgIdAndIdAndDocId(Long orgId, Long id, String docId);
+	RegisterCostInvoiceGnaVO findByOrgIdAndIdAndDocId(Long orgId, Long id, String docId);
+
+	@Query(nativeQuery = true, value = "select * from rcostinvoicegna where screencode=?1 and docid=?2")
+	RegisterCostInvoiceGnaVO getrCostInvoiceByDocIdandScreenCode(String screenCode, String docId);
 
 	@Query(nativeQuery = true, value = "SELECT \r\n" + "    branchcode,\r\n" + "    evid,\r\n" + "    evdate,\r\n"
 			+ "    suppliername,\r\n" + "    suppliergstin,\r\n" + "    gsttype,\r\n"
@@ -135,9 +125,6 @@ public interface RCostInvoiceGnaRepo extends JpaRepository<RCostInvoiceGnaVO, Lo
 	Set<Object[]> findRegisterCostInvoiceReport(Long orgId, String branchCode, String fromDate, String toDate,
 			String partyCode, String finYear);
 
-	@Query(nativeQuery = true, value = "select * from rcostinvoicegna where screencode=?1 and docid=?2")
-	RCostInvoiceGnaVO getrCostInvoiceByDocIdandScreenCode(String screenCode, String docId);
-
 	@Query(nativeQuery = true, value = "select \r\n" + "    sum(t.complete) as complete, \r\n"
 			+ "    sum(t.Approved) as Approved,\r\n" + "    sum(t.Pending) as Pending,\r\n"
 			+ "    sum(t.Reject) as Reject\r\n" + "from (\r\n"
@@ -158,5 +145,4 @@ public interface RCostInvoiceGnaRepo extends JpaRepository<RCostInvoiceGnaVO, Lo
 			+ "    where orgid = ?1 and finyear = ?2 and branchcode = ?3 and cancel = 0 \r\n"
 			+ "      and approvestatus = 'REJECTED'\r\n" + ") t")
 	Set<Object[]> getRCostInvoiceGnaCount(Long orgId, String finYear, String branchCode);
-
 }

@@ -246,7 +246,8 @@ public class ReportController extends BaseController {
 	}
 
 	@GetMapping("/getAllRetrievalManifestProvider")
-	public ResponseEntity<ResponseDTO> getAllRetrievalManifestProvider() {
+	public ResponseEntity<ResponseDTO> getAllRetrievalManifestProvider(@RequestParam(required = true) Long orgId,
+			@RequestParam(required = true) Long finYear) {
 		String methodName = "getAllRetrievalManifestProvider()";
 		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
 		String errorMsg = null;
@@ -254,7 +255,7 @@ public class ReportController extends BaseController {
 		ResponseDTO responseDTO = null;
 		List<RetrievalManifestProviderVO> retrievalManifestProviderVOs = new ArrayList<RetrievalManifestProviderVO>();
 		try {
-			retrievalManifestProviderVOs = reportService.getAllRetrievalManifestProvider();
+			retrievalManifestProviderVOs = reportService.getAllRetrievalManifestProvider(orgId,finYear);
 		} catch (Exception e) {
 			errorMsg = e.getMessage();
 			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);

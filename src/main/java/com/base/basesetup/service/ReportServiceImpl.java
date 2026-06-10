@@ -480,8 +480,8 @@ public class ReportServiceImpl implements ReportService {
 	}
 
 	@Override
-	public List<RetrievalManifestProviderVO> getAllRetrievalManifestProvider() {
-		return retrievalManifestProviderRepo.findAll();
+	public List<RetrievalManifestProviderVO> getAllRetrievalManifestProvider(Long orgId, Long finYear) {
+		return retrievalManifestProviderRepo.getAllRetrievalManifestProvider( orgId,  finYear);
 	}
 
 	@Override
