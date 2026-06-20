@@ -35,6 +35,9 @@ public class AssetVO {
 	private Long orgId;
 
 	@Column(name = "assetcategory")
+	private String assetCategory;
+	
+	@Column(name = "category")
 	private String category;
 
 	@Column(name = "categorycode")

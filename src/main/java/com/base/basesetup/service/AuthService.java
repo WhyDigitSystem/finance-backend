@@ -67,6 +67,10 @@ public interface AuthService {
 	 Map<String, Object> createUpdateRoleScreenPermission(RolesPermissionHeaderDTO rolesPermissionHeaderDTO) throws ApplicationException;
 		
 	 List<RolesPermissionHeaderVO> getRolesPermissionHeaderByRoleandOrgid(String role, Long orgId);
+
+	 Map<String, Object> sendOtp(String userName);
+
+	 void resetPasswordNew(ResetPasswordFormDTO resetPasswordRequest);
 	
 
 	

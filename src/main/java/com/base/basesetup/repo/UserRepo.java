@@ -28,6 +28,8 @@ public interface UserRepo extends JpaRepository<UserVO, Long> {
 
 	UserVO findByOrgIdAndId(Long orgId, Long userid);
 
+	UserVO findByEmployeeName(String userName);
+
 
 //	@Query(nativeQuery =true,value ="select * from users u where u.username=?1")
 //	UserVO getUserName(String userName);

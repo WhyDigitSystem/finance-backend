@@ -2,6 +2,7 @@
 package com.base.basesetup.service;
 
 import java.math.BigDecimal;
+
 import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -15,7 +16,6 @@ import java.util.Set;
 import javax.validation.Valid;
 
 import org.apache.commons.lang3.ObjectUtils;
-import org.apache.poi.util.StringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -260,7 +260,7 @@ public class CostInvoiceServiceImpl implements CostInvoiceService {
 		costInvoiceVO.setSupplierId(costInvoiceDTO.getSupplierId());
 		costInvoiceVO.setJobOrderNo(costInvoiceDTO.getJobOrderNo());
 		costInvoiceVO.setVId(costInvoiceDTO.getVId());
-		costInvoiceVO.setVDate(costInvoiceDTO.getVDate());
+//		costInvoiceVO.setVDate(costInvoiceDTO.getVDate());
 
 		if (costInvoiceDTO.getId() != null) {
 
@@ -990,7 +990,7 @@ public class CostInvoiceServiceImpl implements CostInvoiceService {
 			accountsVO = new AccountsVO();
 //			String accountsDocId = accountsRepo.getCostInvoiceDocId(costInvoiceVO.getOrgId(),
 //					costInvoiceVO.getFinYear(), costInvoiceVO.getBranchCode(), sourceScreenCode, screenCode);
-			
+
 			List<Object[]> taxInvoiceDoc = accountsRepo.getApproveDocId(costInvoiceVO.getOrgId(),
 					costInvoiceVO.getFinYear(), costInvoiceVO.getBranchCode(), sourceScreenCode, screenCode);
 
@@ -1181,6 +1181,7 @@ public class CostInvoiceServiceImpl implements CostInvoiceService {
 		costInvoiceVO.setDueDate(dueDate);
 		costInvoiceVO.setApproveStatus(action);
 		costInvoiceVO.setApproveBy(actionBy);
+		costInvoiceVO.setVDate(LocalDate.now());
 		costInvoiceVO.setApproveOn(
 				LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd-MM-yyyy hh:mm:ss a")).toUpperCase());
 
@@ -1276,6 +1277,8 @@ public class CostInvoiceServiceImpl implements CostInvoiceService {
 				map.put("totalAmount", ch[15] != null ? new BigDecimal(ch[15].toString()) : BigDecimal.ZERO);
 				map.put("tdsAmount", ch[16] != null ? new BigDecimal(ch[16].toString()) : BigDecimal.ZERO);
 				map.put("approvestatus", ch[17] != null ? ch[17].toString() : "");
+				map.put("sNo", ch[18] != null ? ch[18].toString() : "");
+				map.put("createdOn", ch[19] != null ? ch[19].toString() : "");
 				List1.add(map);
 			}
 		}
@@ -1327,6 +1330,8 @@ public class CostInvoiceServiceImpl implements CostInvoiceService {
 				map.put("netAmount", ch[27] != null ? new BigDecimal(ch[27].toString()) : BigDecimal.ZERO);
 				map.put("gstPercentage", ch[28] != null ? new BigDecimal(ch[28].toString()) : BigDecimal.ZERO);
 				map.put("approvestatus", ch[29] != null ? ch[29].toString() : "");
+				map.put("sNo", ch[30] != null ? ch[30].toString() : "");
+				map.put("createdOn", ch[31] != null ? ch[31].toString() : "");
 //				map.put("gstType", ch[29] != null ? ch[29].toString() : "");
 
 				List1.add(map);

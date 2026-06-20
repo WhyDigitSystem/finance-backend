@@ -861,6 +861,7 @@ public class ARServiceImpl implements ARService {
 			map.put("outStanding", ch[20] != null ? new BigDecimal(ch[20].toString()) : BigDecimal.ZERO);
 			map.put("tdsAmount1", ch[21] != null ? new BigDecimal(ch[21].toString()) : BigDecimal.ZERO); // 20
 			map.put("approvestatus", ch[22] != null ? ch[22].toString() : "");
+			map.put("sNo", ch[23] != null ? ch[23].toString() : "");
 			List1.add(map);
 		}
 		return List1;
@@ -890,6 +891,7 @@ public class ARServiceImpl implements ARService {
 			map.put("onAccount", ch[10] != null ? new BigDecimal(ch[10].toString()) : BigDecimal.ZERO);
 			map.put("bankAccount", ch[11] != null ? ch[11].toString() : "");
 			map.put("approvedStatus", ch[12] != null ? ch[12].toString() : "");
+			map.put("sNo", ch[13] != null ? ch[13].toString() : "");
 			List1.add(map);
 		}
 		return List1;

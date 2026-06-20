@@ -109,7 +109,7 @@ public class Views {
     			+ "FROM (\r\n"
     			+ "    SELECT \r\n"
     			+ "        a.orgid AS orgid,\r\n"
-    			+ "        DATE_FORMAT(a.vdate, '%M') AS billmonth,\r\n"
+    			+ "        DATE_FORMAT(a.supplierbilldate, '%M') AS billmonth,\r\n"
     			+ "        a.finyear AS finyear,\r\n"
     			+ "        a.branch AS branch,\r\n"
     			+ "        a.branchcode AS branchcode,\r\n"

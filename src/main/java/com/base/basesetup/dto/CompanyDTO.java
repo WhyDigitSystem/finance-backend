@@ -27,6 +27,8 @@ public class CompanyDTO {
 	private String webSite;
 	private String note;
 	private String cin;
+	private String gst;
+
 	//private String userId;
 	private String employeeName;
 	private String employeeCode;

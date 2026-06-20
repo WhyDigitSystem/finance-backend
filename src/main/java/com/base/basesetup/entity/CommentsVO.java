@@ -26,29 +26,40 @@ public class CommentsVO {
 	@SequenceGenerator(name = "commentsgen", sequenceName = "commentsseq", initialValue = 1000000001, allocationSize = 1)
 	@Column(name = "commentsid")
 	private Long id;
-	
+
 	private String comments;
-	
-	@Column(name="createdby")
+
+	@Column(name = "createdby")
 	private String createdBy;
-	@Column(name="modifiedy")
+	@Column(name = "modifiedy")
 	private String updatedBy;
-	@Column(name="username")
+	@Column(name = "username")
 	private String userName;
 	@Column(name = "orgid")
 	private Long orgId;
-	
+
 	private String status;
 	@Column(name = "ticketid")
 	private Long ticketId;
-	
-	@Column(name="notificationflag")
-	private Boolean notificationFlag=false;
-	
-	//private boolean cancel;
-	
+
+	@Column(name = "notificationflag")
+	private Boolean notificationFlag = false;
+
+	@Column(name = "sourceusername")
+	private String sourceUserName;
+
+	@Column(name = "sourceorgid")
+	private Long sourceOrgId;
+
+	@Column(name = "sourceticketid")
+	private Long sourceTicketId;
+
+	@Column(name = "sourceid")
+	private Long sourceId;
+
+	// private boolean cancel;
+
 	@Embedded
 	private CreatedUpdatedDate commonDate = new CreatedUpdatedDate();
-	
-}
 
+}

@@ -135,8 +135,8 @@ public class CommonMasterServiceImpl implements CommonMasterService {
 	}
 
 	@Override
-	public List<CompanyVO> getCompanyById(Long companyid) {
-		return companyRepo.findByCompany(companyid);
+	public List<CompanyVO> getCompanyById(Long orgId) {
+		return companyRepo.findByCompany(orgId);
 	}
 
 	@Override
@@ -204,7 +204,7 @@ public class CommonMasterServiceImpl implements CommonMasterService {
 		userVO.setEmail(companyVO.getEmail());
 		userVO.setMobileNo(companyVO.getPhone());
 		userVO.setRole(Role.ROLE_USER);
-		userVO.setUserType("admin");
+		userVO.setUserType("ADMIN");
 		userVO.setOrgId(companyVO.getId());
 		userVO.setCreatedby(companyVO.getCreatedBy());
 		userVO.setUpdatedby(companyVO.getCreatedBy());
@@ -296,6 +296,7 @@ public class CommonMasterServiceImpl implements CommonMasterService {
 		companyVO.setTermsAndConditions(companyDTO.getTermsAndConditions());
 		companyVO.setPanNo(companyDTO.getPanNo());
 		companyVO.setCin(companyDTO.getCin());
+		companyVO.setGst(companyDTO.getGst());
 
 		if (ObjectUtils.isNotEmpty(companyDTO.getId())) {
 			List<BankDetailsVO> bankDetailsVO1 = bankDetailsRepo.findByCompanyVO(companyVO);

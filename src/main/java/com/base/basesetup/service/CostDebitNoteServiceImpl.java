@@ -441,8 +441,15 @@ public class CostDebitNoteServiceImpl implements CostDebitNoteService {
 //					+ " must be less than or equal to COSTINVOICE  " + sumLcAmounts);
 //		}
 
-		Set<Object[]> byOrginBillBased = costDebitNoteRepo.findByOrginBillBased(costDebitNoteDTO.getOrgId(),
-				costDebitNoteDTO.getOrginBill());
+//		Set<Object[]> byOrginBillBased = costDebitNoteRepo.findByOrginBillBased(costDebitNoteDTO.getOrgId(),
+//				costDebitNoteDTO.getOrginBill());
+//		
+		Set<Object[]> byOrginBillBased =
+			    costDebitNoteRepo.findByOrginBillBased(
+			        costDebitNoteDTO.getOrgId(),
+			        costDebitNoteDTO.getOrginBill(),
+			        costDebitNoteDTO.getId()
+			    );
 
 		for (Object[] ledger : byOrginBillBased) {
 			BigDecimal remainingAmount = (BigDecimal) ledger[4];
@@ -828,8 +835,14 @@ public class CostDebitNoteServiceImpl implements CostDebitNoteService {
 
 			// Add GST ledger entries
 			for (Map.Entry<String, BigDecimal> entry : ledgerSumMap.entrySet()) {
+
 				GroupLedgerVO groupLedgerVO = groupLedgerRepo.findByAccountGroupName(entry.getKey());
 
+				if(groupLedgerVO == null) {
+				    throw new ApplicationException(
+				        "Ledger not found : " + entry.getKey()
+				    );
+				}
 				AccountsDetailsVO gstAccountDetailsVO = new AccountsDetailsVO();
 				gstAccountDetailsVO.setACategory(groupLedgerVO.getCategory());
 				gstAccountDetailsVO.setNDebitAmount(BigDecimal.ZERO);

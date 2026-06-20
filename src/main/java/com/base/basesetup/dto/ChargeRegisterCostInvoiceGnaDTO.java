@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ChargeRCostInvoiceGnaDTO {
+public class ChargeRegisterCostInvoiceGnaDTO {
 
 	private String chargeName;
 	private boolean tdsApplicable;
@@ -19,7 +19,4 @@ public class ChargeRCostInvoiceGnaDTO {
 	private float gstPer;
 	private BigDecimal gtaAmount;
 
-
-	
-	
 }

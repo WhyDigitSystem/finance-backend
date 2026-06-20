@@ -82,7 +82,7 @@ public class ReportServiceImpl implements ReportService {
 
 	@Autowired
 	QuotationDetailsRepo quotationDetailsRepo;
-	
+
 	@Autowired
 	DocumentTypeMappingDetailsRepo documentTypeMappingDetailsRepo;
 
@@ -194,7 +194,7 @@ public class ReportServiceImpl implements ReportService {
 	@Override
 	public Map<String, Object> createUpdateIssuemanifest(IssueManifestProviderDTO issueManifestProviderDTO)
 			throws ApplicationException {
-		
+
 		String screenCode = "MIM";
 		IssueManifestProviderVO issueManifestProviderVO = new IssueManifestProviderVO();
 		String message;
@@ -206,14 +206,14 @@ public class ReportServiceImpl implements ReportService {
 			message = "IssueManifestProvider Updated Successfully";
 		} else {
 
-			String docId = issueManifestProviderRepo.getIssueManifestProviderDocId(issueManifestProviderDTO.getOrgId(), issueManifestProviderDTO.getFinYear()
-					, screenCode);
+			String docId = issueManifestProviderRepo.getIssueManifestProviderDocId(issueManifestProviderDTO.getOrgId(),
+					issueManifestProviderDTO.getFinYear(), screenCode);
 			issueManifestProviderVO.setTransactionNo(docId);
 
 			// GETDOCID LASTNO +1
 			DocumentTypeMappingDetailsVO documentTypeMappingDetailsVO = documentTypeMappingDetailsRepo
 					.findByOrgIdAndFinYearAndScreenCode(issueManifestProviderDTO.getOrgId(),
-							issueManifestProviderDTO.getFinYear(),  screenCode);
+							issueManifestProviderDTO.getFinYear(), screenCode);
 			documentTypeMappingDetailsVO.setLastno(documentTypeMappingDetailsVO.getLastno() + 1);
 			documentTypeMappingDetailsRepo.save(documentTypeMappingDetailsVO);
 
@@ -221,7 +221,7 @@ public class ReportServiceImpl implements ReportService {
 			issueManifestProviderVO.setUpdatedBy(issueManifestProviderDTO.getCreatedBy());
 			message = "IssueManifestProvider Created Successfully";
 		}
-		
+
 //		IssueManifestProviderVO issueManifestProviderVO = new IssueManifestProviderVO();
 //		String message = null;
 //		if (ObjectUtils.isEmpty(issueManifestProviderDTO.getId())) {
@@ -252,7 +252,6 @@ public class ReportServiceImpl implements ReportService {
 //			}
 //			message = "IssueManifestProvider Update Successfully";
 //		}
-	
 
 		getIssueManifestProviderVOFromIssueManifestProviderDTO(issueManifestProviderVO, issueManifestProviderDTO);
 		issueManifestProviderRepo.save(issueManifestProviderVO);
@@ -340,16 +339,13 @@ public class ReportServiceImpl implements ReportService {
 
 		return issueManifestProviderRepo.findById(id);
 	}
-	
-	
+
 	@Override
 	public String getIssueManifestProviderDocId(Long orgId, String finYear, String branch, String branchCode) {
 		String ScreenCode = "MIM";
-		String result = issueManifestProviderRepo.getIssueManifestProviderDocId(orgId, finYear,  ScreenCode);
+		String result = issueManifestProviderRepo.getIssueManifestProviderDocId(orgId, finYear, ScreenCode);
 		return result;
 	}
-	
-	
 
 	@Override
 	public Map<String, Object> createUpdateRetrievalManifest(RetrievalManifestProviderDTO retrievalManifestProviderDTO)
@@ -386,7 +382,7 @@ public class ReportServiceImpl implements ReportService {
 //			retrievalManifestProviderVO.setTransactionNo(retrievalManifestProviderDTO.getTransactionNo());
 //			message = "IssueManifestProvider Creatrion Sucessfully";
 //		}
-		
+
 		String screenCode = "RM";
 		RetrievalManifestProviderVO retrievalManifestProviderVO = new RetrievalManifestProviderVO();
 		String message;
@@ -398,8 +394,8 @@ public class ReportServiceImpl implements ReportService {
 			message = "RetrievalManifestProvider Updated Successfully";
 		} else {
 
-			String docId = retrievalManifestProviderRepo.getRetrievalManifestProviderDocId(retrievalManifestProviderDTO.getOrgId(), retrievalManifestProviderDTO.getFinYear(),
-					 screenCode);
+			String docId = retrievalManifestProviderRepo.getRetrievalManifestProviderDocId(
+					retrievalManifestProviderDTO.getOrgId(), retrievalManifestProviderDTO.getFinYear(), screenCode);
 			retrievalManifestProviderVO.setTransactionNo(docId);
 
 			// GETDOCID LASTNO +1
@@ -413,7 +409,7 @@ public class ReportServiceImpl implements ReportService {
 			retrievalManifestProviderVO.setUpdatedBy(retrievalManifestProviderDTO.getCreatedBy());
 			message = "RetrievalManifestProvider Created Successfully";
 		}
-		
+
 		getRetrievalManifestProviderVOFromRetrievalManifestProviderDTO(retrievalManifestProviderVO,
 				retrievalManifestProviderDTO);
 		retrievalManifestProviderRepo.save(retrievalManifestProviderVO);
@@ -450,7 +446,6 @@ public class ReportServiceImpl implements ReportService {
 		retrievalManifestProviderVO.setRefNo(retrievalManifestProviderDTO.getRefNo());
 		retrievalManifestProviderVO.setAmountInWords(retrievalManifestProviderDTO.getAmountInWords());
 		retrievalManifestProviderVO.setAmount(retrievalManifestProviderDTO.getAmount());
-		
 
 		if (retrievalManifestProviderDTO.getId() != null) {
 
@@ -485,16 +480,15 @@ public class ReportServiceImpl implements ReportService {
 	}
 
 	@Override
-	public List<RetrievalManifestProviderVO> getAllRetrievalManifestProvider() {
-		return retrievalManifestProviderRepo.findAll();
+	public List<RetrievalManifestProviderVO> getAllRetrievalManifestProvider(Long orgId, Long finYear) {
+		return retrievalManifestProviderRepo.getAllRetrievalManifestProvider( orgId,  finYear);
 	}
 
 	@Override
 	public Optional<RetrievalManifestProviderVO> getRetrievalManifestProviderById(Long id) {
 		return retrievalManifestProviderRepo.findById(id);
 	}
-	
-	
+
 	@Override
 	public String getRetrievalManifestProviderDocId(Long orgId, String finYear, String branch, String branchCode) {
 		String ScreenCode = "RM";
@@ -542,36 +536,36 @@ public class ReportServiceImpl implements ReportService {
 		List<Map<String, Object>> doctypeMappingDetails = new ArrayList<>();
 		for (Object[] sup : getRegister) {
 			Map<String, Object> doctype = new HashMap<>();
-			doctype.put("orgId", sup[0] != null ? sup[0].toString() : "");
-			doctype.put("branchCode", sup[1] != null ? sup[1].toString() : "");
-			doctype.put("finYear", sup[2] != null ? sup[2].toString() : "");
-			doctype.put("createdBy", sup[3] != null ? sup[3].toString() : "");
-			doctype.put("createdOn", sup[4] != null ? sup[4].toString() : "");
-			doctype.put("docId", sup[5] != null ? sup[5].toString() : "");
-			doctype.put("docDate", sup[6] != null ? sup[6].toString() : "");
-			doctype.put("subTypeCode", sup[7] != null ? sup[7].toString() : "");
-			doctype.put("chequeBank", sup[8] != null ? sup[8].toString() : "");
-			doctype.put("chQnNumber", sup[9] != null ? sup[9].toString() : "");
-			doctype.put("subLedgerCode", sup[10] != null ? sup[10].toString() : "");
-			doctype.put("subLedgerName", sup[11] != null ? sup[11].toString() : "");
-			doctype.put("receiptAmount", sup[12] != null ? new BigDecimal(sup[12].toString()) : BigDecimal.ZERO);
-			doctype.put("bankChargesAmt", sup[13] != null ? new BigDecimal(sup[13].toString()) : BigDecimal.ZERO);
-			doctype.put("tdsAmt", sup[14] != null ? new BigDecimal(sup[14].toString()) : BigDecimal.ZERO);
-//			doctype.put("invoiceNo", sup[15] != null ? sup[15].toString() : "");
-//			doctype.put("invoiceDate", sup[16] != null ? sup[16].toString() : "");
-//			doctype.put("refNo", sup[17] != null ? sup[17].toString() : "");
-//			doctype.put("refDate", sup[18] != null ? sup[18].toString() : "");
-			doctype.put("arapAmt", sup[15] != null ? new BigDecimal(sup[15].toString()) : BigDecimal.ZERO);
-			doctype.put("chargableAmt", sup[16] != null ? new BigDecimal(sup[16].toString()) : BigDecimal.ZERO);
-			doctype.put("arApOutstanding", sup[17] != null ? new BigDecimal(sup[17].toString()) : BigDecimal.ZERO);
-			doctype.put("arapSettled", sup[18] != null ? new BigDecimal(sup[18].toString()) : BigDecimal.ZERO);
-			doctype.put("chequeDate", sup[19] != null ? sup[19].toString() : "");
-			doctype.put("totalAmount", sup[20] != null ? new BigDecimal(sup[20].toString()) : BigDecimal.ZERO);
-//			doctype.put("tds", sup[25] != null ? new BigDecimal(sup[25].toString()) : BigDecimal.ZERO);
-			doctype.put("shortName", sup[21] != null ? sup[21].toString() : "");
-			doctype.put("netAmount", sup[22] != null ? new BigDecimal(sup[22].toString()) : BigDecimal.ZERO);
-			doctype.put("onAccount", sup[23] != null ? new BigDecimal(sup[23].toString()) : BigDecimal.ZERO);
-			doctype.put("rn", sup[24] != null ? new BigDecimal(sup[24].toString()) : BigDecimal.ZERO);
+			doctype.put("ids", sup[0] != null ? sup[0].toString() : "");
+			doctype.put("orgId", sup[1] != null ? sup[1].toString() : "");
+			doctype.put("branchCode", sup[2] != null ? sup[2].toString() : "");
+			doctype.put("finYear", sup[3] != null ? sup[3].toString() : "");
+			doctype.put("createdBy", sup[4] != null ? sup[4].toString() : "");
+			doctype.put("createdOn", sup[5] != null ? sup[5].toString() : "");
+			doctype.put("docId", sup[6] != null ? sup[6].toString() : "");
+			doctype.put("docDate", sup[7] != null ? sup[7].toString() : "");
+			doctype.put("subTypeCode", sup[8] != null ? sup[8].toString() : "");
+			doctype.put("bankCashAcc", sup[9] != null ? sup[9].toString() : "");
+			doctype.put("chqNumber", sup[10] != null ? sup[10].toString() : "");
+			doctype.put("subLedgerCode", sup[11] != null ? sup[11].toString() : "");
+			doctype.put("subLedgerName", sup[12] != null ? sup[12].toString() : "");
+
+			doctype.put("receiptAmount", sup[13] != null ? new BigDecimal(sup[13].toString()) : BigDecimal.ZERO);
+			doctype.put("bankChargesAmt", sup[14] != null ? new BigDecimal(sup[14].toString()) : BigDecimal.ZERO);
+			doctype.put("tdsAmt", sup[15] != null ? new BigDecimal(sup[15].toString()) : BigDecimal.ZERO);
+
+			doctype.put("arapAmt", sup[16] != null ? new BigDecimal(sup[16].toString()) : BigDecimal.ZERO);
+			doctype.put("chargableAmt", sup[17] != null ? new BigDecimal(sup[17].toString()) : BigDecimal.ZERO);
+			doctype.put("arApOutstanding", sup[18] != null ? new BigDecimal(sup[18].toString()) : BigDecimal.ZERO);
+			doctype.put("arapSettled", sup[19] != null ? new BigDecimal(sup[19].toString()) : BigDecimal.ZERO);
+
+			doctype.put("chequeDate", sup[20] != null ? sup[20].toString() : "");
+			doctype.put("totalAmount", sup[21] != null ? new BigDecimal(sup[21].toString()) : BigDecimal.ZERO);
+			doctype.put("shortName", sup[22] != null ? sup[22].toString() : "");
+
+			doctype.put("netAmount", sup[23] != null ? new BigDecimal(sup[23].toString()) : BigDecimal.ZERO);
+			doctype.put("onAccount", sup[24] != null ? new BigDecimal(sup[24].toString()) : BigDecimal.ZERO);
+
 			doctype.put("chargeAmount", sup[25] != null ? new BigDecimal(sup[25].toString()) : BigDecimal.ZERO);
 			doctype.put("receivableAmount", sup[26] != null ? new BigDecimal(sup[26].toString()) : BigDecimal.ZERO);
 			doctypeMappingDetails.add(doctype);
@@ -592,33 +586,30 @@ public class ReportServiceImpl implements ReportService {
 		List<Map<String, Object>> list1 = new ArrayList<>();
 		for (Object[] sup : chCode) {
 			Map<String, Object> doctype = new HashMap<>();
-			doctype.put("createdBy", sup[0] != null ? sup[0].toString() : "");
-			doctype.put("createdOn", sup[1] != null ? sup[1].toString() : "");
-			doctype.put("docId", sup[2] != null ? sup[2].toString() : "");
-			doctype.put("docDate", sup[3] != null ? sup[3].toString() : "");
-			doctype.put("subTypeCode", sup[4] != null ? sup[4].toString() : "");
-			doctype.put("subTypeName", sup[5] != null ? sup[5].toString() : "");
-			doctype.put("chequeBank", sup[6] != null ? sup[6].toString() : "");
-			doctype.put("chequeNo", sup[7] != null ? sup[7].toString() : "");
-			doctype.put("subLedgerCode", sup[8] != null ? sup[8].toString() : "");
-			doctype.put("subLedgerName", sup[9] != null ? sup[9].toString() : "");
-			doctype.put("partyShortName", sup[10] != null ? sup[10].toString() : "");
-			doctype.put("PaymentAmount", sup[11] != null ? new BigDecimal(sup[11].toString()) : BigDecimal.ZERO);
-			doctype.put("bankChargesAmt", sup[12] != null ? new BigDecimal(sup[12].toString()) : BigDecimal.ZERO);
-			doctype.put("tdsAmt", sup[13] != null ? new BigDecimal(sup[13].toString()) : BigDecimal.ZERO);
-			doctype.put("staxAmount", sup[14] != null ? new BigDecimal(sup[14].toString()) : BigDecimal.ZERO);
-//			doctype.put("invoiceNo", sup[15] != null ? sup[15].toString() : "");
-//			doctype.put("invoiceDate", sup[16] != null ? sup[16].toString() : "");
-//			doctype.put("refNo", sup[17] != null ? sup[17].toString() : "");
-//			doctype.put("refDate", sup[18] != null ? sup[18].toString() : "");
-			doctype.put("arapAmount", sup[15] != null ? new BigDecimal(sup[15].toString()) : BigDecimal.ZERO);
-			doctype.put("arApOutstanding", sup[16] != null ? new BigDecimal(sup[16].toString()) : BigDecimal.ZERO);
-			doctype.put("arapSettled", sup[17] != null ? new BigDecimal(sup[17].toString()) : BigDecimal.ZERO);
-			doctype.put("chequeDate", sup[18] != null ? sup[18].toString() : "");
-			doctype.put("bankCashAcc", sup[19] != null ? sup[19].toString() : "");
-			doctype.put("onaccount", sup[20] != null ? new BigDecimal(sup[20].toString()) : BigDecimal.ZERO);
-			doctype.put("netamount", sup[21] != null ? new BigDecimal(sup[21].toString()) : BigDecimal.ZERO);
-			doctype.put("chargeamt", sup[22] != null ? new BigDecimal(sup[22].toString()) : BigDecimal.ZERO);
+			doctype.put("ids", sup[0] != null ? sup[0].toString() : "");
+			doctype.put("createdBy", sup[1] != null ? sup[1].toString() : "");
+			doctype.put("createdOn", sup[2] != null ? sup[2].toString() : "");
+			doctype.put("docId", sup[3] != null ? sup[3].toString() : "");
+			doctype.put("docDate", sup[4] != null ? sup[4].toString() : "");
+			doctype.put("subTypeCode", sup[5] != null ? sup[5].toString() : "");
+			doctype.put("subTypeName", sup[6] != null ? sup[6].toString() : "");
+			doctype.put("chequeBank", sup[7] != null ? sup[7].toString() : "");
+			doctype.put("chequeNo", sup[8] != null ? sup[8].toString() : "");
+			doctype.put("subLedgerCode", sup[9] != null ? sup[9].toString() : "");
+			doctype.put("subLedgerName", sup[10] != null ? sup[10].toString() : "");
+			doctype.put("partyShortName", sup[11] != null ? sup[11].toString() : "");
+			doctype.put("paymentAmount", sup[12] != null ? new BigDecimal(sup[12].toString()) : BigDecimal.ZERO);
+			doctype.put("bankChargesAmt", sup[13] != null ? new BigDecimal(sup[13].toString()) : BigDecimal.ZERO);
+			doctype.put("tdsAmt", sup[14] != null ? new BigDecimal(sup[14].toString()) : BigDecimal.ZERO);
+			doctype.put("staxAmount", sup[15] != null ? new BigDecimal(sup[15].toString()) : BigDecimal.ZERO);
+			doctype.put("arapAmount", sup[16] != null ? new BigDecimal(sup[16].toString()) : BigDecimal.ZERO);
+			doctype.put("arapOutstanding", sup[17] != null ? new BigDecimal(sup[17].toString()) : BigDecimal.ZERO);
+			doctype.put("arapSettled", sup[18] != null ? new BigDecimal(sup[18].toString()) : BigDecimal.ZERO);
+			doctype.put("chequeDate", sup[19] != null ? sup[19].toString() : "");
+			doctype.put("bankCashAcc", sup[20] != null ? sup[20].toString() : "");
+			doctype.put("onAccount", sup[21] != null ? new BigDecimal(sup[21].toString()) : BigDecimal.ZERO);
+			doctype.put("netAmount", sup[22] != null ? new BigDecimal(sup[22].toString()) : BigDecimal.ZERO);
+			doctype.put("chargeAmt", sup[23] != null ? new BigDecimal(sup[23].toString()) : BigDecimal.ZERO);
 
 			list1.add(doctype);
 		}
@@ -697,7 +688,7 @@ public class ReportServiceImpl implements ReportService {
 			taxAmount = quotationDetailsDTO.getTax().multiply(quotationDetailsVO.getAmount())
 					.divide(BigDecimal.valueOf(100));
 			quotationDetailsVO.setTaxAmount(taxAmount);
-			
+
 			subTotal = subTotal.add(quotationDetailsVO.getAmount());
 			totalTaxAmount = totalTaxAmount.add(quotationDetailsVO.getTaxAmount());
 
@@ -963,13 +954,10 @@ public class ReportServiceImpl implements ReportService {
 		return list1;
 	}
 
-	
-	
-	
-	
 	@Override
-	public List<Map<String, Object>> getApAgeing(Long orgId, String branch, String partyname, String asdate, String baseType) {
-		Set<Object[]> chType = receiptRepo.getApAgeing(orgId, branch, partyname, asdate,baseType);
+	public List<Map<String, Object>> getApAgeing(Long orgId, String branch, String partyname, String asdate,
+			String baseType) {
+		Set<Object[]> chType = receiptRepo.getApAgeing(orgId, branch, partyname, asdate, baseType);
 		return getApAge(chType);
 	}
 
@@ -998,20 +986,17 @@ public class ReportServiceImpl implements ReportService {
 			map.put("unAdjusted", ch[18] != null ? new BigDecimal(ch[18].toString()) : BigDecimal.ZERO); // 9
 			map.put("dDays", ch[19] != null ? Long.valueOf(ch[19].toString()) : ""); // 10
 			map.put("msLab1", ch[20] != null ? new BigDecimal(ch[20].toString()) : BigDecimal.ZERO); // 11
-			map.put("msLab2", ch[21] != null ?new BigDecimal(ch[21].toString()) : BigDecimal.ZERO); // 12
+			map.put("msLab2", ch[21] != null ? new BigDecimal(ch[21].toString()) : BigDecimal.ZERO); // 12
 			map.put("msLab3", ch[22] != null ? new BigDecimal(ch[22].toString()) : BigDecimal.ZERO); // 13
-			map.put("msLab4", ch[23] != null ? new BigDecimal(ch[23].toString()) : BigDecimal.ZERO); 
+			map.put("msLab4", ch[23] != null ? new BigDecimal(ch[23].toString()) : BigDecimal.ZERO);
 			map.put("msLab5", ch[24] != null ? new BigDecimal(ch[24].toString()) : BigDecimal.ZERO);// 14
 			map.put("creditLimit", ch[25] != null ? new BigDecimal(ch[25].toString()) : BigDecimal.ZERO); // 15
 			map.put("creditDays", ch[26] != null ? Long.valueOf(ch[26].toString()) : ""); // 16
-			
 
 			List1.add(map);
 		}
 		return List1;
 	}
-
-
 
 //	@Override
 //	public List<RetrievalManifestProviderVO> findRIMMIMReports(
