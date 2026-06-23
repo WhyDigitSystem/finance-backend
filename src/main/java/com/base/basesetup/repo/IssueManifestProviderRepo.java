@@ -17,7 +17,7 @@ public interface IssueManifestProviderRepo extends JpaRepository<IssueManifestPr
 	@Query(nativeQuery = true, value = "select * from mim where orgid=?1")
 	List<IssueManifestProviderVO> findAllIssueManifeasrProvider(Long orgId);
 
-	@Query(nativeQuery = true, value = "select * from mim where orgid=?1 and finyear=?2")
+	@Query(nativeQuery = true, value = "select * from mim where orgid=?1 and finyear=?2  order by transactionno asc ")
 	List<IssueManifestProviderVO> getAllIssueManifestProvider(Long orgId, Long finYear);
 
 	@Query(nativeQuery = true, value = "select transactionno,transactiondate,transportername,sender,receiver,amount,hsncode,b.assetcode,b.asset,b.assetqty,kitid,kitname,kitqty from \r\n"

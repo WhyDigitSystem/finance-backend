@@ -44,7 +44,7 @@ public class SecurityConfig {
 						"/api/autoemail/**",
 						
 						"/api/Budget/**","/api/businesscontroller/**","/api/clientcompanycontroller/**","/api/companycontroller/**","/api/license/**",
-						"/api/MonthlyProcess/**","/api/allotment/**","/api/registerCostInvoiceGna/**")
+						"/api/MonthlyProcess/**","/api/allotment/**","/api/registerCostInvoiceGna/**","/api/quotation/**")
 
 
 

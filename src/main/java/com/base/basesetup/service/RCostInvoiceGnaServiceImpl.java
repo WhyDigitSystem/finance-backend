@@ -874,8 +874,18 @@ public class RCostInvoiceGnaServiceImpl implements RCostInvoiceGnaService {
 	}
 
 	private List<Map<String, Object>> findRegisterCostInvoice(Set<Object[]> chCode) {
-		List<Map<String, Object>> List1 = new ArrayList<>();
+		List<Map<String, Object>> list = new ArrayList<>();
+
 		for (Object[] ch : chCode) {
+
+			BigDecimal billAmount = ch[6] != null ? new BigDecimal(ch[6].toString()) : BigDecimal.ZERO;
+			BigDecimal totalAmount = ch[7] != null ? new BigDecimal(ch[7].toString()) : BigDecimal.ZERO;
+
+			// Skip row if both amounts are zero
+			if (billAmount.compareTo(BigDecimal.ZERO) == 0 && totalAmount.compareTo(BigDecimal.ZERO) == 0) {
+				continue;
+			}
+
 			Map<String, Object> map = new HashMap<>();
 
 			map.put("BranchCode", ch[0] != null ? ch[0].toString() : "");
@@ -884,9 +894,8 @@ public class RCostInvoiceGnaServiceImpl implements RCostInvoiceGnaService {
 			map.put("SupplierName", ch[3] != null ? ch[3].toString() : "");
 			map.put("SupplierGstin", ch[4] != null ? ch[4].toString() : "");
 			map.put("GstType", ch[5] != null ? ch[5].toString() : "");
-			map.put("BillAmount", ch[6] != null ? new BigDecimal(ch[6].toString()) : BigDecimal.ZERO);
-//			map.put("Tax", ch[7] != null ? new BigDecimal(ch[7].toString()) : BigDecimal.ZERO);
-			map.put("TotalAmount", ch[7] != null ? new BigDecimal(ch[7].toString()) : BigDecimal.ZERO);
+			map.put("BillAmount", billAmount);
+			map.put("TotalAmount", totalAmount);
 			map.put("Tds", ch[8] != null ? new BigDecimal(ch[8].toString()) : BigDecimal.ZERO);
 			map.put("PartyPayable", ch[9] != null ? new BigDecimal(ch[9].toString()) : BigDecimal.ZERO);
 			map.put("OutputIgst", ch[10] != null ? new BigDecimal(ch[10].toString()) : BigDecimal.ZERO);
@@ -896,10 +905,11 @@ public class RCostInvoiceGnaServiceImpl implements RCostInvoiceGnaService {
 			map.put("DocId", ch[14] != null ? ch[14].toString() : "");
 			map.put("DocDate", ch[15] != null ? ch[15].toString() : "");
 			map.put("ScreenCode", ch[16] != null ? ch[16].toString() : "");
-			List1.add(map);
-		}
-		return List1;
 
+			list.add(map);
+		}
+
+		return list;
 	}
 
 	@Override
@@ -1489,7 +1499,7 @@ public class RCostInvoiceGnaServiceImpl implements RCostInvoiceGnaService {
 				AccountsDetailsVO gstAccountDetailsVO = new AccountsDetailsVO();
 				gstAccountDetailsVO.setACategory(groupLedgerVO.getCategory());
 				gstAccountDetailsVO.setNDebitAmount(entry.getValue());
-				gstAccountDetailsVO.setDebitAmount(entry.getValue());	
+				gstAccountDetailsVO.setDebitAmount(entry.getValue());
 				gstAccountDetailsVO.setNCreditAmount(BigDecimal.ZERO);
 				gstAccountDetailsVO.setCreditAmount(BigDecimal.ZERO);
 				gstAccountDetailsVO.setArapFlag(false);

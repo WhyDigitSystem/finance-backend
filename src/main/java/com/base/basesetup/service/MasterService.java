@@ -21,6 +21,7 @@ import com.base.basesetup.dto.GroupLedgerDTO;
 import com.base.basesetup.dto.GroupMapping2DTO;
 import com.base.basesetup.dto.GroupMappingDTO;
 import com.base.basesetup.dto.HSNSacCodeDTO;
+import com.base.basesetup.dto.InvoiceNewDTO;
 import com.base.basesetup.dto.ItemMasterDTO;
 import com.base.basesetup.dto.ListOfValuesDTO;
 import com.base.basesetup.dto.PartyMasterDTO;
@@ -43,6 +44,7 @@ import com.base.basesetup.entity.EmployeeVO;
 import com.base.basesetup.entity.GroupLedgerVO;
 import com.base.basesetup.entity.GroupMappingVO;
 import com.base.basesetup.entity.HSNSacCodeVO;
+import com.base.basesetup.entity.InvoiceNewVO;
 import com.base.basesetup.entity.ItemMasterVO;
 import com.base.basesetup.entity.ListOfValuesVO;
 import com.base.basesetup.entity.PartyMasterVO;
@@ -309,5 +311,11 @@ public interface MasterService {
 	List<ListOfValuesVO> getListOfValuesByOrgId(Long orgid);
 
 	List<HSNSacCodeVO> getAllActiveSacCodeByOrgId(Long orgId);
+
+	List<InvoiceNewVO> getAllTaxInvoice(Long orgId);
+
+	InvoiceNewVO getTaxInvoiceById(Long id);
+
+	Map<String, Object> createUpdateTaxInvoice(InvoiceNewDTO taxInvoiceDTO) throws ApplicationException;
 
 }
