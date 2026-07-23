@@ -52,5 +52,8 @@ public interface TicketRepo extends JpaRepository<TicketVO, Long> {
 			+ "ORDER BY ticketid DESC")
 	List<TicketVO> getTicketReport(Long orgId, String fromDate, String toDate);
 
+	@Query(nativeQuery = true, value = "select concat(screencode,'-',lpad(lastno,3,0)) AS docid from documenttypemappingdetails where orgid=?1 and screencode=?2")
+	String getTicketDocId(Long orgId,String screenCode);
+
 
 }

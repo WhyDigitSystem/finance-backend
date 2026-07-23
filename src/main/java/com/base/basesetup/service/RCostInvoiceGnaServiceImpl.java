@@ -874,39 +874,82 @@ public class RCostInvoiceGnaServiceImpl implements RCostInvoiceGnaService {
 	}
 
 	private List<Map<String, Object>> findRegisterCostInvoice(Set<Object[]> chCode) {
+
 		List<Map<String, Object>> list = new ArrayList<>();
+		boolean hasData = false;
 
 		for (Object[] ch : chCode) {
 
-			BigDecimal billAmount = ch[6] != null ? new BigDecimal(ch[6].toString()) : BigDecimal.ZERO;
-			BigDecimal totalAmount = ch[7] != null ? new BigDecimal(ch[7].toString()) : BigDecimal.ZERO;
+			// Skip TOTAL row for now
+			if ("TOTAL".equalsIgnoreCase(ch[1] != null ? ch[1].toString() : "")) {
+				continue;
+			}
 
-			// Skip row if both amounts are zero
+			BigDecimal billAmount = ch[7] != null ? new BigDecimal(ch[7].toString()) : BigDecimal.ZERO;
+			BigDecimal totalAmount = ch[8] != null ? new BigDecimal(ch[8].toString()) : BigDecimal.ZERO;
+
 			if (billAmount.compareTo(BigDecimal.ZERO) == 0 && totalAmount.compareTo(BigDecimal.ZERO) == 0) {
 				continue;
 			}
 
+			hasData = true;
+
 			Map<String, Object> map = new HashMap<>();
 
-			map.put("BranchCode", ch[0] != null ? ch[0].toString() : "");
-			map.put("Vid", ch[1] != null ? ch[1].toString() : "");
-			map.put("Vdate", ch[2] != null ? ch[2].toString() : "");
-			map.put("SupplierName", ch[3] != null ? ch[3].toString() : "");
-			map.put("SupplierGstin", ch[4] != null ? ch[4].toString() : "");
-			map.put("GstType", ch[5] != null ? ch[5].toString() : "");
+			map.put("sNo", ch[0] != null ? ch[0].toString() : "");
+			map.put("BranchCode", ch[1] != null ? ch[1].toString() : "");
+			map.put("Vid", ch[2] != null ? ch[2].toString() : "");
+			map.put("Vdate", ch[3] != null ? ch[3].toString() : "");
+			map.put("SupplierName", ch[4] != null ? ch[4].toString() : "");
+			map.put("SupplierGstin", ch[5] != null ? ch[5].toString() : "");
+			map.put("GstType", ch[6] != null ? ch[6].toString() : "");
 			map.put("BillAmount", billAmount);
 			map.put("TotalAmount", totalAmount);
-			map.put("Tds", ch[8] != null ? new BigDecimal(ch[8].toString()) : BigDecimal.ZERO);
-			map.put("PartyPayable", ch[9] != null ? new BigDecimal(ch[9].toString()) : BigDecimal.ZERO);
-			map.put("OutputIgst", ch[10] != null ? new BigDecimal(ch[10].toString()) : BigDecimal.ZERO);
-			map.put("OutputCgst", ch[11] != null ? new BigDecimal(ch[11].toString()) : BigDecimal.ZERO);
-			map.put("OutputSgst", ch[12] != null ? new BigDecimal(ch[12].toString()) : BigDecimal.ZERO);
-			map.put("GstPercent", ch[13] != null ? new BigDecimal(ch[13].toString()) : BigDecimal.ZERO);
-			map.put("DocId", ch[14] != null ? ch[14].toString() : "");
-			map.put("DocDate", ch[15] != null ? ch[15].toString() : "");
-			map.put("ScreenCode", ch[16] != null ? ch[16].toString() : "");
+			map.put("Tds", ch[9] != null ? new BigDecimal(ch[9].toString()) : BigDecimal.ZERO);
+			map.put("PartyPayable", ch[10] != null ? new BigDecimal(ch[10].toString()) : BigDecimal.ZERO);
+			map.put("OutputIgst", ch[11] != null ? new BigDecimal(ch[11].toString()) : BigDecimal.ZERO);
+			map.put("OutputCgst", ch[12] != null ? new BigDecimal(ch[12].toString()) : BigDecimal.ZERO);
+			map.put("OutputSgst", ch[13] != null ? new BigDecimal(ch[13].toString()) : BigDecimal.ZERO);
+			map.put("GstPercent", ch[14] != null ? ch[14].toString() : "");
+			map.put("DocId", ch[15] != null ? ch[15].toString() : "");
+			map.put("DocDate", ch[16] != null ? ch[16].toString() : "");
+			map.put("ScreenCode", ch[17] != null ? ch[17].toString() : "");
 
 			list.add(map);
+		}
+		if (hasData) {
+
+			for (Object[] ch : chCode) {
+
+				if ("TOTAL".equalsIgnoreCase(ch[1] != null ? ch[1].toString() : "")) {
+
+					Map<String, Object> totalMap = new HashMap<>();
+
+					totalMap.put("sNo", "");
+					totalMap.put("BranchCode", "");
+					totalMap.put("Vid", "TOTAL");
+					totalMap.put("Vdate", "");
+					totalMap.put("SupplierName", "");
+					totalMap.put("SupplierGstin", "");
+					totalMap.put("GstType", "");
+
+					totalMap.put("BillAmount", ch[7] != null ? new BigDecimal(ch[7].toString()) : BigDecimal.ZERO);
+					totalMap.put("TotalAmount", ch[8] != null ? new BigDecimal(ch[8].toString()) : BigDecimal.ZERO);
+					totalMap.put("Tds", ch[9] != null ? new BigDecimal(ch[9].toString()) : BigDecimal.ZERO);
+					totalMap.put("PartyPayable", ch[10] != null ? new BigDecimal(ch[10].toString()) : BigDecimal.ZERO);
+					totalMap.put("OutputIgst", ch[11] != null ? new BigDecimal(ch[11].toString()) : BigDecimal.ZERO);
+					totalMap.put("OutputCgst", ch[12] != null ? new BigDecimal(ch[12].toString()) : BigDecimal.ZERO);
+					totalMap.put("OutputSgst", ch[13] != null ? new BigDecimal(ch[13].toString()) : BigDecimal.ZERO);
+
+					totalMap.put("GstPercent", "");
+					totalMap.put("DocId", "");
+					totalMap.put("DocDate", "");
+					totalMap.put("ScreenCode", "");
+
+					list.add(totalMap);
+					break;
+				}
+			}
 		}
 
 		return list;

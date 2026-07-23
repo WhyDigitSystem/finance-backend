@@ -1,6 +1,7 @@
 package com.base.basesetup.service;
 
 import java.io.IOException;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -29,9 +30,11 @@ import org.springframework.web.multipart.MultipartFile;
 import com.base.basesetup.dto.CommentsDTO;
 import com.base.basesetup.dto.TicketDTO;
 import com.base.basesetup.entity.CommentsVO;
+import com.base.basesetup.entity.DocumentTypeMappingDetailsVO;
 import com.base.basesetup.entity.TicketVO;
 import com.base.basesetup.exception.ApplicationException;
 import com.base.basesetup.repo.CommentsRepo;
+import com.base.basesetup.repo.DocumentTypeMappingDetailsRepo;
 import com.base.basesetup.repo.TicketRepo;
 
 @Service
@@ -57,73 +60,9 @@ public class TicketServiceImpl implements TicketService {
 	@Autowired
 	CommentSyncService commentSyncService;
 
-//	@Override
-//	public Map<String, Object> createUpdateTicket(@Valid TicketDTO ticketDTO) throws ApplicationException {
-//
-//		TicketVO ticketVO = new TicketVO();
-//		String toEmail = adminEmail;
-//		String fromMail = noReplayEmail;
-//
-//		String message = null;
-//
-//		ticketVO.setCreatedBy(ticketDTO.getCreatedBy());
-//		ticketVO.setUpdatedBy(ticketDTO.getCreatedBy());
-//		message = "Ticket Creation Successfully";
-//
-//		ticketVO = getTicketVOFroTticketDTO(ticketVO, ticketDTO);
-//		ticketRepo.save(ticketVO);
-//		boolean mailSent = false;
-//		
-//		Date currentDate = new Date();
-//		SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy hh:mm:ss a");
-//		String createdOn=dateFormat.format(currentDate);
-//
-//		try {
-//			// Prepare HTML mail content
-//			String htmlContent = loadHtmlTemplate(ticketVO.getId(), ticketVO.getSubject(), ticketVO.getStatus(),
-//					ticketVO.getDescription(),ticketVO.getCreatedBy(),ticketVO.getEmail(),createdOn);
-//
-//			// Send the mail
-//			emailService.sendHtmlEmail(fromMail, toEmail, ticketVO.getSubject(), htmlContent);
-//			
-//			String Acknowledgement = loadHtmlTemplate(ticketVO.getId(), ticketVO.getSubject(), ticketVO.getStatus(),
-//					ticketVO.getDescription(),ticketVO.getCreatedBy(),ticketVO.getEmail(),createdOn);
-//
-//			// Send the mail
-//			emailService.sendHtmlEmail(fromMail, ticketVO.getEmail(), ticketVO.getSubject(), Acknowledgement);
-//			
-//			mailSent = true;
-//
-//		} catch (Exception e) {
-//			System.err.println("❌ Failed to send mail for ticket ID " + ticketVO.getId() + ": " + e.getMessage());
-//			e.printStackTrace();
-//		}
-//
-//		// Prepare response message
-//		if (mailSent) {
-//			message = "Ticket created successfully and mail sent.";
-//		} else {
-//			message = "Ticket created successfully, but mail not sent.";
-//		}
-//
-//		Map<String, Object> response = new HashMap<>();
-//		response.put("message", message);
-//		response.put("ticketVO", ticketVO);
-//		return response;
-//	}
-//
-//	private TicketVO getTicketVOFroTticketDTO(TicketVO ticketVO, @Valid TicketDTO ticketDTO) {
-//
-//		ticketVO.setSubject(ticketDTO.getSubject());
-//		ticketVO.setDescription(ticketDTO.getDescription());
-//		ticketVO.setUserName(ticketDTO.getUserName());
-//		ticketVO.setOrgId(ticketDTO.getOrgId());
-//		ticketVO.setStatus(ticketDTO.getStatus());
-//		ticketVO.setEmail(ticketDTO.getEmail());
-//
-//		return ticketVO;
-//
-//	}
+	@Autowired
+	DocumentTypeMappingDetailsRepo documentTypeMappingDetailsRepo;
+
 
 	@Override
 	@Transactional
@@ -162,6 +101,17 @@ public class TicketServiceImpl implements TicketService {
 		vo.setStatus(dto.getStatus());
 		vo.setEmail(dto.getEmail());
 		vo.setBranch(dto.getBranch());
+
+		String screenCode = "TICKET";
+
+		String docId = ticketRepo.getTicketDocId(dto.getOrgId(), screenCode);
+		vo.setDocId(docId);
+
+		DocumentTypeMappingDetailsVO documentTypeMappingDetailsVO = documentTypeMappingDetailsRepo
+				.findByOrgIdAndScreenCode(dto.getOrgId(), screenCode);
+		documentTypeMappingDetailsVO.setLastno(documentTypeMappingDetailsVO.getLastno() + 1);
+		documentTypeMappingDetailsRepo.save(documentTypeMappingDetailsVO);
+
 		vo.setBranchCode(dto.getBranchCode());
 		vo.setCompanyName(dto.getCompanyName());
 		vo.setTicketStatus(dto.getTicketStatus());
@@ -581,10 +531,10 @@ public class TicketServiceImpl implements TicketService {
 			throw new RuntimeException("❌ id and sourceId both NULL");
 		}
 	}
-	
+
 	@Override
 	public List<TicketVO> getTicketReport(Long orgId, String fromDate, String toDate) {
-		return ticketRepo.getTicketReport( orgId,  fromDate,  toDate);
+		return ticketRepo.getTicketReport(orgId, fromDate, toDate);
 	}
 
 }

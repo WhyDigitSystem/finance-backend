@@ -59,6 +59,7 @@ public class AsyncService {
 			body.put("sourceBranchCode", ticketVO.getBranchCode());
 			body.put("projectName", ticketVO.getCompanyName());
 			body.put("application", "Finance_AIP");
+			body.put("sourceDocId", ticketVO.getDocId());
 
 			HttpHeaders headers = new HttpHeaders();
 			headers.setContentType(MediaType.APPLICATION_JSON);
@@ -85,7 +86,7 @@ public class AsyncService {
 
 			String content = new String(resource.getInputStream().readAllBytes());
 
-			String htmlContent = content.replace("${ticketId}", ticketVO.getId().toString())
+			String htmlContent = content.replace("${ticketId}", ticketVO.getDocId())
 					.replace("${subject}", ticketVO.getSubject()).replace("${status}", ticketVO.getStatus())
 					.replace("${description}", ticketVO.getDescription())
 					.replace("${raisedBy}", ticketVO.getCreatedBy()).replace("${raisedEmail}", ticketVO.getEmail())

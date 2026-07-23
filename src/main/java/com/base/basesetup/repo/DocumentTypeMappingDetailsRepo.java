@@ -7,7 +7,7 @@ import org.springframework.stereotype.Repository;
 import com.base.basesetup.entity.DocumentTypeMappingDetailsVO;
 
 @Repository
-public interface DocumentTypeMappingDetailsRepo extends JpaRepository<DocumentTypeMappingDetailsVO, Long>{
+public interface DocumentTypeMappingDetailsRepo extends JpaRepository<DocumentTypeMappingDetailsVO, Long> {
 
 	@Query(nativeQuery = true, value = "select * from documenttypemappingdetails where orgid=?1 and finyear=?2 and branchcode=?3 and screencode=?4")
 	DocumentTypeMappingDetailsVO findByOrgIdAndFinYearAndBranchCodeAndScreenCode(Long orgId, String finYear,
@@ -16,6 +16,7 @@ public interface DocumentTypeMappingDetailsRepo extends JpaRepository<DocumentTy
 	@Query(nativeQuery = true, value = "select * from documenttypemappingdetails where orgid=?1 and finyear=?2 and branchcode='BLR' and screencode=?3")
 	DocumentTypeMappingDetailsVO findByOrgIdAndFinYearAndScreenCode(Long orgId, String finYear, String screenCode);
 
+	@Query(nativeQuery = true, value = "select * from documenttypemappingdetails where orgid=?1 and screencode=?2")
+	DocumentTypeMappingDetailsVO findByOrgIdAndScreenCode(Long orgId, String screenCode);
 
 }
-                          
