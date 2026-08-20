@@ -45,15 +45,14 @@ public interface TicketRepo extends JpaRepository<TicketVO, Long> {
 
 	@Query(nativeQuery = true, value = "select * from ticket where orgid=?1 and ticketid=?2 and email=?3")
 	TicketVO findByOrgIdAndIdEmail(Long orgId, Long id, String email);
-	
+
 	@Query(nativeQuery = true, value = "SELECT *\r\n" + "FROM ticket\r\n" + "WHERE  orgid = ?1\r\n"
 			+ "  AND (?2 IS NULL\r\n" + "       OR STR_TO_DATE(createdon,'%d-%m-%Y %h:%i:%s %p') >= ?2)\r\n"
 			+ "  AND (?3 IS NULL\r\n" + "       OR STR_TO_DATE(createdon,'%d-%m-%Y %h:%i:%s %p') <= ?3)\r\n"
 			+ "ORDER BY ticketid DESC")
 	List<TicketVO> getTicketReport(Long orgId, String fromDate, String toDate);
 
-	@Query(nativeQuery = true, value = "select concat(screencode,'-',lpad(lastno,3,0)) AS docid from documenttypemappingdetails where orgid=?1 and screencode=?2")
-	String getTicketDocId(Long orgId,String screenCode);
-
+	@Query(nativeQuery = true, value = "select concat(prefixfield,'-',lpad(lastno,3,0)) AS docid from documenttypemappingdetails where orgid=?1 and screencode=?2")
+	String getTicketDocId(Long orgId, String screenCode);
 
 }

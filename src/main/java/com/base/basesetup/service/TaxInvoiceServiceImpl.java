@@ -143,6 +143,8 @@ public class TaxInvoiceServiceImpl implements TaxInvoiceService {
 			message = "Tax Invoice Updated Successfully";
 		} else {
 
+			createUpdateTaxInvoiceVOByTaxInvoiceDTO(taxInvoiceDTO, taxInvoiceVO);
+			
 			if (taxInvoiceRepo.existsByvIdAndOrgId(taxInvoiceDTO.getVId(), taxInvoiceDTO.getOrgId())) {
 
 				String errorMessage = String.format("This VId: %s already exists for this organization.",
@@ -177,7 +179,7 @@ public class TaxInvoiceServiceImpl implements TaxInvoiceService {
 			documentTypeMappingDetailsVO.setLastno(documentTypeMappingDetailsVO.getLastno() + 1);
 			documentTypeMappingDetailsRepo.save(documentTypeMappingDetailsVO);
 
-			createUpdateTaxInvoiceVOByTaxInvoiceDTO(taxInvoiceDTO, taxInvoiceVO);
+		
 			taxInvoiceVO.setCreatedBy(taxInvoiceDTO.getCreatedBy());
 			taxInvoiceVO.setModifiedBy(taxInvoiceDTO.getCreatedBy());
 //			createUpdateTaxInvoiceVOByTaxInvoiceDTO(taxInvoiceDTO, taxInvoiceVO);
@@ -191,7 +193,7 @@ public class TaxInvoiceServiceImpl implements TaxInvoiceService {
 		return response;
 	}
 
-	private void createUpdateTaxInvoiceVOByTaxInvoiceDTO(TaxInvoiceDTO taxInvoiceDTO, TaxInvoiceVO taxInvoiceVO) {
+	private void createUpdateTaxInvoiceVOByTaxInvoiceDTO(TaxInvoiceDTO taxInvoiceDTO, TaxInvoiceVO taxInvoiceVO) throws ApplicationException {
 
 		// Map fields from DTO to VO
 		taxInvoiceVO.setOrgId(taxInvoiceDTO.getOrgId());
@@ -281,6 +283,7 @@ public class TaxInvoiceServiceImpl implements TaxInvoiceService {
 		BigDecimal totalInvAmountLC = BigDecimal.ZERO;
 		BigDecimal totalInvAmountBC = BigDecimal.ZERO;
 		Long totalQty = Long.valueOf(0);
+		BigDecimal totalPoQty = BigDecimal.ZERO;
 
 		List<TaxInvoiceDetailsVO> taxInvoiceDetailsVOs = new ArrayList<>();
 		for (TaxInvoiceDetailsDTO taxInvoiceDetailsDTO : taxInvoiceDTO.getTaxInvoiceDetailsDTO()) {
@@ -300,6 +303,7 @@ public class TaxInvoiceServiceImpl implements TaxInvoiceService {
 			taxInvoiceDetailsVO.setExempted(taxInvoiceDetailsDTO.getExempted());
 			taxInvoiceDetailsVO.setSac(taxInvoiceDetailsDTO.getSac());
 			taxInvoiceDetailsVO.setGSTPercent(taxInvoiceDetailsDTO.getGSTPercent());
+			totalPoQty=totalPoQty.add(taxInvoiceDetailsVO.getQty());
 
 			BigDecimal fcAmount;
 			BigDecimal lcAmount;
@@ -581,7 +585,19 @@ public class TaxInvoiceServiceImpl implements TaxInvoiceService {
 
 // 		BigDecimal roundedTotalInvAmountBC = totalInvAmountBC.setScale(0, RoundingMode.HALF_UP);
 		taxInvoiceVO.setTotalInvAmountBc(totalInvAmountBC);
-		taxInvoiceVO.setTotalQty(totalQty);
+		
+
+		if (taxInvoiceDTO.getTrasactionNo() != null && !taxInvoiceDTO.getTrasactionNo().isEmpty()) {
+		    BigDecimal totalQtyBD = BigDecimal.valueOf(totalQty);
+		    
+		    if (totalPoQty.compareTo(totalQtyBD) == 0) {
+		        taxInvoiceVO.setTotalQty(totalQty);
+		    } else {
+		        throw new ApplicationException("Quantity Mismatch: Kit Qty doesnot match the Invoice Quantity");
+		    }
+		}
+	
+		
 		taxInvoiceVO.setTotalTaxableAmountLc(totalChargeAmountLC);
 
 		taxInvoiceVO.setTaxInvoiceDetailsVO(taxInvoiceDetailsVOs);
