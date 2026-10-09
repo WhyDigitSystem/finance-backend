@@ -1432,6 +1432,20 @@ Set<Object[]> getPaymentRegisterReport(Long orgId, String partyCode, String bran
 			+ "      and approvestatus = 'REJECTED'\r\n"
 			+ ") t")
 	Set<Object[]> getReceiptCount(Long orgId,String finYear, String branchCode);
+
+	@Query(nativeQuery = true, value = "select 'AIPACKS TRAX' entity,a.finyear,DATE_FORMAT(docdate, '%M %Y')billedmonthyear,b.bussinesscate,a.customername,\r\n"
+			+ "a.chequebank,a.chequeutidate, a.chequeutino,a.receiptamt,a.onaccount,\r\n"
+			+ "case when approvestatus='Approved' then 'Approved' else 'Pending' end status,a.docid,a.docdate\r\n"
+			+ "From finance_aip_trax.receipt a, finance_aip_trax.partymaster b\r\n"
+			+ "Where a.cancel=0 and a.customercode = b.partycode and a.docdate<=?1 and (b.partyname=?2 or 'ALL'=?2)\r\n"
+			+ "Union\r\n"
+			+ "select 'SCM AIPACKS' entity,c.finyear,DATE_FORMAT(docdate, '%M %Y')billedmonthyear,d.bussinesscate,c.customername,\r\n"
+			+ "c.chequebank,c.chequeutidate, c.chequeutino,c.receiptamt,c.onaccount,\r\n"
+			+ "case when approvestatus='Approved' then 'Approved' else 'Pending' end status,c.docid,c.docdate\r\n"
+			+ "From finance_aip.receipt c, finance_aip.partymaster d\r\n"
+			+ "Where c.cancel=0 and c.customercode = d.partycode and c.docdate <=?1 and (d.partyname=?2 or 'ALL'=?2)\r\n"
+			+ "Order by entity,chequeutidate desc")
+	Set<Object[]> getConsoleReport(String asOnDate, String partyName);
 	
 	
 //	@Query(nativeQuery = true, value = "select 1 as sno, a.docid,a.docdate,a.refno,a.refdate,a1.accountname,r.customername,p.partytype,p.gstin,p.panno,p.tanno,r.tdsamt,r1.gstamt,r1.amount,r1.chargeamt,r.netamount	 from accounts a,accountsdetails a1,receipt r,receiptinvdetails r1, partymaster p,branch b,taxinvoice t,taxinvoicedetails t1,taxinvoicegst t2\r\n"

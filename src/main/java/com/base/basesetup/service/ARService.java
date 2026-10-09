@@ -67,4 +67,6 @@ public interface ARService {
 
 	List<Map<String, Object>> getReceiptCount(Long orgId, String finYear, String branchCode);
 
+	List<Map<String, Object>> getConsoleReport(String asOnDate, String partyName);
+
 }

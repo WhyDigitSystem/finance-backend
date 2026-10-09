@@ -1021,4 +1021,49 @@ public class ARServiceImpl implements ARService {
 //		return List1;
 //	}
 
+	@Override
+	public List<Map<String, Object>> getConsoleReport(String asOnDate, String partyName) {
+		Set<Object[]> chType = receiptRepo.getConsoleReport(asOnDate, partyName);
+		return getConsoleReport(chType);
+	}
+
+	private List<Map<String, Object>> getConsoleReport(Set<Object[]> chType) {
+
+		List<Map<String, Object>> List1 = new ArrayList<>();
+
+		for (Object[] ch : chType) {
+
+			Map<String, Object> map = new HashMap<>();
+
+			map.put("entity", ch[0] != null ? ch[0].toString() : "");
+
+			map.put("finyear", ch[1] != null ? ch[1].toString() : "");
+
+			map.put("billedMonthYear", ch[2] != null ? ch[2].toString() : "");
+
+			map.put("businessCategory", ch[3] != null ? ch[3].toString() : "");
+
+			map.put("customerName", ch[4] != null ? ch[4].toString() : "");
+
+			map.put("chequeBank", ch[5] != null ? ch[5].toString() : "");
+
+			map.put("chequeUtiDate", ch[6] != null ? ch[6].toString() : "");
+
+			map.put("chequeUtiNo", ch[7] != null ? ch[7].toString() : "");
+
+			map.put("receiptAmount", ch[8] != null ? new BigDecimal(ch[8].toString()) : BigDecimal.ZERO);
+
+			map.put("onAccount", ch[9] != null ? new BigDecimal(ch[9].toString()) : BigDecimal.ZERO);
+
+			map.put("status", ch[10] != null ? ch[10].toString() : "");
+
+			map.put("docId", ch[11] != null ? ch[11].toString() : "");
+
+			map.put("docDate", ch[12] != null ? ch[12].toString() : "");
+
+			List1.add(map);
+		}
+
+		return List1;
+	}
 }

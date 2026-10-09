@@ -148,7 +148,7 @@ public class CostInvoiceVO {
 	@Column(name = "vid", length = 50)
 	private String vId;
 	@Column(name = "vdate")
-	private LocalDate vDate=LocalDate.now();
+	private LocalDate vDate;
 
 //	APPROVED
 	@Column(name = "approvestatus", length = 20)
