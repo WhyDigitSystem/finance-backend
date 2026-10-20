@@ -78,6 +78,9 @@ public class TicketVO {
 	@Lob
 	@Column(name = "screenshot", columnDefinition = "LONGBLOB")
 	private byte[] screenShot;
+	
+	@Column(name = "docid")
+	private String docId;
 
 	@Embedded
 	private CreatedUpdatedDate commonDate = new CreatedUpdatedDate();

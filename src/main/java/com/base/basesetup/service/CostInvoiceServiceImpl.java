@@ -1254,10 +1254,20 @@ public class CostInvoiceServiceImpl implements CostInvoiceService {
 	}
 
 	private List<Map<String, Object>> getCostSummary(Set<Object[]> chType) {
-		List<Map<String, Object>> List1 = new ArrayList<>();
+
+		List<Map<String, Object>> list1 = new ArrayList<>();
+
 		for (Object[] ch : chType) {
+
+			// Skip Total Amount row if it is the only record
+			if ("Total Amount".equalsIgnoreCase(ch[1] != null ? ch[1].toString() : "") && chType.size() == 1) {
+				continue;
+			}
+
 			if (ch != null) {
+
 				Map<String, Object> map = new HashMap<>();
+
 				map.put("finYear", ch[0] != null ? ch[0].toString() : "");
 				map.put("docId", ch[1] != null ? ch[1].toString() : "");
 				map.put("docDate", ch[2] != null ? ch[2].toString() : "");
@@ -1276,14 +1286,16 @@ public class CostInvoiceServiceImpl implements CostInvoiceService {
 				map.put("totalLcAmount", ch[14] != null ? new BigDecimal(ch[14].toString()) : BigDecimal.ZERO);
 				map.put("totalAmount", ch[15] != null ? new BigDecimal(ch[15].toString()) : BigDecimal.ZERO);
 				map.put("tdsAmount", ch[16] != null ? new BigDecimal(ch[16].toString()) : BigDecimal.ZERO);
+
 				map.put("approvestatus", ch[17] != null ? ch[17].toString() : "");
 				map.put("sNo", ch[18] != null ? ch[18].toString() : "");
 				map.put("createdOn", ch[19] != null ? ch[19].toString() : "");
-				List1.add(map);
+
+				list1.add(map);
 			}
 		}
-		return List1;
 
+		return list1;
 	}
 
 	@Override
@@ -1295,49 +1307,55 @@ public class CostInvoiceServiceImpl implements CostInvoiceService {
 	}
 
 	private List<Map<String, Object>> getCosteDetails(Set<Object[]> chType) {
-		List<Map<String, Object>> List1 = new ArrayList<>();
+
+		List<Map<String, Object>> list1 = new ArrayList<>();
+
 		for (Object[] ch : chType) {
-			if (ch != null) {
-				Map<String, Object> map = new HashMap<>();
 
-				map.put("finYear", ch[0] != null ? ch[0].toString() : "");
-				map.put("docId", ch[1] != null ? ch[1].toString() : "");
-				map.put("docDate", ch[2] != null ? ch[2].toString() : "");
-				map.put("vId", ch[3] != null ? ch[3].toString() : "");
-				map.put("purVoucherNo", ch[4] != null ? ch[4].toString() : "");
-				map.put("purVoucherDate", ch[5] != null ? ch[5].toString() : "");
-				map.put("supplierCode", ch[6] != null ? ch[6].toString() : "");
-				map.put("party", ch[7] != null ? ch[7].toString() : "");
-				map.put("description", ch[8] != null ? ch[8].toString() : "");
-				map.put("supplierName", ch[9] != null ? ch[9].toString() : "");
-				map.put("supplierPlace", ch[10] != null ? ch[10].toString() : "");
-				map.put("gstType", ch[11] != null ? ch[11].toString() : "");
-				map.put("mode", ch[12] != null ? ch[12].toString() : "");
-				map.put("totChargesLcAmt", ch[13] != null ? new BigDecimal(ch[13].toString()) : BigDecimal.ZERO);
-				map.put("payment", ch[14] != null ? ch[14].toString() : "");
-				map.put("section", ch[15] != null ? ch[15].toString() : "");
-				map.put("totalTds", ch[16] != null ? new BigDecimal(ch[16].toString()) : BigDecimal.ZERO);
-				map.put("jobNo", ch[17] != null ? ch[17].toString() : "");
-				map.put("chargeCode", ch[18] != null ? ch[18].toString() : "");
-				map.put("chargerName", ch[19] != null ? ch[19].toString() : "");
-				map.put("ledger", ch[20] != null ? ch[20].toString() : "");
-				map.put("lcAmt", ch[21] != null ? new BigDecimal(ch[21].toString()) : BigDecimal.ZERO);
-				map.put("gst", ch[22] != null ? new BigDecimal(ch[22].toString()) : BigDecimal.ZERO);
-				map.put("qty", ch[23] != null ? new BigDecimal(ch[23].toString()) : BigDecimal.ZERO);
-				map.put("rate", ch[24] != null ? new BigDecimal(ch[24].toString()) : BigDecimal.ZERO);
-				map.put("toalLcAmount", ch[25] != null ? new BigDecimal(ch[25].toString()) : BigDecimal.ZERO);
-				map.put("vDate", ch[26] != null ? ch[26].toString() : "");
-				map.put("netAmount", ch[27] != null ? new BigDecimal(ch[27].toString()) : BigDecimal.ZERO);
-				map.put("gstPercentage", ch[28] != null ? new BigDecimal(ch[28].toString()) : BigDecimal.ZERO);
-				map.put("approvestatus", ch[29] != null ? ch[29].toString() : "");
-				map.put("sNo", ch[30] != null ? ch[30].toString() : "");
-				map.put("createdOn", ch[31] != null ? ch[31].toString() : "");
-//				map.put("gstType", ch[29] != null ? ch[29].toString() : "");
-
-				List1.add(map);
+			// Skip Total Amount row if it is the only record
+			if ("Total Amount".equalsIgnoreCase(ch[1] != null ? ch[1].toString() : "") && chType.size() == 1) {
+				continue;
 			}
+
+			Map<String, Object> map = new HashMap<>();
+
+			map.put("finYear", ch[0] != null ? ch[0].toString() : "");
+			map.put("docId", ch[1] != null ? ch[1].toString() : "");
+			map.put("docDate", ch[2] != null ? ch[2].toString() : "");
+			map.put("vId", ch[3] != null ? ch[3].toString() : "");
+			map.put("purVoucherNo", ch[4] != null ? ch[4].toString() : "");
+			map.put("purVoucherDate", ch[5] != null ? ch[5].toString() : "");
+			map.put("supplierCode", ch[6] != null ? ch[6].toString() : "");
+			map.put("party", ch[7] != null ? ch[7].toString() : "");
+			map.put("description", ch[8] != null ? ch[8].toString() : "");
+			map.put("supplierName", ch[9] != null ? ch[9].toString() : "");
+			map.put("supplierPlace", ch[10] != null ? ch[10].toString() : "");
+			map.put("gstType", ch[11] != null ? ch[11].toString() : "");
+			map.put("mode", ch[12] != null ? ch[12].toString() : "");
+			map.put("totChargesLcAmt", ch[13] != null ? new BigDecimal(ch[13].toString()) : BigDecimal.ZERO);
+			map.put("payment", ch[14] != null ? ch[14].toString() : "");
+			map.put("section", ch[15] != null ? ch[15].toString() : "");
+			map.put("totalTds", ch[16] != null ? new BigDecimal(ch[16].toString()) : BigDecimal.ZERO);
+			map.put("jobNo", ch[17] != null ? ch[17].toString() : "");
+			map.put("chargeCode", ch[18] != null ? ch[18].toString() : "");
+			map.put("chargerName", ch[19] != null ? ch[19].toString() : "");
+			map.put("ledger", ch[20] != null ? ch[20].toString() : "");
+			map.put("lcAmt", ch[21] != null ? new BigDecimal(ch[21].toString()) : BigDecimal.ZERO);
+			map.put("gst", ch[22] != null ? new BigDecimal(ch[22].toString()) : BigDecimal.ZERO);
+			map.put("qty", ch[23] != null ? new BigDecimal(ch[23].toString()) : BigDecimal.ZERO);
+			map.put("rate", ch[24] != null ? new BigDecimal(ch[24].toString()) : BigDecimal.ZERO);
+			map.put("toalLcAmount", ch[25] != null ? new BigDecimal(ch[25].toString()) : BigDecimal.ZERO);
+			map.put("vDate", ch[26] != null ? ch[26].toString() : "");
+			map.put("netAmount", ch[27] != null ? new BigDecimal(ch[27].toString()) : BigDecimal.ZERO);
+			map.put("gstPercentage", ch[28] != null ? new BigDecimal(ch[28].toString()) : BigDecimal.ZERO);
+			map.put("approvestatus", ch[29] != null ? ch[29].toString() : "");
+			map.put("sNo", ch[30] != null ? ch[30].toString() : "");
+			map.put("createdOn", ch[31] != null ? ch[31].toString() : "");
+
+			list1.add(map);
 		}
-		return List1;
+
+		return list1;
 	}
 
 	// CostGstReport

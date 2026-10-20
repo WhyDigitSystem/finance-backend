@@ -963,9 +963,18 @@ public class APServiceImpl implements APService {
 	}
 
 	private List<Map<String, Object>> getPaymentDetails(Set<Object[]> chType) {
-		List<Map<String, Object>> List1 = new ArrayList<>();
+
+		List<Map<String, Object>> list1 = new ArrayList<>();
+
 		for (Object[] ch : chType) {
+
+			// Skip Total Amount row if it is the only record
+			if ("Total Amount".equalsIgnoreCase(ch[3] != null ? ch[3].toString() : "") && chType.size() == 1) {
+				continue;
+			}
+
 			Map<String, Object> map = new HashMap<>();
+
 			map.put("finyear", ch[0] != null ? ch[0].toString() : "");
 			map.put("invno", ch[1] != null ? ch[1].toString() : "");
 			map.put("invdate", ch[2] != null ? ch[2].toString() : "");
@@ -989,9 +998,11 @@ public class APServiceImpl implements APService {
 			map.put("status", ch[20] != null ? ch[20].toString() : "");
 			map.put("approvestatus", ch[21] != null ? ch[21].toString() : "");
 			map.put("sNo", ch[22] != null ? ch[22].toString() : "");
-			List1.add(map);
+
+			list1.add(map);
 		}
-		return List1;
+
+		return list1;
 	}
 
 	@Override
@@ -1002,9 +1013,18 @@ public class APServiceImpl implements APService {
 	}
 
 	private List<Map<String, Object>> getPaymentSummary(Set<Object[]> chType) {
-		List<Map<String, Object>> List1 = new ArrayList<>();
+
+		List<Map<String, Object>> list1 = new ArrayList<>();
+
 		for (Object[] ch : chType) {
+
+			// Skip Total Amount row if it is the only record
+			if ("Total Amount".equalsIgnoreCase(ch[1] != null ? ch[1].toString() : "") && chType.size() == 1) {
+				continue;
+			}
+
 			Map<String, Object> map = new HashMap<>();
+
 			map.put("finyear", ch[0] != null ? ch[0].toString() : "");
 			map.put("docid", ch[1] != null ? ch[1].toString() : "");
 			map.put("docdate", ch[2] != null ? ch[2].toString() : "");
@@ -1020,9 +1040,11 @@ public class APServiceImpl implements APService {
 			map.put("status", ch[12] != null ? ch[12].toString() : "");
 			map.put("approvestatus", ch[13] != null ? ch[13].toString() : "");
 			map.put("sNo", ch[14] != null ? ch[14].toString() : "");
-			List1.add(map);
+
+			list1.add(map);
 		}
-		return List1;
+
+		return list1;
 	}
 
 	@Override

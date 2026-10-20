@@ -1,6 +1,7 @@
 package com.base.basesetup.service;
 
 import java.math.BigDecimal;
+
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -47,6 +48,7 @@ import com.base.basesetup.dto.GroupMapping2DTO;
 import com.base.basesetup.dto.GroupMapping2SubGroupDTO;
 import com.base.basesetup.dto.GroupMappingDTO;
 import com.base.basesetup.dto.HSNSacCodeDTO;
+import com.base.basesetup.dto.InvoiceNewDTO;
 import com.base.basesetup.dto.ItemMasterDTO;
 import com.base.basesetup.dto.ListOfValues1DTO;
 import com.base.basesetup.dto.ListOfValuesDTO;
@@ -66,6 +68,8 @@ import com.base.basesetup.dto.SegmentMappingDetailsDTO;
 import com.base.basesetup.dto.SetTaxRateDTO;
 import com.base.basesetup.dto.SubGroupDetailsDTO;
 import com.base.basesetup.dto.SubLedgerAccountDTO;
+import com.base.basesetup.dto.TaxInvoiceKitLineDTO;
+import com.base.basesetup.dto.TaxInvoiceProductLineDTO;
 import com.base.basesetup.dto.TaxMasterDTO;
 import com.base.basesetup.dto.TaxMasterDetailsDTO;
 import com.base.basesetup.dto.TcsMaster2DTO;
@@ -90,6 +94,7 @@ import com.base.basesetup.entity.GroupLedgerVO;
 import com.base.basesetup.entity.GroupLedgersVO;
 import com.base.basesetup.entity.GroupMappingVO;
 import com.base.basesetup.entity.HSNSacCodeVO;
+import com.base.basesetup.entity.InvoiceNewVO;
 import com.base.basesetup.entity.ItemMasterVO;
 import com.base.basesetup.entity.ListOfValues1VO;
 import com.base.basesetup.entity.ListOfValuesVO;
@@ -111,6 +116,8 @@ import com.base.basesetup.entity.SegmentMappingVO;
 import com.base.basesetup.entity.SetTaxRateVO;
 import com.base.basesetup.entity.SubGroupDetailsVO;
 import com.base.basesetup.entity.SubLedgerAccountVO;
+import com.base.basesetup.entity.TaxInvoiceKitLineVO;
+import com.base.basesetup.entity.TaxInvoiceProductLineVO;
 import com.base.basesetup.entity.TaxMasterDetailsVO;
 import com.base.basesetup.entity.TaxMasterVO;
 import com.base.basesetup.entity.TcsMaster2VO;
@@ -137,6 +144,7 @@ import com.base.basesetup.repo.GroupLedgerRepo;
 import com.base.basesetup.repo.GroupLedgersRepo;
 import com.base.basesetup.repo.GroupMappingRepo;
 import com.base.basesetup.repo.HSNSacCodeRepo;
+import com.base.basesetup.repo.InvoiceNewRepo;
 import com.base.basesetup.repo.ItemMasterRepo;
 import com.base.basesetup.repo.ListOfValues1Repo;
 import com.base.basesetup.repo.ListOfValuesRepo;
@@ -158,6 +166,8 @@ import com.base.basesetup.repo.SegmentMappingRepo;
 import com.base.basesetup.repo.SetTaxRateRepo;
 import com.base.basesetup.repo.SubGroupDetailsRepo;
 import com.base.basesetup.repo.SubLedgerAccountRepo;
+import com.base.basesetup.repo.TaxInvoiceKitLineRepo;
+import com.base.basesetup.repo.TaxInvoiceProductLineRepo;
 import com.base.basesetup.repo.TaxMasterDetailsRepo;
 import com.base.basesetup.repo.TaxMasterRepo;
 import com.base.basesetup.repo.TcsMaster2Repo;
@@ -165,6 +175,7 @@ import com.base.basesetup.repo.TcsMasterRepo;
 import com.base.basesetup.repo.TdsMaster2Repo;
 import com.base.basesetup.repo.TdsMasterRepo;
 import com.base.basesetup.repo.UomRepo;
+
 
 import io.jsonwebtoken.io.IOException;
 
@@ -309,6 +320,14 @@ public class MasterServiceImpl implements MasterService {
 
 	@Autowired
 	SegmentMappingDetailsRepo segmentMappingDetailsRepo;
+	
+	@Autowired
+	InvoiceNewRepo taxInvoiceRepo;
+	@Autowired
+	TaxInvoiceProductLineRepo taxInvoiceProductLineRepo;
+
+	@Autowired
+	TaxInvoiceKitLineRepo taxInvoiceKitLineRepo;
 
 	// Branch
 
@@ -3235,4 +3254,166 @@ public class MasterServiceImpl implements MasterService {
 
 		return null;
 	}
+	
+	
+	// TaxInvoice
+		@Override
+		public Map<String, Object> createUpdateTaxInvoice(InvoiceNewDTO taxInvoiceDTO) throws ApplicationException {
+			InvoiceNewVO taxInvoiceVO = new InvoiceNewVO();
+			String message;
+
+			if (ObjectUtils.isEmpty(taxInvoiceDTO.getId())) {
+				List<TaxInvoiceProductLineVO> taxInvoiceProductLineVOs = new ArrayList<>();
+				List<TaxInvoiceKitLineVO> taxInvoiceKitLineVOs = new ArrayList<>();
+
+				if (taxInvoiceDTO.getProductLines() != null) {
+					for (TaxInvoiceProductLineDTO productLineDTO : taxInvoiceDTO.getProductLines()) {
+						TaxInvoiceProductLineVO productLineVO = new TaxInvoiceProductLineVO();
+						productLineVO.setDescription(productLineDTO.getDescription());
+						productLineVO.setQuantity(productLineDTO.getQuantity());
+						productLineVO.setRate(productLineDTO.getRate());
+						productLineVO.setAmount(productLineDTO.getAmount());
+						productLineVO.setInvoiceNewVO(taxInvoiceVO);
+						taxInvoiceProductLineVOs.add(productLineVO);
+					}
+				}
+
+				if (taxInvoiceDTO.getKitLines() != null) {
+					for (TaxInvoiceKitLineDTO kitLineDTO : taxInvoiceDTO.getKitLines()) {
+						TaxInvoiceKitLineVO kitLineVO = new TaxInvoiceKitLineVO();
+						kitLineVO.setAnnexureDate(kitLineDTO.getAnnexureDate());
+						kitLineVO.setManifestNo(kitLineDTO.getManifestNo());
+						kitLineVO.setEmitter(kitLineDTO.getEmitter());
+						kitLineVO.setLocation(kitLineDTO.getLocation());
+						kitLineVO.setKitNo(kitLineDTO.getKitNo());
+						kitLineVO.setKitQty(kitLineDTO.getKitQty());
+						kitLineVO.setInvoiceNewVO(taxInvoiceVO);
+						taxInvoiceKitLineVOs.add(kitLineVO);
+					}
+				}
+
+				if (taxInvoiceRepo.existsByOrgIdAndInvoiceNo(taxInvoiceDTO.getOrgId(), taxInvoiceDTO.getInvoiceNo())) {
+					throw new ApplicationException("InvoiceNo already Exists");
+				}
+				taxInvoiceVO.setInvoiceNo(taxInvoiceDTO.getInvoiceNo());
+
+				taxInvoiceVO.setProductLines(taxInvoiceProductLineVOs);
+				taxInvoiceVO.setKitLines(taxInvoiceKitLineVOs);
+				taxInvoiceVO.setCreatedBy(taxInvoiceDTO.getCreatedBy());
+				taxInvoiceVO.setModifiedBy(taxInvoiceDTO.getCreatedBy());
+
+//				String base64Image = taxInvoiceDTO.getLogo();
+//				if (base64Image != null && base64Image.startsWith("data:image/")) {
+//					base64Image = base64Image.substring(base64Image.indexOf(",") + 1);
+//					byte[] imageBytes = Base64.getDecoder().decode(base64Image);
+//					taxInvoiceVO.setLogo(imageBytes);
+//				}
+
+				mapTaxInvoiceDTOToTaxInvoiceVO(taxInvoiceDTO, taxInvoiceVO);
+				message = "Tax Invoice Created successfully";
+			} else {
+				taxInvoiceVO = taxInvoiceRepo.findById(taxInvoiceDTO.getId()).get();
+
+				if (!taxInvoiceVO.getInvoiceNo().equals(taxInvoiceDTO.getInvoiceNo())) {
+					if (taxInvoiceRepo.existsByOrgIdAndInvoiceNo(taxInvoiceDTO.getOrgId(), taxInvoiceDTO.getInvoiceNo())) {
+						throw new ApplicationException("InvoiceNo already Exists");
+					}
+					taxInvoiceVO.setInvoiceNo(taxInvoiceDTO.getInvoiceNo());
+				}
+
+				List<TaxInvoiceProductLineVO> existingProductLines = taxInvoiceProductLineRepo
+						.findByInvoiceNewVO(taxInvoiceVO);
+				taxInvoiceProductLineRepo.deleteAll(existingProductLines);
+
+				List<TaxInvoiceKitLineVO> existingKitLines = taxInvoiceKitLineRepo.findByInvoiceNewVO(taxInvoiceVO);
+				taxInvoiceKitLineRepo.deleteAll(existingKitLines);
+
+				List<TaxInvoiceProductLineVO> taxInvoiceProductLineVOs = new ArrayList<>();
+				List<TaxInvoiceKitLineVO> taxInvoiceKitLineVOs = new ArrayList<>();
+
+				if (taxInvoiceDTO.getProductLines() != null) {
+					for (TaxInvoiceProductLineDTO productLineDTO : taxInvoiceDTO.getProductLines()) {
+						TaxInvoiceProductLineVO productLineVO = new TaxInvoiceProductLineVO();
+						productLineVO.setDescription(productLineDTO.getDescription());
+						productLineVO.setQuantity(productLineDTO.getQuantity());
+						productLineVO.setRate(productLineDTO.getRate());
+						productLineVO.setAmount(productLineDTO.getAmount());
+						productLineVO.setInvoiceNewVO(taxInvoiceVO);
+						taxInvoiceProductLineVOs.add(productLineVO);
+					}
+				}
+
+				if (taxInvoiceDTO.getKitLines() != null) {
+					for (TaxInvoiceKitLineDTO kitLineDTO : taxInvoiceDTO.getKitLines()) {
+						TaxInvoiceKitLineVO kitLineVO = new TaxInvoiceKitLineVO();
+						kitLineVO.setAnnexureDate(kitLineDTO.getAnnexureDate());
+						kitLineVO.setManifestNo(kitLineDTO.getManifestNo());
+						kitLineVO.setEmitter(kitLineDTO.getEmitter());
+						kitLineVO.setLocation(kitLineDTO.getLocation());
+						kitLineVO.setKitNo(kitLineDTO.getKitNo());
+						kitLineVO.setKitQty(kitLineDTO.getKitQty());
+						kitLineVO.setInvoiceNewVO(taxInvoiceVO);
+						taxInvoiceKitLineVOs.add(kitLineVO);
+					}
+				}
+
+				taxInvoiceVO.setModifiedBy(taxInvoiceDTO.getCreatedBy());
+				taxInvoiceVO.setProductLines(taxInvoiceProductLineVOs);
+				taxInvoiceVO.setKitLines(taxInvoiceKitLineVOs);
+				mapTaxInvoiceDTOToTaxInvoiceVO(taxInvoiceDTO, taxInvoiceVO);
+
+//				String base64Image = taxInvoiceDTO.getLogo();
+//				if (base64Image != null && base64Image.startsWith("data:image/")) {
+//					base64Image = base64Image.substring(base64Image.indexOf(",") + 1);
+//					byte[] imageBytes = Base64.getDecoder().decode(base64Image);
+//					taxInvoiceVO.setLogo(imageBytes);
+//				}
+
+				message = "Tax Invoice Updated successfully";
+			}
+			String invoiceno = taxInvoiceDTO.getInvoiceNo();
+			if (invoiceno == null) {
+				throw new ApplicationException("Field cannot be Empty");
+			}
+			taxInvoiceRepo.save(taxInvoiceVO);
+			Map<String, Object> response = new HashMap<>();
+			response.put("taxInvoiceVO", taxInvoiceVO);
+			response.put("message", message);
+			return response;
+		}
+
+		private void mapTaxInvoiceDTOToTaxInvoiceVO(InvoiceNewDTO taxInvoiceDTO, InvoiceNewVO taxInvoiceVO) {
+			taxInvoiceVO.setCompanyAddress(taxInvoiceDTO.getCompanyAddress());
+			taxInvoiceVO.setInvoiceNo(taxInvoiceDTO.getInvoiceNo());
+			taxInvoiceVO.setInvoiceDate(taxInvoiceDTO.getInvoiceDate());
+			taxInvoiceVO.setTerm(taxInvoiceDTO.getTerm());
+			taxInvoiceVO.setDueDate(taxInvoiceDTO.getDueDate());
+			taxInvoiceVO.setServiceMonth(taxInvoiceDTO.getServiceMonth());
+			taxInvoiceVO.setBillToAddress(taxInvoiceDTO.getBillToAddress());
+			taxInvoiceVO.setShipToAddress(taxInvoiceDTO.getShipToAddress());
+			taxInvoiceVO.setGstType(taxInvoiceDTO.getGstType());
+			taxInvoiceVO.setSgst(taxInvoiceDTO.getSgst());
+			taxInvoiceVO.setCgst(taxInvoiceDTO.getCgst());
+			taxInvoiceVO.setIgst(taxInvoiceDTO.getIgst());
+			taxInvoiceVO.setTotal(taxInvoiceDTO.getTotal());
+			taxInvoiceVO.setSubTotal(taxInvoiceDTO.getSubTotal());
+			taxInvoiceVO.setTermsAndConditions(taxInvoiceDTO.getTermsAndConditions());
+			taxInvoiceVO.setBankName(taxInvoiceDTO.getBankName());
+			taxInvoiceVO.setAccountName(taxInvoiceDTO.getAccountName());
+			taxInvoiceVO.setAccountNo(taxInvoiceDTO.getAccountNo());
+			taxInvoiceVO.setIFSC(taxInvoiceDTO.getIFSC());
+			taxInvoiceVO.setNotes(taxInvoiceDTO.getNotes());
+			taxInvoiceVO.setOrgId(taxInvoiceDTO.getOrgId());
+		}
+
+		@Override
+		public List<InvoiceNewVO> getAllTaxInvoice(Long orgId) {
+
+			return taxInvoiceRepo.findAllByOrgId(orgId);
+		}
+
+		@Override
+		public InvoiceNewVO getTaxInvoiceById(Long id) {
+			return taxInvoiceRepo.findById(id).get();
+		}
 }
