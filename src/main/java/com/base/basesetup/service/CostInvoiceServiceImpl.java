@@ -260,7 +260,7 @@ public class CostInvoiceServiceImpl implements CostInvoiceService {
 		costInvoiceVO.setSupplierId(costInvoiceDTO.getSupplierId());
 		costInvoiceVO.setJobOrderNo(costInvoiceDTO.getJobOrderNo());
 		costInvoiceVO.setVId(costInvoiceDTO.getVId());
-//		costInvoiceVO.setVDate(costInvoiceDTO.getVDate());
+		costInvoiceVO.setVDate(costInvoiceDTO.getVDate());
 
 		if (costInvoiceDTO.getId() != null) {
 
