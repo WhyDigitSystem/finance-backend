@@ -1,6 +1,7 @@
 package com.base.basesetup.service;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -8,11 +9,21 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
+import javax.transaction.Transactional;
+
 import org.apache.commons.lang3.ObjectUtils;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.DataFormatter;
+import org.apache.poi.ss.usermodel.DateUtil;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.base.basesetup.dto.InvoiceDTO;
 import com.base.basesetup.dto.InvoiceProductLinesDTO;
@@ -22,6 +33,7 @@ import com.base.basesetup.dto.QuotationDTO;
 import com.base.basesetup.dto.QuotationDetailsDTO;
 import com.base.basesetup.dto.RetrievalManifestProviderDTO;
 import com.base.basesetup.dto.RetrievalManifestProviderDetailsDTO;
+import com.base.basesetup.entity.AiapVO;
 import com.base.basesetup.entity.DeclarationAndNotesVO;
 import com.base.basesetup.entity.DocumentTypeMappingDetailsVO;
 import com.base.basesetup.entity.InvoiceProductLinesVO;
@@ -33,6 +45,7 @@ import com.base.basesetup.entity.QuotationVO;
 import com.base.basesetup.entity.RetrievalManifestProviderDetailsVO;
 import com.base.basesetup.entity.RetrievalManifestProviderVO;
 import com.base.basesetup.exception.ApplicationException;
+import com.base.basesetup.repo.AiapRepo;
 import com.base.basesetup.repo.DocumentTypeMappingDetailsRepo;
 import com.base.basesetup.repo.InvoiceProductLinesRepo;
 import com.base.basesetup.repo.InvoiceRepo;
@@ -85,6 +98,9 @@ public class ReportServiceImpl implements ReportService {
 
 	@Autowired
 	DocumentTypeMappingDetailsRepo documentTypeMappingDetailsRepo;
+
+	@Autowired
+	private AiapRepo aiapRepo;
 
 	// Invoice
 	@Override
@@ -1051,4 +1067,135 @@ public class ReportServiceImpl implements ReportService {
 
 		return retrievalManifestProviderRepo.findConsolidationCostInvoiceReports(orgId, supplier, asondate);
 	}
+
+	// aiap roport
+	@Override
+	@Transactional
+	public int uploadAiapExcel(MultipartFile file) throws Exception {
+
+	    if (file == null || file.isEmpty()) {
+	        throw new RuntimeException("Please upload an Excel file");
+	    }
+
+	    List<AiapVO> aiapList = new ArrayList<>();
+	    DataFormatter formatter = new DataFormatter();
+
+	    try (Workbook workbook = WorkbookFactory.create(file.getInputStream())) {
+
+	        if (workbook.getNumberOfSheets() == 0) {
+	            throw new RuntimeException("Excel file contains no sheets");
+	        }
+
+	        Sheet sheet = workbook.getSheetAt(0);
+
+	        // Skip header row
+	        for (int i = 1; i <= sheet.getLastRowNum(); i++) {
+
+	            Row row = sheet.getRow(i);
+
+	            if (row == null || isEmptyRow(row, formatter)) {
+	                continue;
+	            }
+
+	            AiapVO aiapVO = new AiapVO();
+
+	            // Column 0: Date
+	            Cell dateCell = row.getCell(0);
+
+	            if (dateCell != null) {
+	                aiapVO.setDate(getExcelDate(dateCell, formatter));
+	            }
+
+	            // Column 1: Details
+	            aiapVO.setDetails(getCellValue(row, 1, formatter));
+
+	            // Column 2: Mode
+	            aiapVO.setMode(getCellValue(row, 2, formatter));
+
+	            // Column 3: Amount
+	            String amountValue = getCellValue(row, 3, formatter);
+
+	            if (amountValue != null) {
+	                aiapVO.setAmount(new BigDecimal(amountValue.replace(",", "")));
+	            }
+
+	            // Column 4: Group
+	            aiapVO.setGroup(getCellValue(row, 4, formatter));
+
+	            // Column 5: Sub Ledger
+	            aiapVO.setSubLedger(getCellValue(row, 5, formatter));
+
+	            // Column 6: Ledger
+	            aiapVO.setLedger(getCellValue(row, 6, formatter));
+
+	            // Column 7: Additional Details
+	            aiapVO.setRemarks(getCellValue(row, 7, formatter));
+
+	            aiapList.add(aiapVO);
+	        }
+	    }
+
+	    if (aiapList.isEmpty()) {
+	        throw new RuntimeException("No data rows found in the Excel file");
+	    }
+
+	    aiapRepo.saveAll(aiapList);
+
+	    return aiapList.size();
+	}
+	
+	private LocalDate getExcelDate(
+	        Cell cell,
+	        DataFormatter formatter) {
+
+	    if (cell == null) {
+	        return null;
+	    }
+
+	    if (cell.getCellType() == org.apache.poi.ss.usermodel.CellType.NUMERIC
+	            && DateUtil.isCellDateFormatted(cell)) {
+	        return cell.getLocalDateTimeCellValue().toLocalDate();
+	    }
+
+	    String value = formatter.formatCellValue(cell).trim();
+
+	    if (value.isEmpty()) {
+	        return null;
+	    }
+
+	    return LocalDate.parse(value);
+	}
+	
+	private String getCellValue(
+	        Row row,
+	        int columnIndex,
+	        DataFormatter formatter) {
+
+	    Cell cell = row.getCell(
+	            columnIndex,
+	            Row.MissingCellPolicy.RETURN_BLANK_AS_NULL
+	    );
+
+	    if (cell == null) {
+	        return null;
+	    }
+
+	    String value = formatter.formatCellValue(cell);
+
+	    return value.trim().isEmpty() ? null : value;
+	}
+	
+	private boolean isEmptyRow(Row row, DataFormatter formatter) {
+
+	    for (int i = 0; i < 8; i++) {
+	        if (getCellValue(row, i, formatter) != null) {
+	            return false;
+	        }
+	    }
+
+	    return true;
+	}
+	
+	
+	
 }
