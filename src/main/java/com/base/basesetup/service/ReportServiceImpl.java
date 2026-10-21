@@ -481,7 +481,7 @@ public class ReportServiceImpl implements ReportService {
 
 	@Override
 	public List<RetrievalManifestProviderVO> getAllRetrievalManifestProvider(Long orgId, Long finYear) {
-		return retrievalManifestProviderRepo.getAllRetrievalManifestProvider( orgId,  finYear);
+		return retrievalManifestProviderRepo.getAllRetrievalManifestProvider(orgId, finYear);
 	}
 
 	@Override
@@ -852,10 +852,10 @@ public class ReportServiceImpl implements ReportService {
 	}
 
 	@Override
-	public List<RetrievalManifestProviderVO> findRIMReports(String type, Long orgId, String customerName,
-			String finYear, String toDate, String fromDate) {
+	public List<Object[]> findRIMReports(String type, Long orgId, String sender, String company, String finYear,
+			String fromDate, String toDate) {
 
-		return retrievalManifestProviderRepo.findRIMReports(type, orgId, customerName, finYear, toDate, fromDate);
+		return retrievalManifestProviderRepo.findRIMReports(type, orgId, sender, company, finYear, fromDate, toDate);
 	}
 
 	@Override
@@ -1041,4 +1041,14 @@ public class ReportServiceImpl implements ReportService {
 //		    return list;
 //		}
 
+	@Override
+	public List<String> findCompanyDropdownByOrgId(Long orgId) {
+		return retrievalManifestProviderRepo.findCompanyDropdownByOrgId(orgId);
+	}
+
+	@Override
+	public List<Object[]> findConsolidationCostInvoiceReports(Long orgId, String supplier, String asondate) {
+
+		return retrievalManifestProviderRepo.findConsolidationCostInvoiceReports(orgId, supplier, asondate);
+	}
 }

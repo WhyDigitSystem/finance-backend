@@ -8,16 +8,15 @@ import org.springframework.stereotype.Repository;
 
 import com.base.basesetup.entity.RetrievalManifestProviderVO;
 
-
 @Repository
-public interface RetrievalManifestProviderRepo extends JpaRepository<RetrievalManifestProviderVO, Long>{
+public interface RetrievalManifestProviderRepo extends JpaRepository<RetrievalManifestProviderVO, Long> {
 
 	boolean existsByOrgIdAndTransactionNo(Long orgId, String transactionNo);
 
-	@Query(nativeQuery = true,value = "select a.* from rim a where a.orgid=?1 and a.transactionno not in(\r\n"
+	@Query(nativeQuery = true, value = "select a.* from rim a where a.orgid=?1 and a.transactionno not in(\r\n"
 			+ "select docid from binretrieval where orgid=?1 group by docid)")
 	List<RetrievalManifestProviderVO> findPendingBinRetrievalDetails(Long orgId);
-	
+
 //	@Query(value = 
 //			  "SELECT a.*\r\n"
 //			  + "FROM rim a\r\n"
@@ -48,23 +47,93 @@ public interface RetrievalManifestProviderRepo extends JpaRepository<RetrievalMa
 //			+ "  )", nativeQuery = true)
 //	List<IssueManifestProviderVO> findMIMReports(String type, Long orgId, String customerName, String finYear,
 //			String toDate, String fromDate);
-	
-	@Query(value = 
-			  "SELECT *\r\n"
-			  + "FROM rim a\r\n"
-			  + "WHERE ?1 = 'RIM'\r\n"
-			  + "  AND a.orgid = ?2\r\n"
-			  + "  AND (a.sender = ?3 OR ?3 = 'ALL')\r\n"
-			  + "  AND a.finyear = ?4\r\n"
-			  + "  AND (?6 IS NULL OR a.transactiondate >= ?6)\r\n"
-			  + "  AND (?5 IS NULL OR a.transactiondate <= ?5) order by a.transactionno , a.transactiondate",
-			  nativeQuery = true)
-List<RetrievalManifestProviderVO> findRIMReports(String type, Long orgId, String sender, String finYear, String toDate, String fromDate);
 
-	@Query(nativeQuery = true,value="select concat(prefixfield,lpad(lastno,4,0)) AS docid from documenttypemappingdetails where orgid=?1 and finyear=?2 and branchcode='BLR' and screencode=?3")
-	String getRetrievalManifestProviderDocId(Long orgId, String finYear,  String screenCode);
+	@Query(value = """
+			SELECT b.company, a.*
+			FROM rim a
+			JOIN warehouse b
+			    ON a.receiver = CONCAT(
+			        COALESCE(b.locationname, ''),
+			        '-',
+			        COALESCE(b.locationunit, '')
+			    )
+			WHERE ?1 = 'RIM'
+			  AND a.orgid = ?2
+			  AND (a.sender = ?3 OR ?3 = 'ALL')
+			  AND (b.company = ?4 OR ?4 = 'ALL')
+			  AND a.finyear = ?5
+			  AND (?6 IS NULL OR a.transactiondate >= ?6)
+			  AND (?7 IS NULL OR a.transactiondate <= ?7)
+			ORDER BY a.transactionno, a.transactiondate
+			""", nativeQuery = true)
+	List<Object[]> findRIMReports(String type, Long orgId, String customer, String company, String finyear,
+			String fromDate, String toDate);
 
-	@Query(nativeQuery = true,value = "select * from rim where orgid=?1 and finyear=?2  order by transactionno desc")	
+	@Query(nativeQuery = true, value = "select concat(prefixfield,lpad(lastno,4,0)) AS docid from documenttypemappingdetails where orgid=?1 and finyear=?2 and branchcode='BLR' and screencode=?3")
+	String getRetrievalManifestProviderDocId(Long orgId, String finYear, String screenCode);
+
+	@Query(nativeQuery = true, value = "select * from rim where orgid=?1 and finyear=?2  order by transactionno desc")
 	List<RetrievalManifestProviderVO> getAllRetrievalManifestProvider(Long orgId, Long finYear);
+	
+	@Query(value = """
+	        SELECT DISTINCT w.company
+	        FROM warehouse w
+	        WHERE w.orgid = ?1
+	          AND w.company IS NOT NULL
+	        ORDER BY w.company
+	        """, nativeQuery = true)
+	List<String> findCompanyDropdownByOrgId(Long orgId);
+	
+	
+	@Query(value = """
+	        SELECT suppliername, docid, docdate, a.vid, a.vdate,
+	               a.totchargeslcamt, a.gstinputlcamt, a.netbillcurramt,
+	               CASE
+	                   WHEN approvestatus = 'Approved' THEN 'Approved'
+	                   ELSE 'Pending'
+	               END AS status,
+	               purvoucherno, purvoucherdate,
+	               'AIPACKS TRAX' AS entity,
+	               a.finyear,
+	               DATE_FORMAT(docdate, '%M %Y') AS billedmonthyear,
+	               b.bussinesscate,
+	               NOW() AS Report_Time
+	        FROM finance_aip_trax.costinvoice a
+	        JOIN finance_aip_trax.partymaster b
+	            ON a.suppliercode = b.partycode
+	        WHERE a.cancel = 0
+	          AND a.orgid = ?1
+	          AND (?2 = 'ALL' OR a.suppliername = ?2)
+	          AND (?3 IS NULL OR a.docdate <= ?3)
+
+	        UNION
+
+	        SELECT suppliername, docid, docdate, c.vid, c.vdate,
+	               c.totchargeslcamt, c.gstinputlcamt, c.netbillcurramt,
+	               CASE
+	                   WHEN approvestatus = 'Approved' THEN 'Approved'
+	                   ELSE 'Pending'
+	               END AS status,
+	               purvoucherno, purvoucherdate,
+	               'SCM AIPACKS' AS entity,
+	               c.finyear,
+	               DATE_FORMAT(docdate, '%M %Y') AS billedmonthyear,
+	               d.bussinesscate,
+	               NOW() AS Report_Time
+	        FROM finance_aip.costinvoice c
+	        JOIN finance_aip.partymaster d
+	            ON c.suppliercode = d.partycode
+	        WHERE c.cancel = 0
+	          AND c.orgid = ?1
+	          AND (?2 = 'ALL' OR c.suppliername = ?2)
+	          AND (?3 IS NULL OR c.docdate <= ?3)
+
+	        ORDER BY bussinesscate, suppliername, billedmonthyear
+	        """, nativeQuery = true)
+	List<Object[]> findConsolidationCostInvoiceReports(
+	        Long orgId,
+	        String supplier,
+	        String asonDate
+	);
 
 }
