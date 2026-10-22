@@ -136,4 +136,53 @@ public interface RetrievalManifestProviderRepo extends JpaRepository<RetrievalMa
 	        String asonDate
 	);
 
+	@Query(value = """
+	        SELECT a.partyname, a.docid, a.docdate, a.purvoucherno,
+	               a.purvoucherdate, a.paymentamt, a.chequeno, a.chequedate,
+	               a.payto, a.onaccount,
+	               CASE
+	                   WHEN a.approvestatus = 'Approved' THEN 'Approved'
+	                   ELSE 'Pending'
+	               END AS status,
+	               'AIPACKS TRAX' AS entity,
+	               a.finyear,
+	               DATE_FORMAT(a.docdate, '%M %Y') AS billedmonthyear,
+	               b.bussinesscate
+	        FROM finance_aip_trax.payment a
+	        JOIN finance_aip_trax.partymaster b
+	            ON a.partycode = b.partycode
+	        WHERE a.cancel = 0
+	          AND a.orgid = ?1
+	          AND (?2 = 'ALL' OR a.partyname = ?2)
+	          AND (?3 IS NULL OR a.docdate <= ?3)
+
+	        UNION
+
+	        SELECT c.partyname, c.docid, c.docdate, c.purvoucherno,
+	               c.purvoucherdate, c.paymentamt, c.chequeno, c.chequedate,
+	               c.payto, c.onaccount,
+	               CASE
+	                   WHEN c.approvestatus = 'Approved' THEN 'Approved'
+	                   ELSE 'Pending'
+	               END AS status,
+	               'SCM AIPACKS' AS entity,
+	               c.finyear,
+	               DATE_FORMAT(c.docdate, '%M %Y') AS billedmonthyear,
+	               d.bussinesscate
+	        FROM finance_aip.payment c
+	        JOIN finance_aip.partymaster d
+	            ON c.partycode = d.partycode
+	        WHERE c.cancel = 0
+	          AND c.orgid = ?1
+	          AND (?2 = 'ALL' OR c.partyname = ?2)
+	          AND (?3 IS NULL OR c.docdate <= ?3)
+
+	        ORDER BY entity, docdate, billedmonthyear
+	        """, nativeQuery = true)
+	List<Object[]> findConsolidationPaymentReports(
+	        Long orgId,
+	        String partyName,
+	        String asonDate
+	);
+	
 }
