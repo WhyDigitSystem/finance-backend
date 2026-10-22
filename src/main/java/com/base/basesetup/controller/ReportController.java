@@ -256,7 +256,7 @@ public class ReportController extends BaseController {
 		ResponseDTO responseDTO = null;
 		List<RetrievalManifestProviderVO> retrievalManifestProviderVOs = new ArrayList<RetrievalManifestProviderVO>();
 		try {
-			retrievalManifestProviderVOs = reportService.getAllRetrievalManifestProvider(orgId,finYear);
+			retrievalManifestProviderVOs = reportService.getAllRetrievalManifestProvider(orgId, finYear);
 		} catch (Exception e) {
 			errorMsg = e.getMessage();
 			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
@@ -521,7 +521,8 @@ public class ReportController extends BaseController {
 	}
 
 	@GetMapping("/getMimFillGridgettransaction")
-	public ResponseEntity<ResponseDTO> getMimFillGridgettransaction(@RequestParam Long orgId, String Receiver,@RequestParam(required = false) String docId) {
+	public ResponseEntity<ResponseDTO> getMimFillGridgettransaction(@RequestParam Long orgId, String Receiver,
+			@RequestParam(required = false) String docId) {
 		String methodName = "getMimFillGridgettransaction()";
 		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
 		String errorMsg = null;
@@ -529,7 +530,7 @@ public class ReportController extends BaseController {
 		ResponseDTO responseDTO = null;
 		List<Map<String, Object>> department = new ArrayList<>();
 		try {
-			department = reportService.getMimFillGridgettransaction(orgId, Receiver,docId);
+			department = reportService.getMimFillGridgettransaction(orgId, Receiver, docId);
 		} catch (Exception e) {
 			errorMsg = e.getMessage();
 			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
@@ -625,7 +626,7 @@ public class ReportController extends BaseController {
 		return ResponseEntity.ok().body(responseDTO);
 
 	}
-	
+
 	@GetMapping("/findMIMReports")
 	public ResponseEntity<ResponseDTO> findMIMReports(@RequestParam String type, @RequestParam Long orgId,
 			@RequestParam(required = false) String customerName, @RequestParam String finYear,
@@ -637,14 +638,14 @@ public class ReportController extends BaseController {
 		ResponseDTO responseDTO = null;
 		List<IssueManifestProviderVO> mimReportFillGrid = new ArrayList<>();
 		try {
-			mimReportFillGrid  = reportService.findMIMReports(type, orgId, customerName, finYear, toDate, fromDate);
+			mimReportFillGrid = reportService.findMIMReports(type, orgId, customerName, finYear, toDate, fromDate);
 		} catch (Exception e) {
 			errorMsg = e.getMessage();
 			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
 		}
 		if (StringUtils.isBlank(errorMsg)) {
 			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "MimReports information get successfully ByOrgId");
-			responseObjectsMap.put("mimReportFillGrid", mimReportFillGrid );
+			responseObjectsMap.put("mimReportFillGrid", mimReportFillGrid);
 			responseDTO = createServiceResponse(responseObjectsMap);
 		} else {
 			responseDTO = createServiceResponseError(responseObjectsMap, "MimReports information receive failedByOrgId",
@@ -654,62 +655,45 @@ public class ReportController extends BaseController {
 		return ResponseEntity.ok().body(responseDTO);
 
 	}
-	
+
 	@GetMapping("/findRIMReports")
-	public ResponseEntity<ResponseDTO> findRIMReports(
-	        @RequestParam String type,
-	        @RequestParam Long orgId,
-	        @RequestParam(required = false, defaultValue = "ALL") String sender,
-	        @RequestParam(required = false, defaultValue = "ALL") String company,
-	        @RequestParam String finYear,
-	        @RequestParam(required = false) String fromDate,
-	        @RequestParam(required = false) String toDate) {
+	public ResponseEntity<ResponseDTO> findRIMReports(@RequestParam String type, @RequestParam Long orgId,
+			@RequestParam(required = false, defaultValue = "ALL") String sender,
+			@RequestParam(required = false, defaultValue = "ALL") String company, @RequestParam String finYear,
+			@RequestParam(required = false) String fromDate, @RequestParam(required = false) String toDate) {
 
-	    String methodName = "findRIMReports()";
-	    LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+		String methodName = "findRIMReports()";
+		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
 
-	    String errorMsg = null;
-	    Map<String, Object> responseObjectsMap = new HashMap<>();
-	    ResponseDTO responseDTO = null;
-	    List<Object[]> rimReportFillGrid = new ArrayList<>();
+		String errorMsg = null;
+		Map<String, Object> responseObjectsMap = new HashMap<>();
+		ResponseDTO responseDTO = null;
+		List<Object[]> rimReportFillGrid = new ArrayList<>();
 
-	    try {
-	        rimReportFillGrid = reportService.findRIMReports(
-	                type,
-	                orgId,
-	                sender,
-	                company,
-	                finYear,
-	                fromDate,
-	                toDate
-	        );
-	    } catch (Exception e) {
-	        errorMsg = e.getMessage();
-	        LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
-	    }
+		try {
+			rimReportFillGrid = reportService.findRIMReports(type, orgId, sender, company, finYear, fromDate, toDate);
+		} catch (Exception e) {
+			errorMsg = e.getMessage();
+			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+		}
 
-	    if (StringUtils.isBlank(errorMsg)) {
-	        responseObjectsMap.put(
-	                CommonConstant.STRING_MESSAGE,
-	                "RimReports information get successfully ByOrgId"
-	        );
-	        responseObjectsMap.put("rimReportFillGrid", rimReportFillGrid);
-	        responseDTO = createServiceResponse(responseObjectsMap);
-	    } else {
-	        responseDTO = createServiceResponseError(
-	                responseObjectsMap,
-	                "RimReports information receive failedByOrgId",
-	                errorMsg
-	        );
-	    }
+		if (StringUtils.isBlank(errorMsg)) {
+			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "RimReports information get successfully ByOrgId");
+			responseObjectsMap.put("rimReportFillGrid", rimReportFillGrid);
+			responseDTO = createServiceResponse(responseObjectsMap);
+		} else {
+			responseDTO = createServiceResponseError(responseObjectsMap, "RimReports information receive failedByOrgId",
+					errorMsg);
+		}
 
-	    LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
-	    return ResponseEntity.ok().body(responseDTO);
+		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+		return ResponseEntity.ok().body(responseDTO);
 	}
-	
+
 	@GetMapping("/findMimSummaryReport")
 	public ResponseEntity<ResponseDTO> findMimSummaryReport(@RequestParam String type, @RequestParam Long orgId,
-			@RequestParam String customerName, @RequestParam String finYear, @RequestParam(required = false) String fromDate,@RequestParam(required = false) String toDate) {
+			@RequestParam String customerName, @RequestParam String finYear,
+			@RequestParam(required = false) String fromDate, @RequestParam(required = false) String toDate) {
 		String methodName = "findMimSummaryReport()";
 		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
 		String errorMsg = null;
@@ -733,11 +717,11 @@ public class ReportController extends BaseController {
 		return ResponseEntity.ok().body(responseDTO);
 
 	}
-	
-	
+
 	@GetMapping("/findRimSummaryReport")
 	public ResponseEntity<ResponseDTO> findRimSummaryReport(@RequestParam String type, @RequestParam Long orgId,
-			@RequestParam String customerName, @RequestParam String finYear, @RequestParam(required = false) String fromDate,@RequestParam(required = false) String toDate) {
+			@RequestParam String customerName, @RequestParam String finYear,
+			@RequestParam(required = false) String fromDate, @RequestParam(required = false) String toDate) {
 		String methodName = "findMimSummaryReport()";
 		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
 		String errorMsg = null;
@@ -761,10 +745,11 @@ public class ReportController extends BaseController {
 		return ResponseEntity.ok().body(responseDTO);
 
 	}
-	
-@GetMapping("/getARAgeingReport")
-	public ResponseEntity<ResponseDTO> getARAgeingReport(@RequestParam Long orgId,
-			@RequestParam String branch, @RequestParam String partyName, @RequestParam(required = true) String asOnDate,@RequestParam(required = true) String base) {
+
+	@GetMapping("/getARAgeingReport")
+	public ResponseEntity<ResponseDTO> getARAgeingReport(@RequestParam Long orgId, @RequestParam String branch,
+			@RequestParam String partyName, @RequestParam(required = true) String asOnDate,
+			@RequestParam(required = true) String base) {
 		String methodName = "getARAgeingReport()";
 		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
 		String errorMsg = null;
@@ -772,7 +757,7 @@ public class ReportController extends BaseController {
 		ResponseDTO responseDTO = null;
 		List<Map<String, Object>> department = new ArrayList<>();
 		try {
-			department = reportService.getARAgeingReport(orgId, branch, partyName, asOnDate,base);
+			department = reportService.getARAgeingReport(orgId, branch, partyName, asOnDate, base);
 		} catch (Exception e) {
 			errorMsg = e.getMessage();
 			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
@@ -788,12 +773,10 @@ public class ReportController extends BaseController {
 		return ResponseEntity.ok().body(responseDTO);
 
 	}
-  
-  
-  @GetMapping("/getApAgeing")
-	public ResponseEntity<ResponseDTO> getApAgeing(@RequestParam Long orgId,
-			@RequestParam String branch, @RequestParam String partyname,
-			@RequestParam String asdate,  @RequestParam String baseType ) {
+
+	@GetMapping("/getApAgeing")
+	public ResponseEntity<ResponseDTO> getApAgeing(@RequestParam Long orgId, @RequestParam String branch,
+			@RequestParam String partyname, @RequestParam String asdate, @RequestParam String baseType) {
 		String methodName = "getApAgeing()";
 		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
 		String errorMsg = null;
@@ -802,7 +785,7 @@ public class ReportController extends BaseController {
 		List<Map<String, Object>> mapp = new ArrayList<>();
 
 		try {
-			mapp = reportService.getApAgeing(orgId, branch, partyname, asdate,baseType);
+			mapp = reportService.getApAgeing(orgId, branch, partyname, asdate, baseType);
 		} catch (Exception e) {
 			errorMsg = e.getMessage();
 			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
@@ -820,10 +803,10 @@ public class ReportController extends BaseController {
 		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
 		return ResponseEntity.ok().body(responseDTO);
 	}
-	
-  @GetMapping("/getIssueManifestProviderDocId")
-	public ResponseEntity<ResponseDTO> getIssueManifestProviderDocId(@RequestParam Long orgId, @RequestParam String finYear,
-			@RequestParam String branch, @RequestParam String branchCode) {
+
+	@GetMapping("/getIssueManifestProviderDocId")
+	public ResponseEntity<ResponseDTO> getIssueManifestProviderDocId(@RequestParam Long orgId,
+			@RequestParam String finYear, @RequestParam String branch, @RequestParam String branchCode) {
 
 		String methodName = "getIssueManifestProviderDocId()";
 		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
@@ -852,7 +835,7 @@ public class ReportController extends BaseController {
 		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
 		return ResponseEntity.ok().body(responseDTO);
 	}
-  
+
 //	@GetMapping("/getIssueManifestProviderDocId")
 //	public ResponseEntity<ResponseDTO> getIssueManifestProviderDocId(@RequestParam Long orgId, @RequestParam String finYear,
 //			@RequestParam String branch, @RequestParam String branchCode) {
@@ -889,10 +872,9 @@ public class ReportController extends BaseController {
 //		return ResponseEntity.ok().body(responseDTO);
 //	}
 
-
-  @GetMapping("/getRetrievalManifestProviderDocId")
-	public ResponseEntity<ResponseDTO> getRetrievalManifestProviderDocId(@RequestParam Long orgId, @RequestParam String finYear,
-			@RequestParam String branch, @RequestParam String branchCode) {
+	@GetMapping("/getRetrievalManifestProviderDocId")
+	public ResponseEntity<ResponseDTO> getRetrievalManifestProviderDocId(@RequestParam Long orgId,
+			@RequestParam String finYear, @RequestParam String branch, @RequestParam String branchCode) {
 
 		String methodName = "getRetrievalManifestProviderDocId()";
 		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
@@ -922,7 +904,6 @@ public class ReportController extends BaseController {
 		return ResponseEntity.ok().body(responseDTO);
 	}
 
-	
 //	@GetMapping("/findRIMMIMReports")
 //	public ResponseEntity<ResponseDTO> findRIMMIMReports(@RequestParam String type,@RequestParam Long orgId,
 //			@RequestParam(required = false) String customerName, @RequestParam String finYear,
@@ -951,6 +932,104 @@ public class ReportController extends BaseController {
 //		return ResponseEntity.ok().body(responseDTO);
 //
 //	}
+
+	@GetMapping("/findCompanyDropdownByOrgId")
+	public ResponseEntity<ResponseDTO> findCompanyDropdownByOrgId(@RequestParam Long orgId) {
+
+		String methodName = "findCompanyDropdownByOrgId()";
+		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+
+		String errorMsg = null;
+		Map<String, Object> responseObjectsMap = new HashMap<>();
+		ResponseDTO responseDTO = null;
+		List<String> companyList = new ArrayList<>();
+
+		try {
+			companyList = reportService.findCompanyDropdownByOrgId(orgId);
+		} catch (Exception e) {
+			errorMsg = e.getMessage();
+			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+		}
+
+		if (StringUtils.isBlank(errorMsg)) {
+			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "Company dropdown retrieved successfully");
+			responseObjectsMap.put("companyList", companyList);
+			responseDTO = createServiceResponse(responseObjectsMap);
+		} else {
+			responseDTO = createServiceResponseError(responseObjectsMap, "Failed to retrieve company dropdown",
+					errorMsg);
+		}
+
+		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+		return ResponseEntity.ok().body(responseDTO);
+	}
+
+	@GetMapping("/findConsolidationCostInvoiceReports")
+	public ResponseEntity<ResponseDTO> findConsolidationCostInvoiceReports(@RequestParam Long orgId,
+			@RequestParam(required = false) String supplier, @RequestParam(required = false) String asondate) {
+
+		String methodName = "findConsolidationCostInvoiceReports()";
+		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+
+		String errorMsg = null;
+		Map<String, Object> responseObjectsMap = new HashMap<>();
+		ResponseDTO responseDTO = null;
+		List<Object[]> costInvoiceReportList = new ArrayList<>();
+
+		try {
+			costInvoiceReportList = reportService.findConsolidationCostInvoiceReports(orgId, supplier, asondate);
+		} catch (Exception e) {
+			errorMsg = e.getMessage();
+			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+		}
+
+		if (StringUtils.isBlank(errorMsg)) {
+			responseObjectsMap.put(CommonConstant.STRING_MESSAGE,
+					"Consolidation Cost Invoice Reports retrieved successfully");
+			responseObjectsMap.put("costInvoiceReportList", costInvoiceReportList);
+			responseDTO = createServiceResponse(responseObjectsMap);
+		} else {
+			responseDTO = createServiceResponseError(responseObjectsMap,
+					"Failed to retrieve Consolidation Cost Invoice Reports", errorMsg);
+		}
+
+		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+		return ResponseEntity.ok().body(responseDTO);
+	}
+
+	@GetMapping("/ConsolidationPaymentReports")
+	public ResponseEntity<ResponseDTO> ConsolidationPaymentReports(@RequestParam Long orgId,
+			@RequestParam(required = false, defaultValue = "ALL") String partyName,
+			@RequestParam(required = false) String asonDate) {
+
+		String methodName = "ConsolidationPaymentReports()";
+		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+
+		String errorMsg = null;
+		Map<String, Object> responseObjectsMap = new HashMap<>();
+		ResponseDTO responseDTO = null;
+		List<Map<String, Object>> paymentReportList = new ArrayList<>();
+
+		try {
+			paymentReportList = reportService.findConsolidationPaymentReports(orgId, partyName, asonDate);
+		} catch (Exception e) {
+			errorMsg = e.getMessage();
+			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+		}
+
+		if (StringUtils.isBlank(errorMsg)) {
+			responseObjectsMap.put(CommonConstant.STRING_MESSAGE,
+					"Consolidation Payment Reports retrieved successfully");
+			responseObjectsMap.put("paymentReportList", paymentReportList);
+			responseDTO = createServiceResponse(responseObjectsMap);
+		} else {
+			responseDTO = createServiceResponseError(responseObjectsMap,
+					"Failed to retrieve Consolidation Payment Reports", errorMsg);
+		}
+
+		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+		return ResponseEntity.ok().body(responseDTO);
+	}
 
   
   @GetMapping("/findCompanyDropdownByOrgId")
