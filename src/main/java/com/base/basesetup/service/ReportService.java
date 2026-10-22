@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.base.basesetup.dto.InvoiceDTO;
 import com.base.basesetup.dto.IssueManifestProviderDTO;
@@ -82,8 +83,8 @@ public interface ReportService {
 		List<IssueManifestProviderVO> findMIMReports(String type, Long orgId, String customerName, String finYear,
 				String toDate, String fromDate);
 
-		List<RetrievalManifestProviderVO> findRIMReports(String type, Long orgId, String customerName, String finYear,
-				String toDate, String fromDate);
+//		List<RetrievalManifestProviderVO> findRIMReports(String type, Long orgId, String customerName, String finYear,
+//				String toDate, String fromDate);
 
 		List<Map<String, Object>> findMimSummaryReport(String type, Long orgId, String customerName, String finYear,
 				String fromDate, String toDate);
@@ -102,6 +103,24 @@ public interface ReportService {
 		String getRetrievalManifestProviderDocId(Long orgId, String finYear, String branch, String branchCode);
 
 		List<RetrievalManifestProviderVO> getAllRetrievalManifestProvider(Long orgId, Long finYear);
+
+//		List<RetrievalManifestProviderVO> findRIMReports(String type, Long orgId,  String company, String finYear,
+//				String endDate, String startDate, String customer);
+
+//		List<Object[]> findRIMReports(String type, Long orgId, String customerName, String finYear, String toDate,
+//				String fromDate, String sender, String company);
+
+		List<Object[]> findRIMReports(String type, Long orgId, String sender, String company, String finYear,
+				String fromDate, String toDate);
+
+		List<String> findCompanyDropdownByOrgId(Long orgId);
+
+		List<Object[]> findConsolidationCostInvoiceReports(Long orgId, String supplier, String asondate);
+
+		int uploadAiapExcel(MultipartFile file) throws Exception;
+
+//		List<RetrievalManifestProviderVO> findRIMReports(String type, Long orgId, String customerName, String finYear,
+//				String toDate, String fromDate, String sender, String company);
 
 
 //		List<RetrievalManifestProviderVO> findRIMMIMReports(String type, Long orgId, String customerName,

@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.base.basesetup.common.CommonConstant;
 import com.base.basesetup.common.UserConstants;
@@ -655,34 +656,56 @@ public class ReportController extends BaseController {
 	}
 	
 	@GetMapping("/findRIMReports")
-	public ResponseEntity<ResponseDTO> findRIMReports(@RequestParam String type,@RequestParam Long orgId,
-			@RequestParam(required = false) String customerName, @RequestParam String finYear,
-			@RequestParam(required = false) String toDate, @RequestParam(required = false) String fromDate) {
-		String methodName = "findRIMReports()";
-		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
-		String errorMsg = null;
-		Map<String, Object> responseObjectsMap = new HashMap<>();
-		ResponseDTO responseDTO = null;
-		List<RetrievalManifestProviderVO> rimReportFillGrid = new ArrayList<>();
-		try {
-			rimReportFillGrid  = reportService.findRIMReports(type,orgId, customerName, finYear, toDate, fromDate);
-		} catch (Exception e) {
-			errorMsg = e.getMessage();
-			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
-		}
-		if (StringUtils.isBlank(errorMsg)) {
-			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "RimReports information get successfully ByOrgId");
-			responseObjectsMap.put("rimReportFillGrid", rimReportFillGrid );
-			responseDTO = createServiceResponse(responseObjectsMap);
-		} else {
-			responseDTO = createServiceResponseError(responseObjectsMap, "RimReports information receive failedByOrgId",
-					errorMsg);
-		}
-		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
-		return ResponseEntity.ok().body(responseDTO);
+	public ResponseEntity<ResponseDTO> findRIMReports(
+	        @RequestParam String type,
+	        @RequestParam Long orgId,
+	        @RequestParam(required = false, defaultValue = "ALL") String sender,
+	        @RequestParam(required = false, defaultValue = "ALL") String company,
+	        @RequestParam String finYear,
+	        @RequestParam(required = false) String fromDate,
+	        @RequestParam(required = false) String toDate) {
 
+	    String methodName = "findRIMReports()";
+	    LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+
+	    String errorMsg = null;
+	    Map<String, Object> responseObjectsMap = new HashMap<>();
+	    ResponseDTO responseDTO = null;
+	    List<Object[]> rimReportFillGrid = new ArrayList<>();
+
+	    try {
+	        rimReportFillGrid = reportService.findRIMReports(
+	                type,
+	                orgId,
+	                sender,
+	                company,
+	                finYear,
+	                fromDate,
+	                toDate
+	        );
+	    } catch (Exception e) {
+	        errorMsg = e.getMessage();
+	        LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+	    }
+
+	    if (StringUtils.isBlank(errorMsg)) {
+	        responseObjectsMap.put(
+	                CommonConstant.STRING_MESSAGE,
+	                "RimReports information get successfully ByOrgId"
+	        );
+	        responseObjectsMap.put("rimReportFillGrid", rimReportFillGrid);
+	        responseDTO = createServiceResponse(responseObjectsMap);
+	    } else {
+	        responseDTO = createServiceResponseError(
+	                responseObjectsMap,
+	                "RimReports information receive failedByOrgId",
+	                errorMsg
+	        );
+	    }
+
+	    LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+	    return ResponseEntity.ok().body(responseDTO);
 	}
-	
 	
 	@GetMapping("/findMimSummaryReport")
 	public ResponseEntity<ResponseDTO> findMimSummaryReport(@RequestParam String type, @RequestParam Long orgId,
@@ -929,4 +952,136 @@ public class ReportController extends BaseController {
 //
 //	}
 
+  
+  @GetMapping("/findCompanyDropdownByOrgId")
+  public ResponseEntity<ResponseDTO> findCompanyDropdownByOrgId(
+          @RequestParam Long orgId) {
+
+      String methodName = "findCompanyDropdownByOrgId()";
+      LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+
+      String errorMsg = null;
+      Map<String, Object> responseObjectsMap = new HashMap<>();
+      ResponseDTO responseDTO = null;
+      List<String> companyList = new ArrayList<>();
+
+      try {
+          companyList = reportService.findCompanyDropdownByOrgId(orgId);
+      } catch (Exception e) {
+          errorMsg = e.getMessage();
+          LOGGER.error(
+                  UserConstants.ERROR_MSG_METHOD_NAME,
+                  methodName,
+                  errorMsg
+          );
+      }
+
+      if (StringUtils.isBlank(errorMsg)) {
+          responseObjectsMap.put(
+                  CommonConstant.STRING_MESSAGE,
+                  "Company dropdown retrieved successfully"
+          );
+          responseObjectsMap.put("companyList", companyList);
+          responseDTO = createServiceResponse(responseObjectsMap);
+      } else {
+          responseDTO = createServiceResponseError(
+                  responseObjectsMap,
+                  "Failed to retrieve company dropdown",
+                  errorMsg
+          );
+      }
+
+      LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+      return ResponseEntity.ok().body(responseDTO);
+  }
+  
+  
+  @GetMapping("/findConsolidationCostInvoiceReports")
+  public ResponseEntity<ResponseDTO> findConsolidationCostInvoiceReports(
+          @RequestParam Long orgId,
+          @RequestParam(required = false) String supplier,
+          @RequestParam(required = false) String asondate) {
+
+      String methodName = "findConsolidationCostInvoiceReports()";
+      LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+
+      String errorMsg = null;
+      Map<String, Object> responseObjectsMap = new HashMap<>();
+      ResponseDTO responseDTO = null;
+      List<Object[]> costInvoiceReportList = new ArrayList<>();
+
+      try {
+          costInvoiceReportList = reportService.findConsolidationCostInvoiceReports(
+                  orgId,
+                  supplier,
+                  asondate
+          );
+      } catch (Exception e) {
+          errorMsg = e.getMessage();
+          LOGGER.error(
+                  UserConstants.ERROR_MSG_METHOD_NAME,
+                  methodName,
+                  errorMsg
+          );
+      }
+
+      if (StringUtils.isBlank(errorMsg)) {
+          responseObjectsMap.put(
+                  CommonConstant.STRING_MESSAGE,
+                  "Consolidation Cost Invoice Reports retrieved successfully"
+          );
+          responseObjectsMap.put("costInvoiceReportList", costInvoiceReportList);
+          responseDTO = createServiceResponse(responseObjectsMap);
+      } else {
+          responseDTO = createServiceResponseError(
+                  responseObjectsMap,
+                  "Failed to retrieve Consolidation Cost Invoice Reports",
+                  errorMsg
+          );
+      }
+
+      LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+      return ResponseEntity.ok().body(responseDTO);
+  }
+  
+  
+  @PostMapping("/uploadAiapExcel")
+  public ResponseEntity<ResponseDTO> uploadAiapExcel(
+          @RequestParam("files") MultipartFile file) {
+
+      String methodName = "uploadAiapExcel()";
+      LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+
+      String errorMsg = null;
+      Map<String, Object> responseObjectsMap = new HashMap<>();
+      ResponseDTO responseDTO = null;
+
+      try {
+          int totalRecords = reportService.uploadAiapExcel(file);
+
+          responseObjectsMap.put(
+                  CommonConstant.STRING_MESSAGE,
+                  "AIAP Excel uploaded successfully");
+
+          responseObjectsMap.put("totalRecords", totalRecords);
+
+          responseDTO = createServiceResponse(responseObjectsMap);
+
+      } catch (Exception e) {
+          errorMsg = e.getMessage();
+
+          LOGGER.error(
+                  UserConstants.ERROR_MSG_METHOD_NAME,
+                  methodName,
+                  errorMsg);
+
+          responseDTO = createServiceResponseError(
+                  responseObjectsMap,
+                  "AIAP Excel upload failed",
+                  errorMsg);
+      }
+
+      LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+      return ResponseEntity.ok().body(responseDTO);
+  }
 }
