@@ -933,69 +933,9 @@ public class ReportController extends BaseController {
 //
 //	}
 
-	@GetMapping("/findCompanyDropdownByOrgId")
-	public ResponseEntity<ResponseDTO> findCompanyDropdownByOrgId(@RequestParam Long orgId) {
+	
 
-		String methodName = "findCompanyDropdownByOrgId()";
-		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
-
-		String errorMsg = null;
-		Map<String, Object> responseObjectsMap = new HashMap<>();
-		ResponseDTO responseDTO = null;
-		List<String> companyList = new ArrayList<>();
-
-		try {
-			companyList = reportService.findCompanyDropdownByOrgId(orgId);
-		} catch (Exception e) {
-			errorMsg = e.getMessage();
-			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
-		}
-
-		if (StringUtils.isBlank(errorMsg)) {
-			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "Company dropdown retrieved successfully");
-			responseObjectsMap.put("companyList", companyList);
-			responseDTO = createServiceResponse(responseObjectsMap);
-		} else {
-			responseDTO = createServiceResponseError(responseObjectsMap, "Failed to retrieve company dropdown",
-					errorMsg);
-		}
-
-		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
-		return ResponseEntity.ok().body(responseDTO);
-	}
-
-	@GetMapping("/findConsolidationCostInvoiceReports")
-	public ResponseEntity<ResponseDTO> findConsolidationCostInvoiceReports(@RequestParam Long orgId,
-			@RequestParam(required = false) String supplier, @RequestParam(required = false) String asondate) {
-
-		String methodName = "findConsolidationCostInvoiceReports()";
-		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
-
-		String errorMsg = null;
-		Map<String, Object> responseObjectsMap = new HashMap<>();
-		ResponseDTO responseDTO = null;
-		List<Object[]> costInvoiceReportList = new ArrayList<>();
-
-		try {
-			costInvoiceReportList = reportService.findConsolidationCostInvoiceReports(orgId, supplier, asondate);
-		} catch (Exception e) {
-			errorMsg = e.getMessage();
-			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
-		}
-
-		if (StringUtils.isBlank(errorMsg)) {
-			responseObjectsMap.put(CommonConstant.STRING_MESSAGE,
-					"Consolidation Cost Invoice Reports retrieved successfully");
-			responseObjectsMap.put("costInvoiceReportList", costInvoiceReportList);
-			responseDTO = createServiceResponse(responseObjectsMap);
-		} else {
-			responseDTO = createServiceResponseError(responseObjectsMap,
-					"Failed to retrieve Consolidation Cost Invoice Reports", errorMsg);
-		}
-
-		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
-		return ResponseEntity.ok().body(responseDTO);
-	}
+	
 
 	@GetMapping("/ConsolidationPaymentReports")
 	public ResponseEntity<ResponseDTO> ConsolidationPaymentReports(@RequestParam Long orgId,
@@ -1158,7 +1098,7 @@ public class ReportController extends BaseController {
                   responseObjectsMap,
                   "AIAP Excel upload failed",
                   errorMsg);
-      }
+      }																																																																																																																																																		
 
       LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
       return ResponseEntity.ok().body(responseDTO);
