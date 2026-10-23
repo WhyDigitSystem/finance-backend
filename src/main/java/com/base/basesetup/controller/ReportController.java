@@ -971,78 +971,29 @@ public class ReportController extends BaseController {
 	public ResponseEntity<ResponseDTO> findConsolidationCostInvoiceReports(
 			@RequestParam(required = false) String supplier, @RequestParam(required = false) String asondate,
 			@RequestParam(required = false) String type) {
-
 		String methodName = "findConsolidationCostInvoiceReports()";
 		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
-
 		String errorMsg = null;
-		Map<String, Object> responseObjectsMap = new LinkedHashMap<>();
+		Map<String, Object> responseObjectsMap = new HashMap<>();
 		ResponseDTO responseDTO = null;
-
-		List<Map<String, Object>> costInvoiceReportList = new ArrayList<>();
+		List<Map<String, Object>> mapp = new ArrayList<>();
 
 		try {
-			costInvoiceReportList = reportService.findConsolidationCostInvoiceReports(supplier, asondate, type);
-
-			Set<String> uniqueBusinessCategories = new LinkedHashSet<>();
-			Set<String> uniqueSupplierNames = new LinkedHashSet<>();
-
-			for (Map<String, Object> report : costInvoiceReportList) {
-
-				Object businessCategory = report.get("businessCategory");
-
-				if (businessCategory != null && !businessCategory.toString().trim().isEmpty()) {
-					uniqueBusinessCategories.add(businessCategory.toString().trim());
-				}
-
-				Object supplierName = report.get("supplierName");
-
-				if (supplierName != null && !supplierName.toString().trim().isEmpty()) {
-					uniqueSupplierNames.add(supplierName.toString().trim());
-				}
-			}
-
-			List<Map<String, Object>> businessCategoryList = new ArrayList<>();
-
-			for (String businessCategory : uniqueBusinessCategories) {
-				Map<String, Object> categoryMap = new LinkedHashMap<>();
-				categoryMap.put("businessCategory", businessCategory);
-				businessCategoryList.add(categoryMap);
-			}
-
-			List<Map<String, Object>> supplierListDetails = new ArrayList<>();
-
-			for (String supplierName : uniqueSupplierNames) {
-				Map<String, Object> supplierMap = new LinkedHashMap<>();
-				supplierMap.put("supplierName", supplierName);
-				supplierListDetails.add(supplierMap);
-			}
-
-			responseObjectsMap.put("businessCategoryList", businessCategoryList);
-			responseObjectsMap.put("supplierList", supplierListDetails);
-			responseObjectsMap.put("costInvoiceReportList", costInvoiceReportList);
-
+			mapp = reportService.findConsolidationCostInvoiceReports(supplier, asondate, type);
 		} catch (Exception e) {
 			errorMsg = e.getMessage();
-
-			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg, e);
 		}
 
 		if (StringUtils.isBlank(errorMsg)) {
-
-			responseObjectsMap.put(CommonConstant.STRING_MESSAGE,
-					"Consolidation Cost Invoice Reports retrieved successfully");
-
+			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "ConsolidationCostInvoiceReports successfully");
+			responseObjectsMap.put("mapp", mapp);
 			responseDTO = createServiceResponse(responseObjectsMap);
-
 		} else {
-
-			responseDTO = createServiceResponseError(responseObjectsMap,
-					"Failed to retrieve Consolidation Cost Invoice Reports", errorMsg);
+			responseDTO = createServiceResponseError(responseObjectsMap, "ConsolidationCostInvoiceReports  Count",
+					errorMsg);
 		}
 
 		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
-
 		return ResponseEntity.ok().body(responseDTO);
 	}
 
@@ -1076,4 +1027,93 @@ public class ReportController extends BaseController {
 		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
 		return ResponseEntity.ok().body(responseDTO);
 	}
+
+	@GetMapping("/getAllCategoryList")
+	public ResponseEntity<ResponseDTO> getAllCategoryList() {
+		String methodName = "getAllCategoryList()";
+		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+		String errorMsg = null;
+		Map<String, Object> responseObjectsMap = new HashMap<>();
+		ResponseDTO responseDTO = null;
+		List<Map<String, Object>> mapp = new ArrayList<>();
+
+		try {
+			mapp = reportService.getAllCategoryList();
+		} catch (Exception e) {
+			errorMsg = e.getMessage();
+		}
+
+		if (StringUtils.isBlank(errorMsg)) {
+			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "AllCategoryList successfully");
+			responseObjectsMap.put("mapp", mapp);
+			responseDTO = createServiceResponse(responseObjectsMap);
+		} else {
+			responseDTO = createServiceResponseError(responseObjectsMap, "AllCategoryList  Count", errorMsg);
+		}
+
+		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+		return ResponseEntity.ok().body(responseDTO);
+	}
+
+	@GetMapping("/getAllVendorListCostReport")
+	public ResponseEntity<ResponseDTO> getAllVendorListCostReport(String type) {
+		String methodName = "getAllVendorListCostReport()";
+		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+		String errorMsg = null;
+		Map<String, Object> responseObjectsMap = new HashMap<>();
+		ResponseDTO responseDTO = null;
+		List<Map<String, Object>> mapp = new ArrayList<>();
+
+		try {
+			mapp = reportService.getAllVendorListCostReport(type);
+		} catch (Exception e) {
+			errorMsg = e.getMessage();
+		}
+
+		if (StringUtils.isBlank(errorMsg)) {
+			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "VendorListCostReport successfully");
+			responseObjectsMap.put("mapp", mapp);
+			responseDTO = createServiceResponse(responseObjectsMap);
+		} else {
+			responseDTO = createServiceResponseError(responseObjectsMap, "VendorListCostReport  Count", errorMsg);
+		}
+
+		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+		return ResponseEntity.ok().body(responseDTO);
+	}
+	
+	@GetMapping("/ConsolidationPaymentReports")
+	public ResponseEntity<ResponseDTO> ConsolidationPaymentReports(
+			@RequestParam(required = false, defaultValue = "ALL") String partyName,
+			@RequestParam(required = false) String asonDate,@RequestParam(required = false) String type) {
+
+		String methodName = "ConsolidationPaymentReports()";
+		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+
+		String errorMsg = null;
+		Map<String, Object> responseObjectsMap = new HashMap<>();
+		ResponseDTO responseDTO = null;
+		List<Map<String, Object>> paymentReportList = new ArrayList<>();
+
+		try {
+			paymentReportList = reportService.findConsolidationPaymentReports( partyName, asonDate,type);
+		} catch (Exception e) {
+			errorMsg = e.getMessage();
+			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+		}
+
+		if (StringUtils.isBlank(errorMsg)) {
+			responseObjectsMap.put(CommonConstant.STRING_MESSAGE,
+					"Consolidation Payment Reports retrieved successfully");
+			responseObjectsMap.put("paymentReportList", paymentReportList);
+			responseDTO = createServiceResponse(responseObjectsMap);
+		} else {
+			responseDTO = createServiceResponseError(responseObjectsMap,
+					"Failed to retrieve Consolidation Payment Reports", errorMsg);
+		}
+
+		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+		return ResponseEntity.ok().body(responseDTO);
+	}
+
 }

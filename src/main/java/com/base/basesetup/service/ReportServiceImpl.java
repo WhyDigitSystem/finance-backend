@@ -1238,4 +1238,87 @@ public class ReportServiceImpl implements ReportService {
 		return true;
 	}
 
+	@Override
+	public List<Map<String, Object>> getAllCategoryList() {
+
+		List<Object> categoryList = retrievalManifestProviderRepo.getAllCategoryList();
+
+		return getAllCategoryList(categoryList);
+	}
+
+	private List<Map<String, Object>> getAllCategoryList(List<Object> categoryList) {
+
+		List<Map<String, Object>> responseList = new ArrayList<>();
+
+		if (categoryList == null || categoryList.isEmpty()) {
+			return responseList;
+		}
+
+		for (Object category : categoryList) {
+
+			Map<String, Object> map = new LinkedHashMap<>();
+
+			map.put("category", category != null ? category.toString() : "");
+
+			responseList.add(map);
+		}
+
+		return responseList;
+	}
+
+	@Override
+	public List<Map<String, Object>> getAllVendorListCostReport(String type) {
+		Set<Object[]> chType = retrievalManifestProviderRepo.getAllVendorListCostReport(type);
+		return getAllVendorListCostReport(chType);
+	}
+
+	private List<Map<String, Object>> getAllVendorListCostReport(Set<Object[]> chType) {
+
+		List<Map<String, Object>> List1 = new ArrayList<>();
+
+		for (Object[] ch : chType) {
+
+			Map<String, Object> map = new HashMap<>();
+
+			map.put("partyName", ch[0] != null ? ch[0].toString() : "");
+
+			List1.add(map);
+		}
+
+		return List1;
+	}
+
+	@Override
+	public List<Map<String, Object>> findConsolidationPaymentReports(String partyName, String asonDate, String type) {
+
+		List<Object[]> paymentReportList = retrievalManifestProviderRepo.findConsolidationPaymentReports(partyName,
+				asonDate, type);
+
+		List<Map<String, Object>> responseList = new ArrayList<>();
+
+		for (Object[] obj : paymentReportList) {
+			Map<String, Object> responseMap = new LinkedHashMap<>();
+
+			responseMap.put("partyname", obj[0]);
+			responseMap.put("docid", obj[1]);
+			responseMap.put("docdate", obj[2]);
+			responseMap.put("purvoucherno", obj[3]);
+			responseMap.put("purvoucherdate", obj[4]);
+			responseMap.put("paymentamt", obj[5]);
+			responseMap.put("chequeno", obj[6]);
+			responseMap.put("chequedate", obj[7]);
+			responseMap.put("payto", obj[8]);
+			responseMap.put("onaccount", obj[9]);
+			responseMap.put("status", obj[10]);
+			responseMap.put("entity", obj[11]);
+			responseMap.put("finyear", obj[12]);
+			responseMap.put("billedmonthyear", obj[13]);
+			responseMap.put("bussinesscate", obj[14]);
+
+			responseList.add(responseMap);
+		}
+
+		return responseList;
+	}
+
 }

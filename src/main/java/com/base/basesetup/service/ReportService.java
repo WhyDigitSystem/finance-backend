@@ -119,6 +119,12 @@ public interface ReportService {
 
 	int uploadAiapExcel(MultipartFile file) throws Exception;
 
+	List<Map<String, Object>> getAllCategoryList();
+
+	List<Map<String, Object>> getAllVendorListCostReport(String type);
+
+	List<Map<String, Object>> findConsolidationPaymentReports(String partyName, String asonDate,String type);
+
 //		List<RetrievalManifestProviderVO> findRIMReports(String type, Long orgId, String customerName, String finYear,
 //				String toDate, String fromDate, String sender, String company);
 
