@@ -86,7 +86,7 @@ public interface RetrievalManifestProviderRepo extends JpaRepository<RetrievalMa
 	
 	
 	@Query(value = """
-	        SELECT suppliername, docid, docdate, a.vid, a.vdate,
+	        SELECT suppliername, docid, docdate, a.supplierbillno, a.supplierbilldate,
 	               a.totchargeslcamt, a.gstinputlcamt, a.netbillcurramt,
 	               CASE
 	                   WHEN approvestatus = 'Approved' THEN 'Approved'
@@ -102,13 +102,12 @@ public interface RetrievalManifestProviderRepo extends JpaRepository<RetrievalMa
 	        JOIN finance_aip_trax.partymaster b
 	            ON a.suppliercode = b.partycode
 	        WHERE a.cancel = 0
-	          AND a.orgid = ?1
-	          AND (?2 = 'ALL' OR a.suppliername = ?2)
-	          AND (?3 IS NULL OR a.docdate <= ?3)
+	          AND ('ALL' = ?1 OR a.suppliername = ?1 ) and (b.bussinesscate=?3 or 'ALL'=?3)
+			AND (?2 IS NULL OR a.docdate <= ?2)  
 
 	        UNION
 
-	        SELECT suppliername, docid, docdate, c.vid, c.vdate,
+	        SELECT suppliername, docid, docdate, c.supplierbillno, c.supplierbilldate,
 	               c.totchargeslcamt, c.gstinputlcamt, c.netbillcurramt,
 	               CASE
 	                   WHEN approvestatus = 'Approved' THEN 'Approved'
@@ -124,16 +123,13 @@ public interface RetrievalManifestProviderRepo extends JpaRepository<RetrievalMa
 	        JOIN finance_aip.partymaster d
 	            ON c.suppliercode = d.partycode
 	        WHERE c.cancel = 0
-	          AND c.orgid = ?1
-	          AND (?2 = 'ALL' OR c.suppliername = ?2)
-	          AND (?3 IS NULL OR c.docdate <= ?3)
-
+	          AND ('ALL' = ?1 OR c.suppliername = ?1) and (d.bussinesscate=?3 or 'ALL'=?3)
+		      AND (?2 IS NULL OR c.docdate <=?2)
 	        ORDER BY bussinesscate, suppliername, billedmonthyear
 	        """, nativeQuery = true)
 	List<Object[]> findConsolidationCostInvoiceReports(
-	        Long orgId,
 	        String supplier,
-	        String asonDate
+	        String asonDate,String type
 	);
 
 }

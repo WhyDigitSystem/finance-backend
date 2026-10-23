@@ -4,6 +4,8 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -1062,10 +1064,59 @@ public class ReportServiceImpl implements ReportService {
 		return retrievalManifestProviderRepo.findCompanyDropdownByOrgId(orgId);
 	}
 
-	@Override
-	public List<Object[]> findConsolidationCostInvoiceReports(Long orgId, String supplier, String asondate) {
+//	@Override
+//	public List<Object[]> findConsolidationCostInvoiceReports(String supplier, String asondate, String type) {
+//
+//		return retrievalManifestProviderRepo.findConsolidationCostInvoiceReports(supplier,asondate, type);
+//	}
 
-		return retrievalManifestProviderRepo.findConsolidationCostInvoiceReports(orgId, supplier, asondate);
+	@Override
+	public List<Map<String, Object>> findConsolidationCostInvoiceReports(String supplier, String asondate,
+			String type) {
+
+		List<Object[]> costInvoiceList = retrievalManifestProviderRepo.findConsolidationCostInvoiceReports(supplier,
+				asondate, type);
+
+		return getConsolidationCostInvoiceReports(costInvoiceList);
+	}
+
+	private List<Map<String, Object>> getConsolidationCostInvoiceReports(List<Object[]> costInvoiceList) {
+
+		List<Map<String, Object>> list = new ArrayList<>();
+
+		if (costInvoiceList == null || costInvoiceList.isEmpty()) {
+			return list;
+		}
+
+		for (Object[] ch : costInvoiceList) {
+
+			Map<String, Object> map = new LinkedHashMap<>();
+
+			map.put("supplierName", ch[0] != null ? ch[0].toString() : "");
+			map.put("docId", ch[1] != null ? ch[1].toString() : "");
+			map.put("docDate", ch[2] != null ? ch[2].toString() : "");
+			map.put("supplierBillNo", ch[3] != null ? ch[3].toString() : "");
+			map.put("supplierBillDate", ch[4] != null ? ch[4].toString() : "");
+
+			map.put("totalChargesLcAmt", ch[5] != null ? new BigDecimal(ch[5].toString()) : BigDecimal.ZERO);
+
+			map.put("gstInputLcAmt", ch[6] != null ? new BigDecimal(ch[6].toString()) : BigDecimal.ZERO);
+
+			map.put("netBillCurrAmt", ch[7] != null ? new BigDecimal(ch[7].toString()) : BigDecimal.ZERO);
+
+			map.put("status", ch[8] != null ? ch[8].toString() : "");
+			map.put("purVoucherNo", ch[9] != null ? ch[9].toString() : "");
+			map.put("purVoucherDate", ch[10] != null ? ch[10].toString() : "");
+			map.put("entity", ch[11] != null ? ch[11].toString() : "");
+			map.put("finYear", ch[12] != null ? ch[12].toString() : "");
+			map.put("billedMonthYear", ch[13] != null ? ch[13].toString() : "");
+			map.put("businessCategory", ch[14] != null ? ch[14].toString() : "");
+			map.put("reportTime", ch[15] != null ? ch[15].toString() : "");
+
+			list.add(map);
+		}
+
+		return list;
 	}
 
 	// aiap roport
@@ -1073,129 +1124,118 @@ public class ReportServiceImpl implements ReportService {
 	@Transactional
 	public int uploadAiapExcel(MultipartFile file) throws Exception {
 
-	    if (file == null || file.isEmpty()) {
-	        throw new RuntimeException("Please upload an Excel file");
-	    }
+		if (file == null || file.isEmpty()) {
+			throw new RuntimeException("Please upload an Excel file");
+		}
 
-	    List<AiapVO> aiapList = new ArrayList<>();
-	    DataFormatter formatter = new DataFormatter();
+		List<AiapVO> aiapList = new ArrayList<>();
+		DataFormatter formatter = new DataFormatter();
 
-	    try (Workbook workbook = WorkbookFactory.create(file.getInputStream())) {
+		try (Workbook workbook = WorkbookFactory.create(file.getInputStream())) {
 
-	        if (workbook.getNumberOfSheets() == 0) {
-	            throw new RuntimeException("Excel file contains no sheets");
-	        }
+			if (workbook.getNumberOfSheets() == 0) {
+				throw new RuntimeException("Excel file contains no sheets");
+			}
 
-	        Sheet sheet = workbook.getSheetAt(0);
+			Sheet sheet = workbook.getSheetAt(0);
 
-	        // Skip header row
-	        for (int i = 1; i <= sheet.getLastRowNum(); i++) {
+			// Skip header row
+			for (int i = 1; i <= sheet.getLastRowNum(); i++) {
 
-	            Row row = sheet.getRow(i);
+				Row row = sheet.getRow(i);
 
-	            if (row == null || isEmptyRow(row, formatter)) {
-	                continue;
-	            }
+				if (row == null || isEmptyRow(row, formatter)) {
+					continue;
+				}
 
-	            AiapVO aiapVO = new AiapVO();
+				AiapVO aiapVO = new AiapVO();
 
-	            // Column 0: Date
-	            Cell dateCell = row.getCell(0);
+				// Column 0: Date
+				Cell dateCell = row.getCell(0);
 
-	            if (dateCell != null) {
-	                aiapVO.setDate(getExcelDate(dateCell, formatter));
-	            }
+				if (dateCell != null) {
+					aiapVO.setDate(getExcelDate(dateCell, formatter));
+				}
 
-	            // Column 1: Details
-	            aiapVO.setDetails(getCellValue(row, 1, formatter));
+				// Column 1: Details
+				aiapVO.setDetails(getCellValue(row, 1, formatter));
 
-	            // Column 2: Mode
-	            aiapVO.setMode(getCellValue(row, 2, formatter));
+				// Column 2: Mode
+				aiapVO.setMode(getCellValue(row, 2, formatter));
 
-	            // Column 3: Amount
-	            String amountValue = getCellValue(row, 3, formatter);
+				// Column 3: Amount
+				String amountValue = getCellValue(row, 3, formatter);
 
-	            if (amountValue != null) {
-	                aiapVO.setAmount(new BigDecimal(amountValue.replace(",", "")));
-	            }
+				if (amountValue != null) {
+					aiapVO.setAmount(new BigDecimal(amountValue.replace(",", "")));
+				}
 
-	            // Column 4: Group
-	            aiapVO.setGroup(getCellValue(row, 4, formatter));
+				// Column 4: Group
+				aiapVO.setGroup(getCellValue(row, 4, formatter));
 
-	            // Column 5: Sub Ledger
-	            aiapVO.setSubLedger(getCellValue(row, 5, formatter));
+				// Column 5: Sub Ledger
+				aiapVO.setSubLedger(getCellValue(row, 5, formatter));
 
-	            // Column 6: Ledger
-	            aiapVO.setLedger(getCellValue(row, 6, formatter));
+				// Column 6: Ledger
+				aiapVO.setLedger(getCellValue(row, 6, formatter));
 
-	            // Column 7: Additional Details
-	            aiapVO.setRemarks(getCellValue(row, 7, formatter));
+				// Column 7: Additional Details
+				aiapVO.setRemarks(getCellValue(row, 7, formatter));
 
-	            aiapList.add(aiapVO);
-	        }
-	    }
+				aiapList.add(aiapVO);
+			}
+		}
 
-	    if (aiapList.isEmpty()) {
-	        throw new RuntimeException("No data rows found in the Excel file");
-	    }
+		if (aiapList.isEmpty()) {
+			throw new RuntimeException("No data rows found in the Excel file");
+		}
 
-	    aiapRepo.saveAll(aiapList);
+		aiapRepo.saveAll(aiapList);
 
-	    return aiapList.size();
+		return aiapList.size();
 	}
-	
-	private LocalDate getExcelDate(
-	        Cell cell,
-	        DataFormatter formatter) {
 
-	    if (cell == null) {
-	        return null;
-	    }
+	private LocalDate getExcelDate(Cell cell, DataFormatter formatter) {
 
-	    if (cell.getCellType() == org.apache.poi.ss.usermodel.CellType.NUMERIC
-	            && DateUtil.isCellDateFormatted(cell)) {
-	        return cell.getLocalDateTimeCellValue().toLocalDate();
-	    }
+		if (cell == null) {
+			return null;
+		}
 
-	    String value = formatter.formatCellValue(cell).trim();
+		if (cell.getCellType() == org.apache.poi.ss.usermodel.CellType.NUMERIC && DateUtil.isCellDateFormatted(cell)) {
+			return cell.getLocalDateTimeCellValue().toLocalDate();
+		}
 
-	    if (value.isEmpty()) {
-	        return null;
-	    }
+		String value = formatter.formatCellValue(cell).trim();
 
-	    return LocalDate.parse(value);
+		if (value.isEmpty()) {
+			return null;
+		}
+
+		return LocalDate.parse(value);
 	}
-	
-	private String getCellValue(
-	        Row row,
-	        int columnIndex,
-	        DataFormatter formatter) {
 
-	    Cell cell = row.getCell(
-	            columnIndex,
-	            Row.MissingCellPolicy.RETURN_BLANK_AS_NULL
-	    );
+	private String getCellValue(Row row, int columnIndex, DataFormatter formatter) {
 
-	    if (cell == null) {
-	        return null;
-	    }
+		Cell cell = row.getCell(columnIndex, Row.MissingCellPolicy.RETURN_BLANK_AS_NULL);
 
-	    String value = formatter.formatCellValue(cell);
+		if (cell == null) {
+			return null;
+		}
 
-	    return value.trim().isEmpty() ? null : value;
+		String value = formatter.formatCellValue(cell);
+
+		return value.trim().isEmpty() ? null : value;
 	}
-	
+
 	private boolean isEmptyRow(Row row, DataFormatter formatter) {
 
-	    for (int i = 0; i < 8; i++) {
-	        if (getCellValue(row, i, formatter) != null) {
-	            return false;
-	        }
-	    }
+		for (int i = 0; i < 8; i++) {
+			if (getCellValue(row, i, formatter) != null) {
+				return false;
+			}
+		}
 
-	    return true;
+		return true;
 	}
-	
-	
-	
+
 }
