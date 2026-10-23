@@ -153,7 +153,7 @@ public interface RetrievalManifestProviderRepo extends JpaRepository<RetrievalMa
 	            ON a.partycode = b.partycode
 	        WHERE a.cancel = 0
 	          AND a.orgid = ?1
-	          AND (?2 = 'ALL' OR a.partyname = ?2)
+	          AND (?2 = 'ALL' OR FIND_IN_SET(a.partyname, ?2) > 0)
 	          AND (?3 IS NULL OR a.docdate <= ?3)
 
 	        UNION
@@ -174,7 +174,7 @@ public interface RetrievalManifestProviderRepo extends JpaRepository<RetrievalMa
 	            ON c.partycode = d.partycode
 	        WHERE c.cancel = 0
 	          AND c.orgid = ?1
-	          AND (?2 = 'ALL' OR c.partyname = ?2)
+	          AND (?2 = 'ALL' OR FIND_IN_SET(c.partyname, ?2) > 0)
 	          AND (?3 IS NULL OR c.docdate <= ?3)
 
 	        ORDER BY entity, docdate, billedmonthyear
@@ -184,5 +184,6 @@ public interface RetrievalManifestProviderRepo extends JpaRepository<RetrievalMa
 	        String partyName,
 	        String asonDate
 	);
+	
 	
 }
