@@ -50,25 +50,18 @@ public interface RetrievalManifestProviderRepo extends JpaRepository<RetrievalMa
 //			String toDate, String fromDate);
 
 	@Query(value = """
-			SELECT b.company, a.*
-			FROM rim a
-			JOIN warehouse b
-			    ON a.receiver = CONCAT(
-			        COALESCE(b.locationname, ''),
-			        '-',
-			        COALESCE(b.locationunit, '')
-			    )
-			WHERE ?1 = 'RIM'
+			SELECT  a.* FROM rim a left join warehouse w
+ on w.name=a.sender WHERE ?1 = 'RIM'
 			  AND a.orgid = ?2
 			  AND (a.sender = ?3 OR ?3 = 'ALL')
-			  AND (b.company = ?4 OR ?4 = 'ALL')
-			  AND a.finyear = ?5
-			  AND (?6 IS NULL OR a.transactiondate >= ?6)
-			  AND (?7 IS NULL OR a.transactiondate <= ?7)
-			ORDER BY a.transactionno, a.transactiondate
+			  AND a.finyear = ?4
+			  AND (?5 IS NULL OR a.transactiondate >= ?5)
+			  AND (?6 IS NULL OR a.transactiondate <= ?6)
+              and (w.company =?7 or ?7='ALL')
+			ORDER BY a.transactiondate desc
 			""", nativeQuery = true)
-	List<Object[]> findRIMReports(String type, Long orgId, String customer, String company, String finyear,
-			String fromDate, String toDate);
+	List<RetrievalManifestProviderVO> findRIMReports(String type, Long orgId, String customer, String finYear,
+			String fromDate, String toDate,String company);
 
 	@Query(nativeQuery = true, value = "select concat(prefixfield,lpad(lastno,4,0)) AS docid from documenttypemappingdetails where orgid=?1 and finyear=?2 and branchcode='BLR' and screencode=?3")
 	String getRetrievalManifestProviderDocId(Long orgId, String finYear, String screenCode);
@@ -188,5 +181,10 @@ public interface RetrievalManifestProviderRepo extends JpaRepository<RetrievalMa
 			ORDER BY entity, docdate, billedmonthyear
 			""", nativeQuery = true)
 	List<Object[]> findConsolidationPaymentReports(String partyName, String asonDate,String type);
+	
+	@Query(nativeQuery = true, value = "select b.name from warehouse b left join partymaster p on\r\n"
+			+ " p.partyshortname=b.company \r\n"
+			+ "where b.orgid=?1 and (b.company=?2 or ?2='ALL') group by b.name")
+	Set<Object[]> getAllWareHouseLocationDetails(Long orgId,String partyName);
 
 }

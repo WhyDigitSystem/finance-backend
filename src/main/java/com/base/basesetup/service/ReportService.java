@@ -90,9 +90,6 @@ public interface ReportService {
 	List<Map<String, Object>> findMimSummaryReport(String type, Long orgId, String customerName, String finYear,
 			String fromDate, String toDate);
 
-	List<Map<String, Object>> findRimSummaryReport(String type, Long orgId, String customerName, String finYear,
-			String fromDate, String toDate);
-
 	List<Map<String, Object>> getARAgeingReport(Long orgId, String branch, String partyName, String asOnDate,
 			String base);
 
@@ -110,8 +107,8 @@ public interface ReportService {
 //		List<Object[]> findRIMReports(String type, Long orgId, String customerName, String finYear, String toDate,
 //				String fromDate, String sender, String company);
 
-	List<Object[]> findRIMReports(String type, Long orgId, String sender, String company, String finYear,
-			String fromDate, String toDate);
+	List<RetrievalManifestProviderVO> findRIMReports(String type, Long orgId, String sender, String company,
+			String finYear, String fromDate, String toDate);
 
 	List<String> findCompanyDropdownByOrgId(Long orgId);
 
@@ -123,7 +120,12 @@ public interface ReportService {
 
 	List<Map<String, Object>> getAllVendorListCostReport(String type);
 
-	List<Map<String, Object>> findConsolidationPaymentReports(String partyName, String asonDate,String type);
+	List<Map<String, Object>> findConsolidationPaymentReports(String partyName, String asonDate, String type);
+
+	List<Map<String, Object>> getAllWareHouseLocationDetails(Long orgId, String partyName);
+
+	List<Map<String, Object>> findRimSummaryReport(String type, Long orgId, String wareHouse, String finYear,
+			String fromDate, String toDate, String partyName);
 
 //		List<RetrievalManifestProviderVO> findRIMReports(String type, Long orgId, String customerName, String finYear,
 //				String toDate, String fromDate, String sender, String company);

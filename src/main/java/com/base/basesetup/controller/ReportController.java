@@ -661,37 +661,67 @@ public class ReportController extends BaseController {
 
 	@GetMapping("/findRIMReports")
 	public ResponseEntity<ResponseDTO> findRIMReports(@RequestParam String type, @RequestParam Long orgId,
-			@RequestParam(required = false, defaultValue = "ALL") String sender,
-			@RequestParam(required = false, defaultValue = "ALL") String company, @RequestParam String finYear,
-			@RequestParam(required = false) String fromDate, @RequestParam(required = false) String toDate) {
-
+			@RequestParam(required = false, defaultValue = "ALL") String customer, @RequestParam String finYear,
+			@RequestParam(required = false) String fromDate, @RequestParam(required = false) String toDate,
+			@RequestParam(required = false, defaultValue = "ALL") String company) {
 		String methodName = "findRIMReports()";
 		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
-
 		String errorMsg = null;
 		Map<String, Object> responseObjectsMap = new HashMap<>();
 		ResponseDTO responseDTO = null;
-		List<Object[]> rimReportFillGrid = new ArrayList<>();
-
+		List<RetrievalManifestProviderVO> mimReportFillGrid = new ArrayList<>();
 		try {
-			rimReportFillGrid = reportService.findRIMReports(type, orgId, sender, company, finYear, fromDate, toDate);
+			mimReportFillGrid = reportService.findRIMReports(type, orgId, customer, finYear, fromDate, toDate, company);
 		} catch (Exception e) {
 			errorMsg = e.getMessage();
 			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
 		}
-
 		if (StringUtils.isBlank(errorMsg)) {
 			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "RimReports information get successfully ByOrgId");
-			responseObjectsMap.put("rimReportFillGrid", rimReportFillGrid);
+			responseObjectsMap.put("rimReportFillGrid", mimReportFillGrid);
 			responseDTO = createServiceResponse(responseObjectsMap);
 		} else {
 			responseDTO = createServiceResponseError(responseObjectsMap, "RimReports information receive failedByOrgId",
 					errorMsg);
 		}
-
 		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
 		return ResponseEntity.ok().body(responseDTO);
+
 	}
+
+//	@GetMapping("/findRIMReports")
+//	public ResponseEntity<ResponseDTO> findRIMReports(@RequestParam String type, @RequestParam Long orgId,
+//			@RequestParam(required = false, defaultValue = "ALL") String sender,
+//			@RequestParam(required = false, defaultValue = "ALL") String company, @RequestParam String finYear,
+//			@RequestParam(required = false) String fromDate, @RequestParam(required = false) String toDate) {
+//
+//		String methodName = "findRIMReports()";
+//		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+//
+//		String errorMsg = null;
+//		Map<String, Object> responseObjectsMap = new HashMap<>();
+//		ResponseDTO responseDTO = null;
+//		List<Object[]> rimReportFillGrid = new ArrayList<>();
+//
+//		try {
+//			rimReportFillGrid = reportService.findRIMReports(type, orgId, sender, finYear, fromDate, toDate,company,);
+//		} catch (Exception e) {
+//			errorMsg = e.getMessage();
+//			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+//		}
+//
+//		if (StringUtils.isBlank(errorMsg)) {
+//			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "RimReports information get successfully ByOrgId");
+//			responseObjectsMap.put("rimReportFillGrid", rimReportFillGrid);
+//			responseDTO = createServiceResponse(responseObjectsMap);
+//		} else {
+//			responseDTO = createServiceResponseError(responseObjectsMap, "RimReports information receive failedByOrgId",
+//					errorMsg);
+//		}
+//
+//		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+//		return ResponseEntity.ok().body(responseDTO);
+//	}
 
 	@GetMapping("/findMimSummaryReport")
 	public ResponseEntity<ResponseDTO> findMimSummaryReport(@RequestParam String type, @RequestParam Long orgId,
@@ -723,8 +753,9 @@ public class ReportController extends BaseController {
 
 	@GetMapping("/findRimSummaryReport")
 	public ResponseEntity<ResponseDTO> findRimSummaryReport(@RequestParam String type, @RequestParam Long orgId,
-			@RequestParam String customerName, @RequestParam String finYear,
-			@RequestParam(required = false) String fromDate, @RequestParam(required = false) String toDate) {
+			@RequestParam String wareHouse, @RequestParam String finYear,
+			@RequestParam(required = false) String fromDate, @RequestParam(required = false) String toDate,
+			@RequestParam(required = false) String partyName) {
 		String methodName = "findMimSummaryReport()";
 		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
 		String errorMsg = null;
@@ -732,7 +763,8 @@ public class ReportController extends BaseController {
 		ResponseDTO responseDTO = null;
 		List<Map<String, Object>> department = new ArrayList<>();
 		try {
-			department = reportService.findRimSummaryReport(type, orgId, customerName, finYear, fromDate, toDate);
+			department = reportService.findRimSummaryReport(type, orgId, wareHouse, finYear, fromDate, toDate,
+					partyName);
 		} catch (Exception e) {
 			errorMsg = e.getMessage();
 			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
@@ -1056,7 +1088,7 @@ public class ReportController extends BaseController {
 	}
 
 	@GetMapping("/getAllVendorListCostReport")
-	public ResponseEntity<ResponseDTO> getAllVendorListCostReport(String type) {
+	public ResponseEntity<ResponseDTO> getAllVendorListCostReport(@RequestParam String type) {
 		String methodName = "getAllVendorListCostReport()";
 		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
 		String errorMsg = null;
@@ -1081,11 +1113,11 @@ public class ReportController extends BaseController {
 		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
 		return ResponseEntity.ok().body(responseDTO);
 	}
-	
+
 	@GetMapping("/ConsolidationPaymentReports")
 	public ResponseEntity<ResponseDTO> ConsolidationPaymentReports(
 			@RequestParam(required = false, defaultValue = "ALL") String partyName,
-			@RequestParam(required = false) String asonDate,@RequestParam(required = false) String type) {
+			@RequestParam(required = false) String asonDate, @RequestParam(required = false) String type) {
 
 		String methodName = "ConsolidationPaymentReports()";
 		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
@@ -1096,7 +1128,7 @@ public class ReportController extends BaseController {
 		List<Map<String, Object>> paymentReportList = new ArrayList<>();
 
 		try {
-			paymentReportList = reportService.findConsolidationPaymentReports( partyName, asonDate,type);
+			paymentReportList = reportService.findConsolidationPaymentReports(partyName, asonDate, type);
 		} catch (Exception e) {
 			errorMsg = e.getMessage();
 			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
@@ -1110,6 +1142,34 @@ public class ReportController extends BaseController {
 		} else {
 			responseDTO = createServiceResponseError(responseObjectsMap,
 					"Failed to retrieve Consolidation Payment Reports", errorMsg);
+		}
+
+		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+		return ResponseEntity.ok().body(responseDTO);
+	}
+
+	@GetMapping("/getAllWareHouseLocationDetails")
+	public ResponseEntity<ResponseDTO> getAllWareHouseLocationDetails(@RequestParam Long orgId,
+			@RequestParam String partyName) {
+		String methodName = "getAllWareHouseLocationDetails()";
+		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+		String errorMsg = null;
+		Map<String, Object> responseObjectsMap = new HashMap<>();
+		ResponseDTO responseDTO = null;
+		List<Map<String, Object>> mapp = new ArrayList<>();
+
+		try {
+			mapp = reportService.getAllWareHouseLocationDetails(orgId, partyName);
+		} catch (Exception e) {
+			errorMsg = e.getMessage();
+		}
+
+		if (StringUtils.isBlank(errorMsg)) {
+			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, "WareHouseLocationDetails successfully");
+			responseObjectsMap.put("mapp", mapp);
+			responseDTO = createServiceResponse(responseObjectsMap);
+		} else {
+			responseDTO = createServiceResponseError(responseObjectsMap, "WareHouseLocationDetails  Count", errorMsg);
 		}
 
 		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);

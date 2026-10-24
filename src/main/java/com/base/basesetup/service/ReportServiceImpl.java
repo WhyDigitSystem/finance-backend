@@ -870,10 +870,10 @@ public class ReportServiceImpl implements ReportService {
 	}
 
 	@Override
-	public List<Object[]> findRIMReports(String type, Long orgId, String sender, String company, String finYear,
-			String fromDate, String toDate) {
+	public List<RetrievalManifestProviderVO> findRIMReports(String type, Long orgId, String customer, String finYear,
+			String fromDate, String toDate, String company) {
 
-		return retrievalManifestProviderRepo.findRIMReports(type, orgId, sender, company, finYear, fromDate, toDate);
+		return retrievalManifestProviderRepo.findRIMReports(type, orgId, customer, finYear, fromDate, toDate, company);
 	}
 
 	@Override
@@ -903,10 +903,10 @@ public class ReportServiceImpl implements ReportService {
 	}
 
 	@Override
-	public List<Map<String, Object>> findRimSummaryReport(String type, Long orgId, String customerName, String finYear,
-			String fromDate, String toDate) {
-		Set<Object[]> chCode = issueManifestProviderRepo.findRimSummaryReport(type, orgId, customerName, finYear,
-				fromDate, toDate);
+	public List<Map<String, Object>> findRimSummaryReport(String type, Long orgId, String wareHouse, String finYear,
+			String fromDate, String toDate, String partyName) {
+		Set<Object[]> chCode = issueManifestProviderRepo.findRimSummaryReport(type, orgId, wareHouse, finYear, fromDate,
+				toDate, partyName);
 		return findRimSummary(chCode);
 	}
 
@@ -1319,6 +1319,28 @@ public class ReportServiceImpl implements ReportService {
 		}
 
 		return responseList;
+	}
+
+	@Override
+	public List<Map<String, Object>> getAllWareHouseLocationDetails(Long orgId, String partyName) {
+		Set<Object[]> chType = retrievalManifestProviderRepo.getAllWareHouseLocationDetails(orgId, partyName);
+		return getAllWareHouseLocationDetails(chType);
+	}
+
+	private List<Map<String, Object>> getAllWareHouseLocationDetails(Set<Object[]> chType) {
+
+		List<Map<String, Object>> List1 = new ArrayList<>();
+
+		for (Object[] ch : chType) {
+
+			Map<String, Object> map = new HashMap<>();
+
+			map.put("locationName", ch[0] != null ? ch[0].toString() : "");
+
+			List1.add(map);
+		}
+
+		return List1;
 	}
 
 }
