@@ -1103,4 +1103,41 @@ public class ReportController extends BaseController {
       LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
       return ResponseEntity.ok().body(responseDTO);
   }
+  
+//  consolidation Revenue report
+  
+  @GetMapping("/getConsolidationRevenueReport")
+
+  public ResponseEntity<ResponseDTO> getConsolidationRevenueReport(
+          @RequestParam String asondate,
+          @RequestParam String party) {
+
+      String methodName = "getConsolidationRevenueReport()";
+
+      LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+
+      Map<String, Object> responseObjectsMap = new HashMap<>();
+      ResponseDTO responseDTO = null;
+      String errorMsg = null;
+
+      try {
+
+          responseObjectsMap = reportService
+                  .getConsolidationRevenueReport(asondate, party);
+
+          responseDTO = createServiceResponse(responseObjectsMap);
+
+      } catch (Exception e) {
+
+          errorMsg = e.getMessage();
+
+          LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg, e);
+
+          responseDTO = createServiceResponseError(responseObjectsMap, errorMsg, errorMsg);
+      }
+
+      LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+
+      return ResponseEntity.ok().body(responseDTO);
+  }
 }
