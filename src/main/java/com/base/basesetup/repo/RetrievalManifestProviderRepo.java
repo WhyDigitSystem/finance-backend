@@ -186,62 +186,62 @@ public interface RetrievalManifestProviderRepo extends JpaRepository<RetrievalMa
 	        String asonDate
 	);
 	
-	@Query(value = """
-	        SELECT
-	            'AIPACKS TRAX' AS entity,
-	            DATE_FORMAT(a.vdate, '%b-%y') AS mn,
-	            a.partyname,
-	            a.vid,
-	            a.vdate,
-	            b.qty,
-	            SUM(b.billamount) AS billamount,
-	            SUM(b.gstamount) AS gstamount,
-	            a.totalinvamountlc
-	        FROM finance_aip_trax.taxinvoice a
-	        INNER JOIN finance_aip_trax.taxinvoicedetails b
-	            ON a.taxinvoiceid = b.taxinvoiceid
-	        WHERE COALESCE(a.cancel, 0) = 0
-	          AND a.vdate <= :asondate
-	          AND (:party = 'All' OR a.partyname = :party)
-	        GROUP BY
-	            DATE_FORMAT(a.vdate, '%b-%y'),
-	            a.partyname,
-	            a.vid,
-	            a.vdate,
-	            b.qty,
-	            a.totalinvamountlc
-
-	        UNION ALL
-
-	        SELECT
-	            'SCM AIPACKS' AS entity,
-	            DATE_FORMAT(c.vdate, '%b-%y') AS mn,
-	            c.partyname,
-	            c.vid,
-	            c.vdate,
-	            d.qty,
-	            SUM(d.billamount) AS billamount,
-	            SUM(d.gstamount) AS gstamount,
-	            c.totalinvamountlc
-	        FROM finance_aip.taxinvoice c
-	        INNER JOIN finance_aip.taxinvoicedetails d
-	            ON c.taxinvoiceid = d.taxinvoiceid
-	        WHERE COALESCE(c.cancel, 0) = 0
-	          AND c.vdate <= :asondate
-	          AND (:party = 'All' OR c.partyname = :party)
-	        GROUP BY
-	            DATE_FORMAT(c.vdate, '%b-%y'),
-	            c.partyname,
-	            c.vid,
-	            c.vdate,
-	            d.qty,
-	            c.totalinvamountlc
-
-	        ORDER BY vdate DESC
-	        """, nativeQuery = true)
-	List<Object[]> getConsolidationRevenueReport(
-	        @Param("asondate") String asondate,
-	        @Param("party") String party);
-	
+//	@Query(value = """
+//	        SELECT
+//	            'AIPACKS TRAX' AS entity,
+//	            DATE_FORMAT(a.vdate, '%b-%y') AS mn,
+//	            a.partyname,
+//	            a.vid,
+//	            a.vdate,
+//	            b.qty,
+//	            SUM(b.billamount) AS billamount,
+//	            SUM(b.gstamount) AS gstamount,
+//	            a.totalinvamountlc
+//	        FROM finance_aip_trax.taxinvoice a
+//	        INNER JOIN finance_aip_trax.taxinvoicedetails b
+//	            ON a.taxinvoiceid = b.taxinvoiceid
+//	        WHERE COALESCE(a.cancel, 0) = 0
+//	          AND a.vdate <= :asondate
+//	          AND (:party = 'All' OR a.partyname = :party)
+//	        GROUP BY
+//	            DATE_FORMAT(a.vdate, '%b-%y'),
+//	            a.partyname,
+//	            a.vid,
+//	            a.vdate,
+//	            b.qty,
+//	            a.totalinvamountlc
+//
+//	        UNION ALL
+//
+//	        SELECT
+//	            'SCM AIPACKS' AS entity,
+//	            DATE_FORMAT(c.vdate, '%b-%y') AS mn,
+//	            c.partyname,
+//	            c.vid,
+//	            c.vdate,
+//	            d.qty,
+//	            SUM(d.billamount) AS billamount,
+//	            SUM(d.gstamount) AS gstamount,
+//	            c.totalinvamountlc
+//	        FROM finance_aip.taxinvoice c
+//	        INNER JOIN finance_aip.taxinvoicedetails d
+//	            ON c.taxinvoiceid = d.taxinvoiceid
+//	        WHERE COALESCE(c.cancel, 0) = 0
+//	          AND c.vdate <= :asondate
+//	          AND (:party = 'All' OR c.partyname = :party)
+//	        GROUP BY
+//	            DATE_FORMAT(c.vdate, '%b-%y'),
+//	            c.partyname,
+//	            c.vid,
+//	            c.vdate,
+//	            d.qty,
+//	            c.totalinvamountlc
+//
+//	        ORDER BY vdate DESC
+//	        """, nativeQuery = true)
+//	List<Object[]> getConsolidationRevenueReport(
+//	        @Param("asondate") String asondate,
+//	        @Param("party") String party);
+//	
 	
 }
