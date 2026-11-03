@@ -1343,4 +1343,37 @@ public class ReportServiceImpl implements ReportService {
 		return List1;
 	}
 
+	@Override
+	public Map<String, Object> getConsolidationRevenueReport(String asondate, String party)
+			throws ApplicationException {
+
+		List<Object[]> consolidationRevenueList = retrievalManifestProviderRepo.getConsolidationRevenueReport(asondate,
+				party);
+
+		List<Map<String, Object>> responseList = new ArrayList<>();
+
+		for (Object[] obj : consolidationRevenueList) {
+
+			Map<String, Object> map = new HashMap<>();
+
+			map.put("entity", obj[0]);
+			map.put("mn", obj[1]);
+			map.put("partyname", obj[2]);
+			map.put("vid", obj[3]);
+			map.put("vdate", obj[4]);
+			map.put("qty", obj[5]);
+			map.put("billamount", obj[6]);
+			map.put("gstamount", obj[7]);
+			map.put("totalinvamountlc", obj[8]);
+
+			responseList.add(map);
+		}
+
+		Map<String, Object> responseObjectsMap = new HashMap<>();
+
+		responseObjectsMap.put("consolidationRevenueReport", responseList);
+
+		return responseObjectsMap;
+	}
+
 }

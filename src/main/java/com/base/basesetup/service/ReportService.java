@@ -127,6 +127,8 @@ public interface ReportService {
 	List<Map<String, Object>> findRimSummaryReport(String type, Long orgId, String wareHouse, String finYear,
 			String fromDate, String toDate, String partyName);
 
+	Map<String, Object> getConsolidationRevenueReport(String asondate, String party) throws ApplicationException;
+
 //		List<RetrievalManifestProviderVO> findRIMReports(String type, Long orgId, String customerName, String finYear,
 //				String toDate, String fromDate, String sender, String company);
 
