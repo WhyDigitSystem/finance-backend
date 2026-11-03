@@ -246,4 +246,111 @@ public interface RetrievalManifestProviderRepo extends JpaRepository<RetrievalMa
 	        @Param("party") String party);
 
 
+	@Query(value = """
+	        SELECT a.partyname, a.docid, a.docdate, a.purvoucherno,
+	               a.purvoucherdate, a.paymentamt, a.chequeno, a.chequedate,
+	               a.payto, a.onaccount,
+	               CASE
+	                   WHEN a.approvestatus = 'Approved' THEN 'Approved'
+	                   ELSE 'Pending'
+	               END AS status,
+	               'AIPACKS TRAX' AS entity,
+	               a.finyear,
+	               DATE_FORMAT(a.docdate, '%M %Y') AS billedmonthyear,
+	               b.bussinesscate
+	        FROM finance_aip_trax.payment a
+	        JOIN finance_aip_trax.partymaster b
+	            ON a.partycode = b.partycode
+	        WHERE a.cancel = 0
+	          AND a.orgid = ?1
+	          AND (?2 = 'ALL' OR FIND_IN_SET(a.partyname, ?2) > 0)
+	          AND (?3 IS NULL OR a.docdate <= ?3)
+
+	        UNION
+
+	        SELECT c.partyname, c.docid, c.docdate, c.purvoucherno,
+	               c.purvoucherdate, c.paymentamt, c.chequeno, c.chequedate,
+	               c.payto, c.onaccount,
+	               CASE
+	                   WHEN c.approvestatus = 'Approved' THEN 'Approved'
+	                   ELSE 'Pending'
+	               END AS status,
+	               'SCM AIPACKS' AS entity,
+	               c.finyear,
+	               DATE_FORMAT(c.docdate, '%M %Y') AS billedmonthyear,
+	               d.bussinesscate
+	        FROM finance_aip.payment c
+	        JOIN finance_aip.partymaster d
+	            ON c.partycode = d.partycode
+	        WHERE c.cancel = 0
+	          AND c.orgid = ?1
+	          AND (?2 = 'ALL' OR FIND_IN_SET(c.partyname, ?2) > 0)
+	          AND (?3 IS NULL OR c.docdate <= ?3)
+
+	        ORDER BY entity, docdate, billedmonthyear
+	        """, nativeQuery = true)
+	List<Object[]> findConsolidationPaymentReports(
+	        Long orgId,
+	        String partyName,
+	        String asonDate
+	);
+	
+//	@Query(value = """
+//	        SELECT
+//	            'AIPACKS TRAX' AS entity,
+//	            DATE_FORMAT(a.vdate, '%b-%y') AS mn,
+//	            a.partyname,
+//	            a.vid,
+//	            a.vdate,
+//	            b.qty,
+//	            SUM(b.billamount) AS billamount,
+//	            SUM(b.gstamount) AS gstamount,
+//	            a.totalinvamountlc
+//	        FROM finance_aip_trax.taxinvoice a
+//	        INNER JOIN finance_aip_trax.taxinvoicedetails b
+//	            ON a.taxinvoiceid = b.taxinvoiceid
+//	        WHERE COALESCE(a.cancel, 0) = 0
+//	          AND a.vdate <= :asondate
+//	          AND (:party = 'All' OR a.partyname = :party)
+//	        GROUP BY
+//	            DATE_FORMAT(a.vdate, '%b-%y'),
+//	            a.partyname,
+//	            a.vid,
+//	            a.vdate,
+//	            b.qty,
+//	            a.totalinvamountlc
+//
+//	        UNION ALL
+//
+//	        SELECT
+//	            'SCM AIPACKS' AS entity,
+//	            DATE_FORMAT(c.vdate, '%b-%y') AS mn,
+//	            c.partyname,
+//	            c.vid,
+//	            c.vdate,
+//	            d.qty,
+//	            SUM(d.billamount) AS billamount,
+//	            SUM(d.gstamount) AS gstamount,
+//	            c.totalinvamountlc
+//	        FROM finance_aip.taxinvoice c
+//	        INNER JOIN finance_aip.taxinvoicedetails d
+//	            ON c.taxinvoiceid = d.taxinvoiceid
+//	        WHERE COALESCE(c.cancel, 0) = 0
+//	          AND c.vdate <= :asondate
+//	          AND (:party = 'All' OR c.partyname = :party)
+//	        GROUP BY
+//	            DATE_FORMAT(c.vdate, '%b-%y'),
+//	            c.partyname,
+//	            c.vid,
+//	            c.vdate,
+//	            d.qty,
+//	            c.totalinvamountlc
+//
+//	        ORDER BY vdate DESC
+//	        """, nativeQuery = true)
+//	List<Object[]> getConsolidationRevenueReport(
+//	        @Param("asondate") String asondate,
+//	        @Param("party") String party);
+//	
+	
 }

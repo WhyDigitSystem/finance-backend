@@ -14,6 +14,7 @@ import com.base.basesetup.dto.CoaDTO;
 import com.base.basesetup.dto.ExcelUploadResultDTO;
 import com.base.basesetup.dto.LedgerMappingDTO;
 import com.base.basesetup.dto.ServiceLevelDTO;
+import com.base.basesetup.dto.ToleranceMasterDTO;
 import com.base.basesetup.entity.CCoaVO;
 import com.base.basesetup.entity.CoaVO;
 import com.base.basesetup.entity.LedgerMappingVO;
@@ -77,6 +78,8 @@ public interface BusinessService {
 	List<ServiceLevelVO> getAllServiceLevel(Long orgId);
 
 	Optional<CoaVO> getCaoByCode(String code);
+
+	Map<String, Object> createUpdateToleranceMaster(ToleranceMasterDTO toleranceMasterDTO) throws ApplicationException;
 
 	
 
