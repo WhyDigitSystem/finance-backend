@@ -716,6 +716,7 @@ public class APServiceImpl implements APService {
 			doctype.put("chargeAmt", sup[12] != null ? sup[12].toString() : "");
 			doctype.put("chargableamt", sup[13] != null ? sup[13].toString() : "");
 			doctype.put("gstamount", sup[14] != null ? sup[14].toString() : "");
+			doctype.put("amount", sup[15] != null ? sup[15].toString() : "");
 
 			payfill.add(doctype);
 		}
