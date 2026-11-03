@@ -117,10 +117,7 @@ public interface ReportService {
 
 		List<Object[]> findConsolidationCostInvoiceReports(Long orgId, String supplier, String asondate);
 
-		List<Map<String, Object>> findConsolidationPaymentReports(Long orgId, String partyName, String asonDate);
 		int uploadAiapExcel(MultipartFile file) throws Exception;
-
-//		Map<String, Object> getConsolidationRevenueReport(String asondate, String party) throws ApplicationException;
 
 //		List<RetrievalManifestProviderVO> findRIMReports(String type, Long orgId, String customerName, String finYear,
 //				String toDate, String fromDate, String sender, String company);
