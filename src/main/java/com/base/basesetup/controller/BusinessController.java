@@ -29,6 +29,7 @@ import com.base.basesetup.dto.ExcelUploadResultDTO;
 import com.base.basesetup.dto.LedgerMappingDTO;
 import com.base.basesetup.dto.ResponseDTO;
 import com.base.basesetup.dto.ServiceLevelDTO;
+import com.base.basesetup.dto.ToleranceMasterDTO;
 import com.base.basesetup.entity.CCoaVO;
 import com.base.basesetup.entity.CoaVO;
 import com.base.basesetup.entity.LedgerMappingVO;
@@ -117,7 +118,7 @@ public class BusinessController extends BaseController {
 		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
 		return ResponseEntity.ok().body(responseDTO);
 	}
-	
+
 	@GetMapping("/getCoaByCode")
 	public ResponseEntity<ResponseDTO> getCoaByCode(@RequestParam String code) {
 		String methodName = "getCoaByCode()";
@@ -170,16 +171,16 @@ public class BusinessController extends BaseController {
 
 	@PostMapping("/excelUploadForCoa")
 	public ResponseEntity<ResponseDTO> excelUploadForCoa(@RequestParam MultipartFile[] files,
-			@RequestParam(required = false) String createdBy,@RequestParam Long orgId) {
+			@RequestParam(required = false) String createdBy, @RequestParam Long orgId) {
 		String methodName = "excelUploadForCoa()";
-		
+
 		Map<String, Object> responseObjectsMap = new HashMap<>();
 		int totalRows = 0;
 		int successfulUploads = 0;
 		ResponseDTO responseDTO = null;
 		try {
 			// Call service method to process Excel upload
-			businessService.excelUploadForCoa(files, createdBy,orgId);
+			businessService.excelUploadForCoa(files, createdBy, orgId);
 
 			// Retrieve the counts after processing
 			totalRows = businessService.getTotalRows(); // Get total rows processed
@@ -228,7 +229,7 @@ public class BusinessController extends BaseController {
 	}
 
 	@GetMapping("/getAllCCao")
-	public ResponseEntity<ResponseDTO> getAllCCao(@RequestParam Long orgId,@RequestParam String clientCode) {
+	public ResponseEntity<ResponseDTO> getAllCCao(@RequestParam Long orgId, @RequestParam String clientCode) {
 		String methodName = "getAllCCao()";
 		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
 		String errorMsg = null;
@@ -236,7 +237,7 @@ public class BusinessController extends BaseController {
 		ResponseDTO responseDTO = null;
 		List<CCoaVO> cCoaVO = new ArrayList<>();
 		try {
-			cCoaVO = businessService.getAllCCao(orgId,clientCode);
+			cCoaVO = businessService.getAllCCao(orgId, clientCode);
 		} catch (Exception e) {
 			errorMsg = e.getMessage();
 			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
@@ -317,7 +318,8 @@ public class BusinessController extends BaseController {
 
 		try {
 			// Call the service method and get the result
-			ExcelUploadResultDTO uploadResult = businessService.excelUploadForCCoa(files, createdBy, clientCode, clientName, orgId);
+			ExcelUploadResultDTO uploadResult = businessService.excelUploadForCCoa(files, createdBy, clientCode,
+					clientName, orgId);
 
 			totalRows = businessService.getTotalRows(); // Get total rows processed
 			successfulUploads = businessService.getSuccessfulUploads();
@@ -325,7 +327,7 @@ public class BusinessController extends BaseController {
 			responseObjectsMap.put("status", true);
 			responseObjectsMap.put("totalRows", totalRows);
 			responseObjectsMap.put("successfulUploads", successfulUploads);
-			responseObjectsMap.put("message", "Excel Upload For CCoa successful"); 
+			responseObjectsMap.put("message", "Excel Upload For CCoa successful");
 //			// Populate success response
 //			responseObjectsMap.put("statusFlag", "Ok");
 //			responseObjectsMap.put("status", true);
@@ -492,7 +494,8 @@ public class BusinessController extends BaseController {
 	}
 
 	@GetMapping("/getAllLedgerMapping")
-	public ResponseEntity<ResponseDTO> getAllLedgerMapping(@RequestParam(required = false) Long orgId,@RequestParam(required = false) String clientCode) {
+	public ResponseEntity<ResponseDTO> getAllLedgerMapping(@RequestParam(required = false) Long orgId,
+			@RequestParam(required = false) String clientCode) {
 		String methodName = "getAllLedgerMapping()";
 		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
 		String errorMsg = null;
@@ -500,7 +503,7 @@ public class BusinessController extends BaseController {
 		ResponseDTO responseDTO = null;
 		List<LedgerMappingVO> ledgerMappingVO = new ArrayList<LedgerMappingVO>();
 		try {
-			ledgerMappingVO = businessService.getAllLedgerMapping(orgId,clientCode);
+			ledgerMappingVO = businessService.getAllLedgerMapping(orgId, clientCode);
 		} catch (Exception e) {
 			errorMsg = e.getMessage();
 			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
@@ -541,7 +544,7 @@ public class BusinessController extends BaseController {
 			responseObjectsMap.put("status", true);
 			responseObjectsMap.put("totalRows", totalRows);
 			responseObjectsMap.put("successfulUploads", successfulUploads);
-			responseObjectsMap.put("message", "Excel Upload For Ledger Mapping successful"); 
+			responseObjectsMap.put("message", "Excel Upload For Ledger Mapping successful");
 //			// Populate success response
 //			responseObjectsMap.put("statusFlag", "Ok");
 //			responseObjectsMap.put("status", true);
@@ -563,8 +566,8 @@ public class BusinessController extends BaseController {
 		return ResponseEntity.ok().body(responseDTO);
 	}
 
-	//SERVICE LEVEL
-	
+	// SERVICE LEVEL
+
 	@PutMapping("/createUpdateServiceLevel")
 	public ResponseEntity<ResponseDTO> createUpdateServiceLevel(@RequestBody ServiceLevelDTO serviceLevelDTO) {
 		String methodName = "createUpdateServiceLevel()";
@@ -579,7 +582,7 @@ public class BusinessController extends BaseController {
 			// Set response map values
 			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, serviceLevelVO.get("message"));
 			responseObjectsMap.put("ledgerMappingVOList", serviceLevelVO.get("serviceLevelVO")); // Ensure correct
-																										// key
+																									// key
 
 			// Create success response
 			responseDTO = createServiceResponse(responseObjectsMap);
@@ -617,7 +620,7 @@ public class BusinessController extends BaseController {
 		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
 		return ResponseEntity.ok().body(responseDTO);
 	}
-	
+
 	@GetMapping("/getAllServiceLevel")
 	public ResponseEntity<ResponseDTO> getAllServiceLevel(@RequestParam(required = false) Long orgId) {
 		String methodName = "getAllServiceLevel()";
@@ -643,4 +646,42 @@ public class BusinessController extends BaseController {
 		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
 		return ResponseEntity.ok().body(responseDTO);
 	}
+
+//	tolerance master
+	@PostMapping("/createUpdateToleranceMaster")
+	public ResponseEntity<ResponseDTO> createUpdateToleranceMaster(
+			@RequestBody ToleranceMasterDTO toleranceMasterRequestDTO) {
+
+		String methodName = "createUpdateToleranceMaster()";
+		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+
+		String errorMsg = null;
+		Map<String, Object> responseObjectsMap = new HashMap<>();
+		ResponseDTO responseDTO = null;
+
+		try {
+
+			Map<String, Object> createdToleranceMasterVO = businessService
+					.createUpdateToleranceMaster(toleranceMasterRequestDTO);
+
+			responseObjectsMap.put(CommonConstant.STRING_MESSAGE, createdToleranceMasterVO.get("message"));
+
+			responseObjectsMap.put("toleranceMasterVO", createdToleranceMasterVO.get("toleranceMasterVO"));
+
+			responseDTO = createServiceResponse(responseObjectsMap);
+
+		} catch (Exception e) {
+
+			errorMsg = e.getMessage();
+
+			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+
+			responseDTO = createServiceResponseError(responseObjectsMap, errorMsg, errorMsg);
+		}
+
+		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+
+		return ResponseEntity.ok().body(responseDTO);
+	}
+
 }

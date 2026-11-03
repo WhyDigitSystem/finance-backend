@@ -24,19 +24,23 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.base.basesetup.common.CommonConstant;
 import com.base.basesetup.dto.CCoaDTO;
 import com.base.basesetup.dto.CoaDTO;
 import com.base.basesetup.dto.ExcelUploadResultDTO;
 import com.base.basesetup.dto.LedgerMappingDTO;
 import com.base.basesetup.dto.ServiceLevelDTO;
 import com.base.basesetup.dto.ServiceLevelDetailsDTO;
+import com.base.basesetup.dto.ToleranceMasterDTO;
 import com.base.basesetup.entity.CCoaVO;
 import com.base.basesetup.entity.CoaVO;
 import com.base.basesetup.entity.LedgerMappingVO;
 import com.base.basesetup.entity.ServiceLevelDetailsVO;
 import com.base.basesetup.entity.ServiceLevelVO;
+import com.base.basesetup.entity.ToleranceMasterVO;
 import com.base.basesetup.exception.ApplicationException;
 import com.base.basesetup.repo.CCoaRepo;
 import com.base.basesetup.repo.ClientCompanyRepo;
@@ -44,6 +48,7 @@ import com.base.basesetup.repo.CoaRepo;
 import com.base.basesetup.repo.LedgerMappingRepo;
 import com.base.basesetup.repo.ServiceLevelDetailsRepo;
 import com.base.basesetup.repo.ServiceLevelRepo;
+import com.base.basesetup.repo.ToleranceMasterRepo;
 
 import io.jsonwebtoken.io.IOException;
 
@@ -67,6 +72,9 @@ public class BusinessServiceImpl implements BusinessService {
 
 	@Autowired
 	ServiceLevelDetailsRepo serviceLevelDetailsRepo;
+	
+	@Autowired
+	ToleranceMasterRepo toleranceMasterRepo;
 
 	public static final Logger LOGGER = LoggerFactory.getLogger(BusinessServiceImpl.class);
 
@@ -283,7 +291,8 @@ public class BusinessServiceImpl implements BusinessService {
 //				Long startNo=clientCompanyVO.getStartNo();
 //				startNo=startNo+1;
 //				clientCompanyVO.setStartNo(startNo);
-//				clientCompanyRepo.save(clientCompanyVO);//
+//				clientCompanyRepo.save(clientCompanyVO);
+//
 //				message = "Chart Of Account Creation Successful";
 //			} else {
 //				// Update operation
@@ -337,81 +346,79 @@ public class BusinessServiceImpl implements BusinessService {
 //		cCoaVO.setNatureOfAccount(cCoaDTO.getNatureOfAccount());
 //		return cCoaVO;
 //	}
-	
+
 	@Override
 	public Map<String, Object> createUpdateCCoa(CCoaDTO cCoaDTO) throws ApplicationException {
-	    CCoaVO cCoaVO= new CCoaVO();
-	    String message;
+		CCoaVO cCoaVO = new CCoaVO();
+		String message;
 
-	    // Fetch client company details
+		// Fetch client company details
 
-	    // Check if client uses GLCode
+		// Check if client uses GLCode
 
-	    if (ObjectUtils.isEmpty(cCoaDTO.getId())) {
-	        // CREATE OPERATION
-	       
-	            // Validate Account Code and Account Name
-	            cCoaVO.setAccountCode(cCoaDTO.getAccountCode());
-	            // Validate only Account Name, generate Account Code
-	            if (cCoaRepo.existsByOrgIdAndClientCodeAndAccountNameIgnoreCase(
-	                    cCoaDTO.getOrgId(), cCoaDTO.getClientCode(), cCoaDTO.getAccountName())) {
-	                throw new ApplicationException(String.format("This AccountGroupName: %s Already Exists", cCoaDTO.getAccountName()));
-	            }
-	        
-	        
-	        cCoaVO.setCreatedBy(cCoaDTO.getCreatedBy());
-	        cCoaVO.setUpdatedBy(cCoaDTO.getCreatedBy());
-	        message = "Chart Of Account Creation Successful";
-	    } else {
-	        // UPDATE OPERATION
-	        cCoaVO = cCoaRepo.findById(cCoaDTO.getId()).orElseThrow(
-	                () -> new ApplicationException("Chart Of Account not found with id: " + cCoaDTO.getId()));
+		if (ObjectUtils.isEmpty(cCoaDTO.getId())) {
+			// CREATE OPERATION
 
-	        cCoaVO.setUpdatedBy(cCoaDTO.getCreatedBy());
+			// Validate Account Code and Account Name
+			cCoaVO.setAccountCode(cCoaDTO.getAccountCode());
+			// Validate only Account Name, generate Account Code
+			if (cCoaRepo.existsByOrgIdAndClientCodeAndAccountNameIgnoreCase(cCoaDTO.getOrgId(), cCoaDTO.getClientCode(),
+					cCoaDTO.getAccountName())) {
+				throw new ApplicationException(
+						String.format("This AccountGroupName: %s Already Exists", cCoaDTO.getAccountName()));
+			}
 
-	        if (!cCoaVO.getAccountName().equalsIgnoreCase(cCoaDTO.getAccountName())) {
-	            validateAccountName(cCoaDTO);
-	            cCoaVO.setAccountName(cCoaDTO.getAccountName());
-	        }
+			cCoaVO.setCreatedBy(cCoaDTO.getCreatedBy());
+			cCoaVO.setUpdatedBy(cCoaDTO.getCreatedBy());
+			message = "Chart Of Account Creation Successful";
+		} else {
+			// UPDATE OPERATION
+			cCoaVO = cCoaRepo.findById(cCoaDTO.getId()).orElseThrow(
+					() -> new ApplicationException("Chart Of Account not found with id: " + cCoaDTO.getId()));
 
-	        message = "Chart Of Account Updation Successful";
-	    }
+			cCoaVO.setUpdatedBy(cCoaDTO.getCreatedBy());
 
-	    // Map DTO to VO
-	    getCCoaVOFromCCoaDTO(cCoaVO, cCoaDTO);
+			if (!cCoaVO.getAccountName().equalsIgnoreCase(cCoaDTO.getAccountName())) {
+				validateAccountName(cCoaDTO);
+				cCoaVO.setAccountName(cCoaDTO.getAccountName());
+			}
 
-	    // Save entity
-	    cCoaRepo.save(cCoaVO);
+			message = "Chart Of Account Updation Successful";
+		}
 
-	    // Prepare response
-	    Map<String, Object> response = new HashMap<>();
-	    response.put("message", message);
-	    response.put("cCoaVO", cCoaVO);
-	    
-	    return response;
+		// Map DTO to VO
+		getCCoaVOFromCCoaDTO(cCoaVO, cCoaDTO);
+
+		// Save entity
+		cCoaRepo.save(cCoaVO);
+
+		// Prepare response
+		Map<String, Object> response = new HashMap<>();
+		response.put("message", message);
+		response.put("cCoaVO", cCoaVO);
+
+		return response;
 	}
 
-	
 	private void validateAccountName(CCoaDTO cCoaDTO) throws ApplicationException {
-	    if (cCoaRepo.existsByOrgIdAndClientCodeAndAccountNameIgnoreCase(
-	            cCoaDTO.getOrgId(), cCoaDTO.getClientCode(), cCoaDTO.getAccountName())) {
-	        throw new ApplicationException(String.format("This AccountGroupName: %s Already Exists", cCoaDTO.getAccountName()));
-	    }
+		if (cCoaRepo.existsByOrgIdAndClientCodeAndAccountNameIgnoreCase(cCoaDTO.getOrgId(), cCoaDTO.getClientCode(),
+				cCoaDTO.getAccountName())) {
+			throw new ApplicationException(
+					String.format("This AccountGroupName: %s Already Exists", cCoaDTO.getAccountName()));
+		}
 	}
 
-	
 	private CCoaVO getCCoaVOFromCCoaDTO(CCoaVO cCoaVO, CCoaDTO cCoaDTO) {
-	    cCoaVO.setAccountName(cCoaDTO.getAccountName());
-	    cCoaVO.setCreatedBy(cCoaDTO.getCreatedBy());
-	    cCoaVO.setCurrency(cCoaDTO.getCurrency());
-	    cCoaVO.setActive(cCoaDTO.isActive());
-	    cCoaVO.setOrgId(cCoaDTO.getOrgId());
-	    cCoaVO.setClientName(cCoaDTO.getClientName());
-	    cCoaVO.setClientCode(cCoaDTO.getClientCode());
-	    cCoaVO.setNatureOfAccount(cCoaDTO.getNatureOfAccount());
-	    return cCoaVO;
+		cCoaVO.setAccountName(cCoaDTO.getAccountName());
+		cCoaVO.setCreatedBy(cCoaDTO.getCreatedBy());
+		cCoaVO.setCurrency(cCoaDTO.getCurrency());
+		cCoaVO.setActive(cCoaDTO.isActive());
+		cCoaVO.setOrgId(cCoaDTO.getOrgId());
+		cCoaVO.setClientName(cCoaDTO.getClientName());
+		cCoaVO.setClientCode(cCoaDTO.getClientCode());
+		cCoaVO.setNatureOfAccount(cCoaDTO.getNatureOfAccount());
+		return cCoaVO;
 	}
-
 
 	@Override
 	public List<CCoaVO> getAllCCao(Long orgId, String clientCode) {
@@ -672,8 +679,6 @@ public class BusinessServiceImpl implements BusinessService {
 		return true;
 	}
 
-
-
 	@Override
 	public ExcelUploadResultDTO excelUploadForCCoa(MultipartFile[] files, String createdBy, String clientCode,
 			String clientName, Long orgId)
@@ -691,7 +696,6 @@ public class BusinessServiceImpl implements BusinessService {
 		for (MultipartFile file : files) {
 			try (Workbook workbook = WorkbookFactory.create(file.getInputStream())) {
 				Sheet sheet = workbook.getSheetAt(0);
-				
 
 				List<String> errorMessages = new ArrayList<>();
 				Set<String> existingAccountCodes = new HashSet<>();
@@ -710,7 +714,7 @@ public class BusinessServiceImpl implements BusinessService {
 					totalRows++;
 
 					try {
-						
+
 						// ✅ Trim and Parse cell values
 						String accountName = getStringCellValue(row.getCell(0)).trim();
 						String activeString = getStringCellValue(row.getCell(1)).trim();
@@ -739,7 +743,7 @@ public class BusinessServiceImpl implements BusinessService {
 						mainGroupList.add(cCoaVO);
 						result.setSuccessfulUploads(result.getSuccessfulUploads() + 1);
 						successfulUploads++;
-						
+
 					} catch (Exception e) {
 						String errorMessage = "Row " + (row.getRowNum() + 1) + ": " + e.getMessage();
 						errorMessages.add(errorMessage);
@@ -794,8 +798,6 @@ public class BusinessServiceImpl implements BusinessService {
 			ledgerMappingVO.setActive(ledgerMappingDTO.isActive());
 			ledgerMappingVO.setClientCode(ledgerMappingDTO.getClientCode());
 
-			
-
 			if (ledgerMappingRepo.existsByOrgIdAndClientCoaAndClientCode(ledgerMappingDTO.getOrgId(),
 					ledgerMappingDTO.getClientCoa(), ledgerMappingDTO.getClientCode())) {
 
@@ -814,8 +816,6 @@ public class BusinessServiceImpl implements BusinessService {
 			// Existing record, update it
 			ledgerMappingVO = ledgerMappingRepo.findById(ledgerMappingDTO.getId()).orElseThrow(
 					() -> new ApplicationException("LedgerMapping not found with id: " + ledgerMappingDTO.getId()));
-
-			
 
 			if (!ledgerMappingVO.getClientCoa().equalsIgnoreCase(ledgerMappingDTO.getClientCoa())) {
 
@@ -958,7 +958,7 @@ public class BusinessServiceImpl implements BusinessService {
 		totalRows = 0;
 		successfulUploads = 0;
 		ExcelUploadResultDTO result = new ExcelUploadResultDTO(); // Result Object
-		String clientAccountCode=null;
+		String clientAccountCode = null;
 
 		List<LedgerMappingVO> mainGroupList = new ArrayList<>();
 		result.setTotalExcelRows(0);
@@ -981,22 +981,25 @@ public class BusinessServiceImpl implements BusinessService {
 					result.setTotalExcelRows(result.getTotalExcelRows() + 1); // Increment totalRows
 					try {
 						// Parse cell values
-						String clientAccountName=getStringCellValue(row.getCell(0));
+						String clientAccountName = getStringCellValue(row.getCell(0));
 						String elAccountCodes = getStringCellValue(row.getCell(1));
 						String activeString = getStringCellValue(row.getCell(3));
 
-						CCoaVO cCoaVO = cCoaRepo.findByOrgIdAndClientCodeAndAccountNameIgnoreCase(orgId,clientCode ,clientAccountName);
+						CCoaVO cCoaVO = cCoaRepo.findByOrgIdAndClientCodeAndAccountNameIgnoreCase(orgId, clientCode,
+								clientAccountName);
 
 						if (cCoaVO == null) {
-						    errorMessages.add("Row No " + (row.getRowNum() + 1) + ": Not Found Account Name " + clientAccountName + " in Client COA");
+							errorMessages.add("Row No " + (row.getRowNum() + 1) + ": Not Found Account Name "
+									+ clientAccountName + " in Client COA");
 						} else {
-						    clientAccountCode = cCoaVO.getAccountCode();
-						    // Proceed with processing
+							clientAccountCode = cCoaVO.getAccountCode();
+							// Proceed with processing
 						}
 
 						boolean active = "1".equals(activeString); // Convert "1"/"0" to boolean
 
-						if (ledgerMappingRepo.existsByOrgIdAndClientCodeAndClientCoaIgnoreCase(orgId,clientCode, clientAccountName)) {
+						if (ledgerMappingRepo.existsByOrgIdAndClientCodeAndClientCoaIgnoreCase(orgId, clientCode,
+								clientAccountName)) {
 
 							String errorMessage = String.format("This Client Account Name: %s Already Exists",
 									clientAccountName);
@@ -1004,9 +1007,10 @@ public class BusinessServiceImpl implements BusinessService {
 						}
 
 						CoaVO coa = coaRepo.findByOrgIdAndAccountCode(orgId, elAccountCodes);
-						
-						if (coa== null) {
-							 errorMessages.add("Row No " + (row.getRowNum() + 1) + ": This EL Account Code: %s Not Found " + elAccountCodes );
+
+						if (coa == null) {
+							errorMessages.add("Row No " + (row.getRowNum() + 1)
+									+ ": This EL Account Code: %s Not Found " + elAccountCodes);
 						}
 
 						LedgerMappingVO ledgerMappingVO = new LedgerMappingVO();
@@ -1170,5 +1174,61 @@ public class BusinessServiceImpl implements BusinessService {
 		// TODO Auto-generated method stub
 		return coaRepo.findByAccountCode(code);
 	}
+// tolerance master
 
+	@Override
+	@Transactional
+	public Map<String, Object> createUpdateToleranceMaster(ToleranceMasterDTO toleranceMasterDTO)
+			throws ApplicationException {
+
+		String methodName = "createUpdateToleranceMaster()";
+		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+
+		Map<String, Object> responseObjectsMap = new HashMap<>();
+
+		try {
+
+			ToleranceMasterVO toleranceMasterVO = new ToleranceMasterVO();
+
+			if (toleranceMasterDTO.getToleranceid() != null) {
+
+				toleranceMasterVO = toleranceMasterRepo.findById(toleranceMasterDTO.getToleranceid())
+						.orElseThrow(() -> new ApplicationException("Tolerance Master not found"));
+
+				toleranceMasterVO.setUpdatedBy(toleranceMasterDTO.getUpdatedBy());
+
+			} else {
+
+				toleranceMasterVO.setCreatedBy(toleranceMasterDTO.getCreatedBy());
+				toleranceMasterVO.setUpdatedBy(toleranceMasterDTO.getCreatedBy());
+
+			}
+
+			toleranceMasterVO.setScreenCode(toleranceMasterDTO.getScreenCode());
+			toleranceMasterVO.setScreenName(toleranceMasterDTO.getScreenName());
+			toleranceMasterVO.setLowerTolerance(toleranceMasterDTO.getLowerTolerance());
+			toleranceMasterVO.setUpperTolerance(toleranceMasterDTO.getUpperTolerance());
+			toleranceMasterVO.setTolerance(toleranceMasterDTO.getTolerance());
+			toleranceMasterVO.setActive(toleranceMasterDTO.isActive());
+			toleranceMasterVO.setCancel(toleranceMasterDTO.isCancel());
+
+			toleranceMasterVO = toleranceMasterRepo.save(toleranceMasterVO);
+
+			responseObjectsMap.put("message",
+					toleranceMasterDTO.getToleranceid() != null ? "Tolerance Master updated successfully"
+							: "Tolerance Master created successfully");
+
+			responseObjectsMap.put("toleranceMasterVO", toleranceMasterVO);
+
+		} catch (Exception e) {
+
+			LOGGER.error("Error in " + methodName + ": " + e.getMessage());
+			throw new ApplicationException(e.getMessage());
+
+		}
+
+		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+
+		return responseObjectsMap;
+	}
 }

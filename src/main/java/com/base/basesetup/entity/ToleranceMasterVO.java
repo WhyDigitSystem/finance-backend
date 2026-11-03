@@ -52,10 +52,10 @@ public class ToleranceMasterVO {
 	    private boolean cancel;
 	    
 	    @Column(name = "screenid", length = 10)
-	    private String transactionId;
+	    private String screenCode;
 
 	    @Column(name = "screen", length = 50)
-	    private String toleranceMatser;
+	    private String screenName;
 
 	    @Embedded
 	    private CreatedUpdatedDate createdUpdatedDate = new CreatedUpdatedDate();
