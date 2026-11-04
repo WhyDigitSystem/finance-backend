@@ -1,5 +1,22 @@
 package com.base.basesetup.service;
 
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
+import org.springframework.web.multipart.MultipartFile;
+
+import com.base.basesetup.dto.InvoiceDTO;
+import com.base.basesetup.dto.IssueManifestProviderDTO;
+import com.base.basesetup.dto.QuotationDTO;
+import com.base.basesetup.dto.RetrievalManifestProviderDTO;
+import com.base.basesetup.entity.DeclarationAndNotesVO;
+import com.base.basesetup.entity.InvoiceVO;
+import com.base.basesetup.entity.IssueManifestProviderVO;
+import com.base.basesetup.entity.QuotationVO;
+import com.base.basesetup.entity.RetrievalManifestProviderVO;
+import com.base.basesetup.exception.ApplicationException;
+
 public interface ReportService {
 
 

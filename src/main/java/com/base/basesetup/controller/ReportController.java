@@ -1209,3 +1209,4 @@ public class ReportController extends BaseController {
 
 		return ResponseEntity.ok().body(responseDTO);
 	}
+}
