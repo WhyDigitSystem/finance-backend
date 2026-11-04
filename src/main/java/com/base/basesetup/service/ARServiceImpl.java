@@ -606,6 +606,7 @@ public class ARServiceImpl implements ARService {
 			doctype.put("tdsamt", sup[14] != null ? sup[14].toString() : "");
 			doctype.put("gstpercent", sup[15] != null ? sup[15].toString() : "");
 			doctype.put("gstamount", sup[16] != null ? sup[16].toString() : "");
+			doctype.put("amount", sup[17] != null ? sup[17].toString() : "");
 
 			doctypeMappingDetails.add(doctype);
 		}

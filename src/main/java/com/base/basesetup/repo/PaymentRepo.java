@@ -419,5 +419,10 @@ public interface PaymentRepo extends JpaRepository<PaymentVO, Long> {
 			+ ") t")
 	Set<Object[]> getPaymentCount(Long orgId,String finYear, String branchCode);
 
+	@Query(nativeQuery = true, value = "select  'KOTAK MAHINDRA - 9003699236' as accountName from payment where orgid=?1\r\n"
+			+ "    union\r\n"
+			+ "	select 'KOTAK MAHINDRA - 8867055511' as accountname from payment where orgid=?1")
+	Set<Object[]> getPaymentAccountName(Long orgId);
+
 
 }

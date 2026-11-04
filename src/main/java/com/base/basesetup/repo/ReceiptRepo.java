@@ -116,7 +116,7 @@ public interface ReceiptRepo extends JpaRepository<ReceiptVO, Long> {
 			+ "			   a.tdsamt,\r\n"
 			+ "			   tx.gstpercent,\r\n"
 			+ "			   COALESCE(inv.totaltaxamountlc, 0) \r\n"
-			+ "			       - COALESCE(crn.totaltaxamountlc, 0) AS gstamount\r\n"
+			+ "			       - COALESCE(crn.totaltaxamountlc, 0) AS gstamount,d.totalinvamountlc as total\r\n"
 			+ "			FROM arapdetails a\r\n"
 			+ "			JOIN accounts c ON a.docid = c.docid\r\n"
 			+ "			JOIN invoice_data inv ON a.refno = inv.docid\r\n"
@@ -137,7 +137,7 @@ public interface ReceiptRepo extends JpaRepository<ReceiptVO, Long> {
 			+ "			       - COALESCE(n.settamt, 0) > 0\r\n"
 			+ "			ORDER BY \r\n"
 			+ "			   a.refdate,\r\n"
-			+ "			   c.vid")
+			+ "			   c.vid,d.totalinvamountlc")
 	Set<Object[]> findReciptFillGrid(Long orgId, String partyCode,String branchCode);
 
 

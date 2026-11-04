@@ -94,4 +94,6 @@ public interface APService {
 
 	List<Map<String, Object>> getPaymentCount(Long orgId, String finYear, String branchCode);
 
+	List<Map<String, Object>> getPaymentAccountName(Long orgId);
+
 }

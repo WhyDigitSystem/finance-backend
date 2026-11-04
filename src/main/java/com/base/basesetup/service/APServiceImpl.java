@@ -1111,4 +1111,20 @@ public class APServiceImpl implements APService {
 		return List1;
 	}
 
+	@Override
+	public List<Map<String, Object>> getPaymentAccountName(Long orgId) {
+		Set<Object[]> chType = paymentRepo.getPaymentAccountName(orgId);
+		return getPaymentAccountName(chType);
+	}
+
+	private List<Map<String, Object>> getPaymentAccountName(Set<Object[]> chType) {
+		List<Map<String, Object>> List1 = new ArrayList<>();
+		for (Object[] ch : chType) {
+			Map<String, Object> map = new HashMap<>();
+			map.put("accountName", ch[0] != null ? ch[0].toString() : "");
+			List1.add(map);
+		}
+		return List1;
+	}
+
 }
