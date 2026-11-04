@@ -18,6 +18,12 @@ public class ToleranceMasterDTO {
     private BigDecimal upperTolerance;
 
     private BigDecimal tolerance;
+    
+    private String branch;
+    
+    private String branchCode;
+    
+    private Long orgid;
 
     private boolean active;
 

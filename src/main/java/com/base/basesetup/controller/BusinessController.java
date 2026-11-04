@@ -683,5 +683,81 @@ public class BusinessController extends BaseController {
 
 		return ResponseEntity.ok().body(responseDTO);
 	}
+	
+	@GetMapping("/getAllToleranceMaster")
+	public ResponseEntity<ResponseDTO> getAllToleranceMaster(
+	        @RequestParam String branch,
+	        @RequestParam Long orgid) {
 
+	    String methodName = "getAllToleranceMaster()";
+	    LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+
+	    String errorMsg = null;
+	    Map<String, Object> responseObjectsMap = new HashMap<>();
+	    ResponseDTO responseDTO = null;
+
+	    try {
+
+	        Map<String, Object> toleranceMasterMap =
+	                businessService.getAllToleranceMaster(branch, orgid);
+
+	        responseObjectsMap.put(CommonConstant.STRING_MESSAGE,
+	                toleranceMasterMap.get("message"));
+
+	        responseObjectsMap.put("toleranceMasterVO",
+	                toleranceMasterMap.get("toleranceMasterVO"));
+
+	        responseDTO = createServiceResponse(responseObjectsMap);
+
+	    } catch (Exception e) {
+
+	        errorMsg = e.getMessage();
+
+	        LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+
+	        responseDTO = createServiceResponseError(responseObjectsMap, errorMsg, errorMsg);
+	    }
+
+	    LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+
+	    return ResponseEntity.ok().body(responseDTO);
+	}
+
+	@GetMapping("/getToleranceMasterById")
+	public ResponseEntity<ResponseDTO> getToleranceMasterById(
+	        @RequestParam Long toleranceid) {
+
+	    String methodName = "getToleranceMasterById()";
+	    LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+
+	    String errorMsg = null;
+	    Map<String, Object> responseObjectsMap = new HashMap<>();
+	    ResponseDTO responseDTO = null;
+
+	    try {
+
+	        Map<String, Object> toleranceMasterMap =
+	                businessService.getToleranceMasterById(toleranceid);
+
+	        responseObjectsMap.put(CommonConstant.STRING_MESSAGE,
+	                toleranceMasterMap.get("message"));
+
+	        responseObjectsMap.put("toleranceMasterVO",
+	                toleranceMasterMap.get("toleranceMasterVO"));
+
+	        responseDTO = createServiceResponse(responseObjectsMap);
+
+	    } catch (Exception e) {
+
+	        errorMsg = e.getMessage();
+
+	        LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, errorMsg);
+
+	        responseDTO = createServiceResponseError(responseObjectsMap, errorMsg, errorMsg);
+	    }
+
+	    LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+
+	    return ResponseEntity.ok().body(responseDTO);
+	}
 }

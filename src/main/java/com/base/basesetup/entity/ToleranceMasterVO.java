@@ -29,35 +29,44 @@ public class ToleranceMasterVO {
 	@SequenceGenerator(name = "tolerancemastergen", sequenceName = "tolerancemasterseq", initialValue = 1000000001, allocationSize = 1)
 	@Column(name = "toleranceid")
 	private Long toleranceid;
-	
+
 	@Column(name = "lt", precision = 15, scale = 4)
 	private BigDecimal lowerTolerance;
-	
+
 	@Column(name = "ut", precision = 15, scale = 4)
-    private BigDecimal upperTolerance;
+	private BigDecimal upperTolerance;
+
+	@Column(name = "tol", precision = 15, scale = 4)
+	private BigDecimal tolerance;
+
+	@Column(name = "orgid")
+	private Long orgid;
+
+	@Column(name = "branch")
+	private String branch;
 	
-	 @Column(name = "tol", precision = 15, scale = 4)
-	 private BigDecimal tolerance;
-	 
-	    @Column(name = "active")
-	    private boolean active;
+	@Column(name = "branchcode")
+	private String branchCode;
 
-	    @Column(name = "createdby", length = 50)
-	    private String createdBy;
+	@Column(name = "active")
+	private boolean active;
 
-	    @Column(name = "modifiedby", length = 50)
-	    private String updatedBy;
+	@Column(name = "createdby", length = 50)
+	private String createdBy;
 
-	    @Column(name = "cancel")
-	    private boolean cancel;
-	    
-	    @Column(name = "screenid", length = 10)
-	    private String screenCode;
+	@Column(name = "modifiedby", length = 50)
+	private String updatedBy;
 
-	    @Column(name = "screen", length = 50)
-	    private String screenName;
+	@Column(name = "cancel")
+	private boolean cancel;
 
-	    @Embedded
-	    private CreatedUpdatedDate createdUpdatedDate = new CreatedUpdatedDate();
+	@Column(name = "screenid", length = 10)
+	private String screenCode;
+
+	@Column(name = "screen", length = 50)
+	private String screenName;
+
+	@Embedded
+	private CreatedUpdatedDate createdUpdatedDate = new CreatedUpdatedDate();
 
 }

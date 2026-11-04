@@ -81,6 +81,11 @@ public interface BusinessService {
 
 	Map<String, Object> createUpdateToleranceMaster(ToleranceMasterDTO toleranceMasterDTO) throws ApplicationException;
 
+	Map<String, Object> getToleranceMasterById(Long toleranceid) throws ApplicationException;
+
+
+	Map<String, Object> getAllToleranceMaster(String branch, Long orgid) throws ApplicationException;
+
 	
 
 	

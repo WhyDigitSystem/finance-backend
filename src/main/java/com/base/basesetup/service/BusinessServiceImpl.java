@@ -28,6 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.base.basesetup.common.CommonConstant;
+import com.base.basesetup.common.UserConstants;
 import com.base.basesetup.dto.CCoaDTO;
 import com.base.basesetup.dto.CoaDTO;
 import com.base.basesetup.dto.ExcelUploadResultDTO;
@@ -72,7 +73,7 @@ public class BusinessServiceImpl implements BusinessService {
 
 	@Autowired
 	ServiceLevelDetailsRepo serviceLevelDetailsRepo;
-	
+
 	@Autowired
 	ToleranceMasterRepo toleranceMasterRepo;
 
@@ -1211,6 +1212,9 @@ public class BusinessServiceImpl implements BusinessService {
 			toleranceMasterVO.setTolerance(toleranceMasterDTO.getTolerance());
 			toleranceMasterVO.setActive(toleranceMasterDTO.isActive());
 			toleranceMasterVO.setCancel(toleranceMasterDTO.isCancel());
+			toleranceMasterVO.setOrgid(toleranceMasterDTO.getOrgid());
+			toleranceMasterVO.setBranch(toleranceMasterDTO.getBranch());
+			toleranceMasterVO.setBranchCode(toleranceMasterDTO.getBranchCode());
 
 			toleranceMasterVO = toleranceMasterRepo.save(toleranceMasterVO);
 
@@ -1230,5 +1234,65 @@ public class BusinessServiceImpl implements BusinessService {
 		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
 
 		return responseObjectsMap;
+	}
+
+	@Override
+	@Transactional
+	public Map<String, Object> getToleranceMasterById(Long toleranceid) throws ApplicationException {
+
+		String methodName = "getToleranceMasterById()";
+		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+
+		Map<String, Object> responseObjectsMap = new HashMap<>();
+
+		try {
+
+			ToleranceMasterVO toleranceMasterVO = toleranceMasterRepo.findById(toleranceid)
+					.orElseThrow(() -> new ApplicationException("Tolerance Master not found"));
+
+			responseObjectsMap.put("toleranceMasterVO", toleranceMasterVO);
+			responseObjectsMap.put("message", "Tolerance Master fetched successfully");
+
+		} catch (Exception e) {
+
+			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, e.getMessage());
+			throw new ApplicationException(e.getMessage());
+
+		}
+
+		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+
+		return responseObjectsMap;
+	}
+
+	
+
+	@Override
+	@Transactional
+	public Map<String, Object> getAllToleranceMaster(String branch, Long orgid)
+	        throws ApplicationException {
+
+	    String methodName = "getAllToleranceMaster()";
+	    LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+
+	    Map<String, Object> responseObjectsMap = new HashMap<>();
+
+	    try {
+
+	        List<ToleranceMasterVO> toleranceMasterList =
+	                toleranceMasterRepo.findByBranchAndOrgid(branch, orgid);
+
+	        responseObjectsMap.put("toleranceMasterVO", toleranceMasterList);
+	        responseObjectsMap.put("message", "Tolerance Master details fetched successfully");
+
+	    } catch (Exception e) {
+
+	        LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, e.getMessage());
+	        throw new ApplicationException(e.getMessage());
+	    }
+
+	    LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+
+	    return responseObjectsMap;
 	}
 }
