@@ -8,5 +8,5 @@ import com.base.basesetup.entity.ToleranceMasterVO;
 
 public interface ToleranceMasterRepo extends JpaRepository<ToleranceMasterVO, Long> {
 
-	List<ToleranceMasterVO> findByBranchAndOrgid(String branch, Long orgid);
+	List<ToleranceMasterVO> findByBranchCodeAndOrgid(String branchCode, Long orgid);
 }

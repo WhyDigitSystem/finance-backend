@@ -1269,7 +1269,7 @@ public class BusinessServiceImpl implements BusinessService {
 
 	@Override
 	@Transactional
-	public Map<String, Object> getAllToleranceMaster(String branch, Long orgid)
+	public Map<String, Object> getAllToleranceMaster(String branchCode, Long orgid)
 	        throws ApplicationException {
 
 	    String methodName = "getAllToleranceMaster()";
@@ -1280,7 +1280,7 @@ public class BusinessServiceImpl implements BusinessService {
 	    try {
 
 	        List<ToleranceMasterVO> toleranceMasterList =
-	                toleranceMasterRepo.findByBranchAndOrgid(branch, orgid);
+	                toleranceMasterRepo.findByBranchCodeAndOrgid(branchCode, orgid);
 
 	        responseObjectsMap.put("toleranceMasterVO", toleranceMasterList);
 	        responseObjectsMap.put("message", "Tolerance Master details fetched successfully");

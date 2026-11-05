@@ -686,7 +686,7 @@ public class BusinessController extends BaseController {
 	
 	@GetMapping("/getAllToleranceMaster")
 	public ResponseEntity<ResponseDTO> getAllToleranceMaster(
-	        @RequestParam String branch,
+	        @RequestParam String branchCode,
 	        @RequestParam Long orgid) {
 
 	    String methodName = "getAllToleranceMaster()";
@@ -699,7 +699,7 @@ public class BusinessController extends BaseController {
 	    try {
 
 	        Map<String, Object> toleranceMasterMap =
-	                businessService.getAllToleranceMaster(branch, orgid);
+	                businessService.getAllToleranceMaster(branchCode, orgid);
 
 	        responseObjectsMap.put(CommonConstant.STRING_MESSAGE,
 	                toleranceMasterMap.get("message"));
