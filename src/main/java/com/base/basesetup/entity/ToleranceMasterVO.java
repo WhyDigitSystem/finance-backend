@@ -65,6 +65,7 @@ public class ToleranceMasterVO {
 
 	@Column(name = "screen", length = 50)
 	private String screenName;
+	
 
 	@Embedded
 	private CreatedUpdatedDate createdUpdatedDate = new CreatedUpdatedDate();
