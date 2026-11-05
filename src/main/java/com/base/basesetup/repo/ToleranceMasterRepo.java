@@ -9,4 +9,6 @@ import com.base.basesetup.entity.ToleranceMasterVO;
 public interface ToleranceMasterRepo extends JpaRepository<ToleranceMasterVO, Long> {
 
 	List<ToleranceMasterVO> findByBranchCodeAndOrgid(String branchCode, Long orgid);
+
+	boolean existsByScreenCodeAndOrgid(String screenCode, Long orgid); 
 }

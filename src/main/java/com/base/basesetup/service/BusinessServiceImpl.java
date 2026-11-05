@@ -1179,59 +1179,75 @@ public class BusinessServiceImpl implements BusinessService {
 
 	@Override
 	@Transactional
-	public Map<String, Object> createUpdateToleranceMaster(ToleranceMasterDTO toleranceMasterDTO)
+	public Map<String, Object> createUpdateToleranceMaster(ToleranceMasterDTO toleranceMasterRequestDTO)
 			throws ApplicationException {
 
-		String methodName = "createUpdateToleranceMaster()";
-		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+		ToleranceMasterVO toleranceMasterVO;
+		String message = null;
 
-		Map<String, Object> responseObjectsMap = new HashMap<>();
+		if (ObjectUtils.isEmpty(toleranceMasterRequestDTO.getToleranceid())) {
 
-		try {
+			// Check duplicate Screen Code within the organization
+			if (toleranceMasterRepo.existsByScreenCodeAndOrgid(toleranceMasterRequestDTO.getScreenCode(),
+					toleranceMasterRequestDTO.getOrgid())) {
 
-			ToleranceMasterVO toleranceMasterVO = new ToleranceMasterVO();
+				String errorMessage = String.format("This Screen Code: %s Already Exists in This Organization",
+						toleranceMasterRequestDTO.getScreenCode());
 
-			if (toleranceMasterDTO.getToleranceid() != null) {
-
-				toleranceMasterVO = toleranceMasterRepo.findById(toleranceMasterDTO.getToleranceid())
-						.orElseThrow(() -> new ApplicationException("Tolerance Master not found"));
-
-				toleranceMasterVO.setUpdatedBy(toleranceMasterDTO.getUpdatedBy());
-
-			} else {
-
-				toleranceMasterVO.setCreatedBy(toleranceMasterDTO.getCreatedBy());
-				toleranceMasterVO.setUpdatedBy(toleranceMasterDTO.getCreatedBy());
-
+				throw new ApplicationException(errorMessage);
 			}
 
-			toleranceMasterVO.setScreenCode(toleranceMasterDTO.getScreenCode());
-			toleranceMasterVO.setScreenName(toleranceMasterDTO.getScreenName());
-			toleranceMasterVO.setLowerTolerance(toleranceMasterDTO.getLowerTolerance());
-			toleranceMasterVO.setUpperTolerance(toleranceMasterDTO.getUpperTolerance());
-			toleranceMasterVO.setTolerance(toleranceMasterDTO.getTolerance());
-			toleranceMasterVO.setActive(toleranceMasterDTO.isActive());
-			toleranceMasterVO.setCancel(toleranceMasterDTO.isCancel());
-			toleranceMasterVO.setOrgid(toleranceMasterDTO.getOrgid());
-			toleranceMasterVO.setBranch(toleranceMasterDTO.getBranch());
-			toleranceMasterVO.setBranchCode(toleranceMasterDTO.getBranchCode());
+			// Create new Tolerance Master
+			toleranceMasterVO = new ToleranceMasterVO();
 
-			toleranceMasterVO = toleranceMasterRepo.save(toleranceMasterVO);
+			toleranceMasterVO.setCreatedBy(toleranceMasterRequestDTO.getCreatedBy());
+			toleranceMasterVO.setUpdatedBy(toleranceMasterRequestDTO.getCreatedBy());
 
-			responseObjectsMap.put("message",
-					toleranceMasterDTO.getToleranceid() != null ? "Tolerance Master updated successfully"
-							: "Tolerance Master created successfully");
+			message = "Tolerance Master Creation Successfully";
 
-			responseObjectsMap.put("toleranceMasterVO", toleranceMasterVO);
+		} else {
 
-		} catch (Exception e) {
+			// Update existing Tolerance Master
+			toleranceMasterVO = toleranceMasterRepo.findById(toleranceMasterRequestDTO.getToleranceid())
+					.orElseThrow(() -> new ApplicationException(
+							"ID is Not Found Any Information: " + toleranceMasterRequestDTO.getToleranceid()));
 
-			LOGGER.error("Error in " + methodName + ": " + e.getMessage());
-			throw new ApplicationException(e.getMessage());
+			toleranceMasterVO.setUpdatedBy(toleranceMasterRequestDTO.getUpdatedBy());
 
+			// Check duplicate Screen Code only if Screen Code is changed
+			if (!toleranceMasterVO.getScreenCode().equalsIgnoreCase(toleranceMasterRequestDTO.getScreenCode())) {
+
+				if (toleranceMasterRepo.existsByScreenCodeAndOrgid(toleranceMasterRequestDTO.getScreenCode(),
+						toleranceMasterRequestDTO.getOrgid())) {
+
+					String errorMessage = String.format("This Screen Code: %s Already Exists in This Organization",
+							toleranceMasterRequestDTO.getScreenCode());
+
+					throw new ApplicationException(errorMessage);
+				}
+
+				toleranceMasterVO.setScreenCode(toleranceMasterRequestDTO.getScreenCode());
+			}
+
+			message = "Tolerance Master Update Successfully";
 		}
 
-		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+		// Set Tolerance Master details
+		toleranceMasterVO.setScreenName(toleranceMasterRequestDTO.getScreenName());
+		toleranceMasterVO.setLowerTolerance(toleranceMasterRequestDTO.getLowerTolerance());
+		toleranceMasterVO.setUpperTolerance(toleranceMasterRequestDTO.getUpperTolerance());
+		toleranceMasterVO.setTolerance(toleranceMasterRequestDTO.getTolerance());
+		toleranceMasterVO.setActive(toleranceMasterRequestDTO.isActive());
+		toleranceMasterVO.setCancel(toleranceMasterRequestDTO.isCancel());
+		toleranceMasterVO.setBranch(toleranceMasterRequestDTO.getBranch());
+		toleranceMasterVO.setBranchCode(toleranceMasterRequestDTO.getBranchCode());
+		toleranceMasterVO.setOrgid(toleranceMasterRequestDTO.getOrgid());
+
+		toleranceMasterVO = toleranceMasterRepo.save(toleranceMasterVO);
+
+		Map<String, Object> responseObjectsMap = new HashMap<>();
+		responseObjectsMap.put("message", message);
+		responseObjectsMap.put("toleranceMasterVO", toleranceMasterVO);
 
 		return responseObjectsMap;
 	}
@@ -1265,34 +1281,31 @@ public class BusinessServiceImpl implements BusinessService {
 		return responseObjectsMap;
 	}
 
-	
-
 	@Override
 	@Transactional
-	public Map<String, Object> getAllToleranceMaster(String branchCode, Long orgid)
-	        throws ApplicationException {
+	public Map<String, Object> getAllToleranceMaster(String branchCode, Long orgid) throws ApplicationException {
 
-	    String methodName = "getAllToleranceMaster()";
-	    LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+		String methodName = "getAllToleranceMaster()";
+		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
 
-	    Map<String, Object> responseObjectsMap = new HashMap<>();
+		Map<String, Object> responseObjectsMap = new HashMap<>();
 
-	    try {
+		try {
 
-	        List<ToleranceMasterVO> toleranceMasterList =
-	                toleranceMasterRepo.findByBranchCodeAndOrgid(branchCode, orgid);
+			List<ToleranceMasterVO> toleranceMasterList = toleranceMasterRepo.findByBranchCodeAndOrgid(branchCode,
+					orgid);
 
-	        responseObjectsMap.put("toleranceMasterVO", toleranceMasterList);
-	        responseObjectsMap.put("message", "Tolerance Master details fetched successfully");
+			responseObjectsMap.put("toleranceMasterVO", toleranceMasterList);
+			responseObjectsMap.put("message", "Tolerance Master details fetched successfully");
 
-	    } catch (Exception e) {
+		} catch (Exception e) {
 
-	        LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, e.getMessage());
-	        throw new ApplicationException(e.getMessage());
-	    }
+			LOGGER.error(UserConstants.ERROR_MSG_METHOD_NAME, methodName, e.getMessage());
+			throw new ApplicationException(e.getMessage());
+		}
 
-	    LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
 
-	    return responseObjectsMap;
+		return responseObjectsMap;
 	}
 }
