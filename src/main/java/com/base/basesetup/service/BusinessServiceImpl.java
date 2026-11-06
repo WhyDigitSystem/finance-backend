@@ -1214,7 +1214,7 @@ public class BusinessServiceImpl implements BusinessService {
 
 			toleranceMasterVO.setUpdatedBy(toleranceMasterRequestDTO.getUpdatedBy());
 
-			// Check duplicate Screen Code only if Screen Code is changed
+			// Check duplicate Screen Code only when Screen Code is changed
 			if (!toleranceMasterVO.getScreenCode().equalsIgnoreCase(toleranceMasterRequestDTO.getScreenCode())) {
 
 				if (toleranceMasterRepo.existsByScreenCodeAndOrgid(toleranceMasterRequestDTO.getScreenCode(),
@@ -1225,28 +1225,40 @@ public class BusinessServiceImpl implements BusinessService {
 
 					throw new ApplicationException(errorMessage);
 				}
-
-				toleranceMasterVO.setScreenCode(toleranceMasterRequestDTO.getScreenCode());
 			}
 
 			message = "Tolerance Master Update Successfully";
 		}
 
-		// Set Tolerance Master details
+		// Set common fields for both Create and Update
+
+		toleranceMasterVO.setScreenCode(toleranceMasterRequestDTO.getScreenCode());
+
 		toleranceMasterVO.setScreenName(toleranceMasterRequestDTO.getScreenName());
+
 		toleranceMasterVO.setLowerTolerance(toleranceMasterRequestDTO.getLowerTolerance());
+
 		toleranceMasterVO.setUpperTolerance(toleranceMasterRequestDTO.getUpperTolerance());
+
 		toleranceMasterVO.setTolerance(toleranceMasterRequestDTO.getTolerance());
+
 		toleranceMasterVO.setActive(toleranceMasterRequestDTO.isActive());
+
 		toleranceMasterVO.setCancel(toleranceMasterRequestDTO.isCancel());
+
 		toleranceMasterVO.setBranch(toleranceMasterRequestDTO.getBranch());
+
 		toleranceMasterVO.setBranchCode(toleranceMasterRequestDTO.getBranchCode());
+
 		toleranceMasterVO.setOrgid(toleranceMasterRequestDTO.getOrgid());
 
+		// Save Tolerance Master
 		toleranceMasterVO = toleranceMasterRepo.save(toleranceMasterVO);
 
 		Map<String, Object> responseObjectsMap = new HashMap<>();
+
 		responseObjectsMap.put("message", message);
+
 		responseObjectsMap.put("toleranceMasterVO", toleranceMasterVO);
 
 		return responseObjectsMap;
